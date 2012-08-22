@@ -14,7 +14,7 @@
         <summary>.Net Error handler used internally at Stack Exchange/Stack Overflow.  Primarily for logging all unhandled exceptions to SQL, but also supporting JSON and Memory based logging.</summary>
     </metadata>
     <files>
-        <file src="bin\Release\*.dll" target="lib" />
-        <file src="bin\Release\*.pdb" target="lib" />
+        <file src="bin\Release\StackExchange.Exceptional.dll" target="lib" />
+        <file src="bin\Release\StackExchange.Exceptional.pdb" target="lib" />
     </files>
 </package>
