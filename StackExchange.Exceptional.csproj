@@ -130,7 +130,7 @@
     <EmbeddedResource Include="Resources\top-bg.png" />
     <EmbeddedResource Include="Resources\top-bg-fail.png" />
     <EmbeddedResource Include="Resources\loading.gif" />
-    <Content Include="Setup\SQLExceptionTable.sql" />
+    <None Include="Setup\SQLExceptionTable.sql" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
