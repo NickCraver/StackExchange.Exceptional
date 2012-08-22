@@ -1,0 +1,20 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>StackExchange.Exceptional</id>
+        <title>StackExhange.Exceptional</title>
+        <authors>Nick Craver</authors>
+        <owners>Nick Craver</owners>
+        <version>1.0.0</version>
+        <licenseUrl>https://github.com/NickCraver/StackExchange.Exceptional/blob/master/LICENSE</licenseUrl>
+        <tags>SQL JSON Exception Handler Stack Exchange Exceptional</tags>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <language>en-US</language>
+        <description>.Net Error handler for logging to SQL, JSON or Memory.</description>
+        <summary>.Net Error handler used internally at Stack Exchange/Stack Overflow.  Primarily for logging all unhandled exceptions to SQL, but also supporting JSON and Memory based logging.</summary>
+    </metadata>
+    <files>
+        <file src="bin\Release\*.dll" target="lib" />
+        <file src="bin\Release\*.pdb" target="lib" />
+    </files>
+</package>

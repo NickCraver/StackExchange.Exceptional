@@ -69,6 +69,7 @@
     <Compile Include="Handlers\ResourceHandler.cs" />
     <Compile Include="Handlers\RedirectHandler.cs" />
     <Compile Include="Handlers\ErrorJsonHandler.cs" />
+    <None Include="LICENSE" />
     <Compile Include="Pages\ErrorInfo.generated.cs">
       <DependentUpon>ErrorInfo.cshtml</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -156,6 +157,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="StoresSetup\SQLExceptionTable.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="StackExchange.Exceptional.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
