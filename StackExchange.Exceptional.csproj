@@ -116,6 +116,7 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Master.generated.cs</LastGenOutput>
     </None>
+    <None Include="Readme.md" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Styles.css" />
@@ -130,7 +131,6 @@
     <EmbeddedResource Include="Resources\top-bg.png" />
     <EmbeddedResource Include="Resources\top-bg-fail.png" />
     <EmbeddedResource Include="Resources\loading.gif" />
-    <Content Include="Setup\SQLExceptionTable.sql" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
@@ -153,6 +153,9 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="StoresSetup\SQLExceptionTable.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
