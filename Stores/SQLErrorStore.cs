@@ -1,0 +1,205 @@
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
+using System;
+using StackExchange.Exceptional.Dapper;
+using StackExchange.Exceptional.Extensions;
+
+namespace StackExchange.Exceptional.Stores
+{
+    /// <summary>
+    /// An <see cref="ErrorStore"/> implementation that uses SQL Server as its backing store. 
+    /// </summary>
+    public sealed class SQLErrorStore : ErrorStore
+    {
+        private readonly int _displayCount = SQLErrorStore.DefaultDisplayCount;
+        private readonly string _connectionString;
+
+        /// <summary>
+        /// The maximum count of errors to show.
+        /// </summary>
+        public const int MaximumDisplayCount = 500;
+
+        /// <summary>
+        /// The default maximum count of errors shown at once.
+        /// </summary>        
+        public const int DefaultDisplayCount = 200;
+
+        /// <summary>
+        /// Creates a new instance of <see cref="SQLErrorStore"/> with the given configuration.
+        /// </summary>        
+        public SQLErrorStore(ErrorStoreSettings settings) : base(settings)
+        {
+            _displayCount = Math.Min(settings.Size, MaximumDisplayCount);
+
+            if (settings.ConnectionString.IsNullOrEmpty()) throw new ArgumentOutOfRangeException("settings", "Connection string must be specified when using a SQL error store");
+            _connectionString = settings.ConnectionString;
+        }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="SQLErrorStore"/> with the specified connection string.
+        /// </summary>
+        /// <param name="connectionString">The database connection string to use</param>
+        /// <param name="displayCount">How many errors to display in the log (for display ONLY, the log is not truncated to this value)</param>
+        /// <param name="rollupSeconds">The rollup seconds, defaults to <see cref="ErrorStore.DefaultRollupSeconds"/>, duplicate errors within this time period will be rolled up</param>
+        public SQLErrorStore(string connectionString, int displayCount = DefaultDisplayCount, int rollupSeconds = DefaultRollupSeconds) : base(rollupSeconds)
+        {
+            _displayCount = Math.Min(displayCount, MaximumDisplayCount);
+
+            if (connectionString.IsNullOrEmpty()) throw new ArgumentOutOfRangeException("settings", "Connection string must be specified when using a SQL error store");
+            _connectionString = connectionString;
+        }
+
+        public override string Name { get { return "SQL Error Store"; } }
+        public override ErrorStoreType Type { get { return ErrorStoreType.SQL; } }
+
+        protected override bool ProtectError(Guid guid)
+        {
+            using (var c = GetConnection())
+            {
+                return c.Execute(@"
+Update Exceptions 
+   Set IsProtected = 1, DeletionDate = Null
+ Where GUID = @guid", new { guid }) > 0;
+            }
+        }
+
+        protected override bool DeleteError(Guid guid)
+        {
+            using (var c = GetConnection())
+            {
+                return c.Execute(@"
+Update Exceptions 
+   Set DeletionDate = GETUTCDATE() 
+ Where GUID = @guid 
+   And DeletionDate Is Null
+   And ApplicationName = @ApplicationName", new { guid, ApplicationName }) > 0;
+            }
+        }
+
+        protected override bool HardDeleteError(Guid guid)
+        {
+            using (var c = GetConnection())
+            {
+                return c.Execute(@"
+Delete From Exceptions 
+ Where GUID = @guid
+   And ApplicationName = @ApplicationName", new { guid, ApplicationName }) > 0;
+            }
+        }
+
+        protected override bool DeleteAllErrors()
+        {
+            using (var c = GetConnection())
+            {
+                return c.Execute(@"
+Update Exceptions 
+   Set DeletionDate = GETUTCDATE() 
+ Where DeletionDate Is Null 
+   And IsProtected = 0 
+   And ApplicationName = @ApplicationName", new { ApplicationName }) > 0;
+            }
+        }
+
+        protected override void LogError(Error error)
+        {
+            using (var c = GetConnection())
+            {
+                if (RollupThreshold.HasValue && error.ErrorHash.HasValue)
+                {
+                    var count = c.Execute(@"
+Update Exceptions 
+   Set DuplicateCount = DuplicateCount + @DuplicateCount
+ Where Id In (Select Top 1 Id
+                From Exceptions 
+               Where ErrorHash = @ErrorHash
+                 And ApplicationName = @ApplicationName
+                 And DeletionDate Is Null
+                 And CreationDate >= @minDate)", new { error.DuplicateCount, error.ErrorHash, ApplicationName, minDate = DateTime.UtcNow.Add(RollupThreshold.Value.Negate()) });
+                    // if we found an error that's a duplicate, jump out
+                    if (count > 0) return;
+                }
+
+                error.FullJson = error.ToJson();
+
+                c.Execute(@"
+Insert Into Exceptions (GUID, ApplicationName, MachineName, CreationDate, Type, IsProtected, Host, Url, HTTPMethod, IPAddress, Source, Message, Detail, StatusCode, SQL, FullJson, ErrorHash, DuplicateCount)
+Values (@GUID, @ApplicationName, @MachineName, @CreationDate, @Type, @IsProtected, @Host, @Url, @HTTPMethod, @IPAddress, @Source, @Message, @Detail, @StatusCode, @SQL, @FullJson, @ErrorHash, @DuplicateCount)",
+                    new {
+                            error.GUID,
+                            ApplicationName = error.ApplicationName.Truncate(50),
+                            MachineName = error.MachineName.Truncate(50),
+                            error.CreationDate,
+                            Type = error.Type.Truncate(100),
+                            error.IsProtected,
+                            Host = error.Host.Truncate(100),
+                            Url = error.Url.Truncate(500),
+                            HTTPMethod = error.HTTPMethod.Truncate(10), // this feels silly, but you never know when someone will up and go crazy with HTTP 1.2!
+                            error.IPAddress,
+                            Source = error.Source.Truncate(100),
+                            Message = error.Message.Truncate(1000),
+                            error.Detail,
+                            error.StatusCode,
+                            error.SQL,
+                            error.FullJson,
+                            error.ErrorHash,
+                            error.DuplicateCount
+                        });
+            }
+        }
+
+        protected override Error GetError(Guid guid)
+        {
+            Error sqlError;
+            using (var c = GetConnection())
+            {
+                sqlError = c.Query<Error>(@"
+Select * 
+  From Exceptions 
+ Where GUID = @guid
+   And ApplicationName = @ApplicationName", new { guid, ApplicationName }).FirstOrDefault(); // a guid won't collide, but the AppName is for security
+            }
+            if (sqlError == null) return null;
+
+            // everything is in the JSON, but not the columns and we have to deserialize for collections anyway
+            // so use that deserialized version and just get the properties that might change on the SQL side and apply them
+            var result = Error.FromJson(sqlError.FullJson);
+            result.DuplicateCount = sqlError.DuplicateCount;
+            result.DeletionDate = sqlError.DeletionDate;
+            return result;
+        }
+
+        protected override int GetAllErrors(List<Error> errors)
+        {
+            using (var c = GetConnection())
+            {
+                errors.AddRange(c.Query<Error>(@"
+Select Top (@max) * 
+  From Exceptions 
+ Where DeletionDate Is Null
+   And ApplicationName = @ApplicationName
+Order By CreationDate Desc", new { max = _displayCount, ApplicationName }));
+            }
+
+            return errors.Count;
+        }
+
+        protected override int GetErrorCount(DateTime? since = null)
+        {
+            using (var c = GetConnection())
+            {
+                return c.Query<int>(@"
+Select Count(*) 
+  From Exceptions 
+ Where DeletionDate Is Null
+   And ApplicationName = @ApplicationName" + (since.HasValue ? " And CreationDate > @since" : ""),
+                    new { since, ApplicationName }).FirstOrDefault();
+            }
+        }
+
+        private SqlConnection GetConnection()
+        {
+            return new SqlConnection(_connectionString);
+        }
+    }
+}
