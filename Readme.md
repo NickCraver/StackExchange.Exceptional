@@ -2,6 +2,8 @@ StackExchange.Exceptional is the error handler used internally by [Stack Exchang
 
 It also supports JSON and memory error stores, filtering of exceptions before logging, and fail/retry mechanisms for storing errors if there's an interruption in connecting to the error store.
 
+[See the wiki for how to get configured and logging in just a few minutes](https://github.com/NickCraver/StackExchange.Exceptional/wiki).
+
 About:  
 This project was insired by [ELMAH](http://code.google.com/p/elmah/), but it didn't suit our particular needs for very, very high volume error logging when a network-level event occurs.
 
