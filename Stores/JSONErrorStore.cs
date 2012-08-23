@@ -169,7 +169,7 @@ namespace StackExchange.Exceptional.Stores
                 result.IsProtected = file.IsReadOnly;
                 return result;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }
