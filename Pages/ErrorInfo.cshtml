@@ -1,5 +1,8 @@
 ﻿@* Generator: Template TypeVisibility: Internal *@
+@using System
+@using System.Collections.Generic
 @using System.Collections.Specialized
+@using System.Linq
 @using System.Text
 @using System.Text.RegularExpressions
 @using System.Web
@@ -75,7 +78,7 @@
         if (vars["HTTP_HOST"].HasValue() && vars["URL"].HasValue())
         {
             var url = string.Format("http://{0}{1}{2}", vars["HTTP_HOST"], vars["URL"], vars["QUERY_STRING"].HasValue() ? "?" + vars["QUERY_STRING"] : "");
-            result.AppendFormat("          <tr><td class=\"key\">URL and Query</td><td class=\"value\">{0}</td></tr>", vars["REQUEST_METHOD"] == "GET" ? Linkify(url) : Server.HtmlEncode(url));
+            result.AppendFormat("          <tr><td class=\"key\">URL and Query</td><td class=\"value\">{0}</td></tr>", vars["REQUEST_METHOD"] == "GET" ? Linkify(url).ToString() : Server.HtmlEncode(url));
         }
         result.Append(hiddenRows);
         result.AppendFormat("        </table>");
@@ -85,7 +88,7 @@
     }
 
 
-    private string Linkify(string s)
+    private IHtmlString Linkify(string s)
     {
         if (Regex.IsMatch(s, @"%[A-Z0-9][A-Z0-9]"))
         {
@@ -97,10 +100,10 @@
             //@* || (Regex.IsMatch(s, "/[^ /,]+/") && !s.Contains("/LM"))*@ // block special case of "/LM/W3SVC/1"
             var sane = SanitizeUrl(s);
             if (sane == s) // only link if it's not suspicious
-                return string.Format(@"<a href=""{0}"">{1}</a>", sane, Server.HtmlEncode(s));
+                return Html(string.Format(@"<a href=""{0}"">{1}</a>", sane, Server.HtmlEncode(s)));
         }
 
-        return Server.HtmlEncode(s);
+        return Html(Server.HtmlEncode(s));
     }
 
     private static readonly Regex _sanitizeUrl = new Regex(@"[^-a-z0-9+&@#/%?=~_|!:,.;\(\)\{\}]", RegexOptions.IgnoreCase | RegexOptions.Compiled);

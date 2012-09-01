@@ -1,4 +1,6 @@
 ﻿@* Generator: Template TypeVisibility: Internal *@
+@using System.Collections.Generic
+@using System.Linq
 @using StackExchange.Exceptional
 @using StackExchange.Exceptional.Pages
 @using StackExchange.Exceptional.Extensions
@@ -38,7 +40,20 @@ else
 {
     var last = errors.FirstOrDefault(); // oh the irony
 <h1 id="errorcount">@ErrorStore.ApplicationName - @total Errors; last @last.CreationDate.ToRelativeTime()</h1>
-    <table id="ErrorLog" class="alt-rows">        <thead>            <tr>                <th class="type-col">&nbsp;</th>                <th class="type-col">Type</th>                <th>Error</th>                <th>Url</th>                <th>Remote IP</th>                <th>Time</th>                <th>Site</th>                <th>Server</th>            </tr>        </thead>        <tbody>
+    <table id="ErrorLog" class="alt-rows">
+        <thead>
+            <tr>
+                <th class="type-col">&nbsp;</th>
+                <th class="type-col">Type</th>
+                <th>Error</th>
+                <th>Url</th>
+                <th>Remote IP</th>
+                <th>Time</th>
+                <th>Site</th>
+                <th>Server</th>
+            </tr>
+        </thead>
+        <tbody>
         @foreach (var e in errors)
         {
             var fullUrl = "http://" + e.Host + e.Url;
@@ -72,7 +87,9 @@ else
                 <td>@e.Host</td>
                 <td>@e.MachineName</td>
             </tr>
-        }        </tbody>    </table>
+        }
+        </tbody>
+    </table>
     if (errors.Any(e => !e.IsProtected))
     {
     <div class="clear-all-div">
