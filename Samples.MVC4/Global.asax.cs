@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web;
-using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using StackExchange.Exceptional;
-using StackExchange.Exceptional.Stores;
 
 namespace Samples.MVC4
 {
     // Note: For instructions on enabling IIS6 or IIS7 classic mode, 
     // visit http://go.microsoft.com/?LinkId=9394801
 
-    public class MvcApplication : System.Web.HttpApplication
+    public class MvcApplication : HttpApplication
     {
         protected void Application_Start()
         {
@@ -53,6 +49,8 @@ namespace Samples.MVC4
         /// <param name="e">The exception to log</param>
         public static void LogException(Exception e)
         {
+            // Note: When dealing with non-web applications, or logging from background threads, 
+            // you would pass, null in instead of a HttpContext object.
             ErrorStore.LogException(e, HttpContext.Current);
         }
     }

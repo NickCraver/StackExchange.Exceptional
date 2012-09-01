@@ -157,7 +157,9 @@
     <None Include="StoresSetup\SQLExceptionTable.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="StackExchange.Exceptional.nuspec" />
+    <None Include="StackExchange.Exceptional.nuspec">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
