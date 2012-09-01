@@ -42,7 +42,13 @@ namespace StackExchange.Exceptional
             if (e == null) throw new ArgumentNullException("e");
 
             Exception = e;
-            var baseException = e.GetBaseException();
+            var baseException = e;
+
+            // if it's not a .Net core exception, usually more information is being added
+            // so use the wrapper for the message, type, etc.
+            // if it's a .Net core exception type, drill down and get the innermost exception
+            if (IsBuiltInException(e))
+                baseException = e.GetBaseException();
 
             GUID = Guid.NewGuid();
             ApplicationName = ErrorStore.ApplicationName;
@@ -77,9 +83,19 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
+        /// returns if the type of the exception is built into .Net core
+        /// </summary>
+        /// <param name="e">The exception to check</param>
+        /// <returns>True if the exception is a type from within the CLR, false if it's a user/third party type</returns>
+        private bool IsBuiltInException(Exception e)
+        {
+            return e.GetType().Module.ScopeName == "CommonLanguageRuntimeLibrary";
+        }
+
+        /// <summary>
         /// Gets a unique-enough hash of this error.  Stored as a quick comparison mehanism to rollup duplicate errors.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>"Unique" hash for this error</returns>
         private int? GetHash()
         {
             if (!Detail.HasValue()) return null;
