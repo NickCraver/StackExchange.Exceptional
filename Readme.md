@@ -4,6 +4,9 @@ It also supports JSON and memory error stores, filtering of exceptions before lo
 
 [See the wiki for how to get configured and logging in just a few minutes](https://github.com/NickCraver/StackExchange.Exceptional/wiki).
 
+While having some features centered around logging/showing exceptions from web applications, **it can be used with either web or console applications**. HttpContext is optional when logging exceptions. 
+An example use of this at Stack Exchange is windows services logging to SQL and viewed elsewhere in a central dashboard (I'm working on open sourcing this as well).
+
 About:  
 This project was insired by [ELMAH](http://code.google.com/p/elmah/), but it didn't suit our particular needs for very, very high volume error logging when a network-level event occurs.
 
