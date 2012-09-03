@@ -16,7 +16,6 @@ namespace StackExchange.Exceptional
     /// </summary>
     public abstract partial class ErrorStore
     {
-        [ThreadStatic]
         private static ErrorStore _defaultStore;
         
         [ThreadStatic]
