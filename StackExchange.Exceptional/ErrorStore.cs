@@ -418,6 +418,19 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
+        /// For logging an exception with no HttpContext, most commonly used in non-web applications 
+        /// so that they don't have to carry a reference to System.Web
+        /// </summary>
+        /// <param name="ex">The exception to log</param>
+        /// <param name="appendFullStackTrace">Wehther to append a full stack trace to the exception's detail</param>
+        /// <param name="rollupPerServer">Whether to log up per-server, e.g. errors are only duplicates if they have same stack on the same machine</param>
+        /// <param name="customData">Any custom data to store with the exception like UserId, etc...this will be rendered as JSON in the error view for script use</param>
+        public static void LogExceptionWihoutContext(Exception ex, bool appendFullStackTrace = false, bool rollupPerServer = false, Dictionary<string, string> customData = null)
+        {
+            LogException(ex, null, appendFullStackTrace, rollupPerServer, customData);
+        }
+
+        /// <summary>
         /// Logs an exception to the configured error store, or the in-memory default store if none is configured
         /// </summary>
         /// <param name="ex">The exception to log</param>
