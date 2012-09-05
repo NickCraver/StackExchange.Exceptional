@@ -27,7 +27,7 @@ namespace Samples.Console
             catch (Exception ex)
             {
                 // logged, but caught so we don't crash
-                ErrorStore.LogExceptionWihoutContext(ex);
+                ErrorStore.LogExceptionWithoutContext(ex);
             }
 
             DisplayExceptionStats();
@@ -48,7 +48,7 @@ namespace Samples.Console
             var exception = e.ExceptionObject as Exception;
 
             if (exception != null)
-                ErrorStore.LogExceptionWihoutContext(exception);
+                ErrorStore.LogExceptionWithoutContext(exception);
         }
 
         static void DisplayExceptionStats()
