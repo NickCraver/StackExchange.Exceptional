@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System;
@@ -46,9 +47,20 @@ namespace StackExchange.Exceptional.Stores
             _path = path.ResolvePath();
         }
 
+        /// <summary>
+        /// Name for this error store
+        /// </summary>
         public override string Name { get { return "JSON File Error Store"; } }
+        /// <summary>
+        /// Type for this error store
+        /// </summary>
         public override ErrorStoreType Type { get { return ErrorStoreType.JSON; } }
 
+        /// <summary>
+        /// Protects an error from deletion, by making it ReadOnly
+        /// </summary>
+        /// <param name="guid">The guid of the error to protect</param>
+        /// <returns>True if the error was found and proected, false otherwise</returns>
         protected override bool ProtectError(Guid guid)
         {
             FileInfo f;
@@ -59,6 +71,11 @@ namespace StackExchange.Exceptional.Stores
             return true;
         }
 
+        /// <summary>
+        /// Deletes an error, by deleting it from the logging folder
+        /// </summary>
+        /// <param name="guid">The guid of the error to delete</param>
+        /// <returns>True if the error was found and deleted, false otherwise</returns>
         protected override bool DeleteError(Guid guid)
         {
             FileInfo f;
@@ -72,6 +89,10 @@ namespace StackExchange.Exceptional.Stores
             return true;
         }
 
+        /// <summary>
+        /// Deleted all errors in the log, by clearing all *.json files in the folder
+        /// </summary>
+        /// <returns>True if any errors were deleted, false otherwise</returns>
         protected override bool DeleteAllErrors()
         {
             string[] fileList = Directory.GetFiles(_path, "*.json");
@@ -89,11 +110,19 @@ namespace StackExchange.Exceptional.Stores
                     f.Delete();
                     deleted++;
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine("Error Deleting file '" + fn + "' from the store: " + ex.Message);
+                }
             }
             return deleted > 0;
         }
 
+        /// <summary>
+        /// Logs the JSON representation of an Error to the file store specified by the page for this store
+        /// If the rollup conditions are met, then the matching error will have a DuplicateCount += @DuplicateCount (usually 1, unless in retry) rather than a distinct new row for the error
+        /// </summary>
+        /// <param name="error">The error to log</param>
         protected override void LogError(Error error)
         {
             // will allow fast comparisons of messages to see if we can ignore an incoming exception
@@ -139,6 +168,11 @@ namespace StackExchange.Exceptional.Stores
             outstream.Flush();
         }
 
+        /// <summary>
+        /// Gets the error with the specified guid from the log/folder
+        /// </summary>
+        /// <param name="guid">The guid of the error to retrieve</param>
+        /// <returns>The error object if found, null otherwise</returns>
         protected override Error GetError(Guid guid)
         {
             string[] fileList = Directory.GetFiles(_path, string.Format("*{0}.json", guid.ToFileName()));
@@ -175,6 +209,9 @@ namespace StackExchange.Exceptional.Stores
             }
         }
 
+        /// <summary>
+        /// Retrieves all of the errors in the log folder
+        /// </summary>
         protected override int GetAllErrors(List<Error> errors)
         {
             string[] files = Directory.GetFiles(_path, "*.json");
@@ -189,6 +226,9 @@ namespace StackExchange.Exceptional.Stores
             return files.Length;
         }
 
+        /// <summary>
+        /// Retrieves a count of application errors since the specified date, or all time if null
+        /// </summary>
         protected override int GetErrorCount(DateTime? since = null)
         {
             string[] fileList = Directory.GetFiles(_path, "*.json");

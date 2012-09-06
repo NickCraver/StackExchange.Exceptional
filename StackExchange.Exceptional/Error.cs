@@ -13,6 +13,9 @@ namespace StackExchange.Exceptional
     [Serializable]
     public class Error
     {
+        /// <summary>
+        /// The Id on this error, strictly for primary keying on persistent stores
+        /// </summary>
         [ScriptIgnore]
         public long Id { get; set; }
 
@@ -238,6 +241,9 @@ namespace StackExchange.Exceptional
         [ScriptIgnore]
         public string FullJson { get; set; }
 
+        /// <summary>
+        /// Whether to roll up errors per-server. E.g. should an identical error happening on 2 separate servers be a DuplicateCount++, or 2 separate errors.
+        /// </summary>
         [ScriptIgnore]
         public bool RollupPerServer { get; set; }
 
@@ -248,7 +254,11 @@ namespace StackExchange.Exceptional
         {
             return Message;
         }
-
+        
+        /// <summary>
+        /// Create a copy of the error and collections so if it's modified in memory logging is not affected
+        /// </summary>
+        /// <returns>A clone of this error</returns>
         public Error Clone()
         {
             var copy = (Error) MemberwiseClone();
@@ -260,34 +270,52 @@ namespace StackExchange.Exceptional
             return copy;
         }
 
-        // Strictly for JSON serialziation, to maintain non-dictonary behavior
+        /// <summary>
+        /// Caribles strictly for JSON serialziation, to maintain non-dictonary behavior
+        /// </summary>
         public List<NameValuePair> ServerVariablesSerialzable
         {
             get { return GetPairs(ServerVariables); }
             set { ServerVariables = GetNameValueCollection(value); }
         }
+        /// <summary>
+        /// Caribles strictly for JSON serialziation, to maintain non-dictonary behavior
+        /// </summary>
         public List<NameValuePair> QueryStringSerialzable
         {
             get { return GetPairs(QueryString); }
             set { QueryString = GetNameValueCollection(value); }
         }
+        /// <summary>
+        /// Caribles strictly for JSON serialziation, to maintain non-dictonary behavior
+        /// </summary>
         public List<NameValuePair> FormSerialzable
         {
             get { return GetPairs(Form); }
             set { Form = GetNameValueCollection(value); }
         }
+        /// <summary>
+        /// Caribles strictly for JSON serialziation, to maintain non-dictonary behavior
+        /// </summary>
         public List<NameValuePair> CookiesSerialzable
         {
             get { return GetPairs(Cookies); }
             set { Cookies = GetNameValueCollection(value); }
         }
 
+        /// <summary>
+        /// Gets a JSON representation for this error
+        /// </summary>
         public string ToJson()
         {
             var serializer = new JavaScriptSerializer();
             return serializer.Serialize(this);
         }
 
+        /// <summary>
+        /// Gets a JSON representation for this error suitable for cross-domain 
+        /// </summary>
+        /// <returns></returns>
         public string ToDetailedJson()
         {
             var serializer = new JavaScriptSerializer();
@@ -320,6 +348,11 @@ namespace StackExchange.Exceptional
                                             });
         }
 
+        /// <summary>
+        /// Deserializes provided JSON into an Error object
+        /// </summary>
+        /// <param name="json">JSON representing an Error</param>
+        /// <returns>The Error object</returns>
         public static Error FromJson(string json)
         {
             var serializer = new JavaScriptSerializer();
@@ -327,9 +360,19 @@ namespace StackExchange.Exceptional
             return result;
         }
 
+        /// <summary>
+        /// Serialization class in place of the NameValueCollection pairs
+        /// </summary>
+        /// <remarks>This exists because things like a querystring can havle multiple values, they are not a dictionary</remarks>
         public class NameValuePair
         {
+            /// <summary>
+            /// The name for this variable
+            /// </summary>
             public string Name { get; set; }
+            /// <summary>
+            /// The value for this variable
+            /// </summary>
             public string Value { get; set; }
         }
 

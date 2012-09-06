@@ -3,7 +3,7 @@ using System.Web;
 
 namespace StackExchange.Exceptional
 {
-    public class RazorPageBase : IHttpHandler
+    internal class RazorPageBase : IHttpHandler
     {
         private readonly StringBuilder _output = new StringBuilder();
         string _content;

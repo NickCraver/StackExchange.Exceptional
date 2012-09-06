@@ -13,6 +13,14 @@ namespace StackExchange.Exceptional
     /// </summary>
     public class HandlerFactory : IHttpHandlerFactory
     {
+        /// <summary>
+        /// Gets the HttpHandler for executing the request, used to proxy requests through here (e.g. MVC) or by the HttpModule directly
+        /// </summary>
+        /// <param name="context">The HTTPContext for the request</param>
+        /// <param name="requestType">The type of request, GET/POST</param>
+        /// <param name="url">The URL of the request</param>
+        /// <param name="pathTranslated">The translated path of the request</param>
+        /// <returns>The HTTPHandler that can execute the request</returns>
         public virtual IHttpHandler GetHandler(HttpContext context, string requestType, string url, string pathTranslated)
         {
             // In MVC requests, PathInfo isn't set - determine via Path..

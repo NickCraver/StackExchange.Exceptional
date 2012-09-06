@@ -12,7 +12,7 @@ namespace StackExchange.Exceptional.Stores
     /// </summary>
     public sealed class SQLErrorStore : ErrorStore
     {
-        private readonly int _displayCount = SQLErrorStore.DefaultDisplayCount;
+        private readonly int _displayCount = DefaultDisplayCount;
         private readonly string _connectionString;
 
         /// <summary>
@@ -46,13 +46,24 @@ namespace StackExchange.Exceptional.Stores
         {
             _displayCount = Math.Min(displayCount, MaximumDisplayCount);
 
-            if (connectionString.IsNullOrEmpty()) throw new ArgumentOutOfRangeException("settings", "Connection string must be specified when using a SQL error store");
+            if (connectionString.IsNullOrEmpty()) throw new ArgumentOutOfRangeException("connectionString", "Connection string must be specified when using a SQL error store");
             _connectionString = connectionString;
         }
 
+        /// <summary>
+        /// Name for this error store
+        /// </summary>
         public override string Name { get { return "SQL Error Store"; } }
+        /// <summary>
+        /// Type for this error store
+        /// </summary>
         public override ErrorStoreType Type { get { return ErrorStoreType.SQL; } }
 
+        /// <summary>
+        /// Protects an error from deletion, by making IsProtected = 1 in the database
+        /// </summary>
+        /// <param name="guid">The guid of the error to protect</param>
+        /// <returns>True if the error was found and proected, false otherwise</returns>
         protected override bool ProtectError(Guid guid)
         {
             using (var c = GetConnection())
@@ -64,6 +75,11 @@ Update Exceptions
             }
         }
 
+        /// <summary>
+        /// Deletes an error, by setting DeletionDate = GETUTCDATE() in SQL
+        /// </summary>
+        /// <param name="guid">The guid of the error to delete</param>
+        /// <returns>True if the error was found and deleted, false otherwise</returns>
         protected override bool DeleteError(Guid guid)
         {
             using (var c = GetConnection())
@@ -77,6 +93,12 @@ Update Exceptions
             }
         }
 
+        /// <summary>
+        /// Hard deletes an error, actually deletes the row from SQL rather than setting DeletionDate
+        /// This is used to cleanup when testing the error store when attempting to come out of retry/failover mode after losing connection to SQL
+        /// </summary>
+        /// <param name="guid">The guid of the error to hard delete</param>
+        /// <returns>True if the error was found and deleted, false otherwise</returns>
         protected override bool HardDeleteError(Guid guid)
         {
             using (var c = GetConnection())
@@ -88,6 +110,10 @@ Delete From Exceptions
             }
         }
 
+        /// <summary>
+        /// Deleted all errors in the log, by setting DeletionDate = GETUTCDATE() in SQL
+        /// </summary>
+        /// <returns>True if any errors were deleted, false otherwise</returns>
         protected override bool DeleteAllErrors()
         {
             using (var c = GetConnection())
@@ -101,6 +127,11 @@ Update Exceptions
             }
         }
 
+        /// <summary>
+        /// Logs the error to SQL
+        /// If the rollup conditions are met, then the matching error will have a DuplicateCount += @DuplicateCount (usually 1, unless in retry) rather than a distinct new row for the error
+        /// </summary>
+        /// <param name="error">The error to log</param>
         protected override void LogError(Error error)
         {
             using (var c = GetConnection())
@@ -148,6 +179,12 @@ Values (@GUID, @ApplicationName, @MachineName, @CreationDate, @Type, @IsProtecte
             }
         }
 
+        /// <summary>
+        /// Gets the error with the specified guid from SQL
+        /// This can return a deleted error as well, there's no filter based on DeletionDate
+        /// </summary>
+        /// <param name="guid">The guid of the error to retrieve</param>
+        /// <returns>The error object if found, null otherwise</returns>
         protected override Error GetError(Guid guid)
         {
             Error sqlError;
@@ -169,6 +206,9 @@ Select *
             return result;
         }
 
+        /// <summary>
+        /// Retrieves all non-deleted application errors in the database
+        /// </summary>
         protected override int GetAllErrors(List<Error> errors)
         {
             using (var c = GetConnection())
@@ -184,6 +224,9 @@ Order By CreationDate Desc", new { max = _displayCount, ApplicationName }));
             return errors.Count;
         }
 
+        /// <summary>
+        /// Retrieves a count of application errors since the specified date, or all time if null
+        /// </summary>
         protected override int GetErrorCount(DateTime? since = null)
         {
             using (var c = GetConnection())

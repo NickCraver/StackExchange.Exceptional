@@ -29,12 +29,19 @@ namespace StackExchange.Exceptional
         private static bool _enableLogging = true;
         private static Thread _retryThread;
         private static readonly object _retryLock = new object();
-        private const int _retryDelayMiliseconds = 2000;
+        // TODO: possibly make this configurable
+        internal const int _retryDelayMiliseconds = 2000;
         private static bool _isInRetry;
         private static Exception _retryException;
-        public const string CustomDataErrorKey = "CustomDataFetchError";
+        internal const string CustomDataErrorKey = "CustomDataFetchError";
 
+        /// <summary>
+        /// The default number of exceptions (rollups count as 1) to buffer in memory in the event of an error store outage
+        /// </summary>
         public const int DefaultBackupQueueSize = 1000;
+        /// <summary>
+        /// The default number of seconds to roll up errors for.  Identical stack trace errors within 10 minutes get a DuplicateCount++ instead of a separate exception logged.
+        /// </summary>
         public const int DefaultRollupSeconds = 600;
         
         /// <summary>
@@ -56,6 +63,9 @@ namespace StackExchange.Exceptional
                 BackupQueueSize = DefaultBackupQueueSize;
         }
 
+        /// <summary>
+        /// The size of the backup/retry queue for logging, defaults to 1000
+        /// </summary>
         public int BackupQueueSize { get; set; }
 
         /// <summary>
@@ -262,6 +272,9 @@ namespace StackExchange.Exceptional
             }
         }
 
+        /// <summary>
+        /// Gets a specific exception with the specified guid
+        /// </summary>
         public Error Get(Guid guid)
         {
             if (_isInRetry)
@@ -274,6 +287,9 @@ namespace StackExchange.Exceptional
             return null;
         }
 
+        /// <summary>
+        /// Gets all in the store, including those in the backup queue if it's in use
+        /// </summary>
         public int GetAll(List<Error> errors)
         {
             if (_isInRetry)
@@ -287,6 +303,9 @@ namespace StackExchange.Exceptional
             return 0;
         }
 
+        /// <summary>
+        /// Gets the count of exceptions, optionally those since a certain date
+        /// </summary>
         public int GetCount(DateTime? since = null)
         {
             if (_isInRetry)
@@ -298,7 +317,11 @@ namespace StackExchange.Exceptional
             catch (Exception ex) { BeginRetry(ex); }
             return 0;
         }
-        
+
+        /// <summary>
+        /// Queues an error into the backup/retry queue
+        /// </summary>
+        /// <remarks>These will be written to the store when we're able to connect again</remarks>
         public void QueueError(Error e)
         {
             // try and rollup in the queue, to save space

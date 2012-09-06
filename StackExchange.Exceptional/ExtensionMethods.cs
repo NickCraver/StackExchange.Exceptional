@@ -7,7 +7,7 @@ using System.Web;
 
 namespace StackExchange.Exceptional.Extensions
 {
-    public static class ExtensionMethods
+    internal static class ExtensionMethods
     {
         /// <summary>
         /// returns a html span element with relative time elapsed since this event occurred, eg, "3 months ago" or "yesterday"; 

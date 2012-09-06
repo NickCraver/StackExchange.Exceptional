@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System;
 
@@ -48,14 +47,30 @@ namespace StackExchange.Exceptional.Stores
             _size = Math.Min(size, MaximumSize);
         }
 
+        /// <summary>
+        /// Name for this error store
+        /// </summary>
         public override string Name { get { return "Memory Error Store"; } }
+        /// <summary>
+        /// Type for this error store
+        /// </summary>
         public override ErrorStoreType Type { get { return ErrorStoreType.Memory; } }
 
+        /// <summary>
+        /// Does nothing, always returns False - in-memory errors are currently not protectable (as it's a volatile cache anyway)
+        /// </summary>
+        /// <param name="guid">IGNORED: The guid of the error to protect</param>
+        /// <returns>False, always false</returns>
         protected override bool ProtectError(Guid guid)
         {
             return false; // NO QUARTER FOR THE WICKED - no seriously, it's not sane to do this for a volatile memory store.
         }
 
+        /// <summary>
+        /// Deletes an error, by deleting it from the in-memory log
+        /// </summary>
+        /// <param name="guid">The guid of the error to delete</param>
+        /// <returns>True if the error was found and deleted, false otherwise</returns>
         protected override bool DeleteError(Guid guid)
         {
             lock(_lock)
@@ -63,7 +78,11 @@ namespace StackExchange.Exceptional.Stores
                 return _errors.RemoveAll(e => e.GUID == guid) > 0;
             }
         }
-
+        
+        /// <summary>
+        /// Deleted all errors in the log, by clearing the in-memory log
+        /// </summary>
+        /// <returns>True in all cases</returns>
         protected override bool DeleteAllErrors()
         {
             lock (_lock)
@@ -73,6 +92,11 @@ namespace StackExchange.Exceptional.Stores
             return true;
         }
 
+        /// <summary>
+        /// Logs the error to the in-memory error log
+        /// If the rollup conditions are met, then the matching error will have a DuplicateCount += @DuplicateCount (usually 1, unless in retry) rather than a distinct new row for the error
+        /// </summary>
+        /// <param name="error">The error to log</param>
         protected override void LogError(Error error)
         {
             lock(_lock)
@@ -98,6 +122,11 @@ namespace StackExchange.Exceptional.Stores
             }
         }
 
+        /// <summary>
+        /// Gets the error with the specified guid from the in-memory log
+        /// </summary>
+        /// <param name="guid">The guid of the error to retrieve</param>
+        /// <returns>The error object if found, null otherwise</returns>
         protected override Error GetError(Guid guid)
         {
             lock (_lock)
@@ -106,6 +135,9 @@ namespace StackExchange.Exceptional.Stores
             }
         }
 
+        /// <summary>
+        /// Retrieves all of the errors in the log
+        /// </summary>
         protected override int GetAllErrors(List<Error> errors)
         {
             lock (_lock)
@@ -116,6 +148,9 @@ namespace StackExchange.Exceptional.Stores
             }
         }
 
+        /// <summary>
+        /// Retrieves a count of application errors since the specified date, or all time if null
+        /// </summary>
         protected override int GetErrorCount(DateTime? since = null)
         {
             lock (_lock)

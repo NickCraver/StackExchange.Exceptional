@@ -5,6 +5,9 @@ namespace StackExchange.Exceptional
 {
     public partial class Settings
     {
+        /// <summary>
+        /// The ErrorStore section of the configuration, optional and will default to a MemoryErrorStore if not specified
+        /// </summary>
         [ConfigurationProperty("ErrorStore")]
         public ErrorStoreSettings ErrorStore
         {
