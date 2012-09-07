@@ -495,8 +495,13 @@ namespace StackExchange.Exceptional
                                     CustomData = customData
                                 };
 
-                if (ex != null && ex.Data.Contains("SQL"))
-                    error.SQL = ex.Data["SQL"] as string;
+                var exCursor = ex;
+                while (exCursor != null)
+                {
+                    if (exCursor.Data.Contains("SQL"))
+                        error.SQL = exCursor.Data["SQL"] as string;
+                    exCursor = exCursor.InnerException;
+                }
 
                 if (appendFullStackTrace)
                 {
