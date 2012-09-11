@@ -119,6 +119,7 @@ namespace StackExchange.Exceptional.Stores
                     _errors.RemoveAt(0);
 
                 _errors.Add(error);
+                SendEmail(error);
             }
         }
 

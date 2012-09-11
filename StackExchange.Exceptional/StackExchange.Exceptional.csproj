@@ -91,6 +91,9 @@
       <DependentUpon>Master.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
+    <Compile Include="Settings.Email.cs">
+      <DependentUpon>Settings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Settings.ErrorStore.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>

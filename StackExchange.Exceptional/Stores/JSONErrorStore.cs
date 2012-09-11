@@ -154,12 +154,15 @@ namespace StackExchange.Exceptional.Stores
                 using (var outstream = file.CreateText())
                 {
                     LogError(error, outstream);
+                    SendEmail(error);
                 }
 
                 // we added a new file, so clean up old smack over our max errors limit
                 RemoveOldErrors();
             }
         }
+
+
 
         private void LogError(Error error, StreamWriter outstream)
         {
