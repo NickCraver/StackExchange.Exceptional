@@ -162,8 +162,6 @@ namespace StackExchange.Exceptional.Stores
             }
         }
 
-
-
         private void LogError(Error error, StreamWriter outstream)
         {
             var json = error.ToJson();
