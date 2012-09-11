@@ -528,5 +528,28 @@ namespace StackExchange.Exceptional
 
             return t.BaseType != null && IsDescendentOf(t.BaseType, className);
         }
+
+        protected void SendEmail(Error error)
+        {
+            if (Settings.Current.Email.Fromaddress == string.Empty | Settings.Current.Email.Toaddress == string.Empty | Settings.Current.Email.SmtpHost == string.Empty)
+            {
+                return;
+            }
+            var sb = new System.Text.StringBuilder();
+            if (Settings.Current.Email.Infourl != string.Empty)
+            {
+                sb.Append("<b>View exception at:</b> " + Settings.Current.Email.Infourl + "?guid=" + error.GUID + "<br /><br />");
+            }
+            sb.Append("<b>Error:</b>" + error.Exception);
+            var mailMsg = new System.Net.Mail.MailMessage { From = new System.Net.Mail.MailAddress(Settings.Current.Email.Fromaddress) };
+            mailMsg.To.Add(new System.Net.Mail.MailAddress(Settings.Current.Email.Toaddress));
+            mailMsg.Subject = "Error in " + ApplicationName + " at " + error.Host + error.Url;
+            mailMsg.Body = sb.ToString();
+            mailMsg.IsBodyHtml = true;
+            var smtp = new System.Net.Mail.SmtpClient { Host = Settings.Current.Email.SmtpHost };
+            smtp.Send(mailMsg);
+        }
+
+
     }
 }

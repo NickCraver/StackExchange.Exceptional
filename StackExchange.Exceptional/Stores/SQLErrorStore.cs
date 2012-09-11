@@ -176,6 +176,8 @@ Values (@GUID, @ApplicationName, @MachineName, @CreationDate, @Type, @IsProtecte
                             error.ErrorHash,
                             error.DuplicateCount
                         });
+
+                SendEmail(error);
             }
         }
 
