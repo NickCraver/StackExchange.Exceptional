@@ -95,6 +95,8 @@ namespace StackExchange.Exceptional
                             throw new Exception("This is a test. Please disregard. If this were a real emergency, it'd have a different message.");
 
                         default:
+                            context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                            context.Response.Cache.SetNoStore();
                             return new ErrorList();
                     }
                 default:
