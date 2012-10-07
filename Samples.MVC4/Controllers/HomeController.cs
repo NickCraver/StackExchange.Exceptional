@@ -6,9 +6,12 @@ namespace Samples.MVC4.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public ActionResult Index(string validationTest)
         {
             ViewBag.Message = "This is a sample showing how to integrate Exceptional into your MVC4 application.";
+
+            // For testing RequestValidationException, test something like: ?validationTest=<!2342!@#$!@#R<!#2, to throw an exception.
+            var val = Request.QueryString[validationTest];
 
             return View();
         }

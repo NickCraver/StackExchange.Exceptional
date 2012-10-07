@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Web;
 using System.Collections.Specialized;
 using System.Web.Script.Serialization;
@@ -13,6 +14,8 @@ namespace StackExchange.Exceptional
     [Serializable]
     public class Error
     {
+        internal const string CollectionErrorKey = "CollectionFetchError";
+
         /// <summary>
         /// The Id on this error, strictly for primary keying on persistent stores
         /// </summary>
@@ -69,20 +72,49 @@ namespace StackExchange.Exceptional
                 StatusCode = httpException.GetHttpCode();
             }
 
-            if (context != null)
+            SetContextProperties(context);
+
+            ErrorHash = GetHash();
+        }
+
+        /// <summary>
+        /// Sets Error properties pulled from HttpContext, if present
+        /// </summary>
+        /// <param name="context">The HttpContext related to the request</param>
+        private void SetContextProperties(HttpContext context)
+        {
+            if (context == null) return;
+
+            var request = context.Request;
+
+            Func<Func<HttpRequest, NameValueCollection>, NameValueCollection> tryGetCollection = getter =>
+                {
+                    try
+                    {
+                        return new NameValueCollection(getter(request));
+                    }
+                    catch (HttpRequestValidationException e)
+                    {
+                        Trace.WriteLine("Error parsing collection: " + e.Message);
+                        return new NameValueCollection {{CollectionErrorKey, e.Message}};
+                    }
+                };
+
+            ServerVariables = tryGetCollection(r => r.ServerVariables);
+            QueryString = tryGetCollection(r => r.QueryString);
+            Form = tryGetCollection(r => r.Form);
+            try
             {
-                var request = context.Request;
-                ServerVariables = new NameValueCollection(request.ServerVariables);
-                QueryString = new NameValueCollection(request.QueryString);
-                Form = new NameValueCollection(request.Form);
                 Cookies = new NameValueCollection(request.Cookies.Count);
-                for(var i = 0; i < request.Cookies.Count; i++)
+                for (var i = 0; i < request.Cookies.Count; i++)
                 {
                     Cookies.Add(request.Cookies[i].Name, request.Cookies[i].Value);
                 }
             }
-
-            ErrorHash = GetHash();
+            catch (HttpRequestValidationException e)
+            {
+                Trace.WriteLine("Error parsing cookie collection: " + e.Message);
+            }
         }
 
         /// <summary>

@@ -123,28 +123,42 @@ namespace StackExchange.Exceptional.Pages
         var result = new StringBuilder();
         var hiddenRows = new StringBuilder();
 
-        result.AppendFormat("    <div class=\"{0}\">", className);
-        result.AppendFormat("      <h3 class=\"kv-title\">{0}</h3>", title);
-        result.AppendFormat("      <div class=\"side-scroll\">");
-        result.AppendFormat("        <table class=\"kv-table\">");
+        var fetchError = vars[Error.CollectionErrorKey];
+        var errored = fetchError.HasValue();
+        var keys = vars.AllKeys.Where(key => !hiddenHttpKeys.Contains(key) && key != Error.CollectionErrorKey).OrderBy(k => k);
 
-        foreach (var k in vars.AllKeys.Where(key => !hiddenHttpKeys.Contains(key)).OrderBy(k => k))
+        result.AppendFormat("    <div class=\"{0}\">", className);
+        result.AppendFormat("      <h3 class=\"kv-title{1}\">{0}{2}</h3>", title, errored ? " title-error" : "", errored ? " - Error while gathering data" : "");
+        if(keys.Any())
         {
-            // If this has no value, skip it
-            if (vars[k].IsNullOrEmpty()) { continue; }
-            // If this is a hidden row, buffer it up, since CSS has no clean mechanism for :visible:nth-row(odd) type styling behavior
-            var hidden = defaultHttpKeys.Contains(k);
-            var sb = hidden ? hiddenRows : result;
-            sb.AppendFormat("          <tr{2}><td class=\"key\">{0}</td><td class=\"value\">{1}</td></tr>", k, Linkify(vars[k]), hidden ? " class=\"hidden\"" : "");
+            result.AppendFormat("      <div class=\"side-scroll\">");
+            result.AppendFormat("        <table class=\"kv-table\">");
+            foreach (var k in keys)
+            {
+                // If this has no value, skip it
+                if (vars[k].IsNullOrEmpty())
+                {
+                    continue;
+                }
+                // If this is a hidden row, buffer it up, since CSS has no clean mechanism for :visible:nth-row(odd) type styling behavior
+                var hidden = defaultHttpKeys.Contains(k);
+                var sb = hidden ? hiddenRows : result;
+                sb.AppendFormat("          <tr{2}><td class=\"key\">{0}</td><td class=\"value\">{1}</td></tr>", k, Linkify(vars[k]), hidden ? " class=\"hidden\"" : "");
+            }
+            if (vars["HTTP_HOST"].HasValue() && vars["URL"].HasValue())
+            {
+                var url = string.Format("http://{0}{1}{2}", vars["HTTP_HOST"], vars["URL"], vars["QUERY_STRING"].HasValue() ? "?" + vars["QUERY_STRING"] : "");
+                result.AppendFormat("          <tr><td class=\"key\">URL and Query</td><td class=\"value\">{0}</td></tr>", vars["REQUEST_METHOD"] == "GET" ? Linkify(url).ToString() : Server.HtmlEncode(url));
+            }
+            result.Append(hiddenRows);
+            result.AppendFormat("        </table>");
+            result.AppendFormat("      </div>");
         }
-        if (vars["HTTP_HOST"].HasValue() && vars["URL"].HasValue())
+        if(errored)
         {
-            var url = string.Format("http://{0}{1}{2}", vars["HTTP_HOST"], vars["URL"], vars["QUERY_STRING"].HasValue() ? "?" + vars["QUERY_STRING"] : "");
-            result.AppendFormat("          <tr><td class=\"key\">URL and Query</td><td class=\"value\">{0}</td></tr>", vars["REQUEST_METHOD"] == "GET" ? Linkify(url).ToString() : Server.HtmlEncode(url));
+            result.AppendFormat("<span class=\"custom-error-label\">Get {0} threw an exception:</span>", title);
+            result.AppendFormat("<pre class=\"error-detail\">{0}</pre>", Server.HtmlEncode(fetchError));
         }
-        result.Append(hiddenRows);
-        result.AppendFormat("        </table>");
-        result.AppendFormat("      </div>");
         result.AppendFormat("    </div>");
         return Html(result.ToString());
     }
@@ -212,7 +226,7 @@ WriteLiteral("\r\n<div id=\"ErrorInfo\">\r\n");
 
 
             
-            #line 117 "..\..\Pages\ErrorInfo.cshtml"
+            #line 131 "..\..\Pages\ErrorInfo.cshtml"
  if (error == null)
 {
 
@@ -223,7 +237,7 @@ WriteLiteral("    <h1>Error not found.</h1>\r\n");
 
 
             
-            #line 120 "..\..\Pages\ErrorInfo.cshtml"
+            #line 134 "..\..\Pages\ErrorInfo.cshtml"
 }
 else
 {
@@ -235,7 +249,7 @@ WriteLiteral("    <h1 class=\"error-title\">");
 
 
             
-            #line 123 "..\..\Pages\ErrorInfo.cshtml"
+            #line 137 "..\..\Pages\ErrorInfo.cshtml"
                        Write(error.Message);
 
             
@@ -249,7 +263,7 @@ WriteLiteral("    <div class=\"error-type\">");
 
 
             
-            #line 124 "..\..\Pages\ErrorInfo.cshtml"
+            #line 138 "..\..\Pages\ErrorInfo.cshtml"
                        Write(error.Type);
 
             
@@ -263,7 +277,7 @@ WriteLiteral("    <pre class=\"error-detail\">");
 
 
             
-            #line 125 "..\..\Pages\ErrorInfo.cshtml"
+            #line 139 "..\..\Pages\ErrorInfo.cshtml"
                          Write(error.Detail);
 
             
@@ -277,7 +291,7 @@ WriteLiteral("    <p class=\"error-time\">occurred <b title=\"");
 
 
             
-            #line 127 "..\..\Pages\ErrorInfo.cshtml"
+            #line 141 "..\..\Pages\ErrorInfo.cshtml"
                                         Write(error.CreationDate.ToLongDateString());
 
             
@@ -287,7 +301,7 @@ WriteLiteral(" at ");
 
 
             
-            #line 127 "..\..\Pages\ErrorInfo.cshtml"
+            #line 141 "..\..\Pages\ErrorInfo.cshtml"
                                                                                   Write(error.CreationDate.ToLongTimeString());
 
             
@@ -297,7 +311,7 @@ WriteLiteral("\">");
 
 
             
-            #line 127 "..\..\Pages\ErrorInfo.cshtml"
+            #line 141 "..\..\Pages\ErrorInfo.cshtml"
                                                                                                                           Write(error.CreationDate.ToRelativeTime());
 
             
@@ -307,7 +321,7 @@ WriteLiteral("</b> on ");
 
 
             
-            #line 127 "..\..\Pages\ErrorInfo.cshtml"
+            #line 141 "..\..\Pages\ErrorInfo.cshtml"
                                                                                                                                                                       Write(error.MachineName);
 
             
@@ -317,7 +331,7 @@ WriteLiteral(" <span class=\"info-delete-link\">(<a class=\"info-link\" href=\"d
 
 
             
-            #line 127 "..\..\Pages\ErrorInfo.cshtml"
+            #line 141 "..\..\Pages\ErrorInfo.cshtml"
                                                                                                                                                                                                                                                                 Write(error.GUID);
 
             
@@ -327,7 +341,7 @@ WriteLiteral("\">delete</a>)</span></p>\r\n");
 
 
             
-            #line 128 "..\..\Pages\ErrorInfo.cshtml"
+            #line 142 "..\..\Pages\ErrorInfo.cshtml"
     if (!string.IsNullOrEmpty(error.SQL))
     {
 
@@ -342,7 +356,7 @@ WriteLiteral("        <pre class=\"sql-detail\">");
 
 
             
-            #line 131 "..\..\Pages\ErrorInfo.cshtml"
+            #line 145 "..\..\Pages\ErrorInfo.cshtml"
                            Write(error.SQL);
 
             
@@ -356,21 +370,21 @@ WriteLiteral("        <br/>\r\n");
 
 
             
-            #line 133 "..\..\Pages\ErrorInfo.cshtml"
+            #line 147 "..\..\Pages\ErrorInfo.cshtml"
     }
     
             
             #line default
             #line hidden
             
-            #line 134 "..\..\Pages\ErrorInfo.cshtml"
+            #line 148 "..\..\Pages\ErrorInfo.cshtml"
 Write(RenderVariableTable("Server Variables", "server-variables", error.ServerVariables));
 
             
             #line default
             #line hidden
             
-            #line 134 "..\..\Pages\ErrorInfo.cshtml"
+            #line 148 "..\..\Pages\ErrorInfo.cshtml"
                                                                                        
     if (error.CustomData != null && error.CustomData.Count > 0)
     {
@@ -384,7 +398,7 @@ WriteLiteral("        <div class=\"custom-data\">\r\n");
 
 
             
-            #line 140 "..\..\Pages\ErrorInfo.cshtml"
+            #line 154 "..\..\Pages\ErrorInfo.cshtml"
              if (errored)
             {
 
@@ -396,7 +410,7 @@ WriteLiteral("                <h3 class=\"kv-title title-error\">Custom - Error 
 
 
             
-            #line 143 "..\..\Pages\ErrorInfo.cshtml"
+            #line 157 "..\..\Pages\ErrorInfo.cshtml"
             } else
             {
 
@@ -404,68 +418,6 @@ WriteLiteral("                <h3 class=\"kv-title title-error\">Custom - Error 
             #line default
             #line hidden
 WriteLiteral("                <h3 class=\"kv-title\">Custom</h3>\r\n");
-
-
-            
-            #line 146 "..\..\Pages\ErrorInfo.cshtml"
-            }
-
-            
-            #line default
-            #line hidden
-
-            
-            #line 147 "..\..\Pages\ErrorInfo.cshtml"
-             if(cdKeys.Any(k => k != ErrorStore.CustomDataErrorKey))
-            {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                <div class=\"side-scroll\">\r\n                    <table class=\"kv-t" +
-"able\">\r\n");
-
-
-            
-            #line 151 "..\..\Pages\ErrorInfo.cshtml"
-                         foreach (var cd in cdKeys)
-                        {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                            <tr>\r\n                                <td class=\"key\"" +
-">");
-
-
-            
-            #line 154 "..\..\Pages\ErrorInfo.cshtml"
-                                           Write(cd);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</td>\r\n                                <td class=\"value\">");
-
-
-            
-            #line 155 "..\..\Pages\ErrorInfo.cshtml"
-                                             Write(Linkify(error.CustomData[cd]));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</td>\r\n                            </tr>\r\n");
-
-
-            
-            #line 157 "..\..\Pages\ErrorInfo.cshtml"
-                        }
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                    </table>\r\n                </div>\r\n");
 
 
             
@@ -478,6 +430,68 @@ WriteLiteral("                    </table>\r\n                </div>\r\n");
 
             
             #line 161 "..\..\Pages\ErrorInfo.cshtml"
+             if(cdKeys.Any(k => k != ErrorStore.CustomDataErrorKey))
+            {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                <div class=\"side-scroll\">\r\n                    <table class=\"kv-t" +
+"able\">\r\n");
+
+
+            
+            #line 165 "..\..\Pages\ErrorInfo.cshtml"
+                         foreach (var cd in cdKeys)
+                        {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                            <tr>\r\n                                <td class=\"key\"" +
+">");
+
+
+            
+            #line 168 "..\..\Pages\ErrorInfo.cshtml"
+                                           Write(cd);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</td>\r\n                                <td class=\"value\">");
+
+
+            
+            #line 169 "..\..\Pages\ErrorInfo.cshtml"
+                                             Write(Linkify(error.CustomData[cd]));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</td>\r\n                            </tr>\r\n");
+
+
+            
+            #line 171 "..\..\Pages\ErrorInfo.cshtml"
+                        }
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                    </table>\r\n                </div>\r\n");
+
+
+            
+            #line 174 "..\..\Pages\ErrorInfo.cshtml"
+            }
+
+            
+            #line default
+            #line hidden
+
+            
+            #line 175 "..\..\Pages\ErrorInfo.cshtml"
              if(errored)
             {
 
@@ -493,7 +507,7 @@ WriteLiteral("                <pre class=\"error-detail\">");
 
 
             
-            #line 164 "..\..\Pages\ErrorInfo.cshtml"
+            #line 178 "..\..\Pages\ErrorInfo.cshtml"
                                      Write(error.CustomData[ErrorStore.CustomDataErrorKey]);
 
             
@@ -503,7 +517,7 @@ WriteLiteral("</pre>\r\n");
 
 
             
-            #line 165 "..\..\Pages\ErrorInfo.cshtml"
+            #line 179 "..\..\Pages\ErrorInfo.cshtml"
             }
 
             
@@ -513,49 +527,49 @@ WriteLiteral("        </div>\r\n");
 
 
             
-            #line 167 "..\..\Pages\ErrorInfo.cshtml"
+            #line 181 "..\..\Pages\ErrorInfo.cshtml"
     }
     
             
             #line default
             #line hidden
             
-            #line 168 "..\..\Pages\ErrorInfo.cshtml"
+            #line 182 "..\..\Pages\ErrorInfo.cshtml"
 Write(RenderVariableTable("QueryString", "querystring", error.QueryString));
 
             
             #line default
             #line hidden
             
-            #line 168 "..\..\Pages\ErrorInfo.cshtml"
+            #line 182 "..\..\Pages\ErrorInfo.cshtml"
                                                                          
     
             
             #line default
             #line hidden
             
-            #line 169 "..\..\Pages\ErrorInfo.cshtml"
+            #line 183 "..\..\Pages\ErrorInfo.cshtml"
 Write(RenderVariableTable("Form", "form", error.Form));
 
             
             #line default
             #line hidden
             
-            #line 169 "..\..\Pages\ErrorInfo.cshtml"
+            #line 183 "..\..\Pages\ErrorInfo.cshtml"
                                                     
     
             
             #line default
             #line hidden
             
-            #line 170 "..\..\Pages\ErrorInfo.cshtml"
+            #line 184 "..\..\Pages\ErrorInfo.cshtml"
 Write(RenderVariableTable("Cookies", "cookies", error.Cookies));
 
             
             #line default
             #line hidden
             
-            #line 170 "..\..\Pages\ErrorInfo.cshtml"
+            #line 184 "..\..\Pages\ErrorInfo.cshtml"
                                                              
 }
 
