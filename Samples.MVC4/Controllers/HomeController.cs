@@ -16,6 +16,19 @@ namespace Samples.MVC4.Controllers
             return View();
         }
 
+        public ActionResult Form()
+        {
+            ViewBag.Message = "This is a sample with a form which has filtered logging (e.g. password is ommitted).";
+
+            return View();
+        }
+
+
+        public ActionResult FormSubmit(FormCollection fc)
+        {
+            throw new Exception("Check out the log to see that this exception didn't log the password.");
+        }
+
         /// <summary>
         /// This lets you access the error handler via a route in your application, secured by whatever
         /// mechanisms are already in place.

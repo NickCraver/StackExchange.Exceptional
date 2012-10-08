@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "Form Test Page";
+}
+@section featured {
+    <section class="featured">
+        <div class="content-wrapper">
+            <hgroup class="title">
+                <h2>@ViewBag.Message</h2>
+            </hgroup>
+        </div>
+    </section>
+}
+<h3>Enter test data below to throw an exception</h3>
+<form action="/Home/FormSubmit" method="POST">
+    <div>
+        <input type="text" name="name" placeholder="Name" />
+        <br/>
+        <input type="password" name="password" placeholder="Password" />
+        <br/>
+        <button type="submit">Submit</button>
+    </div>
+</form>

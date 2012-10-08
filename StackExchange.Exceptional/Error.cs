@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Web;
@@ -15,6 +16,30 @@ namespace StackExchange.Exceptional
     public class Error
     {
         internal const string CollectionErrorKey = "CollectionFetchError";
+
+        private static ConcurrentDictionary<string, string> _formLogFilters;
+
+        private static readonly object initLock = new object();
+
+        /// <summary>
+        /// Filters on form values *not * to log, because they contain sensitive data
+        /// </summary>
+        public static ConcurrentDictionary<string, string> FormLogFilters
+        {
+            get
+            {
+                if (_formLogFilters == null)
+                {
+                    lock (initLock)
+                    {
+                        if (_formLogFilters != null) return _formLogFilters;
+                        _formLogFilters = new ConcurrentDictionary<string, string>();
+                        Settings.Current.LogFilters.FormFilters.All.ForEach(flf => _formLogFilters[flf.Name] = flf.ReplaceWith ?? "");
+                    }
+                }
+                return _formLogFilters;
+            }
+        }
 
         /// <summary>
         /// The Id on this error, strictly for primary keying on persistent stores
@@ -103,6 +128,17 @@ namespace StackExchange.Exceptional
             ServerVariables = tryGetCollection(r => r.ServerVariables);
             QueryString = tryGetCollection(r => r.QueryString);
             Form = tryGetCollection(r => r.Form);
+            
+            // Filter form variables for sensitive information
+            if (FormLogFilters.Count > 0)
+            {
+                foreach (var k in FormLogFilters.Keys)
+                {
+                    if (Form[k] != null)
+                        Form[k] = FormLogFilters[k];
+                }
+            }
+
             try
             {
                 Cookies = new NameValueCollection(request.Cookies.Count);

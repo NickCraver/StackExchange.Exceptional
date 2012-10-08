@@ -20,7 +20,6 @@ namespace StackExchange.Exceptional
         
         [ThreadStatic]
         private static List<Regex> _ignoreRegex;
-
         [ThreadStatic]
         private static List<string> _ignoreExceptions;
 

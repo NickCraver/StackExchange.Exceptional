@@ -97,6 +97,9 @@
     <Compile Include="Settings.IgnoreErrors.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
+    <Compile Include="Settings.LogFilters.cs">
+      <DependentUpon>Settings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Stores\ErrorStoreType.cs" />
     <Compile Include="Stores\JSONErrorStore.cs" />
     <Compile Include="Stores\SQLErrorStore.cs" />
