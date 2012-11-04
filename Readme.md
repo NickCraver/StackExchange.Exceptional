@@ -8,7 +8,7 @@ While having some features centered around logging/showing exceptions from web a
 An example use of this at Stack Exchange is windows services logging to SQL and viewed elsewhere in a central dashboard (I'm working on open sourcing this as well).
 
 About:  
-This project was insired by [ELMAH](http://code.google.com/p/elmah/), but it didn't suit our particular needs for very, very high volume error logging when a network-level event occurs.
+This project was inspired by [ELMAH](http://code.google.com/p/elmah/), but it didn't suit our particular needs for very, very high volume error logging when a network-level event occurs.
 
 Stack Exchange needed a handful things in an error handler/logger:
 
