@@ -54,10 +54,6 @@ namespace StackExchange.Exceptional.Stores
         /// Name for this error store
         /// </summary>
         public override string Name { get { return "SQL Error Store"; } }
-        /// <summary>
-        /// Type for this error store
-        /// </summary>
-        public override ErrorStoreType Type { get { return ErrorStoreType.SQL; } }
 
         /// <summary>
         /// Protects an error from deletion, by making IsProtected = 1 in the database

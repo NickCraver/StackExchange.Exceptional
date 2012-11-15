@@ -64,6 +64,12 @@
     <Compile Include="Dapper\Dapper.Extensions.cs">
       <DependentUpon>Dapper.cs</DependentUpon>
     </Compile>
+    <Compile Include="Email\ErrorEmailer.cs" />
+    <Compile Include="Email\ErrorEmail.generated.cs">
+      <DependentUpon>ErrorEmail.cshtml</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Error.cs" />
     <Compile Include="ErrorStore.Extensibility.cs">
       <DependentUpon>ErrorStore.cs</DependentUpon>
@@ -91,6 +97,9 @@
       <DependentUpon>Master.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
+    <Compile Include="Settings.Email.cs">
+      <DependentUpon>Settings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Settings.ErrorStore.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
@@ -100,7 +109,6 @@
     <Compile Include="Settings.LogFilters.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
-    <Compile Include="Stores\ErrorStoreType.cs" />
     <Compile Include="Stores\JSONErrorStore.cs" />
     <Compile Include="Stores\SQLErrorStore.cs" />
     <Compile Include="Stores\MemoryErrorStore.cs" />
@@ -109,6 +117,10 @@
     <Compile Include="RazorPage.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Email\ErrorEmail.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>ErrorEmail.generated.cs</LastGenOutput>
+    </None>
     <None Include="Pages\ErrorInfo.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>ErrorInfo.generated.cs</LastGenOutput>

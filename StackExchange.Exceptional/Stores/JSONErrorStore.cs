@@ -51,10 +51,6 @@ namespace StackExchange.Exceptional.Stores
         /// Name for this error store
         /// </summary>
         public override string Name { get { return "JSON File Error Store"; } }
-        /// <summary>
-        /// Type for this error store
-        /// </summary>
-        public override ErrorStoreType Type { get { return ErrorStoreType.JSON; } }
 
         /// <summary>
         /// Protects an error from deletion, by making it ReadOnly

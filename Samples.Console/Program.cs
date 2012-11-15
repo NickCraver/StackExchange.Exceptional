@@ -53,7 +53,7 @@ namespace Samples.Console
 
         static void DisplayExceptionStats()
         {
-            System.Console.WriteLine(ErrorStore.Default.Type + " Exception Log for " + ErrorStore.Default.Name);
+            System.Console.WriteLine(ErrorStore.Default.Name + " for " + ErrorStore.Default.Name);
             var count = ErrorStore.Default.GetCount();
             System.Console.WriteLine("Exceptions in the log: " + count);
 

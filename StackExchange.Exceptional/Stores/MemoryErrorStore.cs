@@ -51,10 +51,6 @@ namespace StackExchange.Exceptional.Stores
         /// Name for this error store
         /// </summary>
         public override string Name { get { return "Memory Error Store"; } }
-        /// <summary>
-        /// Type for this error store
-        /// </summary>
-        public override ErrorStoreType Type { get { return ErrorStoreType.Memory; } }
 
         /// <summary>
         /// Does nothing, always returns False - in-memory errors are currently not protectable (as it's a volatile cache anyway)

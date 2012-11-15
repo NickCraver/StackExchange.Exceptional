@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
+using StackExchange.Exceptional.Email;
 using StackExchange.Exceptional.Stores;
 using StackExchange.Exceptional.Extensions;
 
@@ -126,12 +127,7 @@ namespace StackExchange.Exceptional
         /// Get the name of this error log store implementation.
         /// </summary>
         public virtual string Name { get { return GetType().Name; } }
-
-        /// <summary>
-        /// Get the name of this error log store implementation.
-        /// </summary>
-        public abstract ErrorStoreType Type { get; }
-
+        
         private static string _applicationName { get; set; }
         /// <summary>
         /// Gets the name of the application to which the log is scoped.
@@ -213,11 +209,13 @@ namespace StackExchange.Exceptional
             if (_isInRetry)
             {
                 QueueError(error);
+                ErrorEmailer.SendMail(error);
                 return;
             }
             try
             {
                 LogError(error);
+                ErrorEmailer.SendMail(error);
             }
             catch (Exception ex)
             {
