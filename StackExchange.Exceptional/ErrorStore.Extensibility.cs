@@ -55,6 +55,67 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Method to get custom data for an error for, will be call when custom data isn't already present
         /// </summary>
-        public static Action<Exception, HttpContext, Dictionary<string, string>> GetCustomData { get; set; } 
+        public static Action<Exception, HttpContext, Dictionary<string, string>> GetCustomData { get; set; }
+
+        /// <summary>
+        /// Event handler to run before an exception is logged to the store
+        /// </summary>
+        public static event EventHandler<ErrorBeforeLogEventArgs> OnBeforeLog;
+
+        /// <summary>
+        /// Event handler to run after an exception has been logged to the store
+        /// </summary>
+        public static event EventHandler<ErrorAfterLogEventArgs> OnAfterLog;
+    }
+
+    /// <summary>
+    /// Arguments for the event handler called before an exception is logged
+    /// </summary>
+    public class ErrorBeforeLogEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Whether to abort the logging of this exception, if set to true the exception will not be logged.
+        /// </summary>
+        public bool Abort { get; set; }
+        /// <summary>
+        /// The Error object in question
+        /// </summary>
+        public Error Error { get; private set; }
+
+        /// <summary>
+        /// Creates an ErrorBeforeLogEventArgs object to be passed to event handlers, setting .Abort = true prevents the error from being logged.
+        /// </summary>
+        public ErrorBeforeLogEventArgs(Error e)
+        {
+            Error = e;
+        }
+    }
+
+    /// <summary>
+    /// Arguments for the event handler called after an exception is logged
+    /// </summary>
+    public class ErrorAfterLogEventArgs : EventArgs
+    {
+        /// <summary>
+        /// The Error object in question
+        /// </summary>
+        public Guid ErrorGuid { get; private set; }
+        /// <summary>
+        /// Creates an ErrorAfterLogEventArgs object to be passed to event handlers
+        /// </summary>
+        public ErrorAfterLogEventArgs(Error e)
+        {
+            ErrorGuid = e.GUID;
+        }
+
+        /// <summary>
+        /// Gets the current state of the Error that was logged.
+        /// Important note: since this may be a duplicate of an earlier error it's an explicit fetch from the error store
+        /// </summary>
+        /// <returns>The current state of the Error matching this guid</returns>
+        public Error GetError()
+        {
+            return ErrorStore.Default.Get(ErrorGuid);
+        }
     }
 }

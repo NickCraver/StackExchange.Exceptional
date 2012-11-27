@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -35,6 +36,16 @@ namespace Samples.MVC4
                 };
 
             ErrorStore.AddJSInclude("~/Content/errors.js");
+            ErrorStore.OnBeforeLog += (sender, args) =>
+                {
+                    args.Error.Message += " - This was appended in the OnBeforeLog handler.";
+                    //args.Abort = true; - you could stop the exception from being logged here
+                };
+            ErrorStore.OnAfterLog += (sender, args) =>
+                {
+                    Trace.WriteLine("The logged exception GUID was: " + args.ErrorGuid);
+                    // optionally var e = args.GetError() to fetch the actual error from the store
+                };
 
             AreaRegistration.RegisterAllAreas();
 

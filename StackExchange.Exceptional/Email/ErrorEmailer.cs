@@ -1,14 +1,19 @@
 ﻿using System;
-using System.Configuration;
+using System.Diagnostics;
 using System.Net;
-using System.Net.Configuration;
 using System.Net.Mail;
 using StackExchange.Exceptional.Extensions;
 
 namespace StackExchange.Exceptional.Email
 {
+    /// <summary>
+    /// Error emailing handler
+    /// </summary>
     public class ErrorEmailer
     {
+        /// <summary>
+        /// Address to send messages to
+        /// </summary>
         public static string ToAddress { get; private set; }
         private static MailAddress FromAddress { get; set; }
         private static string Host { get; set; }
@@ -17,6 +22,9 @@ namespace StackExchange.Exceptional.Email
         private static NetworkCredential Credentials { get; set; }
         private static bool EnableSSL { get; set; } 
 
+        /// <summary>
+        /// Whether email functionality is enabled
+        /// </summary>
         public static bool Enabled { get; private set; }
 
         static ErrorEmailer()
@@ -24,6 +32,10 @@ namespace StackExchange.Exceptional.Email
             // Override with excetional specific settings (user may want this mail to go to another place, or only specify mail settings here, etc.)
             var eSettings = Settings.Current.Email;
 
+            if (!eSettings.ToAddress.HasValue())
+            {
+                return; // not enabled
+            }
 
             ToAddress = eSettings.ToAddress;
             if (eSettings.FromAddress.HasValue())
@@ -50,20 +62,27 @@ namespace StackExchange.Exceptional.Email
         public static void SendMail(Error error)
         {
             if (!Enabled) return;
-
-            using (var message = new MailMessage())
+            try
             {
-                message.To.Add(ToAddress);
-                if (FromAddress != null) message.From = FromAddress;
 
-                message.Subject = ErrorStore.ApplicationName + " error: " + error.Message;
-                message.Body = GetErrorHtml(error);
-                message.IsBodyHtml = true;
-
-                using (var client = GetClient())
+                using (var message = new MailMessage())
                 {
-                    client.Send(message);
+                    message.To.Add(ToAddress);
+                    if (FromAddress != null) message.From = FromAddress;
+
+                    message.Subject = ErrorStore.ApplicationName + " error: " + error.Message;
+                    message.Body = GetErrorHtml(error);
+                    message.IsBodyHtml = true;
+
+                    using (var client = GetClient())
+                    {
+                        client.Send(message);
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(e);
             }
         }
 

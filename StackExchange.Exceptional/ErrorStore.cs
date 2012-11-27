@@ -507,8 +507,34 @@ namespace StackExchange.Exceptional
                         error.Detail += "\n\nFull Trace:\n\n" + string.Join("", frames.Skip(2));
                 }
 
+                if (OnBeforeLog != null)
+                {
+                    try
+                    {
+                        var args = new ErrorBeforeLogEventArgs(error);
+                        OnBeforeLog(Default, args);
+                        if (args.Abort) return; // if we've been told to abort, then abort dammit!
+                    }
+                    catch (Exception e)
+                    {
+                        Trace.WriteLine(e);
+                    }
+                }
+
                 Trace.WriteLine(ex); // always echo the error to trace for local debugging
                 Default.Log(error);
+
+                if (OnAfterLog != null)
+                {
+                    try
+                    {
+                        OnAfterLog(Default, new ErrorAfterLogEventArgs(error));
+                    }
+                    catch (Exception e)
+                    {
+                        Trace.WriteLine(e);
+                    }
+                }
             }
             catch (Exception e)
             {

@@ -107,6 +107,7 @@ namespace StackExchange.Exceptional.Stores
                     if (dupe != null)
                     {
                         dupe.DuplicateCount+= error.DuplicateCount;
+                        error.GUID = dupe.GUID;
                         return;
                     }
                 }

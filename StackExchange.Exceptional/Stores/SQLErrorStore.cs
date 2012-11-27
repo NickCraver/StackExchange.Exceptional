@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System;
@@ -134,17 +135,30 @@ Update Exceptions
             {
                 if (RollupThreshold.HasValue && error.ErrorHash.HasValue)
                 {
+                    var queryParams = new DynamicParameters(new
+                        {
+                            error.DuplicateCount,
+                            error.ErrorHash,
+                            ApplicationName,
+                            minDate = DateTime.UtcNow.Add(RollupThreshold.Value.Negate())
+                        });
+                    queryParams.Add("@newGUID", dbType: DbType.Guid, direction: ParameterDirection.Output);
                     var count = c.Execute(@"
 Update Exceptions 
-   Set DuplicateCount = DuplicateCount + @DuplicateCount
+   Set DuplicateCount = DuplicateCount + @DuplicateCount,
+       @newGUID = GUID
  Where Id In (Select Top 1 Id
                 From Exceptions 
                Where ErrorHash = @ErrorHash
                  And ApplicationName = @ApplicationName
                  And DeletionDate Is Null
-                 And CreationDate >= @minDate)", new { error.DuplicateCount, error.ErrorHash, ApplicationName, minDate = DateTime.UtcNow.Add(RollupThreshold.Value.Negate()) });
+                 And CreationDate >= @minDate)", queryParams);
                     // if we found an error that's a duplicate, jump out
-                    if (count > 0) return;
+                    if (count > 0)
+                    {
+                        error.GUID = queryParams.Get<Guid>("@newGUID");
+                        return;
+                    }
                 }
 
                 error.FullJson = error.ToJson();

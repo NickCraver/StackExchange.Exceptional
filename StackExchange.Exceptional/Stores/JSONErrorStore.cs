@@ -130,6 +130,7 @@ namespace StackExchange.Exceptional.Stores
             {
                 // just update the existing file after incrementing its "duplicate count"
                 original.DuplicateCount = original.DuplicateCount.GetValueOrDefault(0) + error.DuplicateCount;
+                error.GUID = original.GUID;
 
                 FileInfo f;
                 if (!TryGetErrorFile(original.GUID, out f))
