@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Transactions;
 using System.Web;
 using StackExchange.Exceptional.Email;
 using StackExchange.Exceptional.Stores;
@@ -214,7 +215,10 @@ namespace StackExchange.Exceptional
             }
             try
             {
-                LogError(error);
+                using (new TransactionScope(TransactionScopeOption.Suppress))
+                {
+                    LogError(error);
+                }
                 ErrorEmailer.SendMail(error);
             }
             catch (Exception ex)
@@ -231,8 +235,11 @@ namespace StackExchange.Exceptional
         public bool Protect(Guid guid)
         {
             if (_isInRetry) return false; // no protecting allowed when failing, since we don't respect it in the queue anyway
-
-            return ProtectError(guid);
+            
+            using (new TransactionScope(TransactionScopeOption.Suppress))
+            {
+                return ProtectError(guid);
+            }
         }
 
         /// <summary>
@@ -242,7 +249,13 @@ namespace StackExchange.Exceptional
         {
             if (_isInRetry) return false; // no deleting from the retry queue
 
-            try { return DeleteError(guid); }
+            try
+            {
+                using (new TransactionScope(TransactionScopeOption.Suppress))
+                {
+                    return DeleteError(guid);
+                }
+            }
             catch (Exception ex)
             {
                 BeginRetry(ex);
@@ -261,7 +274,13 @@ namespace StackExchange.Exceptional
                 return true;
             }
 
-            try { return DeleteAllErrors(); }
+            try
+            {
+                using (new TransactionScope(TransactionScopeOption.Suppress))
+                {
+                    return DeleteAllErrors();
+                }
+            }
             catch (Exception ex)
             {
                 BeginRetry(ex);

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using StackExchange.Exceptional;
 
 namespace Samples.MVC4.Controllers
@@ -16,19 +15,6 @@ namespace Samples.MVC4.Controllers
             return View();
         }
 
-        public ActionResult Form()
-        {
-            ViewBag.Message = "This is a sample with a form which has filtered logging (e.g. password is ommitted).";
-
-            return View();
-        }
-
-
-        public ActionResult FormSubmit(FormCollection fc)
-        {
-            throw new Exception("Check out the log to see that this exception didn't log the password.");
-        }
-
         /// <summary>
         /// This lets you access the error handler via a route in your application, secured by whatever
         /// mechanisms are already in place.
@@ -41,14 +27,6 @@ namespace Samples.MVC4.Controllers
             page.ProcessRequest(context);
 
             return null;
-        }
-
-        public ActionResult Throw()
-        {
-            var ex = new Exception("This is an exception throw from the Samples project! - Check out the log to see this exception.");
-            // here's how your catch/throw might can add more info, for example SQL is special cased and shown in the UI:
-            ex.Data["SQL"] = "Select * From FUBAR -- This is a SQL command!";
-            throw ex;
         }
     }
 }
