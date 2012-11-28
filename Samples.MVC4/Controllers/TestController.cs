@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Transactions;
 using System.Web.Mvc;
-using StackExchange.Exceptional;
 
 namespace Samples.MVC4.Controllers
 {
@@ -30,10 +29,10 @@ namespace Samples.MVC4.Controllers
                 }
                 catch (Exception e)
                 {
-                    MvcApplication.LogException(e); // this still gets logged  in SQL, because Exceptional ignores transaction scopes
+                    MvcApplication.LogException(e); // this still gets logged, because Exceptional ignores transaction scopes
                 }
             }
-            return Exceptions();
+            return RedirectToAction("Exceptions", "Home");
         }
 
         public ActionResult Throw()
@@ -42,15 +41,6 @@ namespace Samples.MVC4.Controllers
             // here's how your catch/throw might can add more info, for example SQL is special cased and shown in the UI:
             ex.Data["SQL"] = "Select * From FUBAR -- This is a SQL command!";
             throw ex;
-        }
-
-        public ActionResult Exceptions()
-        {
-            var context = System.Web.HttpContext.Current;
-            var page = new HandlerFactory().GetHandler(context, Request.RequestType, Request.Url.ToString(), Request.PathInfo);
-            page.ProcessRequest(context);
-
-            return null;
         }
     }
 }

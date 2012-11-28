@@ -106,7 +106,7 @@ namespace StackExchange.Exceptional.Stores
                     var dupe = _errors.FirstOrDefault(e => e.ErrorHash == error.ErrorHash && e.CreationDate > minDate);
                     if (dupe != null)
                     {
-                        dupe.DuplicateCount+= error.DuplicateCount;
+                        dupe.DuplicateCount += error.DuplicateCount;
                         error.GUID = dupe.GUID;
                         return;
                     }
