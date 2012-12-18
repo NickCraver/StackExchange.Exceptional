@@ -33,10 +33,16 @@ namespace StackExchange.Exceptional
         public string Path { get { return this["path"] as string; } }
 
         /// <summary>
-        /// The connection string to use on datbase based error stores
+        /// The connection string to use on database based error stores.  If provided, ConnectionStringName is ignored.
         /// </summary>
         [ConfigurationProperty("connectionString")]
         public string ConnectionString { get { return this["connectionString"] as string; } }
+
+        /// <summary>
+        /// The name of the connection string to use from the application's configuration.
+        /// </summary>
+        [ConfigurationProperty("connectionStringName")]
+        public string ConnectionStringName { get { return this["connectionStringName"] as string; } }
 
         /// <summary>
         /// The size of this error log, either how many to keep or how many to display depending on type
