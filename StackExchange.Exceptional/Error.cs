@@ -68,7 +68,7 @@ namespace StackExchange.Exceptional
         /// <see cref="HttpContext"/> instance representing the HTTP 
         /// context during the exception.
         /// </summary>
-        public Error(Exception e, HttpContext context)
+        public Error(Exception e, HttpContext context, string applicationName = null)
         {
             if (e == null) throw new ArgumentNullException("e");
 
@@ -82,7 +82,7 @@ namespace StackExchange.Exceptional
                 baseException = e.GetBaseException();
 
             GUID = Guid.NewGuid();
-            ApplicationName = ErrorStore.ApplicationName;
+            ApplicationName = applicationName ?? ErrorStore.ApplicationName;
             MachineName = Environment.MachineName;
             Type = baseException.GetType().FullName;
             Message = baseException.Message;

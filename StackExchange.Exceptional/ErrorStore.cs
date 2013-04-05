@@ -477,11 +477,12 @@ namespace StackExchange.Exceptional
         /// <param name="appendFullStackTrace">Wehther to append a full stack trace to the exception's detail</param>
         /// <param name="rollupPerServer">Whether to log up per-server, e.g. errors are only duplicates if they have same stack on the same machine</param>
         /// <param name="customData">Any custom data to store with the exception like UserId, etc...this will be rendered as JSON in the error view for script use</param>
+        /// <param name="applicationName">If specified, the application name to log with, if not specified the name in the config is used</param>
         /// <remarks>
         /// When dealing with a non web requests, pass <see langword="null" /> in for context.  
         /// It shouldn't be forgotten for most web application usages, so it's not an optional parameter.
         /// </remarks>
-        public static void LogException(Exception ex, HttpContext context, bool appendFullStackTrace = false, bool rollupPerServer = false, Dictionary<string, string> customData = null)
+        public static void LogException(Exception ex, HttpContext context, bool appendFullStackTrace = false, bool rollupPerServer = false, Dictionary<string, string> customData = null, string applicationName = null)
         {
             if (!_enableLogging) return;
             try
@@ -505,7 +506,7 @@ namespace StackExchange.Exceptional
                     }
                 }
 
-                var error = new Error(ex, context)
+                var error = new Error(ex, context, applicationName)
                                 {
                                     RollupPerServer = rollupPerServer,
                                     CustomData = customData
