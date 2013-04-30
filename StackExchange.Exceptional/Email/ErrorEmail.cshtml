@@ -129,7 +129,7 @@ else
     <div style="font-size: 12px; color: #444; padding: 0; margin: 2px 0;">@error.Type</div>
     <pre style="background-color: #FFFFCC; font-family: Consolas, Monaco, monospace; font-size: 12px; margin: 2px 0; padding: 12px;">@error.Detail
     </pre>
-    <p class="error-time" style="font-size: 13px; color: #555; margin: 5px 0;">occurred at <b title="@error.CreationDate.ToLongDateString() at @error.CreationDate.ToLongTimeString()">@error.CreationDate.ToUniversalTime()</b> on @error.MachineName</p>
+    <p class="error-time" style="font-size: 13px; color: #555; margin: 5px 0;">occurred at <b title="@error.CreationDate.ToLongDateString() at @error.CreationDate.ToLongTimeString()">@error.CreationDate.ToUniversalTime() UTC</b> on @error.MachineName</p>
     if (!string.IsNullOrEmpty(error.SQL))
     {
         <h3 style="color: #224C00; font-family: Verdana, Tahoma, Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 14px; margin: 10px 0 5px 0;">SQL</h3>
