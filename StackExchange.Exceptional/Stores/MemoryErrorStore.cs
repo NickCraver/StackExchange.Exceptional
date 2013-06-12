@@ -59,6 +59,15 @@ namespace StackExchange.Exceptional.Stores
         /// <returns>False, always false</returns>
         protected override bool ProtectError(Guid guid)
         {
+            lock (_lock)
+            {
+                var error = _errors.FirstOrDefault(e => e.GUID == guid);
+                if (error != null)
+                {
+                    error.IsProtected = true;
+                    return true;
+                }
+            }
             return false; // NO QUARTER FOR THE WICKED - no seriously, it's not sane to do this for a volatile memory store.
         }
 
@@ -83,7 +92,7 @@ namespace StackExchange.Exceptional.Stores
         {
             lock (_lock)
             {
-                _errors.Clear();
+                _errors.RemoveAll(e => !e.IsProtected);
             }
             return true;
         }
@@ -113,7 +122,9 @@ namespace StackExchange.Exceptional.Stores
                 }
 
                 if (_errors.Count >= _size)
-                    _errors.RemoveAt(0);
+                {
+                    _errors.Remove(_errors.FirstOrDefault(e => !e.IsProtected));
+                }
 
                 _errors.Add(error);
             }
