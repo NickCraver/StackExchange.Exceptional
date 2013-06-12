@@ -49,16 +49,6 @@ namespace StackExchange.Exceptional.Pages
     {
 #line hidden
 
-        #line 17 "..\..\Pages\ErrorList.cshtml"
-
-    public string Url(string path)
-    {
-        return BasePageName.EndsWith("/") ? BasePageName + path : BasePageName + "/" + path;
-    }
-
-        #line default
-        #line hidden
-
         public override void Execute()
         {
 
@@ -87,11 +77,8 @@ WriteLiteral("\r\n");
             #line default
             #line hidden
 
-WriteLiteral("\r\n");
-
-
             
-            #line 23 "..\..\Pages\ErrorList.cshtml"
+            #line 16 "..\..\Pages\ErrorList.cshtml"
  if (log.InFailureMode)
 {
     var le = ErrorStore.LastRetryException;
@@ -103,7 +90,7 @@ WriteLiteral("        <div class=\"failure-mode\">Error log is in failure mode, 
 
 
             
-            #line 26 "..\..\Pages\ErrorList.cshtml"
+            #line 19 "..\..\Pages\ErrorList.cshtml"
                                                            Write(ErrorStore.WriteQueue.Count);
 
             
@@ -113,7 +100,7 @@ WriteLiteral(" ");
 
 
             
-            #line 26 "..\..\Pages\ErrorList.cshtml"
+            #line 19 "..\..\Pages\ErrorList.cshtml"
                                                                                          Write(ErrorStore.WriteQueue.Count == 1 ? "entry" : "entries");
 
             
@@ -121,14 +108,14 @@ WriteLiteral(" ");
             #line hidden
 
             
-            #line 26 "..\..\Pages\ErrorList.cshtml"
+            #line 19 "..\..\Pages\ErrorList.cshtml"
                                                                                                                                                       WriteLiteral(" queued to log.");
 
             
             #line default
             #line hidden
             
-            #line 26 "..\..\Pages\ErrorList.cshtml"
+            #line 19 "..\..\Pages\ErrorList.cshtml"
                                                                                                                                                                       if(le != null){
             
             #line default
@@ -137,7 +124,7 @@ WriteLiteral("<br />Last Logging Exception: ");
 
 
             
-            #line 26 "..\..\Pages\ErrorList.cshtml"
+            #line 19 "..\..\Pages\ErrorList.cshtml"
                                                                                                                                                                                                                     Write(le.Message);
 
             
@@ -145,7 +132,7 @@ WriteLiteral("<br />Last Logging Exception: ");
             #line hidden
 
             
-            #line 26 "..\..\Pages\ErrorList.cshtml"
+            #line 19 "..\..\Pages\ErrorList.cshtml"
                                                                                                                                                                                                                                            }
             
             #line default
@@ -158,7 +145,7 @@ WriteLiteral("    <!-- Exception Details:\r\n");
 
 
             
-            #line 28 "..\..\Pages\ErrorList.cshtml"
+            #line 21 "..\..\Pages\ErrorList.cshtml"
      if(ErrorStore.LastRetryException != null)
     {
         
@@ -166,28 +153,28 @@ WriteLiteral("    <!-- Exception Details:\r\n");
             #line default
             #line hidden
             
-            #line 30 "..\..\Pages\ErrorList.cshtml"
+            #line 23 "..\..\Pages\ErrorList.cshtml"
    Write(ErrorStore.LastRetryException.Message);
 
             
             #line default
             #line hidden
             
-            #line 30 "..\..\Pages\ErrorList.cshtml"
+            #line 23 "..\..\Pages\ErrorList.cshtml"
                                               
         
             
             #line default
             #line hidden
             
-            #line 31 "..\..\Pages\ErrorList.cshtml"
+            #line 24 "..\..\Pages\ErrorList.cshtml"
    Write(ErrorStore.LastRetryException.StackTrace);
 
             
             #line default
             #line hidden
             
-            #line 31 "..\..\Pages\ErrorList.cshtml"
+            #line 24 "..\..\Pages\ErrorList.cshtml"
                                                  
     }
 
@@ -198,7 +185,7 @@ WriteLiteral("     -->\r\n");
 
 
             
-            #line 34 "..\..\Pages\ErrorList.cshtml"
+            #line 27 "..\..\Pages\ErrorList.cshtml"
 }
 
             
@@ -206,7 +193,7 @@ WriteLiteral("     -->\r\n");
             #line hidden
 
             
-            #line 35 "..\..\Pages\ErrorList.cshtml"
+            #line 28 "..\..\Pages\ErrorList.cshtml"
  if (!errors.Any())
 {
 
@@ -217,7 +204,7 @@ WriteLiteral("        <h1>No errors yet, yay!</h1>\r\n");
 
 
             
-            #line 38 "..\..\Pages\ErrorList.cshtml"
+            #line 31 "..\..\Pages\ErrorList.cshtml"
 }
 else
 {
@@ -230,7 +217,7 @@ WriteLiteral("        <h1 id=\"errorcount\">");
 
 
             
-            #line 42 "..\..\Pages\ErrorList.cshtml"
+            #line 35 "..\..\Pages\ErrorList.cshtml"
                        Write(ErrorStore.ApplicationName);
 
             
@@ -240,7 +227,7 @@ WriteLiteral(" - ");
 
 
             
-            #line 42 "..\..\Pages\ErrorList.cshtml"
+            #line 35 "..\..\Pages\ErrorList.cshtml"
                                                      Write(total);
 
             
@@ -250,7 +237,7 @@ WriteLiteral(" Errors; last ");
 
 
             
-            #line 42 "..\..\Pages\ErrorList.cshtml"
+            #line 35 "..\..\Pages\ErrorList.cshtml"
                                                                          Write(last.CreationDate.ToRelativeTime());
 
             
@@ -278,7 +265,7 @@ WriteLiteral(@"        <table id=""ErrorLog"" class=""alt-rows"">
 
 
             
-            #line 57 "..\..\Pages\ErrorList.cshtml"
+            #line 50 "..\..\Pages\ErrorList.cshtml"
              foreach (var e in errors)
             {
                 var fullUrl = "http://" + e.Host + e.Url;
@@ -290,7 +277,7 @@ WriteLiteral("                <tr data-id=\"");
 
 
             
-            #line 60 "..\..\Pages\ErrorList.cshtml"
+            #line 53 "..\..\Pages\ErrorList.cshtml"
                         Write(e.GUID);
 
             
@@ -300,7 +287,7 @@ WriteLiteral("\" class=\"error");
 
 
             
-            #line 60 "..\..\Pages\ErrorList.cshtml"
+            #line 53 "..\..\Pages\ErrorList.cshtml"
                                               Write(e.IsProtected ? " protected" : "");
 
             
@@ -310,7 +297,7 @@ WriteLiteral("\">\r\n                    <td>\r\n                        <a href
 
 
             
-            #line 62 "..\..\Pages\ErrorList.cshtml"
+            #line 55 "..\..\Pages\ErrorList.cshtml"
                             Write(Url("delete"));
 
             
@@ -320,7 +307,7 @@ WriteLiteral("\" class=\"delete-link\" title=\"Delete this error\">&nbsp;X&nbsp;
 
 
             
-            #line 63 "..\..\Pages\ErrorList.cshtml"
+            #line 56 "..\..\Pages\ErrorList.cshtml"
                          if (!e.IsProtected)
                         {
 
@@ -331,7 +318,7 @@ WriteLiteral("                        <a href=\"");
 
 
             
-            #line 65 "..\..\Pages\ErrorList.cshtml"
+            #line 58 "..\..\Pages\ErrorList.cshtml"
                             Write(Url("protect"));
 
             
@@ -341,7 +328,7 @@ WriteLiteral("\" class=\"protect-link\" title=\"Protect this error\">&nbsp;P&nbs
 
 
             
-            #line 66 "..\..\Pages\ErrorList.cshtml"
+            #line 59 "..\..\Pages\ErrorList.cshtml"
                         }
 
             
@@ -351,7 +338,7 @@ WriteLiteral("                    </td>\r\n                    <td class=\"type-
 
 
             
-            #line 68 "..\..\Pages\ErrorList.cshtml"
+            #line 61 "..\..\Pages\ErrorList.cshtml"
                                            Write(e.Type);
 
             
@@ -361,7 +348,7 @@ WriteLiteral("\">");
 
 
             
-            #line 68 "..\..\Pages\ErrorList.cshtml"
+            #line 61 "..\..\Pages\ErrorList.cshtml"
                                                     Write(e.Type.ToShortException());
 
             
@@ -371,7 +358,7 @@ WriteLiteral("</td>\r\n                    <td class=\"error-col\"><a href=\"");
 
 
             
-            #line 69 "..\..\Pages\ErrorList.cshtml"
+            #line 62 "..\..\Pages\ErrorList.cshtml"
                                               Write(Url("info?guid="+@e.GUID));
 
             
@@ -381,7 +368,7 @@ WriteLiteral("\" class=\"info-link\">");
 
 
             
-            #line 69 "..\..\Pages\ErrorList.cshtml"
+            #line 62 "..\..\Pages\ErrorList.cshtml"
                                                                                             Write(e.Message);
 
             
@@ -391,7 +378,7 @@ WriteLiteral("</a> \r\n");
 
 
             
-            #line 70 "..\..\Pages\ErrorList.cshtml"
+            #line 63 "..\..\Pages\ErrorList.cshtml"
                      if(e.DuplicateCount > 1)
                     {
 
@@ -403,7 +390,7 @@ WriteLiteral("                        <span class=\"duplicate-count\" title=\"nu
 
 
             
-            #line 72 "..\..\Pages\ErrorList.cshtml"
+            #line 65 "..\..\Pages\ErrorList.cshtml"
                                                                                                                  Write(e.DuplicateCount);
 
             
@@ -413,7 +400,7 @@ WriteLiteral(")</span>\r\n");
 
 
             
-            #line 73 "..\..\Pages\ErrorList.cshtml"
+            #line 66 "..\..\Pages\ErrorList.cshtml"
                     }
 
             
@@ -423,7 +410,7 @@ WriteLiteral("                    </td>\r\n                    <td>\r\n");
 
 
             
-            #line 76 "..\..\Pages\ErrorList.cshtml"
+            #line 69 "..\..\Pages\ErrorList.cshtml"
                      if (e.HTTPMethod == "GET" && e.Url.HasValue())
                     {
 
@@ -434,7 +421,7 @@ WriteLiteral("                        <a href=\"");
 
 
             
-            #line 78 "..\..\Pages\ErrorList.cshtml"
+            #line 71 "..\..\Pages\ErrorList.cshtml"
                             Write(fullUrl);
 
             
@@ -444,7 +431,7 @@ WriteLiteral("\" title=\"");
 
 
             
-            #line 78 "..\..\Pages\ErrorList.cshtml"
+            #line 71 "..\..\Pages\ErrorList.cshtml"
                                              Write(fullUrl);
 
             
@@ -454,7 +441,7 @@ WriteLiteral("\" class=\"url-link\">");
 
 
             
-            #line 78 "..\..\Pages\ErrorList.cshtml"
+            #line 71 "..\..\Pages\ErrorList.cshtml"
                                                                         Write(e.Url.TruncateWithEllipsis(40));
 
             
@@ -464,7 +451,7 @@ WriteLiteral("</a>\r\n");
 
 
             
-            #line 79 "..\..\Pages\ErrorList.cshtml"
+            #line 72 "..\..\Pages\ErrorList.cshtml"
                     }
                     else if (e.Url.HasValue())
                     {
@@ -476,7 +463,7 @@ WriteLiteral("                        <span title=\"");
 
 
             
-            #line 82 "..\..\Pages\ErrorList.cshtml"
+            #line 75 "..\..\Pages\ErrorList.cshtml"
                                 Write(fullUrl);
 
             
@@ -486,7 +473,7 @@ WriteLiteral("\">");
 
 
             
-            #line 82 "..\..\Pages\ErrorList.cshtml"
+            #line 75 "..\..\Pages\ErrorList.cshtml"
                                           Write(e.Url.TruncateWithEllipsis(40));
 
             
@@ -496,7 +483,7 @@ WriteLiteral("</span>\r\n");
 
 
             
-            #line 83 "..\..\Pages\ErrorList.cshtml"
+            #line 76 "..\..\Pages\ErrorList.cshtml"
                     }
 
             
@@ -506,7 +493,7 @@ WriteLiteral("                    </td>\r\n                    <td>");
 
 
             
-            #line 85 "..\..\Pages\ErrorList.cshtml"
+            #line 78 "..\..\Pages\ErrorList.cshtml"
                    Write(e.IPAddress);
 
             
@@ -516,7 +503,7 @@ WriteLiteral("</td>\r\n                    <td><span title=\"");
 
 
             
-            #line 86 "..\..\Pages\ErrorList.cshtml"
+            #line 79 "..\..\Pages\ErrorList.cshtml"
                                  Write(string.Format("{0:G} -- {1:u}", e.CreationDate, e.CreationDate.ToUniversalTime()));
 
             
@@ -526,7 +513,7 @@ WriteLiteral("\">");
 
 
             
-            #line 86 "..\..\Pages\ErrorList.cshtml"
+            #line 79 "..\..\Pages\ErrorList.cshtml"
                                                                                                                       Write(e.CreationDate.ToRelativeTime());
 
             
@@ -536,7 +523,7 @@ WriteLiteral("</span></td>\r\n                    <td>");
 
 
             
-            #line 87 "..\..\Pages\ErrorList.cshtml"
+            #line 80 "..\..\Pages\ErrorList.cshtml"
                    Write(e.Host);
 
             
@@ -546,7 +533,7 @@ WriteLiteral("</td>\r\n                    <td>");
 
 
             
-            #line 88 "..\..\Pages\ErrorList.cshtml"
+            #line 81 "..\..\Pages\ErrorList.cshtml"
                    Write(e.MachineName);
 
             
@@ -556,7 +543,7 @@ WriteLiteral("</td>\r\n                </tr>\r\n");
 
 
             
-            #line 90 "..\..\Pages\ErrorList.cshtml"
+            #line 83 "..\..\Pages\ErrorList.cshtml"
             }
 
             
@@ -566,7 +553,7 @@ WriteLiteral("            </tbody>\r\n        </table>\r\n");
 
 
             
-            #line 93 "..\..\Pages\ErrorList.cshtml"
+            #line 86 "..\..\Pages\ErrorList.cshtml"
         if (errors.Any(e => !e.IsProtected))
         {
 
@@ -578,7 +565,7 @@ WriteLiteral("        <div class=\"clear-all-div\">\r\n            <a class=\"de
 
 
             
-            #line 96 "..\..\Pages\ErrorList.cshtml"
+            #line 89 "..\..\Pages\ErrorList.cshtml"
                                                    Write(Url("delete-all"));
 
             
@@ -588,7 +575,7 @@ WriteLiteral("\">&nbsp;X&nbsp;- Clear all non-protected errors</a>\r\n        </
 
 
             
-            #line 98 "..\..\Pages\ErrorList.cshtml"
+            #line 91 "..\..\Pages\ErrorList.cshtml"
         }
 }
             

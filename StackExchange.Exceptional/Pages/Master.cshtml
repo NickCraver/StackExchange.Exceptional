@@ -9,7 +9,7 @@
 }<html>
     <head>
         <title>@PageTitle</title>
-        <link rel="stylesheet" type="text/css" href="@this.BasePageName/css" />
+        <link rel="stylesheet" type="text/css" href="@Url("css")" />
         @foreach(var css in ErrorStore.CSSIncludes)
         {
         <link rel="stylesheet" type="text/css" href="@css" />
@@ -18,9 +18,10 @@
         {
         <script>var Exception = @Html(Error.ToDetailedJson());</script>
         }
-        <!--[if lt IE 9]><script src="@this.BasePageName/html5shiv"></script><![endif]-->
+        <!--[if lt IE 9]><script src="@Url("html5shiv")"></script><![endif]-->
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-        <script src="@this.BasePageName/js"></script>
+        <script src="@Url("js")"></script>
+        <script>var baseUrl = '@Url("")';</script>
         @foreach(var js in ErrorStore.JSIncludes)
         {
         <script src="@js"></script>

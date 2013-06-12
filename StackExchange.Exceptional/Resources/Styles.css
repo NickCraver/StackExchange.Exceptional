@@ -73,6 +73,17 @@ p { margin: 0; padding: 0; margin-bottom:0.5em; }
     border-top: solid 1px transparent;
     border-bottom: solid 1px transparent;
 }
+
+.alt-rows tbody tr.error td:nth-child(2) {
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+.alt-rows tbody tr.error.selected td
+{
+    background-color: #ffffcc;
+}
 .alt-rows tbody tr:hover td {
     -webkit-transition: border 200ms ease;
     -moz-transition: border 200ms ease;

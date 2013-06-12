@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Web.Script.Serialization;
 
 namespace StackExchange.Exceptional.Extensions
 {
@@ -305,6 +306,15 @@ namespace StackExchange.Exceptional.Extensions
                 result.Add(kvp.Key, kvp.Value);
             }
             return result;
+        }
+
+        /// <summary>
+        /// Returns a JSON string representing this object
+        /// </summary>
+        public static string ToJson(this object o)
+        {
+            var serializer = new JavaScriptSerializer();
+            return serializer.Serialize(o);
         }
     }
 }

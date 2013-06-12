@@ -100,9 +100,33 @@ namespace StackExchange.Exceptional
         protected abstract bool ProtectError(Guid guid);
 
         /// <summary>
+        /// Protects a list of errors in the log
+        /// </summary>
+        protected virtual bool ProtectErrors(IEnumerable<Guid> guids)
+        {
+            var success = true;
+            foreach (var guid in guids)
+                if (!ProtectError(guid))
+                    success = false;
+            return success;
+        }
+
+        /// <summary>
         /// Deletes a specific error from the log
         /// </summary>
         protected abstract bool DeleteError(Guid guid);
+
+        /// <summary>
+        /// Deletes a list of errors from the log, only if they are not protected
+        /// </summary>
+        protected virtual bool DeleteErrors(IEnumerable<Guid> guids)
+        {
+            var success = true;
+            foreach (var guid in guids)
+                if (!DeleteError(guid))
+                    success = false;
+            return success;
+        }
 
         /// <summary>
         /// Deletes a specific error from the log, any traces of it
@@ -243,6 +267,27 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
+        /// Protects a list of errors in the log
+        /// </summary>
+        public bool ProtectList(IEnumerable<Guid> guids)
+        {
+            if (_isInRetry) return false; // no protecting allowed when failing, since we don't respect it in the queue anyway
+
+            try
+            {
+                using (new TransactionScope(TransactionScopeOption.Suppress))
+                {
+                    return ProtectErrors(guids);
+                }
+            }
+            catch (Exception ex)
+            {
+                BeginRetry(ex);
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Deletes an error from the log with the specified id
         /// </summary>
         public bool Delete(Guid guid)
@@ -254,6 +299,27 @@ namespace StackExchange.Exceptional
                 using (new TransactionScope(TransactionScopeOption.Suppress))
                 {
                     return DeleteError(guid);
+                }
+            }
+            catch (Exception ex)
+            {
+                BeginRetry(ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Deletes a list of non-protected errors from the log
+        /// </summary>
+        public bool DeleteList(IEnumerable<Guid> guids)
+        {
+            if (_isInRetry) return false; // no deleting from the retry queue
+
+            try
+            {
+                using (new TransactionScope(TransactionScopeOption.Suppress))
+                {
+                    return DeleteErrors(guids);
                 }
             }
             catch (Exception ex)

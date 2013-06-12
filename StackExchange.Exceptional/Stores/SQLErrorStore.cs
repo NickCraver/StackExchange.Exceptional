@@ -75,7 +75,7 @@ namespace StackExchange.Exceptional.Stores
         /// Protects an error from deletion, by making IsProtected = 1 in the database
         /// </summary>
         /// <param name="guid">The guid of the error to protect</param>
-        /// <returns>True if the error was found and proected, false otherwise</returns>
+        /// <returns>True if the error was found and protected, false otherwise</returns>
         protected override bool ProtectError(Guid guid)
         {
             using (var c = GetConnection())
@@ -84,6 +84,22 @@ namespace StackExchange.Exceptional.Stores
 Update Exceptions 
    Set IsProtected = 1, DeletionDate = Null
  Where GUID = @guid", new { guid }) > 0;
+            }
+        }
+
+        /// <summary>
+        /// Protects errors from deletion, by making IsProtected = 1 in the database
+        /// </summary>
+        /// <param name="guids">The guids of the error to protect</param>
+        /// <returns>True if the errors were found and protected, false otherwise</returns>
+        protected override bool ProtectErrors(IEnumerable<Guid> guids)
+        {
+            using (var c = GetConnection())
+            {
+                return c.Execute(@"
+Update Exceptions 
+   Set IsProtected = 1, DeletionDate = Null
+ Where GUID In @guids", new { guids }) > 0;
             }
         }
 
@@ -102,6 +118,24 @@ Update Exceptions
  Where GUID = @guid 
    And DeletionDate Is Null
    And ApplicationName = @ApplicationName", new { guid, ApplicationName }) > 0;
+            }
+        }
+
+        /// <summary>
+        /// Deletes errors, by setting DeletionDate = GETUTCDATE() in SQL
+        /// </summary>
+        /// <param name="guids">The guids of the error to delete</param>
+        /// <returns>True if the errors were found and deleted, false otherwise</returns>
+        protected override bool DeleteErrors(IEnumerable<Guid> guids)
+        {
+            using (var c = GetConnection())
+            {
+                return c.Execute(@"
+Update Exceptions 
+   Set DeletionDate = GETUTCDATE() 
+ Where GUID In @guids
+   And DeletionDate Is Null
+   And ApplicationName = @ApplicationName", new { guids, ApplicationName }) > 0;
             }
         }
 

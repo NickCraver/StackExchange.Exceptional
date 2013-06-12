@@ -13,13 +13,6 @@
     
     Layout = new Master { PageTitle = "Error Log" };
 }
-@functions
-{
-    public string Url(string path)
-    {
-        return BasePageName.EndsWith("/") ? BasePageName + path : BasePageName + "/" + path;
-    }
-}
 @if (log.InFailureMode)
 {
     var le = ErrorStore.LastRetryException;

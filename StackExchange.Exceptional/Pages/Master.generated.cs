@@ -67,12 +67,12 @@ WriteLiteral("</title>\r\n        <link rel=\"stylesheet\" type=\"text/css\" hre
 
             
             #line 13 "..\..\Pages\Master.cshtml"
-                                                Write(this.BasePageName);
+                                                Write(Url("css"));
 
             
             #line default
             #line hidden
-WriteLiteral("/css\" />\r\n");
+WriteLiteral("\" />\r\n");
 
 
             
@@ -137,27 +137,37 @@ WriteLiteral("        <!--[if lt IE 9]><script src=\"");
 
             
             #line 22 "..\..\Pages\Master.cshtml"
-                                 Write(this.BasePageName);
+                                 Write(Url("html5shiv"));
 
             
             #line default
             #line hidden
-WriteLiteral("/html5shiv\"></script><![endif]-->\r\n        <script src=\"//ajax.googleapis.com/aja" +
-"x/libs/jquery/1.7.2/jquery.min.js\"></script>\r\n        <script src=\"");
+WriteLiteral("\"></script><![endif]-->\r\n        <script src=\"//ajax.googleapis.com/ajax/libs/jqu" +
+"ery/1.7.2/jquery.min.js\"></script>\r\n        <script src=\"");
 
 
             
             #line 24 "..\..\Pages\Master.cshtml"
-                Write(this.BasePageName);
+                Write(Url("js"));
 
             
             #line default
             #line hidden
-WriteLiteral("/js\"></script>\r\n");
+WriteLiteral("\"></script>\r\n        <script>var baseUrl = \'");
 
 
             
             #line 25 "..\..\Pages\Master.cshtml"
+                          Write(Url(""));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\';</script>\r\n");
+
+
+            
+            #line 26 "..\..\Pages\Master.cshtml"
          foreach(var js in ErrorStore.JSIncludes)
         {
 
@@ -168,7 +178,7 @@ WriteLiteral("        <script src=\"");
 
 
             
-            #line 27 "..\..\Pages\Master.cshtml"
+            #line 28 "..\..\Pages\Master.cshtml"
                 Write(js);
 
             
@@ -178,7 +188,7 @@ WriteLiteral("\"></script>\r\n");
 
 
             
-            #line 28 "..\..\Pages\Master.cshtml"
+            #line 29 "..\..\Pages\Master.cshtml"
         }
 
             
@@ -188,7 +198,7 @@ WriteLiteral("    </head>\r\n    <body>\r\n        <div id=\"top-header\" class=
 
 
             
-            #line 31 "..\..\Pages\Master.cshtml"
+            #line 32 "..\..\Pages\Master.cshtml"
                                 Write(ErrorStore.Default.InFailureMode ? "failure" : "");
 
             
@@ -198,7 +208,7 @@ WriteLiteral("\">\r\n            <div class=\"top-label\">Exceptions Log: ");
 
 
             
-            #line 32 "..\..\Pages\Master.cshtml"
+            #line 33 "..\..\Pages\Master.cshtml"
                                               Write(Settings.Current.ApplicationName);
 
             
@@ -208,7 +218,7 @@ WriteLiteral("</div>\r\n        </div>\r\n        <section id=\"content\">\r\n  
 
 
             
-            #line 35 "..\..\Pages\Master.cshtml"
+            #line 36 "..\..\Pages\Master.cshtml"
    Write(RenderBody());
 
             
@@ -219,7 +229,7 @@ WriteLiteral("\r\n        </section>\r\n        <footer>\r\n            <div cla
 
 
             
-            #line 39 "..\..\Pages\Master.cshtml"
+            #line 40 "..\..\Pages\Master.cshtml"
                        Write(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
             
@@ -229,7 +239,7 @@ WriteLiteral("<br/>\r\n                ");
 
 
             
-            #line 40 "..\..\Pages\Master.cshtml"
+            #line 41 "..\..\Pages\Master.cshtml"
            Write(log.Name);
 
             
@@ -239,7 +249,7 @@ WriteLiteral("\r\n            </div>\r\n            <div class=\"server-time\">S
 
 
             
-            #line 42 "..\..\Pages\Master.cshtml"
+            #line 43 "..\..\Pages\Master.cshtml"
                                                Write(DateTime.Now);
 
             

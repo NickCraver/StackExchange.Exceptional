@@ -37,7 +37,7 @@ function () {
 
 
 $(function () {
-    var table = $('#ErrorLog');
+    var table = $('#ErrorLog'), lastSelected;
     if (table.length == 0) return;
 
     // make columns sortable    
@@ -121,6 +121,76 @@ $(function () {
             }
         });
         return false;
+    });
+    // allow range selection
+    table.delegate('td:nth-child(2)', 'click', function (e) {
+        var row = $(this).closest('tr');
+        row.toggleClass('selected');
+
+        if (e.shiftKey) {
+            var index = row.index(),
+                lastIndex = lastSelected.index();
+            if (!e.ctrlKey) {
+                row.siblings().andSelf().removeClass('selected');
+            }
+            row.parent()
+               .children()
+               .slice(Math.min(index, lastIndex), Math.max(index, lastIndex)).add(lastSelected).add(row)
+               .addClass('selected');
+            if (!e.ctrlKey) {
+                lastSelected = row.first();
+            }
+        } else if (e.ctrlKey) {
+            lastSelected = row.first();
+        } else {
+            if ($('.exceptions-dashboard tbody td').length > 2) {
+                row.addClass('selected');
+            }
+            row.siblings().removeClass('selected');
+            lastSelected = row.first();
+        }
+    });
+    // allow protection and deletion of range selection
+    $(document).keyup(function (e) {
+        var action, selected = $('.error.selected').not('.protected');
+        if (e.keyCode == 46) { // del = delete
+            action = 'delete';
+        } else if (e.keyCode == 80) { // p = protect
+            action = 'protect';
+        } else {
+            return;
+        }
+
+        if (selected.length > 0) {
+            var ids = selected.map(function () { return $(this).data('id'); }).get();
+            selected.children('.actions').addClass('loading');
+
+            $.ajax({
+                type: 'POST',
+                context: this,
+                traditional: true,
+                data: { ids: ids },
+                dataType: 'json',
+                url: baseUrl + action + '-list',
+                success: function (data) {
+                    if (!data.result) {
+                        alert('Error occurred when trying to ' + action + ' these errors.');
+                        return;
+                    }
+                    if (action === 'delete') {
+                        selected.remove();
+                        table.trigger('update', [true]);
+                    } else if (action === 'protect') {
+                        selected.addClass('protected').find('.protect-link').remove();
+                    }
+                },
+                error: function (a, b, c) {
+                    console.log(a, b, c);
+                    selected.children('.actions').removeClass('loading');
+                    alert('Error occurred when trying to ' + action + ' these errors.');
+                }
+            });
+        }
     });
 
     $('a.clear-all-link').click(function () {

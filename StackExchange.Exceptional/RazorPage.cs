@@ -19,6 +19,11 @@ namespace StackExchange.Exceptional
             get { return Request.ServerVariables["URL"]; }
         }
 
+        public string Url(string path)
+        {
+            return BasePageName.EndsWith("/") ? BasePageName + path : BasePageName + "/" + path;
+        }
+
         public IHtmlString Html(string html)
         {
             return new HtmlString(html);

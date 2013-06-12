@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using StackExchange.Exceptional.Handlers;
@@ -28,6 +30,14 @@ namespace StackExchange.Exceptional
             var match = Regex.Match(context.Request.Path, @"/?(?<resource>[\w\-\.]+)/?$");
             var resource = match.Success ? match.Groups["resource"].Value : "";
 
+            Func<IEnumerable<Guid>> getFormGuids = () =>
+                {
+                    var idsStr = context.Request.Form["ids"];
+                    try { if (idsStr.HasValue()) return idsStr.Split(',').Select(Guid.Parse); }
+                    catch { return Enumerable.Empty<Guid>(); }
+                    return Enumerable.Empty<Guid>();
+                };
+
             switch(context.Request.HttpMethod)
             {
                 // The chrome team, in their infinite wisdom, started pre-fetching URLs, making /delete-all being a GET a PITA
@@ -48,10 +58,18 @@ namespace StackExchange.Exceptional
                             bool delAllResult = ErrorStore.Default.DeleteAll();
                             return JSONPHandler(context, delAllResult) ?? new RedirectHandler(context.Request.Path.Replace("/delete-all", ""), false);
 
+                        case "delete-list":
+                            bool delListResult = ErrorStore.Default.DeleteList(getFormGuids());
+                            return new ContentHandler(new { result = delListResult }.ToJson(), "text/javascript");
+
                         case "protect":
                             // send back a "true" or "false" - this will be handled in javascript
                             var pResult = ErrorStore.Default.Protect(context.Request.Form["guid"].ToGuid());
                             return JSONPHandler(context, pResult) ?? new ContentHandler(pResult.ToString(), "text/html");
+
+                        case "protect-list":
+                            bool protectListResult = ErrorStore.Default.ProtectList(getFormGuids());
+                            return new ContentHandler(new { result = protectListResult }.ToJson(), "text/javascript");
 
                         default:
                             return new ContentHandler("Invalid POST Request", "text/html");
