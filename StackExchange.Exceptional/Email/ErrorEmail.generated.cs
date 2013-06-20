@@ -310,7 +310,7 @@ WriteLiteral("\">");
             
             #line default
             #line hidden
-WriteLiteral("</b> on ");
+WriteLiteral(" UTC</b> on ");
 
 
             
