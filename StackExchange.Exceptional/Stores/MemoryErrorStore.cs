@@ -53,10 +53,10 @@ namespace StackExchange.Exceptional.Stores
         public override string Name { get { return "Memory Error Store"; } }
 
         /// <summary>
-        /// Does nothing, always returns False - in-memory errors are currently not protectable (as it's a volatile cache anyway)
+        /// Protects an error from deletion, by setting IsProtected = true
         /// </summary>
-        /// <param name="guid">IGNORED: The guid of the error to protect</param>
-        /// <returns>False, always false</returns>
+        /// <param name="guid">The guid of the error to protect</param>
+        /// <returns>True if the error was found and protected, false otherwise</returns>
         protected override bool ProtectError(Guid guid)
         {
             lock (_lock)
@@ -68,7 +68,7 @@ namespace StackExchange.Exceptional.Stores
                     return true;
                 }
             }
-            return false; // NO QUARTER FOR THE WICKED - no seriously, it's not sane to do this for a volatile memory store.
+            return false;
         }
 
         /// <summary>
