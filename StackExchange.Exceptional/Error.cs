@@ -408,7 +408,7 @@ namespace StackExchange.Exceptional
                                                 StatusCode,
                                                 Type,
                                                 Url,
-                                                QueryString = ServerVariables["QUERY_STRING"],
+                                                QueryString = ServerVariables != null ? ServerVariables["QUERY_STRING"] : null,
                                                 ServerVariables = ServerVariablesSerialzable.ToJsonDictionary(),
                                                 CookieVariables = CookiesSerialzable.ToJsonDictionary(),
                                                 QueryStringVariables = QueryStringSerialzable.ToJsonDictionary(),
