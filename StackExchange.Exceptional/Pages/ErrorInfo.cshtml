@@ -85,7 +85,8 @@
             }
             if (vars["HTTP_HOST"].HasValue() && vars["URL"].HasValue())
             {
-                var url = string.Format("http://{0}{1}{2}", vars["HTTP_HOST"], vars["URL"], vars["QUERY_STRING"].HasValue() ? "?" + vars["QUERY_STRING"] : "");
+                var ssl = vars["HTTP_X_FORWARDED_PROTO"] == "https" || vars["HTTP_X_SSL"].HasValue() || vars["HTTPS"] == "on";
+                var url = string.Format("http{3}://{0}{1}{2}", vars["HTTP_HOST"], vars["URL"], vars["QUERY_STRING"].HasValue() ? "?" + vars["QUERY_STRING"] : "", ssl ? "s" : "");
                 result.AppendFormat("          <tr><td class=\"key\">URL and Query</td><td class=\"value\">{0}</td></tr>", vars["REQUEST_METHOD"] == "GET" ? Linkify(url).ToString() : Server.HtmlEncode(url));
             }
             result.Append(hiddenRows);
@@ -122,7 +123,7 @@
         return Html(Server.HtmlEncode(s));
     }
 
-    private static readonly Regex _sanitizeUrl = new Regex(@"[^-a-z0-9+&@#/%?=~_|!:,.;\(\)\{\}]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex _sanitizeUrl = new Regex(@"[^-a-z0-9+&@#/%?=~_|!:,.;\*\(\)\{\}]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
     public static string SanitizeUrl(string url)
     {
         return url.IsNullOrEmpty() ? url : _sanitizeUrl.Replace(url, "");
