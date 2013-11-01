@@ -8,6 +8,8 @@ namespace Samples.MVC4.Controllers
     {
         public ActionResult Form()
         {
+            Response.SetCookie(new System.Web.HttpCookie("authToken", "test value"));
+            Response.SetCookie(new System.Web.HttpCookie("notAnAuthToken", "Turnip."));
             ViewBag.Message = "This is a sample with a form which has filtered logging (e.g. password is ommitted).";
 
             return View();

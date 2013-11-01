@@ -16,29 +16,26 @@ namespace StackExchange.Exceptional
     public class Error
     {
         internal const string CollectionErrorKey = "CollectionFetchError";
-
-        private static ConcurrentDictionary<string, string> _formLogFilters;
-
+        
         private static readonly object initLock = new object();
 
         /// <summary>
         /// Filters on form values *not * to log, because they contain sensitive data
         /// </summary>
-        public static ConcurrentDictionary<string, string> FormLogFilters
+        public static ConcurrentDictionary<string, string> FormLogFilters { get; private set; }
+
+        /// <summary>
+        /// Filters on form values *not * to log, because they contain sensitive data
+        /// </summary>
+        public static ConcurrentDictionary<string, string> CookieLogFilters { get; private set; }
+
+        static Error()
         {
-            get
-            {
-                if (_formLogFilters == null)
-                {
-                    lock (initLock)
-                    {
-                        if (_formLogFilters != null) return _formLogFilters;
-                        _formLogFilters = new ConcurrentDictionary<string, string>();
-                        Settings.Current.LogFilters.FormFilters.All.ForEach(flf => _formLogFilters[flf.Name] = flf.ReplaceWith ?? "");
-                    }
-                }
-                return _formLogFilters;
-            }
+            CookieLogFilters = new ConcurrentDictionary<string, string>();
+            Settings.Current.LogFilters.CookieFilters.All.ForEach(flf => CookieLogFilters[flf.Name] = flf.ReplaceWith ?? "");
+
+            FormLogFilters = new ConcurrentDictionary<string, string>();
+            Settings.Current.LogFilters.FormFilters.All.ForEach(flf => FormLogFilters[flf.Name] = flf.ReplaceWith ?? "");
         }
 
         /// <summary>
@@ -144,7 +141,10 @@ namespace StackExchange.Exceptional
                 Cookies = new NameValueCollection(request.Cookies.Count);
                 for (var i = 0; i < request.Cookies.Count; i++)
                 {
-                    Cookies.Add(request.Cookies[i].Name, request.Cookies[i].Value);
+                    var name = request.Cookies[i].Name;
+                    string val;
+                    CookieLogFilters.TryGetValue(name, out val);
+                    Cookies.Add(name, val ?? request.Cookies[i].Value);
                 }
             }
             catch (HttpRequestValidationException e)

@@ -19,12 +19,21 @@ namespace StackExchange.Exceptional
         public class LogFilterSettings : ConfigurationElement
         {
             /// <summary>
-            /// Regular expressions collection for errors to ignore.  Any errors with a .ToString() matching any regex here will not be logged
+            /// Form submitted values to replace on save - this prevents logging passwords, etc.
             /// </summary>
             [ConfigurationProperty("Form")]
             public SettingsCollection<LogFilter> FormFilters
             {
                 get { return this["Form"] as SettingsCollection<LogFilter>; }
+            }
+
+            /// <summary>
+            /// Cookie values to replace on save - this prevents logging auth tokens, etc.
+            /// </summary>
+            [ConfigurationProperty("Cookies")]
+            public SettingsCollection<LogFilter> CookieFilters
+            {
+                get { return this["Cookies"] as SettingsCollection<LogFilter>; }
             }
         }
     }
