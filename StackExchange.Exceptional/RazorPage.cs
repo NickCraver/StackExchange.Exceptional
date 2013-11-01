@@ -36,7 +36,7 @@ namespace StackExchange.Exceptional
 
         public string Encode(string text)
         {
-            return string.IsNullOrEmpty(text) ? string.Empty  : Server.HtmlEncode(text);
+            return string.IsNullOrEmpty(text) ? string.Empty  : HttpUtility.HtmlEncode(text);
         }
 
         public void Write(object value)
