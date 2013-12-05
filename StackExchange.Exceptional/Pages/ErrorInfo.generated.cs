@@ -574,6 +574,20 @@ Write(RenderVariableTable("Cookies", "cookies", error.Cookies));
             
             #line 187 "..\..\Pages\ErrorInfo.cshtml"
                                                              
+    
+            
+            #line default
+            #line hidden
+            
+            #line 188 "..\..\Pages\ErrorInfo.cshtml"
+Write(RenderVariableTable("RequestHeaders", "headers", error.RequestHeaders));
+
+            
+            #line default
+            #line hidden
+            
+            #line 188 "..\..\Pages\ErrorInfo.cshtml"
+                                                                           
 }
 
             
