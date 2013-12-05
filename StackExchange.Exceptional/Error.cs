@@ -438,6 +438,7 @@ namespace StackExchange.Exceptional
                                                 QueryString = ServerVariables != null ? ServerVariables["QUERY_STRING"] : null,
                                                 ServerVariables = ServerVariablesSerialzable.ToJsonDictionary(),
                                                 CookieVariables = CookiesSerialzable.ToJsonDictionary(),
+                                                RequestHeaders = RequestHeadersSerialzable.ToJsonDictionary(),
                                                 QueryStringVariables = QueryStringSerialzable.ToJsonDictionary(),
                                                 FormVariables = FormSerialzable.ToJsonDictionary()
                                             });
