@@ -151,6 +151,17 @@ namespace StackExchange.Exceptional
             {
                 Trace.WriteLine("Error parsing cookie collection: " + e.Message);
             }
+
+            RequestHeaders = new NameValueCollection(request.Headers.Count);
+            foreach(var header in request.Headers.AllKeys)
+            {
+                // Cookies are handled above, no need to repeat
+                if (string.Compare(header, "Cookie", StringComparison.OrdinalIgnoreCase) == 0)
+                    continue;
+
+                if (request.Headers[header] != null)
+                    RequestHeaders[header] = request.Headers[header];
+            }
         }
 
         /// <summary>
@@ -259,6 +270,12 @@ namespace StackExchange.Exceptional
         public NameValueCollection Cookies { get; set; }
 
         /// <summary>
+        /// Gets a collection representing the headers sent with the request
+        /// </summary>
+        [ScriptIgnore]
+        public NameValueCollection RequestHeaders { get; set; }
+
+        /// <summary>
         /// Gets a collection of custom data added at log time
         /// </summary>
         public Dictionary<string, string> CustomData { get; set; }
@@ -334,6 +351,7 @@ namespace StackExchange.Exceptional
             if (QueryString != null) copy.QueryString = new NameValueCollection(QueryString);
             if (Form != null) copy.Form = new NameValueCollection(Form);
             if (Cookies != null) copy.Cookies = new NameValueCollection(Cookies);
+            if (RequestHeaders != null) copy.RequestHeaders = new NameValueCollection(RequestHeaders);
             if (CustomData != null) copy.CustomData = new Dictionary<string, string>(CustomData);
             return copy;
         }
@@ -369,6 +387,15 @@ namespace StackExchange.Exceptional
         {
             get { return GetPairs(Cookies); }
             set { Cookies = GetNameValueCollection(value); }
+        }
+
+        /// <summary>
+        /// Caribles strictly for JSON serialziation, to maintain non-dictonary behavior
+        /// </summary>
+        public List<NameValuePair> RequestHeadersSerialzable
+        {
+            get { return GetPairs(RequestHeaders); }
+            set { RequestHeaders = GetNameValueCollection(value); }
         }
 
         /// <summary>
