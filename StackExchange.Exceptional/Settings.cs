@@ -20,7 +20,13 @@ namespace StackExchange.Exceptional
         /// </summary>
         [ConfigurationProperty("applicationName", IsRequired = true)]
         public string ApplicationName { get { return this["applicationName"] as string; } }
-        
+
+        /// <summary>
+        /// An optional name to help enable transformations when application name varies from one environment to the next
+        /// </summary>
+        [ConfigurationProperty("name", IsRequired = false)]
+        public string Name { get { return this["name"] as string; } }
+
         /// <summary>
         /// A collection of list types all with a Name attribute
         /// </summary>
