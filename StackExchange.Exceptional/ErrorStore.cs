@@ -592,6 +592,7 @@ namespace StackExchange.Exceptional
                     var frames = new StackTrace(fNeedFileInfo: true).GetFrames();
                     if (frames != null)
                         error.Detail += "\n\nFull Trace:\n\n" + string.Join("", frames.Skip(2));
+                    error.ErrorHash = error.GetHash();
                 }
 
                 if (OnBeforeLog != null)

@@ -178,7 +178,7 @@ namespace StackExchange.Exceptional
         /// Gets a unique-enough hash of this error.  Stored as a quick comparison mehanism to rollup duplicate errors.
         /// </summary>
         /// <returns>"Unique" hash for this error</returns>
-        private int? GetHash()
+        public int? GetHash()
         {
             if (!Detail.HasValue()) return null;
 
