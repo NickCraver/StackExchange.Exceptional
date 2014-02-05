@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -582,8 +583,7 @@ namespace StackExchange.Exceptional
                 var exCursor = ex;
                 while (exCursor != null)
                 {
-                    if (exCursor.Data.Contains("SQL"))
-                        error.SQL = exCursor.Data["SQL"] as string;
+                    AddErrorData(error, exCursor);
                     exCursor = exCursor.InnerException;
                 }
 
@@ -629,6 +629,20 @@ namespace StackExchange.Exceptional
             {
                 Trace.WriteLine(e);
                 return null;
+            }
+        }
+
+        private static void AddErrorData(Error error, Exception exception)
+        {
+            if (exception.Data.Contains("SQL"))
+                error.SQL = exception.Data["SQL"] as string;
+
+            var se = exception as SqlException;
+            if (se != null)
+            {
+                error.CustomData["SQL-Server"] = se.Server;
+                error.CustomData["SQL-ErrorNumber"] = se.Number.ToString();
+                error.CustomData["SQL-LineNumber"] = se.LineNumber.ToString();
             }
         }
 
