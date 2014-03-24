@@ -19,7 +19,7 @@
     <ul>
         <li>Web.config entries (look at web.config for more details/options)
             <ul>
-                <li>Section declaraction (<b>required</b>, unless using code setup):
+                <li>Section declaration (<b>required</b>, unless using code setup):
                     <pre class="prettyprint">
 &lt;section name="Exceptional" type="StackExchange.Exceptional.Settings" /&gt;
 </pre>
@@ -34,7 +34,7 @@
                 <li>Handler (<b>optional</b>, can use a route or dashboard to view errors instead):
                     <pre class="prettyprint">
 &lt;add name="Exceptional" path="exceptions.axd" verb="POST,GET,HEAD" 
-     type="StackExchange.Exceptional.ExceptionalModule, StackExchange.Exceptional" 
+     type="StackExchange.Exceptional.HandlerFactory, StackExchange.Exceptional" 
      preCondition="integratedMode" /&gt;
 </pre>
                 </li>
