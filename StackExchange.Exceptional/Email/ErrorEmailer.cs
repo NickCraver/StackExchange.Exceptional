@@ -70,7 +70,7 @@ namespace StackExchange.Exceptional.Email
                     message.To.Add(ToAddress);
                     if (FromAddress != null) message.From = FromAddress;
 
-                    message.Subject = ErrorStore.ApplicationName + " error: " + error.Message;
+                    message.Subject = ErrorStore.ApplicationName + " error: " + error.Message.Replace(Environment.NewLine, string.Empty);
                     message.Body = GetErrorHtml(error);
                     message.IsBodyHtml = true;
 

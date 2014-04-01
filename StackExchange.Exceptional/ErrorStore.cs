@@ -577,7 +577,7 @@ namespace StackExchange.Exceptional
                 var error = new Error(ex, context, applicationName)
                                 {
                                     RollupPerServer = rollupPerServer,
-                                    CustomData = customData
+                                    CustomData = customData ?? new Dictionary<string, string>()
                                 };
 
                 var exCursor = ex;
