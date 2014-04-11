@@ -640,6 +640,9 @@ namespace StackExchange.Exceptional
             var se = exception as SqlException;
             if (se != null)
             {
+                if (error.CustomData == null) 
+                    error.CustomData = new Dictionary<string, string>();
+
                 error.CustomData["SQL-Server"] = se.Server;
                 error.CustomData["SQL-ErrorNumber"] = se.Number.ToString();
                 error.CustomData["SQL-LineNumber"] = se.LineNumber.ToString();
