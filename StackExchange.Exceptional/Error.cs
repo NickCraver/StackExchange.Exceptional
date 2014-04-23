@@ -475,7 +475,7 @@ namespace StackExchange.Exceptional
         private List<NameValuePair> GetPairs(NameValueCollection nvc)
         {
             var result = new List<NameValuePair>();
-            if (nvc == null) return result;
+            if (nvc == null) return null;
 
             for (int i = 0; i < nvc.Count; i++)
             {
@@ -487,7 +487,7 @@ namespace StackExchange.Exceptional
         private NameValueCollection GetNameValueCollection(List<NameValuePair> pairs)
         {
             var result = new NameValueCollection();
-            if (pairs == null) return result;
+            if (pairs == null) return null;
 
             foreach(var p in pairs)
             {
