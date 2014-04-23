@@ -359,7 +359,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Caribles strictly for JSON serialziation, to maintain non-dictonary behavior
         /// </summary>
-        public List<NameValuePair> ServerVariablesSerialzable
+        public List<NameValuePair> ServerVariablesSerializable
         {
             get { return GetPairs(ServerVariables); }
             set { ServerVariables = GetNameValueCollection(value); }
@@ -367,7 +367,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Caribles strictly for JSON serialziation, to maintain non-dictonary behavior
         /// </summary>
-        public List<NameValuePair> QueryStringSerialzable
+        public List<NameValuePair> QueryStringSerializable
         {
             get { return GetPairs(QueryString); }
             set { QueryString = GetNameValueCollection(value); }
@@ -375,7 +375,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Caribles strictly for JSON serialziation, to maintain non-dictonary behavior
         /// </summary>
-        public List<NameValuePair> FormSerialzable
+        public List<NameValuePair> FormSerializable
         {
             get { return GetPairs(Form); }
             set { Form = GetNameValueCollection(value); }
@@ -383,7 +383,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Caribles strictly for JSON serialziation, to maintain non-dictonary behavior
         /// </summary>
-        public List<NameValuePair> CookiesSerialzable
+        public List<NameValuePair> CookiesSerializable
         {
             get { return GetPairs(Cookies); }
             set { Cookies = GetNameValueCollection(value); }
@@ -392,7 +392,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Caribles strictly for JSON serialziation, to maintain non-dictonary behavior
         /// </summary>
-        public List<NameValuePair> RequestHeadersSerialzable
+        public List<NameValuePair> RequestHeadersSerializable
         {
             get { return GetPairs(RequestHeaders); }
             set { RequestHeaders = GetNameValueCollection(value); }
@@ -436,11 +436,11 @@ namespace StackExchange.Exceptional
                                                 Type,
                                                 Url,
                                                 QueryString = ServerVariables != null ? ServerVariables["QUERY_STRING"] : null,
-                                                ServerVariables = ServerVariablesSerialzable.ToJsonDictionary(),
-                                                CookieVariables = CookiesSerialzable.ToJsonDictionary(),
-                                                RequestHeaders = RequestHeadersSerialzable.ToJsonDictionary(),
-                                                QueryStringVariables = QueryStringSerialzable.ToJsonDictionary(),
-                                                FormVariables = FormSerialzable.ToJsonDictionary()
+                                                ServerVariables = ServerVariablesSerializable.ToJsonDictionary(),
+                                                CookieVariables = CookiesSerializable.ToJsonDictionary(),
+                                                RequestHeaders = RequestHeadersSerializable.ToJsonDictionary(),
+                                                QueryStringVariables = QueryStringSerializable.ToJsonDictionary(),
+                                                FormVariables = FormSerializable.ToJsonDictionary()
                                             });
         }
 
