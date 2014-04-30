@@ -16,8 +16,6 @@ namespace StackExchange.Exceptional
     public class Error
     {
         internal const string CollectionErrorKey = "CollectionFetchError";
-        
-        private static readonly object initLock = new object();
 
         /// <summary>
         /// Filters on form values *not * to log, because they contain sensitive data
