@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web;
 using StackExchange.Exceptional.Extensions;
+using System.Collections.Specialized;
 
 namespace StackExchange.Exceptional
 {
@@ -56,6 +57,12 @@ namespace StackExchange.Exceptional
         /// Method to get custom data for an error for, will be call when custom data isn't already present
         /// </summary>
         public static Action<Exception, HttpContext, Dictionary<string, string>> GetCustomData { get; set; }
+
+        /// <summary>
+        /// Method of getting the IP address for the error, defaults to retrieving it from server variables
+        /// but may need to be replaced in special nulti-proxy situations.
+        /// </summary>
+        public static Func<string> GetIPAddress { get; set; }
 
         /// <summary>
         /// Event handler to run before an exception is logged to the store

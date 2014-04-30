@@ -580,6 +580,19 @@ namespace StackExchange.Exceptional
                                     CustomData = customData
                                 };
 
+                if (GetIPAddress != null)
+                {
+                    try
+                    {
+                        error.IPAddress = GetIPAddress();
+                    }
+                    catch (Exception gipe)
+                    {
+                        // if there was an error getting the IP, log it so we can display such in the view...and not fail to log the original error
+                        error.CustomData.Add(CustomDataErrorKey, "Fetching IP Adddress: " + gipe);
+                    }
+                }
+
                 var exCursor = ex;
                 while (exCursor != null)
                 {
