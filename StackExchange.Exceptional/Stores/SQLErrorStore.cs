@@ -241,7 +241,6 @@ Values (@GUID, @ApplicationName, @MachineName, @CreationDate, @Type, @IsProtecte
         /// This can return a deleted error as well, there's no filter based on DeletionDate
         /// </summary>
         /// <param name="guid">The guid of the error to retrieve</param>
-        /// <param name="applicationName">The optional specific application to swarch</param>
         /// <returns>The error object if found, null otherwise</returns>
         protected override Error GetError(Guid guid)
         {
