@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using StackExchange.Exceptional;
+using StackExchange.Exceptional.Email;
 using StackExchange.Exceptional.Stores;
 
 namespace Samples.Console
@@ -13,6 +14,15 @@ namespace Samples.Console
             // Example of code-only setup, alteratively this can be in the App.config
             // rollupSeconds is 0 so a new file is always generated, for demonstration purposes
             ErrorStore.Setup("Samples.Console", new JSONErrorStore(path: "Errors", rollupSeconds: 0));
+
+            // Example of a code-only email setup, alteratively this can be in the App.config
+            var emailSettings = new EmailSettings
+            {
+                FromAddress = "exceptions@site.com",
+                FromDisplayName = "Bob the Builder",
+                ToAddress = "nrcraver@gmail.com"
+            };
+            ErrorEmailer.Setup(emailSettings);
 
             // Optional: for logging all unhandled exceptions
             AppDomain.CurrentDomain.UnhandledException += ExceptionalHandler;

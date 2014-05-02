@@ -29,11 +29,20 @@ namespace StackExchange.Exceptional.Email
 
         static ErrorEmailer()
         {
-            // Override with excetional specific settings (user may want this mail to go to another place, or only specify mail settings here, etc.)
+            // Override with exceptional specific settings (user may want this mail to go to another place, or only specify mail settings here, etc.)
             var eSettings = Settings.Current.Email;
+            Setup(eSettings);
+        }
 
+        /// <summary>
+        /// Configure the emailer - note that if config isn't valid this sill silently fail
+        /// </summary>
+        /// <param name="eSettings">Settings to use to configure error emailing</param>
+        public static void Setup(IEmailSettings eSettings)
+        {
             if (!eSettings.ToAddress.HasValue())
             {
+                Trace.WriteLine("Configuration invalid: ToAddress must have a value");
                 return; // not enabled
             }
 
@@ -53,6 +62,7 @@ namespace StackExchange.Exceptional.Email
             EnableSSL = eSettings.SMTPEnableSSL;
 
             Enabled = true;
+            
         }
 
         /// <summary>

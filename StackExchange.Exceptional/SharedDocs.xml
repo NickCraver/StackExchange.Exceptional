@@ -1,0 +1,44 @@
+﻿<SharedDocs>
+    <IEmailSettings>
+        <Member name="ToAddress">
+            <summary>
+                The address to send email messages to
+            </summary>
+        </Member>
+        <Member name="FromAddress">
+            <summary>
+                The address to send email messages from
+            </summary>
+        </Member>
+        <Member name="FromDisplayName">
+            <summary>
+                The display name to send email messages from
+            </summary>
+        </Member>
+        <Member name="SMTPHost">
+            <summary>
+                The SMTP server to send mail through
+            </summary>
+        </Member>
+        <Member name="SMTPPort">
+            <summary>
+                The port to send mail on (if SMTP server is specified via smtpHost="serverName")
+            </summary>
+        </Member>
+        <Member name="SMTPUserName">
+            <summary>
+                The SMTP username to use, if authentication is needed
+            </summary>
+        </Member>
+        <Member name="SMTPPassword">
+            <summary>
+                The SMTP password to use, if authentication is needed
+            </summary>
+        </Member>
+        <Member name="SMTPEnableSSL">
+            <summary>
+                Whether to use SSL when sending via SMTP
+            </summary>
+        </Member>
+    </IEmailSettings>
+</SharedDocs>
