@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using StackExchange.Exceptional.Extensions;
 
 namespace StackExchange.Exceptional.Stores
 {
@@ -88,11 +89,14 @@ namespace StackExchange.Exceptional.Stores
         /// Deleted all errors in the log, by clearing the in-memory log
         /// </summary>
         /// <returns>True in all cases</returns>
-        protected override bool DeleteAllErrors()
+        protected override bool DeleteAllErrors(string applicationName = null)
         {
             lock (_lock)
             {
-                _errors.RemoveAll(e => !e.IsProtected);
+                if (applicationName.HasValue())
+                    _errors.RemoveAll(e => !e.IsProtected && e.ApplicationName == applicationName);
+                else
+                    _errors.RemoveAll(e => !e.IsProtected);
             }
             return true;
         }
@@ -146,12 +150,19 @@ namespace StackExchange.Exceptional.Stores
         /// <summary>
         /// Retrieves all of the errors in the log
         /// </summary>
-        protected override int GetAllErrors(List<Error> errors)
+        protected override int GetAllErrors(List<Error> errors, string applicationName = null)
         {
             lock (_lock)
             {
                 if (_errors == null) return 0;
-                errors.AddRange(_errors.Select(e => e.Clone()));
+
+                IEnumerable<Error> result = _errors;
+                if (applicationName.HasValue())
+                {
+                    result = result.Where(e => e.ApplicationName == applicationName);
+                }
+
+                errors.AddRange(result.Select(e => e.Clone()));
                 return _errors.Count;
             }
         }
@@ -159,12 +170,20 @@ namespace StackExchange.Exceptional.Stores
         /// <summary>
         /// Retrieves a count of application errors since the specified date, or all time if null
         /// </summary>
-        protected override int GetErrorCount(DateTime? since = null)
+        protected override int GetErrorCount(DateTime? since = null, string applicationName = null)
         {
             lock (_lock)
             {
                 if (_errors == null) return 0;
+                if (applicationName.HasValue())
+                {
+                    return !since.HasValue
+                        ? _errors.Count(e => e.ApplicationName == applicationName)
+                        : _errors.Count(e => e.CreationDate >= since && e.ApplicationName == applicationName);
+                }
+
                 return !since.HasValue ? _errors.Count : _errors.Count(e => e.CreationDate >= since);
+
             }
         }
     }

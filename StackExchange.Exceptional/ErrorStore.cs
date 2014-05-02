@@ -137,17 +137,17 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Deletes all non-protected errors from the log
         /// </summary>
-        protected abstract bool DeleteAllErrors();
+        protected abstract bool DeleteAllErrors(string applicationName = null);
 
         /// <summary>
         /// Retrieves all of the errors in the log
         /// </summary>
-        protected abstract int GetAllErrors(List<Error> list);
+        protected abstract int GetAllErrors(List<Error> list, string applicationName = null);
 
         /// <summary>
         /// Retrieves a count of application errors since the specified date, or all time if null
         /// </summary>
-        protected abstract int GetErrorCount(DateTime? since = null);
+        protected abstract int GetErrorCount(DateTime? since = null, string applicationName = null);
 
         /// <summary>
         /// Get the name of this error log store implementation.
@@ -333,7 +333,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Deletes all non-protected errors from the log
         /// </summary>
-        public bool DeleteAll()
+        public bool DeleteAll(string applicationName = null)
         {
             if (_isInRetry)
             {
@@ -345,7 +345,7 @@ namespace StackExchange.Exceptional
             {
                 using (new TransactionScope(TransactionScopeOption.Suppress))
                 {
-                    return DeleteAllErrors();
+                    return DeleteAllErrors(applicationName);
                 }
             }
             catch (Exception ex)
@@ -373,7 +373,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Gets all in the store, including those in the backup queue if it's in use
         /// </summary>
-        public int GetAll(List<Error> errors)
+        public int GetAll(List<Error> errors, string applicationName = null)
         {
             if (_isInRetry)
             {
@@ -381,7 +381,7 @@ namespace StackExchange.Exceptional
                 return errors.Count;
             }
 
-            try { return GetAllErrors(errors); }
+            try { return GetAllErrors(errors, applicationName); }
             catch (Exception ex) { BeginRetry(ex); }
             return 0;
         }
@@ -389,14 +389,14 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Gets the count of exceptions, optionally those since a certain date
         /// </summary>
-        public int GetCount(DateTime? since = null)
+        public int GetCount(DateTime? since = null, string applicationName = null)
         {
             if (_isInRetry)
             {
                 return WriteQueue.Count;
             }
 
-            try { return GetErrorCount(since); }
+            try { return GetErrorCount(since, applicationName); }
             catch (Exception ex) { BeginRetry(ex); }
             return 0;
         }

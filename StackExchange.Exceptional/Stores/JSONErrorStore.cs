@@ -89,7 +89,7 @@ namespace StackExchange.Exceptional.Stores
         /// Deleted all errors in the log, by clearing all *.json files in the folder
         /// </summary>
         /// <returns>True if any errors were deleted, false otherwise</returns>
-        protected override bool DeleteAllErrors()
+        protected override bool DeleteAllErrors(string applicationName = null)
         {
             string[] fileList = Directory.GetFiles(_path, "*.json");
             if (fileList.Length == 0)
@@ -103,7 +103,18 @@ namespace StackExchange.Exceptional.Stores
                     // ignore protected files
                     var f = new FileInfo(fn);
                     if (f.IsReadOnly) continue;
-                    f.Delete();
+                    if (applicationName.HasValue())
+                    {
+                        var e = Get(f.FullName);
+                        if (e != null && e.ApplicationName == applicationName)
+                        {
+                            f.Delete();
+                        }
+                    }
+                    else
+                    {
+                        f.Delete();
+                    }
                     deleted++;
                 }
                 catch (Exception ex)
@@ -209,7 +220,7 @@ namespace StackExchange.Exceptional.Stores
         /// <summary>
         /// Retrieves all of the errors in the log folder
         /// </summary>
-        protected override int GetAllErrors(List<Error> errors)
+        protected override int GetAllErrors(List<Error> errors, string applicationName = null)
         {
             string[] files = Directory.GetFiles(_path, "*.json");
 
@@ -217,8 +228,14 @@ namespace StackExchange.Exceptional.Stores
 
             Array.Sort(files);
             Array.Reverse(files);
-            
-            errors.AddRange(files.Select(Get).Where(e => e != null));
+
+            var result = files.Select(Get).Where(e => e != null);
+            if (applicationName.HasValue())
+            {
+                result = result.Where(e => e.ApplicationName == applicationName);
+            }
+
+            errors.AddRange(result);
 
             return files.Length;
         }
@@ -226,7 +243,7 @@ namespace StackExchange.Exceptional.Stores
         /// <summary>
         /// Retrieves a count of application errors since the specified date, or all time if null
         /// </summary>
-        protected override int GetErrorCount(DateTime? since = null)
+        protected override int GetErrorCount(DateTime? since = null, string applicationName = null)
         {
             string[] fileList = Directory.GetFiles(_path, "*.json");
 
@@ -236,7 +253,10 @@ namespace StackExchange.Exceptional.Stores
             foreach (var fn in fileList.ToList().OrderByDescending(f => f))
             {
                 var error = Get(fn);
-                if (error == null) 
+                if (error == null)
+                    continue;
+
+                if (applicationName.HasValue() && error.ApplicationName != applicationName)
                     continue;
 
                 if (error.CreationDate >= since)
