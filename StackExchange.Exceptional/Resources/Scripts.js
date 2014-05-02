@@ -52,7 +52,7 @@ $(function () {
             date = date.substr(date.indexOf('-- ') + 3); // only look at the 2nd UTC time
 
             var exp = /(\d{4})-(\d{1,2})-(\d{1,2})\W*(\d{1,2}):(\d{1,2}):(\d{1,2})Z/i.exec(date);
-            return new Date(exp[1], exp[2], exp[3], exp[4], exp[5], exp[6], 0).getTime();
+            return new Date(exp[1], exp[2] - 1, exp[3], exp[4], exp[5], exp[6], 0).getTime();
         },
         type: 'numeric'
     });
