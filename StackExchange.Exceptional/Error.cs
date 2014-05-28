@@ -397,6 +397,47 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
+        /// Only for deserializing errors pre-spelling fix properly
+        /// </summary>
+        [ScriptIgnore]
+        public List<NameValuePair> ServerVariablesSerialzable
+        {
+            set { ServerVariables = GetNameValueCollection(value); }
+        }
+        /// <summary>
+        /// Only for deserializing errors pre-spelling fix properly
+        /// </summary>
+        [ScriptIgnore]
+        public List<NameValuePair> QueryStringSerialzable
+        {
+            set { QueryString = GetNameValueCollection(value); }
+        }
+        /// <summary>
+        /// Only for deserializing errors pre-spelling fix properly
+        /// </summary>
+        [ScriptIgnore]
+        public List<NameValuePair> FormSerialzable
+        {
+            set { Form = GetNameValueCollection(value); }
+        }
+        /// <summary>
+        /// Only for deserializing errors pre-spelling fix properly
+        /// </summary>
+        [ScriptIgnore]
+        public List<NameValuePair> CookiesSerialzable
+        {
+            set { Cookies = GetNameValueCollection(value); }
+        }
+        /// <summary>
+        /// Only for deserializing errors pre-spelling fix properly
+        /// </summary>
+        [ScriptIgnore]
+        public List<NameValuePair> RequestHeadersSerialzable
+        {
+            set { RequestHeaders = GetNameValueCollection(value); }
+        }
+
+        /// <summary>
         /// Gets a JSON representation for this error
         /// </summary>
         public string ToJson()
