@@ -39,9 +39,13 @@ namespace Samples.MVC4.Controllers
 
         public ActionResult Throw()
         {
-            var ex = new Exception("This is an exception throw from the Samples project! - Check out the log to see this exception.");
+            var innerEx = new ArgumentOutOfRangeException("nameOfParam", "ohValue!", "This is the message in the InnerException!");
+            innerEx.Data["data from inner"] = "Data from the inner exception!";
+
+            var ex = new Exception("This is an exception throw from the Samples project! - Check out the log to see this exception.", innerEx);
             // here's how your catch/throw might can add more info, for example SQL is special cased and shown in the UI:
             ex.Data["SQL"] = "Select * From FUBAR -- This is a SQL command!";
+            ex.Data["data from outer space"] = "just an example";
             throw ex;
         }
     }

@@ -647,8 +647,21 @@ namespace StackExchange.Exceptional
 
         private static void AddErrorData(Error error, Exception exception)
         {
-            if (exception.Data.Contains("SQL"))
+          if(exception.Data != null && exception.Data.Count > 0) {
+            if(error.CustomData == null) { error.CustomData = new Dictionary<string, string>(); }
+
+            foreach(var exKey in exception.Data.Keys) {
+              var exData = exception.Data[exKey];
+              if(exKey.Equals("SQL")) {
+                //keep SQL separate
                 error.SQL = exception.Data["SQL"] as string;
+              } else {
+                //key can't be null.
+                //values in exception.Data should be a primitive values, or have a meaningfull ToString()...
+                error.CustomData[exKey.ToString()] = (exData == null ? "null" : exData.ToString());
+              }
+            }
+          }
 
             var se = exception as SqlException;
             if (se != null)
@@ -659,6 +672,7 @@ namespace StackExchange.Exceptional
                 error.CustomData["SQL-Server"] = se.Server;
                 error.CustomData["SQL-ErrorNumber"] = se.Number.ToString();
                 error.CustomData["SQL-LineNumber"] = se.LineNumber.ToString();
+                error.CustomData["SQL-Procedure"] = se.Procedure.ToString();
             }
         }
 
