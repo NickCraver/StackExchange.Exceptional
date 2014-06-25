@@ -20,7 +20,7 @@ namespace Samples.Console
             {
                 FromAddress = "exceptions@site.com",
                 FromDisplayName = "Bob the Builder",
-                ToAddress = "nrcraver@gmail.com"
+                ToAddress = "dont.use@thisadress.com"
             };
             ErrorEmailer.Setup(emailSettings);
 

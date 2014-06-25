@@ -659,7 +659,10 @@ namespace StackExchange.Exceptional
                 error.CustomData["SQL-Server"] = se.Server;
                 error.CustomData["SQL-ErrorNumber"] = se.Number.ToString();
                 error.CustomData["SQL-LineNumber"] = se.LineNumber.ToString();
-                if(!string.IsNullOrWhiteSpace(se.Procedure)) { error.CustomData["SQL-Procedure"] = se.Procedure; }
+                if (se.Procedure.HasValue())
+                {
+                    error.CustomData["SQL-Procedure"] = se.Procedure;
+                }
             }
         }
 
