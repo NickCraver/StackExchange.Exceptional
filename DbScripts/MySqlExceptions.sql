@@ -22,10 +22,10 @@ CREATE TABLE Exceptions(
  PRIMARY KEY (Id)
 );
 
-ALTER TABLE `exceptions`
+ALTER TABLE `Exceptions`
 	ADD INDEX `IX_Exceptions_GUID_ApplicationName_DeletionDate_CreationDate` (`GUID`, `ApplicationName`, `DeletionDate`, `CreationDate` desc);
 
-ALTER TABLE `exceptions`
+ALTER TABLE `Exceptions`
 	ADD INDEX `IX_Exceptions_ErrorHash_AppName_CreationDate_DelDate` (`ErrorHash`, `ApplicationName`, `CreationDate` desc, `DeletionDate`);
 
 
