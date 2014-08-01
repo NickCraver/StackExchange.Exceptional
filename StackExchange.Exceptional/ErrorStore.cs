@@ -518,6 +518,8 @@ namespace StackExchange.Exceptional
                     return new MemoryErrorStore(settings);
                 case "SQL":
                     return new SQLErrorStore(settings);
+                case "MySQL":
+                    return new MySQLErrorStore(settings);
                 default:
                     throw new Exception("Unknwon error store type: " + settings.Type);
             }

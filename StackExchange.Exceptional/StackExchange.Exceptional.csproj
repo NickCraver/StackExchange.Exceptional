@@ -50,6 +50,9 @@
     <DocumentationFile>bin\Release\StackExchange.Exceptional.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data">
+      <HintPath>..\packages\MySql.Data.6.8.3\lib\net40\MySql.Data.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -111,6 +114,7 @@
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
     <Compile Include="Stores\JSONErrorStore.cs" />
+    <Compile Include="Stores\MySQLErrorStore.cs" />
     <Compile Include="Stores\SQLErrorStore.cs" />
     <Compile Include="Stores\MemoryErrorStore.cs" />
     <Compile Include="Handlers\ContentHandler.cs" />
@@ -122,6 +126,7 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>ErrorEmail.generated.cs</LastGenOutput>
     </None>
+    <None Include="packages.config" />
     <None Include="Pages\ErrorInfo.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>ErrorInfo.generated.cs</LastGenOutput>
