@@ -201,7 +201,7 @@ Update Exceptions
                     {
                         // Update the count and move on
                         error.GUID = existingException.First().GUID;
-                        c.Execute("Update Exceptions set DupliateCount = DuplicateCount + @DuplicateCount where ID = @id", new {error.DuplicateCount, id = existingException.First().Id});
+                        c.Execute("Update Exceptions set DuplicateCount = DuplicateCount + @DuplicateCount where ID = @id", new {error.DuplicateCount, id = existingException.First().Id});
                     }
                     else
                     {
