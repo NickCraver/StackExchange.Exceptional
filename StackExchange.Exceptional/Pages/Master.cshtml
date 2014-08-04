@@ -6,7 +6,8 @@
 {
     public string PageTitle { get; set; }
     public Error Error { get; set; }
-}<html>
+}
+<html>
     <head>
         <title>@PageTitle</title>
         <link rel="stylesheet" type="text/css" href="@Url("css")" />
@@ -19,7 +20,7 @@
         <script>var Exception = @Html(Error.ToDetailedJson());</script>
         }
         <!--[if lt IE 9]><script src="@Url("html5shiv")"></script><![endif]-->
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <script src="@ErrorStore.jQueryURL"></script>
         <script src="@Url("js")"></script>
         <script>var baseUrl = '@Url("")';</script>
         @foreach(var js in ErrorStore.JSIncludes)
