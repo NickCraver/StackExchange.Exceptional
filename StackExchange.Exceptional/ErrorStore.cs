@@ -3,11 +3,15 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net.Mime;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Transactions;
 using System.Web;
+using System.Web.UI;
 using StackExchange.Exceptional.Email;
 using StackExchange.Exceptional.Stores;
 using StackExchange.Exceptional.Extensions;
@@ -510,17 +514,64 @@ namespace StackExchange.Exceptional
             if (settings.Size < 1) 
                 throw new ArgumentOutOfRangeException("settings","ErrorStore 'size' must be positive");
 
-            switch (settings.Type)
+            var storeTypes = GetErrorStores();
+            // Search by convention first
+            var match = storeTypes.FirstOrDefault(s => s.Name == settings.Type + "ErrorStore");
+            if (match == null)
             {
-                case "JSON":
-                    return new JSONErrorStore(settings);
-                case "Memory":
-                    return new MemoryErrorStore(settings);
-                case "SQL":
-                    return new SQLErrorStore(settings);
-                default:
-                    throw new Exception("Unknwon error store type: " + settings.Type);
+                // well shit, free for all!
+                match = storeTypes.FirstOrDefault(s => s.Name.Contains(settings.Type));
             }
+
+            if (match == null)
+            {
+                throw new Exception("Could not find error store type: " + settings.Type);
+            }
+
+            try
+            {
+                return (ErrorStore) Activator.CreateInstance(match, settings);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error creating a " + settings.Type + " error store: " + ex.Message, ex);
+            }
+        }
+
+        private static List<Type> GetErrorStores()
+        {
+            var result = new List<Type>();
+            // Get the current directory, based on Where StackExchange.Exceptional.dll is located
+            var path = typeof (ErrorStore).Assembly.Location;
+            var dir = Path.GetDirectoryName(path);
+
+            if (dir == null)
+            {
+                Trace.WriteLine("Error loading Error stores, path: " + path);
+                return result;
+            }
+
+            try
+            {
+                // It's intentional even the core error stores load this way, as a sanity check
+                foreach (var filename in Directory.GetFiles(dir, "StackExchange.Exceptional*.dll"))
+                {
+                    try
+                    {
+                        var assembly = Assembly.LoadFrom(filename);
+                        result.AddRange(assembly.GetTypes().Where(type => type.IsSubclassOf(typeof (ErrorStore))));
+                    }
+                    catch (Exception e)
+                    {
+                        Trace.WriteLine(string.Format("Error loading ErrorStore types from {0}: {1}", filename, e.Message));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine("Error loading error stores: " + ex.Message);
+            }
+            return result;
         }
 
         /// <summary>
