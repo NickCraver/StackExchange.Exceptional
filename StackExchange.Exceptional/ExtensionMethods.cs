@@ -8,29 +8,11 @@ using System.Web.Script.Serialization;
 
 namespace StackExchange.Exceptional.Extensions
 {
-    internal static class ExtensionMethods
+    /// <summary>
+    /// Extenstion methods used inside of StackExchange.Exceptional
+    /// </summary>
+    public static class ExtensionMethods
     {
-        /// <summary>
-        /// returns a html span element with relative time elapsed since this event occurred, eg, "3 months ago" or "yesterday"; 
-        /// assumes time is *already* stored in UTC format!
-        /// </summary>
-        public static string ToRelativeTimeSpan(this DateTime dt)
-        {
-            return ToRelativeTimeSpan(dt, "relativetime");
-        }
-        public static string ToRelativeTimeSpan(this DateTime dt, string cssclass)
-        {
-            return cssclass == null
-                       ? string.Format(@"<span title=""{0:G} -- {2:u}"">{1}</span>", dt, ToRelativeTime(dt), dt.ToUniversalTime())
-                       : string.Format(@"<span title=""{0:G} -- {3:u}"" class=""{2}"">{1}</span>", dt, ToRelativeTime(dt), cssclass, dt.ToUniversalTime());
-        }
-
-        public static string ToRelativeTimeSpan(this DateTime? dt)
-        {
-            if (dt == null) return "";
-            return ToRelativeTimeSpan(dt.Value);
-        }
-
         /// <summary>
         /// Returns a humanized string indicating how long ago something happened, eg "3 days ago".
         /// For future dates, returns when this DateTime will occur from DateTime.UtcNow.
@@ -168,7 +150,7 @@ namespace StackExchange.Exceptional.Extensions
         /// </summary>
         public const string UnknownIP = "0.0.0.0";
 
-        private static readonly Regex _ipAddress = new Regex(@"\b([0-9]{1,3}\.){3}[0-9]{1,3}$", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+        private static readonly Regex IPv4Regex = new Regex(@"\b([0-9]{1,3}\.){3}[0-9]{1,3}$", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
         /// <summary>
         /// returns true if this is a private network IP  
@@ -190,7 +172,7 @@ namespace StackExchange.Exceptional.Extensions
             // check if we were forwarded from a proxy
             if (ipForwarded.HasValue())
             {
-                ipForwarded = _ipAddress.Match(ipForwarded).Value;
+                ipForwarded = IPv4Regex.Match(ipForwarded).Value;
                 if (ipForwarded.HasValue() && !IsPrivateIP(ipForwarded))
                     ip = ipForwarded;
             }
@@ -254,14 +236,14 @@ namespace StackExchange.Exceptional.Extensions
         }
 
 
-        private static readonly DateTime _epoch = new DateTime(1970, 1, 1, 0, 0, 0);
+        private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0);
 
         /// <summary>
         /// Returns a unix Epoch time given a Date
         /// </summary>
         public static long ToEpochTime(this DateTime dt)
         {
-            return (long)(dt - _epoch).TotalSeconds;
+            return (long)(dt - Epoch).TotalSeconds;
         }
 
         /// <summary>

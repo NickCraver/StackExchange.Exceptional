@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -35,21 +34,11 @@ namespace StackExchange.Exceptional.Stores
             _displayCount = Math.Min(settings.Size, MaximumDisplayCount);
 
             _connectionString = settings.ConnectionString.IsNullOrEmpty() 
-                ? getConnectionStringByName(settings.ConnectionStringName)
+                ? GetConnectionStringByName(settings.ConnectionStringName)
                 : settings.ConnectionString;
 
             if (_connectionString.IsNullOrEmpty())
                 throw new ArgumentOutOfRangeException("settings", "A connection string or connection string name must be specified when using a SQL error store");
-        }
-
-        static string getConnectionStringByName(string connectionStringName)
-        {
-            if (connectionStringName.IsNullOrEmpty()) return null;
-
-            var connectionString = ConfigurationManager.ConnectionStrings[connectionStringName];
-            if (connectionString == null)
-                throw new ArgumentOutOfRangeException("connectionStringName", "A connection string was not found for the connection string name provided");
-            return connectionString.ConnectionString;
         }
 
         /// <summary>

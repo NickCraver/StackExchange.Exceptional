@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
@@ -725,6 +726,22 @@ namespace StackExchange.Exceptional
             if (t.FullName == className) return true;
 
             return t.BaseType != null && IsDescendentOf(t.BaseType, className);
+        }
+
+        /// <summary>
+        /// Gets the connection string from the connectionStrings configuration element, from web.config or app.config, throws if not found.
+        /// </summary>
+        /// <param name="connectionStringName">The connection string name to fetch</param>
+        /// <returns>The connection string requested</returns>
+        /// <exception cref="ConfigurationErrorsException">Connection string was not found</exception>
+        protected static string GetConnectionStringByName(string connectionStringName)
+        {
+            if (connectionStringName.IsNullOrEmpty()) return null;
+
+            var connectionString = ConfigurationManager.ConnectionStrings[connectionStringName];
+            if (connectionString == null)
+                throw new ConfigurationErrorsException("A connection string was not found for the connection string name provided");
+            return connectionString.ConnectionString;
         }
     }
 }

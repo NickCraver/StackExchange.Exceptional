@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using MySql.Data.MySqlClient;
 using StackExchange.Exceptional.Dapper;
+using StackExchange.Exceptional.Extensions;
 using StackExchange.Exceptional.Stores;
 
 namespace StackExchange.Exceptional.MySQL
@@ -35,7 +35,7 @@ namespace StackExchange.Exceptional.MySQL
             _displayCount = Math.Min(settings.Size, MaximumDisplayCount);
 
             _connectionString = settings.ConnectionString.IsNullOrEmpty()
-                ? getConnectionStringByName(settings.ConnectionStringName)
+                ? GetConnectionStringByName(settings.ConnectionStringName)
                 : settings.ConnectionString;
 
             if (_connectionString.IsNullOrEmpty())
@@ -69,16 +69,6 @@ namespace StackExchange.Exceptional.MySQL
         public override string Name
         {
             get { return "SQL Error Store"; }
-        }
-
-        private static string getConnectionStringByName(string connectionStringName)
-        {
-            if (connectionStringName.IsNullOrEmpty()) return null;
-
-            ConnectionStringSettings connectionString = ConfigurationManager.ConnectionStrings[connectionStringName];
-            if (connectionString == null)
-                throw new ArgumentOutOfRangeException("connectionStringName", "A connection string was not found for the connection string name provided");
-            return connectionString.ConnectionString;
         }
 
         /// <summary>
@@ -190,7 +180,7 @@ Update Exceptions
         /// <param name="error">The error to log</param>
         protected override void LogError(Error error)
         {
-            using (MySqlConnection c = GetConnection())
+            using (var c = GetConnection())
             {
                 if (RollupThreshold.HasValue && error.ErrorHash.HasValue)
                 {

@@ -43,9 +43,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dapper\Dapper.cs" />
-    <Compile Include="Dapper\Dapper.Extensions.cs" />
-    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="MySQLErrorStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
