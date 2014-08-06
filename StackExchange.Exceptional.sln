@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples.MVC4", "Samples.MVC4\Samples.MVC4.csproj", "{D66CF910-FD29-429D-9B51-40864E7C8E56}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Exceptional", "StackExchange.Exceptional\StackExchange.Exceptional.csproj", "{DA84A7A0-8042-4B2B-A000-3579DD419D2A}"
@@ -12,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples.Console", "Samples.Console\Samples.Console.csproj", "{61566A7A-8384-4D8D-A55D-B8647B0DDF7C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Exceptional.MySQL", "StackExchange.Exceptional.MySQL\StackExchange.Exceptional.MySQL.csproj", "{52031553-68D4-4B56-B5ED-867975972038}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +35,10 @@ Global
 		{61566A7A-8384-4D8D-A55D-B8647B0DDF7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61566A7A-8384-4D8D-A55D-B8647B0DDF7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61566A7A-8384-4D8D-A55D-B8647B0DDF7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52031553-68D4-4B56-B5ED-867975972038}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52031553-68D4-4B56-B5ED-867975972038}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52031553-68D4-4B56-B5ED-867975972038}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52031553-68D4-4B56-B5ED-867975972038}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
