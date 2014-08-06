@@ -30,6 +30,11 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
+        /// The URL to use for jQuery on the pages rendered by Exceptional
+        /// </summary>
+        public static string jQueryURL = "//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js";
+
+        /// <summary>
         /// Re-enables error logging afer a .DisableLogging() call
         /// </summary>
         public static void EnableLogging()
