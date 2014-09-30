@@ -17,6 +17,16 @@ namespace StackExchange.Exceptional
     {
         internal const string CollectionErrorKey = "CollectionFetchError";
 
+		/// <summary>
+		/// The convert from json
+		/// </summary>
+		public static Func<string, Error> ConvertFromJson { get; set; }
+
+		/// <summary>
+		/// The convert to json
+		/// </summary>
+	    public static Func<object, string> ConvertToJson { get; set; }
+
         /// <summary>
         /// Filters on form values *not * to log, because they contain sensitive data
         /// </summary>
@@ -29,6 +39,17 @@ namespace StackExchange.Exceptional
 
         static Error()
         {
+			ConvertFromJson = json =>
+	        {
+				var serializer = new JavaScriptSerializer();
+				return serializer.Deserialize<Error>(json);
+	        };
+			ConvertToJson = error =>
+			{
+				var serializer = new JavaScriptSerializer();
+				return serializer.Serialize(error);
+			};
+
             CookieLogFilters = new ConcurrentDictionary<string, string>();
             Settings.Current.LogFilters.CookieFilters.All.ForEach(flf => CookieLogFilters[flf.Name] = flf.ReplaceWith ?? "");
 
@@ -442,8 +463,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         public string ToJson()
         {
-            var serializer = new JavaScriptSerializer();
-            return serializer.Serialize(this);
+	        return ConvertToJson(this);
         }
 
         /// <summary>
@@ -452,8 +472,7 @@ namespace StackExchange.Exceptional
         /// <returns></returns>
         public string ToDetailedJson()
         {
-            var serializer = new JavaScriptSerializer();
-            return serializer.Serialize(new
+            return ConvertToJson(new
                                             {
                                                 GUID,
                                                 ApplicationName,
@@ -490,9 +509,7 @@ namespace StackExchange.Exceptional
         /// <returns>The Error object</returns>
         public static Error FromJson(string json)
         {
-            var serializer = new JavaScriptSerializer();
-            var result = serializer.Deserialize<Error>(json);
-            return result;
+	        return ConvertFromJson(json);
         }
 
         /// <summary>
