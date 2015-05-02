@@ -20,7 +20,13 @@ namespace StackExchange.Exceptional
         /// </summary>
         [ConfigurationProperty("applicationName", IsRequired = true)]
         public string ApplicationName { get { return this["applicationName"] as string; } }
-        
+
+        /// <summary>
+        /// The Regex pattern of data keys to include. For example, "Redis.*" would include all keys that start with Redis
+        /// </summary>
+        [ConfigurationProperty("dataIncludePattern")]
+        public string DataIncludePattern { get { return this["dataIncludePattern"] as string; } }
+
         /// <summary>
         /// A collection of list types all with a Name attribute
         /// </summary>

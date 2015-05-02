@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Web;
 using System.Collections.Specialized;
+using System.Data.SqlClient;
+using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 using StackExchange.Exceptional.Extensions;
 
@@ -26,6 +28,11 @@ namespace StackExchange.Exceptional
         /// Filters on form values *not * to log, because they contain sensitive data
         /// </summary>
         public static ConcurrentDictionary<string, string> CookieLogFilters { get; private set; }
+        
+        /// <summary>
+        /// Gets the data include pattern, like "SQL.*|Redis-*" to match against .Data keys to include when logging
+        /// </summary>
+        public static Regex DataIncludeRegex { get; private set; }
 
         static Error()
         {
@@ -34,6 +41,11 @@ namespace StackExchange.Exceptional
 
             FormLogFilters = new ConcurrentDictionary<string, string>();
             Settings.Current.LogFilters.FormFilters.All.ForEach(flf => FormLogFilters[flf.Name] = flf.ReplaceWith ?? "");
+
+            if (!string.IsNullOrEmpty(Settings.Current.DataIncludePattern))
+            {
+                DataIncludeRegex = new Regex(Settings.Current.DataIncludePattern, RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            }
         }
 
         /// <summary>
@@ -159,6 +171,40 @@ namespace StackExchange.Exceptional
 
                 if (request.Headers[header] != null)
                     RequestHeaders[header] = request.Headers[header];
+            }
+        }
+        
+        internal void AddFromData(Exception exception)
+        {
+            // Historical special case
+            if (exception.Data.Contains("SQL"))
+                SQL = exception.Data["SQL"] as string;
+
+            var se = exception as SqlException;
+            if (se != null)
+            {
+                if (CustomData == null)
+                    CustomData = new Dictionary<string, string>();
+
+                CustomData["SQL-Server"] = se.Server;
+                CustomData["SQL-ErrorNumber"] = se.Number.ToString();
+                CustomData["SQL-LineNumber"] = se.LineNumber.ToString();
+                if (se.Procedure.HasValue())
+                {
+                    CustomData["SQL-Procedure"] = se.Procedure;
+                }
+            }
+            // Regardless of what Resharper may be telling you, .Data can be null on things like a null ref exception.
+            if (exception.Data != null && DataIncludeRegex != null)
+            {
+                if (CustomData == null)
+                    CustomData = new Dictionary<string, string>();
+
+                foreach (string k in exception.Data.Keys)
+                {
+                    if (!DataIncludeRegex.IsMatch(k)) continue;
+                    CustomData[k] = exception.Data[k] != null ? exception.Data[k].ToString() : "";
+                }
             }
         }
 

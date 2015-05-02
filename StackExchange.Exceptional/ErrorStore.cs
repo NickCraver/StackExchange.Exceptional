@@ -2,17 +2,14 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Transactions;
 using System.Web;
-using System.Web.UI;
 using StackExchange.Exceptional.Email;
 using StackExchange.Exceptional.Stores;
 using StackExchange.Exceptional.Extensions;
@@ -27,7 +24,7 @@ namespace StackExchange.Exceptional
         private static ErrorStore _defaultStore;
         
         [ThreadStatic]
-        private static List<Regex> _ignoreRegex;
+        private static List<Regex> _ignoreRegexes;
         [ThreadStatic]
         private static List<string> _ignoreExceptions;
 
@@ -50,11 +47,11 @@ namespace StackExchange.Exceptional
         /// The default number of seconds to roll up errors for.  Identical stack trace errors within 10 minutes get a DuplicateCount++ instead of a separate exception logged.
         /// </summary>
         public const int DefaultRollupSeconds = 600;
-        
+
         /// <summary>
         /// Base constructor of the error store to set common properties
         /// </summary>
-        protected ErrorStore(ErrorStoreSettings settings) : this(settings.RollupSeconds, settings.BackupQueueSize) { }
+        protected ErrorStore(ErrorStoreSettings settings) : this(settings.RollupSeconds, settings.BackupQueueSize) {}
 
         /// <summary>
         /// Creates an error store with the specified rollup
@@ -181,12 +178,11 @@ namespace StackExchange.Exceptional
         /// </summary>
         public static List<Regex> IgnoreRegexes
         {
-            get { return _ignoreRegex ?? (_ignoreRegex = Settings.Current.Ignore.Regexes.All.Select(r => r.PatternRegex).ToList()); }
+            get { return _ignoreRegexes ?? (_ignoreRegexes = Settings.Current.Ignore.Regexes.All.Select(r => r.PatternRegex).ToList()); }
         }
 
         /// <summary>
         /// Gets the list of exceptions to ignore specified in the configuration file
-        /// 
         /// </summary>
         public static List<string> IgnoreExceptions
         {
@@ -648,7 +644,7 @@ namespace StackExchange.Exceptional
                 var exCursor = ex;
                 while (exCursor != null)
                 {
-                    AddErrorData(error, exCursor);
+                    error.AddFromData(exCursor);
                     exCursor = exCursor.InnerException;
                 }
 
@@ -694,27 +690,6 @@ namespace StackExchange.Exceptional
             {
                 Trace.WriteLine(e);
                 return null;
-            }
-        }
-
-        private static void AddErrorData(Error error, Exception exception)
-        {
-            if (exception.Data.Contains("SQL"))
-                error.SQL = exception.Data["SQL"] as string;
-
-            var se = exception as SqlException;
-            if (se != null)
-            {
-                if (error.CustomData == null) 
-                    error.CustomData = new Dictionary<string, string>();
-
-                error.CustomData["SQL-Server"] = se.Server;
-                error.CustomData["SQL-ErrorNumber"] = se.Number.ToString();
-                error.CustomData["SQL-LineNumber"] = se.LineNumber.ToString();
-                if (se.Procedure.HasValue())
-                {
-                    error.CustomData["SQL-Procedure"] = se.Procedure;
-                }
             }
         }
 
