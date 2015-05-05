@@ -36,6 +36,14 @@ namespace StackExchange.Exceptional
             {
                 get { return this["Types"] as SettingsCollection<IgnoreType>; }
             }
+            /// <summary>
+            /// Hosts collection for errors to ignore.  Any Machine Name matching any name here will not be logged
+            /// </summary>
+            [ConfigurationProperty("Hosts")]
+            public SettingsCollection<IgnoreHost> Hosts
+            {
+                get { return this["Hosts"] as SettingsCollection<IgnoreHost>; }
+            }
         }
     }
 
@@ -83,4 +91,17 @@ namespace StackExchange.Exceptional
         [ConfigurationProperty("type", IsRequired = true)]
         public string Type { get { return this["type"] as string; } }
     }
+
+    /// <summary>
+    /// A host entry, to match against hosts to see if we should ignore them
+    /// </summary>
+    public class IgnoreHost : Settings.SettingsCollectionElement
+    {
+        /// <summary>
+        /// The name that describes this ignored type
+        /// </summary>
+        [ConfigurationProperty("name", IsRequired = true)]
+        public override string Name { get { return this["name"] as string; } }
+    }
+
 }

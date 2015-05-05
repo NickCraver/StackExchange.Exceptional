@@ -27,6 +27,8 @@ namespace StackExchange.Exceptional
         private static List<Regex> _ignoreRegexes;
         [ThreadStatic]
         private static List<string> _ignoreExceptions;
+        [ThreadStatic]
+        private static List<string> _ignoreHosts;
 
         private static ConcurrentQueue<Error> _writeQueue;
 
@@ -188,6 +190,16 @@ namespace StackExchange.Exceptional
         {
             get { return _ignoreExceptions ?? (_ignoreExceptions = Settings.Current.Ignore.Types.All.Select(r => r.Type).ToList()); }
         }
+
+        /// <summary>
+        /// Gets the list of exceptions to ignore specified in the configuration file
+        /// 
+        /// </summary>
+        public static List<string> IgnoreHosts
+        {
+            get { return _ignoreHosts ?? (_ignoreHosts = Settings.Current.Ignore.Hosts.All.Select(r => r.Name).ToList()); }
+        }
+
 
         /// <summary>
         /// Gets the default error store specified in the configuration, 
@@ -627,6 +639,10 @@ namespace StackExchange.Exceptional
                                     RollupPerServer = rollupPerServer,
                                     CustomData = customData
                                 };
+
+                if (IgnoreHosts.Any(host => error.Host.Contains(host)))
+                    return null;
+
 
                 if (GetIPAddress != null)
                 {
