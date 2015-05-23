@@ -240,6 +240,26 @@ namespace StackExchange.Exceptional.Stores
             return files.Length;
         }
 
+        protected override int GetAllErrors(List<Error> list, int page, int pageSize, string applicationName = null)
+        {
+            string[] files = Directory.GetFiles(_path, "*.json");
+
+            if (files.Length < 1) return 0;
+
+            Array.Sort(files);
+            Array.Reverse(files);
+
+            var result = files.Select(Get).Where(e => e != null);
+            if (applicationName.HasValue())
+            {
+                result = result.Where(e => e.ApplicationName == applicationName).Skip(page * pageSize).Take(pageSize);
+            }
+
+            list.AddRange(result);
+
+            return files.Length;
+        }
+
         /// <summary>
         /// Retrieves a count of application errors since the specified date, or all time if null
         /// </summary>

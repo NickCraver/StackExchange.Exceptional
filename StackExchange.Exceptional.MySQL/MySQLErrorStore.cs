@@ -83,7 +83,7 @@ namespace StackExchange.Exceptional.MySQL
                 return c.Execute(@"
 Update Exceptions 
    Set IsProtected = 1, DeletionDate = Null
- Where GUID = @guid", new {guid}) > 0;
+ Where GUID = @guid", new { guid }) > 0;
             }
         }
 
@@ -99,7 +99,7 @@ Update Exceptions
                 return c.Execute(@"
 Update Exceptions 
    Set IsProtected = 1, DeletionDate = Null
- Where GUID In @guids", new {guids}) > 0;
+ Where GUID In @guids", new { guids }) > 0;
             }
         }
 
@@ -116,7 +116,7 @@ Update Exceptions
 Update Exceptions 
    Set DeletionDate = UTC_DATE() 
  Where GUID = @guid 
-   And DeletionDate Is Null", new {guid, ApplicationName}) > 0;
+   And DeletionDate Is Null", new { guid, ApplicationName }) > 0;
             }
         }
 
@@ -133,7 +133,7 @@ Update Exceptions
 Update Exceptions 
    Set DeletionDate = UTC_DATE() 
  Where GUID In @guids
-   And DeletionDate Is Null", new {guids}) > 0;
+   And DeletionDate Is Null", new { guids }) > 0;
             }
         }
 
@@ -151,7 +151,7 @@ Update Exceptions
                 return c.Execute(@"
 Delete From Exceptions 
  Where GUID = @guid
-   And ApplicationName = @ApplicationName", new {guid, ApplicationName}) > 0;
+   And ApplicationName = @ApplicationName", new { guid, ApplicationName }) > 0;
             }
         }
 
@@ -168,7 +168,7 @@ Update Exceptions
    Set DeletionDate = UTC_DATE() 
  Where DeletionDate Is Null 
    And IsProtected = 0 
-   And ApplicationName = @ApplicationName", new {ApplicationName = applicationName.IsNullOrEmptyReturn(ApplicationName)}) > 0;
+   And ApplicationName = @ApplicationName", new { ApplicationName = applicationName.IsNullOrEmptyReturn(ApplicationName) }) > 0;
             }
         }
 
@@ -201,7 +201,7 @@ Update Exceptions
                     {
                         // Update the count and move on
                         error.GUID = existingException.First().GUID;
-                        c.Execute("Update Exceptions set DuplicateCount = DuplicateCount + @DuplicateCount where ID = @id", new {error.DuplicateCount, id = existingException.First().Id});
+                        c.Execute("Update Exceptions set DuplicateCount = DuplicateCount + @DuplicateCount where ID = @id", new { error.DuplicateCount, id = existingException.First().Id });
                     }
                     else
                     {
@@ -251,7 +251,7 @@ Values (@GUID, @ApplicationName, @MachineName, @CreationDate, @Type, @IsProtecte
                 sqlError = c.Query<Error>(@"
 Select * 
   From Exceptions 
- Where GUID = @guid", new {guid}).FirstOrDefault(); // a guid won't collide, but the AppName is for security
+ Where GUID = @guid", new { guid }).FirstOrDefault(); // a guid won't collide, but the AppName is for security
             }
             if (sqlError == null) return null;
 
@@ -275,10 +275,28 @@ Select *
   From Exceptions 
  Where DeletionDate Is Null
    And ApplicationName = @ApplicationName
-Order By CreationDate Desc limit @max", new {max = _displayCount, ApplicationName = applicationName.IsNullOrEmptyReturn(ApplicationName)}));
+Order By CreationDate Desc limit @max", new { max = _displayCount, ApplicationName = applicationName.IsNullOrEmptyReturn(ApplicationName) }));
             }
 
             return errors.Count;
+        }
+
+        /// <summary>
+        ///     Retrieves a page of non-deleted application errors in the database
+        /// </summary>
+        protected override int GetAllErrors(List<Error> list, int page, int pageSize, string applicationName = null)
+        {
+            using (MySqlConnection c = GetConnection())
+            {
+                list.AddRange(c.Query<Error>(@"
+Select * 
+  From Exceptions 
+ Where DeletionDate Is Null
+   And ApplicationName = @ApplicationName
+Order By CreationDate Desc limit @Page,@PageSize", new { Page = (page * pageSize), PageSize = pageSize, ApplicationName = applicationName.IsNullOrEmptyReturn(ApplicationName) }));
+            }
+
+            return list.Count;
         }
 
         /// <summary>
@@ -293,7 +311,7 @@ Select Count(*)
   From Exceptions 
  Where DeletionDate Is Null
    And ApplicationName = @ApplicationName" + (since.HasValue ? " And CreationDate > @since" : ""),
-                    new {since, ApplicationName = applicationName.IsNullOrEmptyReturn(ApplicationName)}).FirstOrDefault();
+                    new { since, ApplicationName = applicationName.IsNullOrEmptyReturn(ApplicationName) }).FirstOrDefault();
             }
         }
 
