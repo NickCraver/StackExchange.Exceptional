@@ -33,7 +33,7 @@ namespace StackExchange.Exceptional.Stores
         {
             _displayCount = Math.Min(settings.Size, MaximumDisplayCount);
 
-            _connectionString = settings.ConnectionString.IsNullOrEmpty() 
+            _connectionString = settings.ConnectionString.IsNullOrEmpty()
                 ? GetConnectionStringByName(settings.ConnectionStringName)
                 : settings.ConnectionString;
 
@@ -172,12 +172,12 @@ Update Exceptions
                 if (RollupThreshold.HasValue && error.ErrorHash.HasValue)
                 {
                     var queryParams = new DynamicParameters(new
-                        {
-                            error.DuplicateCount,
-                            error.ErrorHash,
-                            ApplicationName = error.ApplicationName.Truncate(50),
-                            minDate = DateTime.UtcNow.Add(RollupThreshold.Value.Negate())
-                        });
+                    {
+                        error.DuplicateCount,
+                        error.ErrorHash,
+                        ApplicationName = error.ApplicationName.Truncate(50),
+                        minDate = DateTime.UtcNow.Add(RollupThreshold.Value.Negate())
+                    });
                     queryParams.Add("@newGUID", dbType: DbType.Guid, direction: ParameterDirection.Output);
                     var count = c.Execute(@"
 Update Exceptions 
@@ -202,26 +202,27 @@ Update Exceptions
                 c.Execute(@"
 Insert Into Exceptions (GUID, ApplicationName, MachineName, CreationDate, Type, IsProtected, Host, Url, HTTPMethod, IPAddress, Source, Message, Detail, StatusCode, SQL, FullJson, ErrorHash, DuplicateCount)
 Values (@GUID, @ApplicationName, @MachineName, @CreationDate, @Type, @IsProtected, @Host, @Url, @HTTPMethod, @IPAddress, @Source, @Message, @Detail, @StatusCode, @SQL, @FullJson, @ErrorHash, @DuplicateCount)",
-                    new {
-                            error.GUID,
-                            ApplicationName = error.ApplicationName.Truncate(50),
-                            MachineName = error.MachineName.Truncate(50),
-                            error.CreationDate,
-                            Type = error.Type.Truncate(100),
-                            error.IsProtected,
-                            Host = error.Host.Truncate(100),
-                            Url = error.Url.Truncate(500),
-                            HTTPMethod = error.HTTPMethod.Truncate(10), // this feels silly, but you never know when someone will up and go crazy with HTTP 1.2!
-                            error.IPAddress,
-                            Source = error.Source.Truncate(100),
-                            Message = error.Message.Truncate(1000),
-                            error.Detail,
-                            error.StatusCode,
-                            error.SQL,
-                            error.FullJson,
-                            error.ErrorHash,
-                            error.DuplicateCount
-                        });
+                    new
+                    {
+                        error.GUID,
+                        ApplicationName = error.ApplicationName.Truncate(50),
+                        MachineName = error.MachineName.Truncate(50),
+                        error.CreationDate,
+                        Type = error.Type.Truncate(100),
+                        error.IsProtected,
+                        Host = error.Host.Truncate(100),
+                        Url = error.Url.Truncate(500),
+                        HTTPMethod = error.HTTPMethod.Truncate(10), // this feels silly, but you never know when someone will up and go crazy with HTTP 1.2!
+                        error.IPAddress,
+                        Source = error.Source.Truncate(100),
+                        Message = error.Message.Truncate(1000),
+                        error.Detail,
+                        error.StatusCode,
+                        error.SQL,
+                        error.FullJson,
+                        error.ErrorHash,
+                        error.DuplicateCount
+                    });
             }
         }
 
@@ -267,6 +268,28 @@ Order By CreationDate Desc", new { max = _displayCount, ApplicationName = applic
             }
 
             return errors.Count;
+        }
+
+        /// <summary>
+        /// Retrieves a page of non-deleted application errors in the database
+        /// </summary>
+        protected override int GetAllErrors(List<Error> list, int page, int pageSize, string applicationName = null)
+        {
+            using (var c = GetConnection())
+            {
+                list.AddRange(c.Query<string>(@"
+SELECT FullJson
+FROM
+(
+    SELECT FullJson, ROW_NUMBER() OVER(ORDER BY CreationDate DESC) AS ROWNUMBER
+    FROM Exceptions
+    WHERE DeletionDate IS NULL
+        AND ApplicationName = @ApplicationName
+) AS NumberedExceptions
+WHERE ROWNUMBER BETWEEN ((@Page * @PageSize) + 1) AND ((@Page + 1) * @PageSize)", new { Page = page, PageSize = pageSize, ApplicationName = applicationName.IsNullOrEmptyReturn(ApplicationName) }).Select(a => Error.FromJson(a)));
+            }
+
+            return list.Count;
         }
 
         /// <summary>

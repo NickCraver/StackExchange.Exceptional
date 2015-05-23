@@ -79,12 +79,12 @@ namespace StackExchange.Exceptional.Stores
         /// <returns>True if the error was found and deleted, false otherwise</returns>
         protected override bool DeleteError(Guid guid)
         {
-            lock(_lock)
+            lock (_lock)
             {
                 return _errors.RemoveAll(e => e.GUID == guid) > 0;
             }
         }
-        
+
         /// <summary>
         /// Deleted all errors in the log, by clearing the in-memory log
         /// </summary>
@@ -108,7 +108,7 @@ namespace StackExchange.Exceptional.Stores
         /// <param name="error">The error to log</param>
         protected override void LogError(Error error)
         {
-            lock(_lock)
+            lock (_lock)
             {
                 if (_errors == null)
                     _errors = new List<Error>(_size);
@@ -163,6 +163,26 @@ namespace StackExchange.Exceptional.Stores
                 }
 
                 errors.AddRange(result.Select(e => e.Clone()));
+                return _errors.Count;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves a page of the errors in the log
+        /// </summary>
+        protected override int GetAllErrors(List<Error> list, int page, int pageSize, string applicationName = null)
+        {
+            lock (_lock)
+            {
+                if (_errors == null) return 0;
+
+                IEnumerable<Error> result = _errors;
+                if (applicationName.HasValue())
+                {
+                    result = result.Where(e => e.ApplicationName == applicationName).Skip(page * pageSize).Take(pageSize);
+                }
+
+                list.AddRange(result.Select(e => e.Clone()));
                 return _errors.Count;
             }
         }

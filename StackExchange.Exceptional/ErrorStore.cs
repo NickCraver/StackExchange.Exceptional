@@ -22,7 +22,7 @@ namespace StackExchange.Exceptional
     public abstract partial class ErrorStore
     {
         private static ErrorStore _defaultStore;
-        
+
         [ThreadStatic]
         private static List<Regex> _ignoreRegexes;
         [ThreadStatic]
@@ -51,7 +51,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Base constructor of the error store to set common properties
         /// </summary>
-        protected ErrorStore(ErrorStoreSettings settings) : this(settings.RollupSeconds, settings.BackupQueueSize) {}
+        protected ErrorStore(ErrorStoreSettings settings) : this(settings.RollupSeconds, settings.BackupQueueSize) { }
 
         /// <summary>
         /// Creates an error store with the specified rollup
@@ -76,7 +76,7 @@ namespace StackExchange.Exceptional
         /// Gets if this error store is 
         /// </summary>
         public bool InFailureMode { get { return _isInRetry; } }
-        
+
         /// <summary>
         /// The Rollup threshold within which errors logged rapidly are rolled up
         /// </summary>
@@ -147,6 +147,11 @@ namespace StackExchange.Exceptional
         protected abstract int GetAllErrors(List<Error> list, string applicationName = null);
 
         /// <summary>
+        /// Retrieves a page of the errors in the log
+        /// </summary>
+        protected abstract int GetAllErrors(List<Error> list, int page, int pageSize, string applicationName = null);
+
+        /// <summary>
         /// Retrieves a count of application errors since the specified date, or all time if null
         /// </summary>
         protected abstract int GetErrorCount(DateTime? since = null, string applicationName = null);
@@ -155,7 +160,7 @@ namespace StackExchange.Exceptional
         /// Get the name of this error log store implementation.
         /// </summary>
         public virtual string Name { get { return GetType().Name; } }
-        
+
         private static string _applicationName { get; set; }
         /// <summary>
         /// Gets the name of the application to which the log is scoped.
@@ -197,7 +202,7 @@ namespace StackExchange.Exceptional
         {
             get { return _defaultStore ?? (_defaultStore = GetErrorStoreFromConfig()); }
         }
-        
+
         /// <summary>
         /// Sets the default error store to use for logging
         /// </summary>
@@ -261,7 +266,7 @@ namespace StackExchange.Exceptional
         public bool Protect(Guid guid)
         {
             if (_isInRetry) return false; // no protecting allowed when failing, since we don't respect it in the queue anyway
-            
+
             using (new TransactionScope(TransactionScopeOption.Suppress))
             {
                 return ProtectError(guid);
@@ -508,8 +513,8 @@ namespace StackExchange.Exceptional
             // a bit of validation
             if (settings.Type.IsNullOrEmpty())
                 throw new ArgumentOutOfRangeException("settings", "ErrorStore 'type' must be specified");
-            if (settings.Size < 1) 
-                throw new ArgumentOutOfRangeException("settings","ErrorStore 'size' must be positive");
+            if (settings.Size < 1)
+                throw new ArgumentOutOfRangeException("settings", "ErrorStore 'size' must be positive");
 
             var storeTypes = GetErrorStores();
             // Search by convention first
@@ -527,7 +532,7 @@ namespace StackExchange.Exceptional
 
             try
             {
-                return (ErrorStore) Activator.CreateInstance(match, settings);
+                return (ErrorStore)Activator.CreateInstance(match, settings);
             }
             catch (Exception ex)
             {
@@ -539,7 +544,7 @@ namespace StackExchange.Exceptional
         {
             var result = new List<Type>();
             // Get the current directory, based on Where StackExchange.Exceptional.dll is located
-            var path = typeof (ErrorStore).Assembly.Location;
+            var path = typeof(ErrorStore).Assembly.Location;
             var dir = Path.GetDirectoryName(path);
 
             if (dir == null)
@@ -556,7 +561,7 @@ namespace StackExchange.Exceptional
                     try
                     {
                         var assembly = Assembly.LoadFrom(filename);
-                        result.AddRange(assembly.GetTypes().Where(type => type.IsSubclassOf(typeof (ErrorStore))));
+                        result.AddRange(assembly.GetTypes().Where(type => type.IsSubclassOf(typeof(ErrorStore))));
                     }
                     catch (Exception e)
                     {
@@ -623,10 +628,10 @@ namespace StackExchange.Exceptional
                 }
 
                 var error = new Error(ex, context, applicationName)
-                                {
-                                    RollupPerServer = rollupPerServer,
-                                    CustomData = customData
-                                };
+                {
+                    RollupPerServer = rollupPerServer,
+                    CustomData = customData
+                };
 
                 if (GetIPAddress != null)
                 {
