@@ -34,7 +34,7 @@ namespace StackExchange.Exceptional.Dapper
         
         private static IDisposable EnsureOpen(this DbConnection connection)
         {
-            if (connection == null) throw new ArgumentNullException("connection");
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
             switch (connection.State)
             {
                 case ConnectionState.Open:

@@ -9,10 +9,7 @@ namespace StackExchange.Exceptional
         /// The Ignore section of the configuration, optional and no errors will be blocked from logging if not specified
         /// </summary>
         [ConfigurationProperty("IgnoreErrors")]
-        public IgnoreSettings Ignore
-        {
-            get { return this["IgnoreErrors"] as IgnoreSettings; }
-        }
+        public IgnoreSettings Ignore => this["IgnoreErrors"] as IgnoreSettings;
 
         /// <summary>
         /// Ignore element for deserilization from a configuration, e.g. web.config or app.config
@@ -23,19 +20,13 @@ namespace StackExchange.Exceptional
             /// Regular expressions collection for errors to ignore.  Any errors with a .ToString() matching any regex here will not be logged
             /// </summary>
             [ConfigurationProperty("Regexes")]
-            public SettingsCollection<IgnoreRegex> Regexes
-            {
-                get { return this["Regexes"] as SettingsCollection<IgnoreRegex>; }
-            }
+            public SettingsCollection<IgnoreRegex> Regexes => this["Regexes"] as SettingsCollection<IgnoreRegex>;
 
             /// <summary>
             /// Types collection for errors to ignore.  Any errors with a Type matching any name here will not be logged
             /// </summary>
             [ConfigurationProperty("Types")]
-            public SettingsCollection<IgnoreType> Types
-            {
-                get { return this["Types"] as SettingsCollection<IgnoreType>; }
-            }
+            public SettingsCollection<IgnoreType> Types => this["Types"] as SettingsCollection<IgnoreType>;
         }
     }
 
@@ -48,22 +39,19 @@ namespace StackExchange.Exceptional
         /// The name that describes this regex
         /// </summary>
         [ConfigurationProperty("name")]
-        public override string Name { get { return this["name"] as string; } }
+        public override string Name => this["name"] as string;
 
         /// <summary>
         /// The Pattern to match on the exception message
         /// </summary>
         [ConfigurationProperty("pattern", IsRequired = true)]
-        public string Pattern { get { return this["pattern"] as string; } }
+        public string Pattern => this["pattern"] as string;
 
         private Regex _patternRegEx;
         /// <summary>
         /// Regex object representing the pattern specified, compiled once for use against all future exceptions
         /// </summary>
-        public Regex PatternRegex
-        {
-            get { return _patternRegEx ?? (_patternRegEx = new Regex(Pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline)); }
-        }
+        public Regex PatternRegex => _patternRegEx ?? (_patternRegEx = new Regex(Pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline));
     }
 
     /// <summary>
@@ -75,12 +63,12 @@ namespace StackExchange.Exceptional
         /// The name that describes this ignored type
         /// </summary>
         [ConfigurationProperty("name")]
-        public override string Name { get { return this["name"] as string; } }
+        public override string Name => this["name"] as string;
 
         /// <summary>
         /// The fully qualified type of the exception to ignore
         /// </summary>
         [ConfigurationProperty("type", IsRequired = true)]
-        public string Type { get { return this["type"] as string; } }
+        public string Type => this["type"] as string;
     }
 }

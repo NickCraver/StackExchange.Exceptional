@@ -13,19 +13,19 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Current instance of the settings element
         /// </summary>
-        public static Settings Current { get { return _settings ?? new Settings(); } }
+        public static Settings Current => _settings ?? new Settings();
 
         /// <summary>
         /// Application name to log with
         /// </summary>
         [ConfigurationProperty("applicationName", IsRequired = true)]
-        public string ApplicationName { get { return this["applicationName"] as string; } }
+        public string ApplicationName => this["applicationName"] as string;
 
         /// <summary>
         /// The Regex pattern of data keys to include. For example, "Redis.*" would include all keys that start with Redis
         /// </summary>
         [ConfigurationProperty("dataIncludePattern")]
-        public string DataIncludePattern { get { return this["dataIncludePattern"] as string; } }
+        public string DataIncludePattern => this["dataIncludePattern"] as string;
 
         /// <summary>
         /// A collection of list types all with a Name attribute
@@ -36,17 +36,13 @@ namespace StackExchange.Exceptional
             /// <summary>
             /// Accessor by key
             /// </summary>
-            public new T this[string key]
-            {
-                get { return BaseGet(key) as T; }
-            }
+            public new T this[string key] => BaseGet(key) as T;
+
             /// <summary>
             /// Accessor by index
             /// </summary>
-            public T this[int index]
-            {
-                get { return BaseGet(index) as T; }
-            }
+            public T this[int index] => BaseGet(index) as T;
+
             /// <summary>
             /// Default constructor for this element
             /// </summary>
@@ -64,10 +60,7 @@ namespace StackExchange.Exceptional
             /// <summary>
             /// Returns all the elements in this collection, type-cased out
             /// </summary>
-            public List<T> All
-            {
-                get { return this.Cast<T>().ToList(); }
-            }
+            public List<T> All => this.Cast<T>().ToList();
         }
 
         /// <summary>

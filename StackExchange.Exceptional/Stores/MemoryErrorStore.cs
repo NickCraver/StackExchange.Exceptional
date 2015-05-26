@@ -51,7 +51,7 @@ namespace StackExchange.Exceptional.Stores
         /// <summary>
         /// Name for this error store
         /// </summary>
-        public override string Name { get { return "Memory Error Store"; } }
+        public override string Name => "Memory Error Store";
 
         /// <summary>
         /// Protects an error from deletion, by setting IsProtected = true

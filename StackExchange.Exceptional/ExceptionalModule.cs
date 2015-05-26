@@ -13,7 +13,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         public virtual void Init(HttpApplication app)
         {
-            if (app == null) throw new ArgumentNullException("app", "Could not find HttpApplication");
+            if (app == null) throw new ArgumentNullException(nameof(app), "Could not find HttpApplication");
             app.Error += OnError;
         }
 
@@ -25,10 +25,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Gets the <see cref="ErrorStore"/> instance to which the module will log exceptions.
         /// </summary>        
-        public virtual ErrorStore ErrorStore
-        {
-            get { return ErrorStore.Default; }
-        }
+        public virtual ErrorStore ErrorStore => ErrorStore.Default;
 
         /// <summary>
         /// The handler called when an unhandled exception bubbles up to the module.

@@ -126,7 +126,7 @@ namespace StackExchange.Exceptional
         {
             if (context.Request.QueryString["jsonp"].HasValue())
             {
-                var response = string.Format("{0}({1});", context.Request.QueryString["jsonp"], result.ToString().ToLower());
+                var response = $"{context.Request.QueryString["jsonp"]}({result.ToString().ToLower()});";
                 return new ContentHandler(response, "text/javascript");
             }
             return null;

@@ -19,9 +19,6 @@ namespace StackExchange.Exceptional.Handlers
             context.Response.Write(_content);
         }
 
-        public bool IsReusable
-        {
-            get { return false; }
-        }
+        public bool IsReusable => false;
     }
 }

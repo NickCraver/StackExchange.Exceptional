@@ -8,10 +8,7 @@ namespace StackExchange.Exceptional
         /// The Ignore section of the configuration, optional and no errors will be blocked from logging if not specified
         /// </summary>
         [ConfigurationProperty("LogFilters")]
-        public LogFilterSettings LogFilters
-        {
-            get { return this["LogFilters"] as LogFilterSettings; }
-        }
+        public LogFilterSettings LogFilters => this["LogFilters"] as LogFilterSettings;
 
         /// <summary>
         /// Ignore element for deserilization from a configuration, e.g. web.config or app.config
@@ -22,19 +19,13 @@ namespace StackExchange.Exceptional
             /// Form submitted values to replace on save - this prevents logging passwords, etc.
             /// </summary>
             [ConfigurationProperty("Form")]
-            public SettingsCollection<LogFilter> FormFilters
-            {
-                get { return this["Form"] as SettingsCollection<LogFilter>; }
-            }
+            public SettingsCollection<LogFilter> FormFilters => this["Form"] as SettingsCollection<LogFilter>;
 
             /// <summary>
             /// Cookie values to replace on save - this prevents logging auth tokens, etc.
             /// </summary>
             [ConfigurationProperty("Cookies")]
-            public SettingsCollection<LogFilter> CookieFilters
-            {
-                get { return this["Cookies"] as SettingsCollection<LogFilter>; }
-            }
+            public SettingsCollection<LogFilter> CookieFilters => this["Cookies"] as SettingsCollection<LogFilter>;
         }
     }
 
@@ -47,12 +38,12 @@ namespace StackExchange.Exceptional
         /// The form parameter name to ignore
         /// </summary>
         [ConfigurationProperty("name", IsRequired = true)]
-        public override string Name { get { return this["name"] as string; } }
+        public override string Name => this["name"] as string;
 
         /// <summary>
         /// The value to log instead of the real value
         /// </summary>
         [ConfigurationProperty("replaceWith")]
-        public string ReplaceWith { get { return this["replaceWith"] as string; } }
+        public string ReplaceWith => this["replaceWith"] as string;
     }
 }

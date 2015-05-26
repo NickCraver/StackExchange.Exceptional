@@ -38,7 +38,7 @@ namespace StackExchange.Exceptional.Stores
                 : settings.ConnectionString;
 
             if (_connectionString.IsNullOrEmpty())
-                throw new ArgumentOutOfRangeException("settings", "A connection string or connection string name must be specified when using a SQL error store");
+                throw new ArgumentOutOfRangeException(nameof(settings), "A connection string or connection string name must be specified when using a SQL error store");
         }
 
         /// <summary>
@@ -51,14 +51,14 @@ namespace StackExchange.Exceptional.Stores
         {
             _displayCount = Math.Min(displayCount, MaximumDisplayCount);
 
-            if (connectionString.IsNullOrEmpty()) throw new ArgumentOutOfRangeException("connectionString", "Connection string must be specified when using a SQL error store");
+            if (connectionString.IsNullOrEmpty()) throw new ArgumentOutOfRangeException(nameof(connectionString), "Connection string must be specified when using a SQL error store");
             _connectionString = connectionString;
         }
 
         /// <summary>
         /// Name for this error store
         /// </summary>
-        public override string Name { get { return "SQL Error Store"; } }
+        public override string Name => "SQL Error Store";
 
         /// <summary>
         /// Protects an error from deletion, by making IsProtected = 1 in the database

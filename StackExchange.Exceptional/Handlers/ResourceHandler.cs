@@ -33,9 +33,6 @@ namespace StackExchange.Exceptional.Handlers
             }
         }
 
-        public bool IsReusable
-        {
-            get { return false; }
-        }
+        public bool IsReusable => false;
     }
 }

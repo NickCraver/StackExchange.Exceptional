@@ -13,6 +13,9 @@
         <language>en-US</language>
         <description>.Net Error handler for logging to SQL, JSON or Memory.</description>
         <summary>.Net Error handler used internally at Stack Exchange/Stack Overflow.  Primarily for logging all unhandled exceptions to SQL, but also supporting JSON and Memory based logging.</summary>
+        <dependencies>
+            <dependency id="Dapper" version="1.42.0" />
+        </dependencies>
     </metadata>
     <files>
         <file src="bin\Release\StackExchange.Exceptional.*" target="lib" />

@@ -22,17 +22,17 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Filters on form values *not * to log, because they contain sensitive data
         /// </summary>
-        public static ConcurrentDictionary<string, string> FormLogFilters { get; private set; }
+        public static ConcurrentDictionary<string, string> FormLogFilters { get; }
 
         /// <summary>
         /// Filters on form values *not * to log, because they contain sensitive data
         /// </summary>
-        public static ConcurrentDictionary<string, string> CookieLogFilters { get; private set; }
+        public static ConcurrentDictionary<string, string> CookieLogFilters { get; }
         
         /// <summary>
         /// Gets the data include pattern, like "SQL.*|Redis-*" to match against .Data keys to include when logging
         /// </summary>
-        public static Regex DataIncludeRegex { get; private set; }
+        public static Regex DataIncludeRegex { get; }
 
         static Error()
         {
@@ -77,7 +77,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         public Error(Exception e, HttpContext context, string applicationName = null)
         {
-            if (e == null) throw new ArgumentNullException("e");
+            if (e == null) throw new ArgumentNullException(nameof(e));
 
             Exception = e;
             var baseException = e;
@@ -176,8 +176,10 @@ namespace StackExchange.Exceptional
         
         internal void AddFromData(Exception exception)
         {
+            if (exception.Data == null) return;
+
             // Historical special case
-            if (exception.Data.Contains("SQL"))
+                if (exception.Data.Contains("SQL"))
                 SQL = exception.Data["SQL"] as string;
 
             var se = exception as SqlException;
@@ -195,7 +197,7 @@ namespace StackExchange.Exceptional
                 }
             }
             // Regardless of what Resharper may be telling you, .Data can be null on things like a null ref exception.
-            if (exception.Data != null && DataIncludeRegex != null)
+            if (DataIncludeRegex != null)
             {
                 if (CustomData == null)
                     CustomData = new Dictionary<string, string>();
@@ -379,10 +381,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Returns the value of the <see cref="Message"/> property.
         /// </summary>
-        public override string ToString()
-        {
-            return Message;
-        }
+        public override string ToString() => Message;
         
         /// <summary>
         /// Create a copy of the error and collections so if it's modified in memory logging is not affected

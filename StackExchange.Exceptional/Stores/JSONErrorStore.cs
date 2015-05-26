@@ -50,7 +50,7 @@ namespace StackExchange.Exceptional.Stores
         /// <summary>
         /// Name for this error store
         /// </summary>
-        public override string Name { get { return "JSON File Error Store"; } }
+        public override string Name => "JSON File Error Store";
 
         /// <summary>
         /// Protects an error from deletion, by making it ReadOnly
@@ -133,7 +133,7 @@ namespace StackExchange.Exceptional.Stores
         protected override void LogError(Error error)
         {
             // will allow fast comparisons of messages to see if we can ignore an incoming exception
-            var detailHash = error.ErrorHash.HasValue ? error.ErrorHash.ToString() : "no-stack-trace";
+            var detailHash = error.ErrorHash?.ToString() ?? "no-stack-trace";
             Error original;
 
             // before we persist 'error', see if there are any existing errors that it could be a duplicate of
@@ -156,7 +156,7 @@ namespace StackExchange.Exceptional.Stores
             else
             {
                 string timeStamp = DateTime.UtcNow.ToString("u").Replace(":", "").Replace(" ", "");
-                string fileName = string.Format(@"{0}\error-{1}-{2}-{3}.json", _path, timeStamp, detailHash, error.GUID.ToFileName());
+                string fileName = $@"{_path}\error-{timeStamp}-{detailHash}-{error.GUID.ToFileName()}.json";
 
                 var file = new FileInfo(fileName);
                 using (var outstream = file.CreateText())
@@ -169,7 +169,7 @@ namespace StackExchange.Exceptional.Stores
             }
         }
 
-        private void LogError(Error error, StreamWriter outstream)
+        private static void LogError(Error error, StreamWriter outstream)
         {
             var json = error.ToJson();
             outstream.Write(json); //TODO: consider making this async
@@ -183,7 +183,7 @@ namespace StackExchange.Exceptional.Stores
         /// <returns>The error object if found, null otherwise</returns>
         protected override Error GetError(Guid guid)
         {
-            string[] fileList = Directory.GetFiles(_path, string.Format("*{0}.json", guid.ToFileName()));
+            string[] fileList = Directory.GetFiles(_path, $"*{guid.ToFileName()}.json");
             
             if (fileList.Length < 1)
                 return null;
@@ -269,7 +269,7 @@ namespace StackExchange.Exceptional.Stores
         
         private bool TryGetErrorFile(Guid guid, out FileInfo file)
         {
-            string[] fileList = Directory.GetFiles(_path, string.Format("*{0}.json", guid.ToFileName()));
+            string[] fileList = Directory.GetFiles(_path, $"*{guid.ToFileName()}.json");
 
             if (fileList.Length != 1)
             {

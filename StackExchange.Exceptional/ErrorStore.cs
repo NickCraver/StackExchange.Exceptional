@@ -75,8 +75,8 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Gets if this error store is 
         /// </summary>
-        public bool InFailureMode { get { return _isInRetry; } }
-        
+        public bool InFailureMode => _isInRetry;
+
         /// <summary>
         /// The Rollup threshold within which errors logged rapidly are rolled up
         /// </summary>
@@ -154,24 +154,18 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Get the name of this error log store implementation.
         /// </summary>
-        public virtual string Name { get { return GetType().Name; } }
-        
+        public virtual string Name => GetType().Name;
+
         private static string _applicationName { get; set; }
         /// <summary>
         /// Gets the name of the application to which the log is scoped.
         /// </summary>
-        public static string ApplicationName
-        {
-            get { return _applicationName ?? (_applicationName = Settings.Current.ApplicationName); }
-        }
+        public static string ApplicationName => _applicationName ?? (_applicationName = Settings.Current.ApplicationName);
 
         /// <summary>
         /// Gets the name of the machine logging these errors.
         /// </summary>
-        public virtual string MachineName
-        {
-            get { return Environment.MachineName; }
-        }
+        public virtual string MachineName => Environment.MachineName;
 
         /// <summary>
         /// Gets the list of exceptions to ignore specified in the configuration file
@@ -193,11 +187,8 @@ namespace StackExchange.Exceptional
         /// Gets the default error store specified in the configuration, 
         /// or the in-memory store if none is configured.
         /// </summary>
-        public static ErrorStore Default
-        {
-            get { return _defaultStore ?? (_defaultStore = GetErrorStoreFromConfig()); }
-        }
-        
+        public static ErrorStore Default => _defaultStore ?? (_defaultStore = GetErrorStoreFromConfig());
+
         /// <summary>
         /// Sets the default error store to use for logging
         /// </summary>
@@ -212,25 +203,19 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Gets the write queue for errors, which is populated in the case of a write failure
         /// </summary>
-        public static ConcurrentQueue<Error> WriteQueue
-        {
-            get { return _writeQueue ?? (_writeQueue = new ConcurrentQueue<Error>()); }
-        }
+        public static ConcurrentQueue<Error> WriteQueue => _writeQueue ?? (_writeQueue = new ConcurrentQueue<Error>());
 
         /// <summary>
         /// Gets the last exception that happened when trying to log exceptions
         /// </summary>
-        public static Exception LastRetryException
-        {
-            get { return _retryException; }
-        }
+        public static Exception LastRetryException => _retryException;
 
         /// <summary>
         /// Logs an error in log for the application
         /// </summary>
         public void Log(Error error)
         {
-            if (error == null) throw new ArgumentNullException("error");
+            if (error == null) throw new ArgumentNullException(nameof(error));
 
             // if we're in a retry state, log directly to the queue
             if (_isInRetry)
@@ -507,9 +492,9 @@ namespace StackExchange.Exceptional
 
             // a bit of validation
             if (settings.Type.IsNullOrEmpty())
-                throw new ArgumentOutOfRangeException("settings", "ErrorStore 'type' must be specified");
+                throw new ArgumentOutOfRangeException(nameof(settings), "ErrorStore 'type' must be specified");
             if (settings.Size < 1) 
-                throw new ArgumentOutOfRangeException("settings","ErrorStore 'size' must be positive");
+                throw new ArgumentOutOfRangeException(nameof(settings),"ErrorStore 'size' must be positive");
 
             var storeTypes = GetErrorStores();
             // Search by convention first
@@ -560,7 +545,7 @@ namespace StackExchange.Exceptional
                     }
                     catch (Exception e)
                     {
-                        Trace.WriteLine(string.Format("Error loading ErrorStore types from {0}: {1}", filename, e.Message));
+                        Trace.WriteLine($"Error loading ErrorStore types from {filename}: {e.Message}");
                     }
                 }
             }

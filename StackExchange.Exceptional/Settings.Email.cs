@@ -9,10 +9,7 @@ namespace StackExchange.Exceptional
         /// The ErrorStore section of the configuration, optional and will default to a MemoryErrorStore if not specified
         /// </summary>
         [ConfigurationProperty("Email")]
-        public EmailSettingsConfig Email
-        {
-            get { return this["Email"] as EmailSettingsConfig; }
-        }
+        public EmailSettingsConfig Email => this["Email"] as EmailSettingsConfig;
     }
 
 
@@ -85,54 +82,34 @@ namespace StackExchange.Exceptional
     {
         /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="ToAddress"]/*' />
         [ConfigurationProperty("toAddress", IsRequired = true)]
-        public string ToAddress
-        {
-            get { return this["toAddress"] as string; }
-        }
+        public string ToAddress => this["toAddress"] as string;
 
         /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="FromAddress"]/*' />
         [ConfigurationProperty("fromAddress")]
-        public string FromAddress
-        {
-            get { return this["fromAddress"] as string; }
-        }
+        public string FromAddress => this["fromAddress"] as string;
 
         /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="FromDisplayName"]/*' />
         [ConfigurationProperty("fromDisplayName")]
-        public string FromDisplayName
-        {
-            get { return this["fromDisplayName"] as string; }
-        }
+        public string FromDisplayName => this["fromDisplayName"] as string;
 
         /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPHost"]/*' />
         [ConfigurationProperty("smtpHost")]
-        public string SMTPHost
-        {
-            get { return this["smtpHost"] as string; }
-        }
+        public string SMTPHost => this["smtpHost"] as string;
+
         /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPPort"]/*' />
         [ConfigurationProperty("smtpPort"), DefaultValue(typeof (int), "25")]
-        public int SMTPPort
-        {
-            get { return (int)this["smtpPort"]; }
-        }
+        public int SMTPPort => (int)this["smtpPort"];
+
         /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPUserName"]/*' />
         [ConfigurationProperty("smtpUserName")]
-        public string SMTPUserName
-        {
-            get { return this["smtpUserName"] as string; }
-        }
+        public string SMTPUserName => this["smtpUserName"] as string;
+
         /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPPassword"]/*' />
         [ConfigurationProperty("smtpPassword")]
-        public string SMTPPassword
-        {
-            get { return this["smtpPassword"] as string; }
-        }
+        public string SMTPPassword => this["smtpPassword"] as string;
+
         /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPEnableSSL"]/*' />
         [ConfigurationProperty("smtpEnableSsl"), DefaultValue(typeof(bool), "false")]
-        public bool SMTPEnableSSL
-        {
-            get { return (bool)this["smtpEnableSsl"]; }
-        }
+        public bool SMTPEnableSSL => (bool)this["smtpEnableSsl"];
     }
 }

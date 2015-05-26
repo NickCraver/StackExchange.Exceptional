@@ -39,7 +39,7 @@ namespace StackExchange.Exceptional.MySQL
                 : settings.ConnectionString;
 
             if (_connectionString.IsNullOrEmpty())
-                throw new ArgumentOutOfRangeException("settings", "A connection string or connection string name must be specified when using a SQL error store");
+                throw new ArgumentOutOfRangeException(nameof(settings), "A connection string or connection string name must be specified when using a SQL error store");
         }
 
         /// <summary>
@@ -59,17 +59,14 @@ namespace StackExchange.Exceptional.MySQL
         {
             _displayCount = Math.Min(displayCount, MaximumDisplayCount);
 
-            if (connectionString.IsNullOrEmpty()) throw new ArgumentOutOfRangeException("connectionString", "Connection string must be specified when using a SQL error store");
+            if (connectionString.IsNullOrEmpty()) throw new ArgumentOutOfRangeException(nameof(connectionString), "Connection string must be specified when using a SQL error store");
             _connectionString = connectionString;
         }
 
         /// <summary>
         ///     Name for this error store
         /// </summary>
-        public override string Name
-        {
-            get { return "SQL Error Store"; }
-        }
+        public override string Name => "MySQL Error Store";
 
         /// <summary>
         ///     Protects an error from deletion, by making IsProtected = 1 in the database
@@ -78,7 +75,7 @@ namespace StackExchange.Exceptional.MySQL
         /// <returns>True if the error was found and protected, false otherwise</returns>
         protected override bool ProtectError(Guid guid)
         {
-            using (MySqlConnection c = GetConnection())
+            using (var c = GetConnection())
             {
                 return c.Execute(@"
 Update Exceptions 
@@ -94,7 +91,7 @@ Update Exceptions
         /// <returns>True if the errors were found and protected, false otherwise</returns>
         protected override bool ProtectErrors(IEnumerable<Guid> guids)
         {
-            using (MySqlConnection c = GetConnection())
+            using (var c = GetConnection())
             {
                 return c.Execute(@"
 Update Exceptions 
@@ -110,7 +107,7 @@ Update Exceptions
         /// <returns>True if the error was found and deleted, false otherwise</returns>
         protected override bool DeleteError(Guid guid)
         {
-            using (MySqlConnection c = GetConnection())
+            using (var c = GetConnection())
             {
                 return c.Execute(@"
 Update Exceptions 
@@ -127,7 +124,7 @@ Update Exceptions
         /// <returns>True if the errors were found and deleted, false otherwise</returns>
         protected override bool DeleteErrors(IEnumerable<Guid> guids)
         {
-            using (MySqlConnection c = GetConnection())
+            using (var c = GetConnection())
             {
                 return c.Execute(@"
 Update Exceptions 
@@ -146,7 +143,7 @@ Update Exceptions
         /// <returns>True if the error was found and deleted, false otherwise</returns>
         protected override bool HardDeleteError(Guid guid)
         {
-            using (MySqlConnection c = GetConnection())
+            using (var c = GetConnection())
             {
                 return c.Execute(@"
 Delete From Exceptions 
@@ -161,7 +158,7 @@ Delete From Exceptions
         /// <returns>True if any errors were deleted, false otherwise</returns>
         protected override bool DeleteAllErrors(string applicationName = null)
         {
-            using (MySqlConnection c = GetConnection())
+            using (var c = GetConnection())
             {
                 return c.Execute(@"
 Update Exceptions 
@@ -242,11 +239,10 @@ Values (@GUID, @ApplicationName, @MachineName, @CreationDate, @Type, @IsProtecte
         /// </summary>
         /// <param name="guid">The guid of the error to retrieve</param>
         /// <returns>The error object if found, null otherwise</returns>
-        protected override
-            Error GetError(Guid guid)
+        protected override Error GetError(Guid guid)
         {
             Error sqlError;
-            using (MySqlConnection c = GetConnection())
+            using (var c = GetConnection())
             {
                 sqlError = c.Query<Error>(@"
 Select * 
@@ -268,7 +264,7 @@ Select *
         /// </summary>
         protected override int GetAllErrors(List<Error> errors, string applicationName = null)
         {
-            using (MySqlConnection c = GetConnection())
+            using (var c = GetConnection())
             {
                 errors.AddRange(c.Query<Error>(@"
 Select * 
@@ -286,7 +282,7 @@ Order By CreationDate Desc limit @max", new {max = _displayCount, ApplicationNam
         /// </summary>
         protected override int GetErrorCount(DateTime? since = null, string applicationName = null)
         {
-            using (MySqlConnection c = GetConnection())
+            using (var c = GetConnection())
             {
                 return c.Query<int>(@"
 Select Count(*) 
