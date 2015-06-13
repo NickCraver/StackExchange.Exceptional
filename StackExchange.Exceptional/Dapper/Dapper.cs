@@ -1945,7 +1945,7 @@ Type type, IDataReader reader, int startBound = 0, int length = -1, bool returnN
     /// <summary>
     /// A bag of parameters that can be passed to the Dapper Query and Execute methods
     /// </summary>
-    internal class DynamicParameters : SqlMapper.IDynamicParameters
+    public class DynamicParameters : SqlMapper.IDynamicParameters
     {
         static Dictionary<SqlMapper.Identity, Action<IDbCommand, object>> paramReaderCache = new Dictionary<SqlMapper.Identity, Action<IDbCommand, object>>();
 

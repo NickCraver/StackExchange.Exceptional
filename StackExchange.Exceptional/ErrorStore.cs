@@ -524,12 +524,13 @@ namespace StackExchange.Exceptional
         {
             var result = new List<Type>();
             // Get the current directory, based on Where StackExchange.Exceptional.dll is located
-            var path = typeof (ErrorStore).Assembly.Location;
-            var dir = Path.GetDirectoryName(path);
 
-            if (dir == null)
+            Uri assemblyUri = new Uri(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase));
+            var dir= assemblyUri.LocalPath;
+
+            if (String.IsNullOrEmpty(dir))
             {
-                Trace.WriteLine("Error loading Error stores, path: " + path);
+                Trace.WriteLine("Error loading Error stores, abs path: " + assemblyUri.AbsolutePath);
                 return result;
             }
 
