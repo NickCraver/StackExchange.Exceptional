@@ -50,6 +50,11 @@
     <DocumentationFile>bin\Release\StackExchange.Exceptional.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dapper, Version=1.40.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.42\lib\net40\Dapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -61,10 +66,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dapper\Dapper.cs" />
-    <Compile Include="Dapper\Dapper.Extensions.cs">
-      <DependentUpon>Dapper.cs</DependentUpon>
-    </Compile>
     <Compile Include="Email\ErrorEmailer.cs" />
     <Compile Include="Email\ErrorEmail.generated.cs">
       <DependentUpon>ErrorEmail.cshtml</DependentUpon>
@@ -122,6 +123,7 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>ErrorEmail.generated.cs</LastGenOutput>
     </None>
+    <None Include="packages.config" />
     <None Include="Pages\ErrorInfo.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>ErrorInfo.generated.cs</LastGenOutput>

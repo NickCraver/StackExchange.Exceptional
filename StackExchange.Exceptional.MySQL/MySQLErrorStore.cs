@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
+using Dapper;
 using MySql.Data.MySqlClient;
-using StackExchange.Exceptional.Dapper;
 using StackExchange.Exceptional.Extensions;
 using StackExchange.Exceptional.Stores;
 
