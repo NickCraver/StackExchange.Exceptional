@@ -204,6 +204,7 @@ Update Exceptions
                                 And ApplicationName = @ApplicationName
                                 And DeletionDate Is Null
                                 And CreationDate >= @minDate limit 1 ", queryParams).First();
+                        error.IsOriginalError = false;
                         return;
                     }
                 }
@@ -234,9 +235,7 @@ Values (@GUID, @ApplicationName, @MachineName, @CreationDate, @Type, @IsProtecte
                                 error.ErrorHash,
                                 error.DuplicateCount
                             });
-
-                
-                
+                error.IsOriginalError = true;
             }
         }
 

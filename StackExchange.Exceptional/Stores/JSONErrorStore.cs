@@ -142,6 +142,7 @@ namespace StackExchange.Exceptional.Stores
                 // just update the existing file after incrementing its "duplicate count"
                 original.DuplicateCount = original.DuplicateCount.GetValueOrDefault(0) + error.DuplicateCount;
                 error.GUID = original.GUID;
+                error.IsOriginalError = false;
 
                 FileInfo f;
                 if (!TryGetErrorFile(original.GUID, out f))
@@ -166,6 +167,7 @@ namespace StackExchange.Exceptional.Stores
 
                 // we added a new file, so clean up old smack over our max errors limit
                 RemoveOldErrors();
+                error.IsOriginalError = true;
             }
         }
 

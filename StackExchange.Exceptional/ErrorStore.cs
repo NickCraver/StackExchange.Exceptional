@@ -611,7 +611,7 @@ namespace StackExchange.Exceptional
                 var error = new Error(ex, context, applicationName)
                                 {
                                     RollupPerServer = rollupPerServer,
-                                    CustomData = customData
+                                    CustomData = customData ?? new Dictionary<string, string>()
                                 };
 
                 if (GetIPAddress != null)
@@ -637,7 +637,7 @@ namespace StackExchange.Exceptional
                 if (appendFullStackTrace)
                 {
                     var frames = new StackTrace(fNeedFileInfo: true).GetFrames();
-                    if (frames != null)
+                    if (frames != null && frames.Length > 2)
                         error.Detail += "\n\nFull Trace:\n\n" + string.Join("", frames.Skip(2));
                     error.ErrorHash = error.GetHash();
                 }

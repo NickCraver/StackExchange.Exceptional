@@ -193,6 +193,7 @@ Update Exceptions
                     if (count > 0)
                     {
                         error.GUID = queryParams.Get<Guid>("@newGUID");
+                        error.IsOriginalError = false;
                         return;
                     }
                 }
@@ -222,6 +223,7 @@ Values (@GUID, @ApplicationName, @MachineName, @CreationDate, @Type, @IsProtecte
                             error.ErrorHash,
                             error.DuplicateCount
                         });
+                error.IsOriginalError = true;
             }
         }
 

@@ -40,5 +40,10 @@
                 Whether to use SSL when sending via SMTP
             </summary>
         </Member>
+        <Member name="PreventDuplicates">
+            <summary>
+                Flags whether or not emails are sent for duplicate errors.
+            </summary>
+        </Member>
     </IEmailSettings>
 </SharedDocs>

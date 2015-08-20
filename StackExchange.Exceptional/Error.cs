@@ -97,6 +97,7 @@ namespace StackExchange.Exceptional
             Detail = e.ToString();
             CreationDate = DateTime.UtcNow;
             DuplicateCount = 1;
+            IsOriginalError = true; //Default to true, but it should always be set by the store.
             
             var httpException = e as HttpException;
             if (httpException != null)
@@ -221,7 +222,7 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Gets a unique-enough hash of this error.  Stored as a quick comparison mehanism to rollup duplicate errors.
+        /// Gets a unique-enough hash of this error.  Stored as a quick comparison mechanism to rollup duplicate errors.
         /// </summary>
         /// <returns>"Unique" hash for this error</returns>
         public int? GetHash()
@@ -331,6 +332,13 @@ namespace StackExchange.Exceptional
         /// "IgnoreSimilarExceptionsThreshold" TimeSpan value.
         /// </summary>
         public int? DuplicateCount { get; set; }
+
+        /// <summary>
+        /// This flag is to indicate that there were no matches of this error in the store nor in the queue. This is slightly different than checking for DuplicateCount > 1
+        /// because DuplicateCount can be incremented even before the error is committed to the store.
+        /// </summary>
+        [ScriptIgnore]
+        public bool IsOriginalError { get; set; }
 
         /// <summary>
         /// Gets the SQL command text assocaited with this error

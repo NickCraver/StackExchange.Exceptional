@@ -121,6 +121,7 @@ namespace StackExchange.Exceptional.Stores
                     {
                         dupe.DuplicateCount += error.DuplicateCount;
                         error.GUID = dupe.GUID;
+                        error.IsOriginalError = false;
                         return;
                     }
                 }
@@ -131,6 +132,7 @@ namespace StackExchange.Exceptional.Stores
                 }
 
                 _errors.Add(error);
+                error.IsOriginalError = true;
             }
         }
 
