@@ -221,7 +221,7 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Gets a unique-enough hash of this error.  Stored as a quick comparison mehanism to rollup duplicate errors.
+        /// Gets a unique-enough hash of this error.  Stored as a quick comparison mechanism to rollup duplicate errors.
         /// </summary>
         /// <returns>"Unique" hash for this error</returns>
         public int? GetHash()
@@ -331,6 +331,12 @@ namespace StackExchange.Exceptional
         /// "IgnoreSimilarExceptionsThreshold" TimeSpan value.
         /// </summary>
         public int? DuplicateCount { get; set; }
+
+        /// <summary>
+        /// This flag is to indicate that there were no matches of this error in when added to the queue or store.
+        /// </summary>
+        [ScriptIgnore]
+        public bool IsDuplicate { get; set; }
 
         /// <summary>
         /// Gets the SQL command text assocaited with this error

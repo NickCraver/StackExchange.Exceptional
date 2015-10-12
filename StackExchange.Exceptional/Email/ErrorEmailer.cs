@@ -20,7 +20,8 @@ namespace StackExchange.Exceptional.Email
         private static int? Port { get; set; }
 
         private static NetworkCredential Credentials { get; set; }
-        private static bool EnableSSL { get; set; } 
+        private static bool EnableSSL { get; set; }
+        private static bool PreventDuplicates { get; set; }
 
         /// <summary>
         /// Whether email functionality is enabled
@@ -61,6 +62,7 @@ namespace StackExchange.Exceptional.Email
             if (eSettings.SMTPPort != 25) Port = eSettings.SMTPPort;
             EnableSSL = eSettings.SMTPEnableSSL;
 
+            PreventDuplicates = eSettings.PreventDuplicates;
             Enabled = true;
             
         }
@@ -72,6 +74,8 @@ namespace StackExchange.Exceptional.Email
         public static void SendMail(Error error)
         {
             if (!Enabled) return;
+            // The following prevents errors that have already been stored from being emailed a second time.
+            if (PreventDuplicates && error.IsDuplicate) return;
             try
             {
 
