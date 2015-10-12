@@ -75,7 +75,7 @@ namespace StackExchange.Exceptional.Email
         {
             if (!Enabled) return;
             // The following prevents errors that have already been stored from being emailed a second time.
-            if (PreventDuplicates && !error.IsOriginalError) return;
+            if (PreventDuplicates && error.IsDuplicate) return;
             try
             {
 

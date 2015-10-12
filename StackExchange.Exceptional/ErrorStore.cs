@@ -217,10 +217,13 @@ namespace StackExchange.Exceptional
         {
             if (error == null) throw new ArgumentNullException(nameof(error));
 
+            // Track the GUID we made vs. what the store returns. If it's different, it's a dupe.
+            var originalGuid = error.GUID;
             // if we're in a retry state, log directly to the queue
             if (_isInRetry)
             {
                 QueueError(error);
+                if (originalGuid != error.GUID) error.IsDuplicate = true;
                 ErrorEmailer.SendMail(error);
                 return;
             }
@@ -230,6 +233,7 @@ namespace StackExchange.Exceptional
                 {
                     LogError(error);
                 }
+                if (originalGuid != error.GUID) error.IsDuplicate = true;
                 ErrorEmailer.SendMail(error);
             }
             catch (Exception ex)
@@ -396,6 +400,7 @@ namespace StackExchange.Exceptional
             // try and rollup in the queue, to save space
             foreach (var err in WriteQueue.Where(err => e.ErrorHash == err.ErrorHash))
             {
+                e.GUID = err.GUID;
                 err.DuplicateCount++;
                 return;
             }
