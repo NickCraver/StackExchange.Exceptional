@@ -406,7 +406,7 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Caribles strictly for JSON serialziation, to maintain non-dictonary behavior
+        /// Variables strictly for JSON serialziation, to maintain non-dictonary behavior
         /// </summary>
         public List<NameValuePair> ServerVariablesSerializable
         {
@@ -414,7 +414,7 @@ namespace StackExchange.Exceptional
             set { ServerVariables = GetNameValueCollection(value); }
         }
         /// <summary>
-        /// Caribles strictly for JSON serialziation, to maintain non-dictonary behavior
+        /// Variables strictly for JSON serialziation, to maintain non-dictonary behavior
         /// </summary>
         public List<NameValuePair> QueryStringSerializable
         {
@@ -422,7 +422,7 @@ namespace StackExchange.Exceptional
             set { QueryString = GetNameValueCollection(value); }
         }
         /// <summary>
-        /// Caribles strictly for JSON serialziation, to maintain non-dictonary behavior
+        /// Variables strictly for JSON serialziation, to maintain non-dictonary behavior
         /// </summary>
         public List<NameValuePair> FormSerializable
         {
@@ -430,7 +430,7 @@ namespace StackExchange.Exceptional
             set { Form = GetNameValueCollection(value); }
         }
         /// <summary>
-        /// Caribles strictly for JSON serialziation, to maintain non-dictonary behavior
+        /// Variables strictly for JSON serialziation, to maintain non-dictonary behavior
         /// </summary>
         public List<NameValuePair> CookiesSerializable
         {
@@ -439,7 +439,7 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Caribles strictly for JSON serialziation, to maintain non-dictonary behavior
+        /// Variables strictly for JSON serialziation, to maintain non-dictonary behavior
         /// </summary>
         public List<NameValuePair> RequestHeadersSerializable
         {
