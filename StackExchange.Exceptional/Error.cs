@@ -32,7 +32,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Gets the data include pattern, like "SQL.*|Redis-*" to match against .Data keys to include when logging
         /// </summary>
-        public static Regex DataIncludeRegex { get; }
+        public static Regex DataIncludeRegex { get; set; }
 
         static Error()
         {
