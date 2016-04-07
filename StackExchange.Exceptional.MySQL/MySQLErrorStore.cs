@@ -199,7 +199,7 @@ Update Exceptions
                     if (count > 0)
                     {
                         // MySQL .NET Connector doesn't support OUT params, so we need to query for the guid.
-                        error.GUID = c.Query<Guid>(@"Select guid from exceptions 
+                        error.GUID = c.Query<Guid>(@"Select guid from Exceptions 
                                 Where ErrorHash = @ErrorHash
                                 And ApplicationName = @ApplicationName
                                 And DeletionDate Is Null
