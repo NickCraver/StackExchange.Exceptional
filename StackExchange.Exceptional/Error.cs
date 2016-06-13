@@ -333,7 +333,7 @@ namespace StackExchange.Exceptional
         public int? DuplicateCount { get; set; }
 
         /// <summary>
-        /// This flag is to indicate that there were no matches of this error in when added to the queue or store.
+        /// This flag is to indicate that there were matches of this error when added to the queue or store.
         /// </summary>
         [ScriptIgnore]
         public bool IsDuplicate { get; set; }
