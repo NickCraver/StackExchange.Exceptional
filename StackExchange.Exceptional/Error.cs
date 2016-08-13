@@ -133,7 +133,7 @@ namespace StackExchange.Exceptional
                     catch (NullReferenceException e)
                     {
                         Trace.WriteLine("Error parsing collection: " + e.Message);
-                        return new NameValueCollection { { "CollectionFetchError", e.Message } };
+                        return new NameValueCollection {{CollectionErrorKey, e.Message}};
                     }
                 };
 
