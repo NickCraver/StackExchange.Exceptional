@@ -130,6 +130,11 @@ namespace StackExchange.Exceptional
                         Trace.WriteLine("Error parsing collection: " + e.Message);
                         return new NameValueCollection {{CollectionErrorKey, e.Message}};
                     }
+                    catch (NullReferenceException e)
+                    {
+                        Trace.WriteLine("Error parsing collection: " + e.Message);
+                        return new NameValueCollection { { "CollectionFetchError", e.Message } };
+                    }
                 };
 
             ServerVariables = tryGetCollection(r => r.ServerVariables);
