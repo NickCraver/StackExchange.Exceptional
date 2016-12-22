@@ -169,7 +169,14 @@ else
                         {
                             <tr>
                                 <td class="key">@cd</td>
-                                <td class="value">@Linkify(error.CustomData[cd])</td>
+                                @if (error.CustomData[cd].HasValue())
+                                {
+                                    <td class="value">@Linkify(error.CustomData[cd])</td>
+                                }
+                                else
+                                {
+                                    <td class="value"></td>
+                                }
                             </tr>
                         }
                     </table>
