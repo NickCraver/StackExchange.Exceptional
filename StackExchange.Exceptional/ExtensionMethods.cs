@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Script.Serialization;
@@ -156,11 +158,56 @@ namespace StackExchange.Exceptional.Extensions
         /// returns true if this is a private network IP  
         /// http://en.wikipedia.org/wiki/Private_network
         /// </summary>
-        private static bool IsPrivateIP(string s)
+        private static bool IsPrivateIP(string ipString)
         {
-            return (s.StartsWith("192.168.") || s.StartsWith("10.") || s.StartsWith("127.0.0."));
+            IPAddress ipAddress;
+            if (!IPAddress.TryParse(ipString, out ipAddress)) return false;
+            
+            if (ipAddress.AddressFamily == AddressFamily.InterNetwork)
+            {
+                byte[] bytes = ipAddress.GetAddressBytes();
+                switch (bytes[0])
+                {
+                    case 10:
+                        return true;
+                    case 172:
+                        return bytes[1] < 32 && bytes[1] >= 16;
+                    case 192:
+                        return bytes[1] == 168;
+                    case 127:
+                        return bytes[1] == 0 && bytes[2] == 0;
+                    default:
+                        return false;
+                }
+            }
+
+            if (ipAddress.AddressFamily == AddressFamily.InterNetworkV6)
+            {
+                // equivalent of 127.0.0.1 in IPv6
+                if (ipString == "::1")
+                    return true;
+                // The original IPv6 Site Local addresses (fec0::/10) are deprecated. Unfortunately IsIPv6SiteLocal only checks for the original deprecated version:
+                if (ipAddress.IsIPv6SiteLocal)
+                    return true;
+                // These days Unique Local Addresses (ULA) are used in place of Site Local. 
+                // ULA has two variants: 
+                //      fc00::/8 is not defined yet, but might be used in the future for internal-use addresses that are registered in a central place (ULA Central). 
+                //      fd00::/8 is in use and does not have to registered anywhere.
+                var firstWord = ipString.Split(new[] {':'}, StringSplitOptions.RemoveEmptyEntries)[0];
+                if (firstWord.Length >= 4 && firstWord.Substring(0, 2) == "fc")
+                    return true;
+                if (firstWord.Length >= 4 && firstWord.Substring(0, 2) == "fd")
+                    return true;
+                // Link local addresses (prefixed with fe80) are not routable
+                if (firstWord == "fe80")
+                    return true;
+                // Discard Prefix
+                if (firstWord == "100")
+                    return true;
+            }
+            return false;
         }
-        
+
         /// <summary>
         /// retrieves the IP address of the current request -- handles proxies and private networks
         /// </summary>
@@ -168,7 +215,6 @@ namespace StackExchange.Exceptional.Extensions
         {
             var ip = serverVariables["REMOTE_ADDR"]; // could be a proxy -- beware
             var ipForwarded = serverVariables["HTTP_X_FORWARDED_FOR"];
-
             // check if we were forwarded from a proxy
             if (ipForwarded.HasValue())
             {
