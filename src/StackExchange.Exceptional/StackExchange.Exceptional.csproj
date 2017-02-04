@@ -1,59 +1,21 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{DA84A7A0-8042-4B2B-A000-3579DD419D2A}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>StackExchange.Exceptional</RootNamespace>
+    <TargetFrameworks>net40</TargetFrameworks>
     <AssemblyName>StackExchange.Exceptional</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\Debug\StackExchange.Exceptional.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\Release\StackExchange.Exceptional.xml</DocumentationFile>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <Authors>Nick Craver</Authors>
+    <Description>.NET Error handler used internally at Stack Overflow.  Primarily for logging all unhandled exceptions to SQL, but also supporting JSON and Memory based logging.</Description>
+    <PackageId>StackExchange.Exceptional</PackageId>
+    <PackageVersion>1.0.0.0</PackageVersion>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/NickCraver/StackExchange.Exceptional</PackageProjectUrl>
+    <PackageTags>SQL JSON Exception Handler Errors Stack Exchange Exceptional</PackageTags>
+    <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dapper, Version=1.40.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Dapper.1.42\lib\net40\Dapper.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <PackageReference Include="Dapper" Version="1.40" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -66,130 +28,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Email\ErrorEmailer.cs" />
-    <Compile Include="Email\ErrorEmail.generated.cs">
-      <DependentUpon>ErrorEmail.cshtml</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Error.cs" />
-    <Compile Include="ErrorStore.Extensibility.cs">
-      <DependentUpon>ErrorStore.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Handlers\ResourceHandler.cs" />
-    <Compile Include="Handlers\RedirectHandler.cs" />
-    <Compile Include="Handlers\ErrorJsonHandler.cs" />
-    <Compile Include="Pages\ErrorInfo.generated.cs">
-      <DependentUpon>ErrorInfo.cshtml</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Pages\ErrorList.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ErrorList.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="HandlerFactory.cs" />
-    <Compile Include="ErrorStore.cs" />
-    <Compile Include="ExceptionalModule.cs" />
-    <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="Pages\Master.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Master.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Settings.cs" />
-    <Compile Include="Settings.Email.cs">
-      <DependentUpon>Settings.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Settings.ErrorStore.cs">
-      <DependentUpon>Settings.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Settings.IgnoreErrors.cs">
-      <DependentUpon>Settings.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Settings.LogFilters.cs">
-      <DependentUpon>Settings.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Stores\JSONErrorStore.cs" />
-    <Compile Include="Stores\SQLErrorStore.cs" />
-    <Compile Include="Stores\MemoryErrorStore.cs" />
-    <Compile Include="Handlers\ContentHandler.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RazorPage.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Email\ErrorEmail.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>ErrorEmail.generated.cs</LastGenOutput>
-    </None>
-    <None Include="packages.config" />
-    <None Include="Pages\ErrorInfo.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>ErrorInfo.generated.cs</LastGenOutput>
-    </None>
-    <None Include="Pages\ErrorList.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>ErrorList.generated.cs</LastGenOutput>
-    </None>
-    <None Include="Pages\Master.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>Master.generated.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\Styles.css" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\html5shiv.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\Scripts.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\top-bg.png" />
-    <EmbeddedResource Include="Resources\top-bg-fail.png" />
-    <EmbeddedResource Include="Resources\loading.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="StoresSetup\SQLExceptionTable.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="StackExchange.Exceptional.nuspec">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="SharedDocs.xml" />
+    <None Include="**\*.cshtml" />
+    <None Include="StoresSetup\**\*.*" />
+    <EmbeddedResource Include="Resources\*.*" />
+    <Compile Update="Email\ErrorEmail.generated.cs" DependentUpon="ErrorEmail.cshtml" AutoGen="True" />
+    <Compile Update="ErrorStore.Extensibility.cs" DependentUpon="ErrorStore.cs" />
+    <Compile Update="Pages\ErrorInfo.generated.cs" DependentUpon="ErrorInfo.cshtml" AutoGen="True" />
+    <Compile Update="Pages\ErrorList.generated.cs" DependentUpon="ErrorList.cshtml" AutoGen="True" />
+    <Compile Update="Pages\Master.generated.cs" DependentUpon="Master.cshtml" AutoGen="True" />
+    <Compile Update="Settings.*.cs" DependentUpon="Settings.cs" AutoGen="True" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
