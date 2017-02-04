@@ -120,17 +120,34 @@ namespace StackExchange.Exceptional
             var request = context.Request;
 
             Func<Func<HttpRequest, NameValueCollection>, NameValueCollection> tryGetCollection = getter =>
+            {
+                try
                 {
-                    try
+                    var original = getter(request);
+                    var copy = new NameValueCollection();
+                    foreach (var key in original.AllKeys)
                     {
-                        return new NameValueCollection(getter(request));
+                        try
+                        {
+                            foreach (var value in original.GetValues(key))
+                            {
+                                copy.Add(key, value);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Trace.WriteLine(string.Format("Error getting collection value [{0}]: {1}", key, e.Message));
+                            copy.Add(key, "[Error getting value: " + e.Message + "]");
+                        }
                     }
-                    catch (HttpRequestValidationException e)
-                    {
-                        Trace.WriteLine("Error parsing collection: " + e.Message);
-                        return new NameValueCollection {{CollectionErrorKey, e.Message}};
-                    }
-                };
+                    return copy;
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine("Error parsing collection: " + e.Message);
+                    return new NameValueCollection { { CollectionErrorKey, e.Message } };
+                }
+            };
 
             ServerVariables = tryGetCollection(r => r.ServerVariables);
             QueryString = tryGetCollection(r => r.QueryString);
