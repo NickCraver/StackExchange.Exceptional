@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{9D33C0
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples.MVC5", "samples\Samples.MVC4\Samples.MVC5.csproj", "{D66CF910-FD29-429D-9B51-40864E7C8E56}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples.MVC5", "samples\Samples.MVC5\Samples.MVC5.csproj", "{D66CF910-FD29-429D-9B51-40864E7C8E56}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Exceptional", "src\StackExchange.Exceptional\StackExchange.Exceptional.csproj", "{DA84A7A0-8042-4B2B-A000-3579DD419D2A}"
 EndProject
