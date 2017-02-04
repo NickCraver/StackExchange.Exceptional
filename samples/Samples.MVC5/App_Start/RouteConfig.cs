@@ -1,7 +1,7 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
 
-namespace Samples.MVC4
+namespace Samples.MVC5
 {
     public class RouteConfig
     {

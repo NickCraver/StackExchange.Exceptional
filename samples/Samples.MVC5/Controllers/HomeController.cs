@@ -1,7 +1,7 @@
 ﻿using System.Web.Mvc;
 using StackExchange.Exceptional;
 
-namespace Samples.MVC4.Controllers
+namespace Samples.MVC5.Controllers
 {
     public class HomeController : Controller
     {

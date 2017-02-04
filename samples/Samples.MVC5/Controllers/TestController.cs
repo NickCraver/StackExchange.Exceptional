@@ -2,7 +2,7 @@
 using System.Transactions;
 using System.Web.Mvc;
 
-namespace Samples.MVC4.Controllers
+namespace Samples.MVC5.Controllers
 {
     public class TestController : Controller
     {
