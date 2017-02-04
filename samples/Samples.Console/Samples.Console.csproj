@@ -43,7 +43,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\StackExchange.Exceptional\StackExchange.Exceptional.csproj">
+    <ProjectReference Include="..\..\src\StackExchange.Exceptional\StackExchange.Exceptional.csproj">
       <Project>{da84a7a0-8042-4b2b-a000-3579dd419d2a}</Project>
       <Name>StackExchange.Exceptional</Name>
     </ProjectReference>
