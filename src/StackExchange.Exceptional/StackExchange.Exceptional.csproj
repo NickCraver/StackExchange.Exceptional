@@ -15,7 +15,7 @@
     <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="1.40" />
+    <PackageReference Include="Dapper" Version="1.42.0" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
