@@ -27,7 +27,7 @@ namespace Samples.MVC4.Controllers
                 try
                 {
                     throw new Exception("Transaction killing exception of doom!");
-                    t.Complete();
+                    //t.Complete();
                 }
                 catch (Exception e)
                 {
