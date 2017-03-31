@@ -1,18 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net40</TargetFrameworks>
     <AssemblyName>StackExchange.Exceptional</AssemblyName>
-    <OutputType>Library</OutputType>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-    <Authors>Nick Craver</Authors>
-    <Description>.NET Error handler used internally at Stack Overflow.  Primarily for logging all unhandled exceptions to SQL, but also supporting JSON and Memory based logging.</Description>
-    <PackageId>StackExchange.Exceptional</PackageId>
-    <PackageVersion>1.0.0.0</PackageVersion>
-    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/NickCraver/StackExchange.Exceptional</PackageProjectUrl>
+    <Description>.NET Error handler used internally at Stack Overflow. Primarily for logging all unhandled exceptions to SQL, but also supporting JSON and Memory based logging.</Description>
     <PackageTags>SQL JSON Exception Handler Errors Stack Exchange Exceptional</PackageTags>
-    <IncludeSymbols>true</IncludeSymbols>
+    <TargetFrameworks>net40</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="1.42.0" />
@@ -28,12 +19,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SharedDocs.xml" />
+    <None Include="SharedDocs.xml" />
     <None Include="**\*.cshtml" />
     <None Include="StoresSetup\**\*.*" />
     <EmbeddedResource Include="Resources\*.*" />
-    <Compile Update="Email\ErrorEmail.generated.cs" DependentUpon="ErrorEmail.cshtml" AutoGen="True" />
     <Compile Update="ErrorStore.Extensibility.cs" DependentUpon="ErrorStore.cs" />
+    <Compile Update="Email\ErrorEmail.generated.cs" DependentUpon="ErrorEmail.cshtml" AutoGen="True" />
     <Compile Update="Pages\ErrorInfo.generated.cs" DependentUpon="ErrorInfo.cshtml" AutoGen="True" />
     <Compile Update="Pages\ErrorList.generated.cs" DependentUpon="ErrorList.cshtml" AutoGen="True" />
     <Compile Update="Pages\Master.generated.cs" DependentUpon="Master.cshtml" AutoGen="True" />

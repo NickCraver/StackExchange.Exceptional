@@ -1,24 +1,28 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26127.3
+VisualStudioVersion = 15.0.26228.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{9D33C076-4A0C-4366-89B8-9A735E6867EA}"
 	ProjectSection(SolutionItems) = preProject
+		build.ps1 = build.ps1
 		LICENSE-APACHE = LICENSE-APACHE
 		LICENSE-MIT = LICENSE-MIT
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples.MVC5", "samples\Samples.MVC5\Samples.MVC5.csproj", "{D66CF910-FD29-429D-9B51-40864E7C8E56}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.MVC5", "samples\Samples.MVC5\Samples.MVC5.csproj", "{D66CF910-FD29-429D-9B51-40864E7C8E56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Exceptional", "src\StackExchange.Exceptional\StackExchange.Exceptional.csproj", "{DA84A7A0-8042-4B2B-A000-3579DD419D2A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackExchange.Exceptional", "src\StackExchange.Exceptional\StackExchange.Exceptional.csproj", "{DA84A7A0-8042-4B2B-A000-3579DD419D2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples.Console", "samples\Samples.Console\Samples.Console.csproj", "{61566A7A-8384-4D8D-A55D-B8647B0DDF7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.Console", "samples\Samples.Console\Samples.Console.csproj", "{61566A7A-8384-4D8D-A55D-B8647B0DDF7C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Exceptional.MySQL", "src\StackExchange.Exceptional.MySQL\StackExchange.Exceptional.MySQL.csproj", "{52031553-68D4-4B56-B5ED-867975972038}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackExchange.Exceptional.MySQL", "src\StackExchange.Exceptional.MySQL\StackExchange.Exceptional.MySQL.csproj", "{52031553-68D4-4B56-B5ED-867975972038}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8B91532F-A112-4F73-80BD-A95B7359BBC3}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.build.props = src\Directory.build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{001E5AA4-42C8-4AC3-B14A-AF1DFA02E9FB}"
 EndProject

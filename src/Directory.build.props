@@ -1,0 +1,27 @@
+<Project>
+  <PropertyGroup>
+    <VersionPrefix>1.0.130</VersionPrefix>
+
+    <OutputType>Library</OutputType>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <GenerateDocumentationFile Condition="'$(Configuration)'=='Release'">true</GenerateDocumentationFile>
+
+    <Authors>Nick Craver</Authors>    
+    <PackageId>$(AssemblyName)</PackageId>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/NickCraver/StackExchange.Exceptional</PackageProjectUrl>
+    
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>embedded</DebugType>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <IncludeSymbols>false</IncludeSymbols>
+    <IsTestProject>$(MSBuildProjectName.Contains('Test'))</IsTestProject>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="SourceLink.Create.GitHub" Version="2.0.2" PrivateAssets="All" /> 
+    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.0.2" />
+    <DotNetCliToolReference Include="dotnet-sourcelink-git" Version="2.0.2" />
+  </ItemGroup>
+</Project>

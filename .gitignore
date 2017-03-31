@@ -1,22 +1,4 @@
 #################
-## Eclipse
-#################
-
-*.pydevproject
-.project
-.metadata
-bin/
-tmp/
-*.tmp
-*.bak
-*.swp
-*~.nib
-local.properties
-.classpath
-.settings/
-.loadpath
-
-#################
 ## Visual Studio
 #################
 
@@ -29,7 +11,11 @@ local.properties
 *.sln.docstates
 .vs/
 
+# Test Files
+error-*.json
+
 # Build results
+.nupkgs/
 [Dd]ebug/
 [Rr]elease/
 *_i.c
@@ -53,13 +39,6 @@ local.properties
 
 ## TODO: If you have NuGet Package Restore enabled, uncomment this
 packages/
-
-# Visual C++ cache files
-ipch/
-*.aps
-*.ncb
-*.opensdf
-*.sdf
 
 # Visual Studio profiler
 *.psess

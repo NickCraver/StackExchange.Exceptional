@@ -1,18 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <TargetFrameworks>net45</TargetFrameworks>
     <AssemblyName>StackExchange.Exceptional.MySQL</AssemblyName>
-    <OutputType>Library</OutputType>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-    <Authors>Nick Craver</Authors>
     <Description>MySQL storage provider for StackExchange.Exceptional</Description>
-    <PackageId>StackExchange.Exceptional.MySQL</PackageId>
-    <PackageVersion>1.0.0.0</PackageVersion>
-    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/NickCraver/StackExchange.Exceptional</PackageProjectUrl>
     <PackageTags>SQL MySQL Exception Handler Errors Stack Exchange Exceptional</PackageTags>
-    <IncludeSymbols>true</IncludeSymbols>
+    <TargetFrameworks>net45</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\StackExchange.Exceptional\StackExchange.Exceptional.csproj" />
