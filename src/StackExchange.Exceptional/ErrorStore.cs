@@ -530,8 +530,8 @@ namespace StackExchange.Exceptional
             var result = new List<Type>();
             // Get the current directory, based on Where StackExchange.Exceptional.dll is located
 
-            Uri assemblyUri = new Uri(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase));
-            var dir= assemblyUri.LocalPath;
+            var assemblyUri = new Uri(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+            var dir = System.IO.Path.GetDirectoryName(assemblyUri.LocalPath);
 
             if (String.IsNullOrEmpty(dir))
             {
