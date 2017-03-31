@@ -3,7 +3,7 @@ StackExchange.Exceptional is the error handler used internally by [Stack Exchang
 
 It also supports JSON and memory error stores, filtering of exceptions before logging, and fail/retry mechanisms for storing errors if there's an interruption in connecting to the error store.
 
-## Coniguration
+## Configuration
 [See the wiki for how to get configured and logging in just a few minutes](https://github.com/NickCraver/StackExchange.Exceptional/wiki).
 
 ## Details
