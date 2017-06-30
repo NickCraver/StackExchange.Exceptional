@@ -19,7 +19,7 @@ namespace StackExchange.Exceptional.Handlers
         {
             context.Response.ContentType = _contentType;
 
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("StackExchange.Exceptional.Resources." + _resourceName))
+            using (var stream = typeof(Error).Assembly.GetManifestResourceStream("StackExchange.Exceptional.Resources." + _resourceName))
             {
                 if (stream != null)
                 {
