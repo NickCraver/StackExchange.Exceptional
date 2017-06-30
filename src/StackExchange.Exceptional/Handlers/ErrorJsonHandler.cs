@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,20 +9,21 @@ namespace StackExchange.Exceptional.Handlers
 {
     internal sealed class ErrorJsonHandler : IHttpHandler
     {
+        private static readonly JsonSerializer serializer = new JsonSerializer();
+
         public void ProcessRequest(HttpContext context)
         {
             context.Response.ContentType = "application/json";
 
-            const int maxCount = 200;
-            long sinceLong;
-            DateTime since = long.TryParse(context.Request["since"], out sinceLong)
-                                 ? new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(sinceLong)
-                                 : DateTime.MinValue;
+            DateTime since = long.TryParse(context.Request["since"], out long sinceLong)
+                     ? new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(sinceLong)
+                     : DateTime.MinValue;
 
-            var errors = new List<Error>(maxCount);
-            ErrorStore.Default.GetAll(errors);
+            var errors = ErrorStore.Default.GetAll();
 
             var result = errors.Where(error => error.CreationDate >= since).Select(error => new JsonError(error)).ToList();
+
+            //serializer.Serialize(context.Response.Output, result);
 
             var ser = new JavaScriptSerializer();
             var json = ser.Serialize(result);

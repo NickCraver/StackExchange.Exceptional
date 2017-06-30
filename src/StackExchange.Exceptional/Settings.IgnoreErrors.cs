@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace StackExchange.Exceptional
 {
-    public partial class Settings
+    internal partial class Settings
     {
         /// <summary>
         /// The Ignore section of the configuration, optional and no errors will be blocked from logging if not specified
@@ -27,48 +27,66 @@ namespace StackExchange.Exceptional
             /// </summary>
             [ConfigurationProperty("Types")]
             public SettingsCollection<IgnoreType> Types => this["Types"] as SettingsCollection<IgnoreType>;
+
+            /// <summary>
+            /// Runs after deserialization, to populate <see cref="ExceptionalSettings.Ignore"/>.
+            /// </summary>
+            protected override void PostDeserialize()
+            {
+                base.PostDeserialize();
+
+                var s = ExceptionalSettings.Current.Ignore;
+                foreach (IgnoreRegex r in Regexes)
+                {
+                    s.Regexes.Add(r.PatternRegex);
+                }
+                foreach (IgnoreType t in Types)
+                {
+                    s.Types.Add(t.Type);
+                }
+            }
         }
-    }
-
-    /// <summary>
-    /// A regex entry, to match against error messages to see if we should ignore them
-    /// </summary>
-    public class IgnoreRegex : Settings.SettingsCollectionElement
-    {
-        /// <summary>
-        /// The name that describes this regex
-        /// </summary>
-        [ConfigurationProperty("name")]
-        public override string Name => this["name"] as string;
 
         /// <summary>
-        /// The Pattern to match on the exception message
+        /// A regex entry, to match against error messages to see if we should ignore them
         /// </summary>
-        [ConfigurationProperty("pattern", IsRequired = true)]
-        public string Pattern => this["pattern"] as string;
+        public class IgnoreRegex : SettingsCollectionElement
+        {
+            /// <summary>
+            /// The name that describes this regex
+            /// </summary>
+            [ConfigurationProperty("name")]
+            public override string Name => this["name"] as string;
 
-        private Regex _patternRegEx;
-        /// <summary>
-        /// Regex object representing the pattern specified, compiled once for use against all future exceptions
-        /// </summary>
-        public Regex PatternRegex => _patternRegEx ?? (_patternRegEx = new Regex(Pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline));
-    }
+            /// <summary>
+            /// The Pattern to match on the exception message
+            /// </summary>
+            [ConfigurationProperty("pattern", IsRequired = true)]
+            public string Pattern => this["pattern"] as string;
 
-    /// <summary>
-    /// A type entry, to match against error messages types to see if we should ignore them
-    /// </summary>
-    public class IgnoreType : Settings.SettingsCollectionElement
-    {
-        /// <summary>
-        /// The name that describes this ignored type
-        /// </summary>
-        [ConfigurationProperty("name")]
-        public override string Name => this["name"] as string;
+            private Regex _patternRegEx;
+            /// <summary>
+            /// Regex object representing the pattern specified, compiled once for use against all future exceptions
+            /// </summary>
+            public Regex PatternRegex => _patternRegEx ?? (_patternRegEx = new Regex(Pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline));
+        }
 
         /// <summary>
-        /// The fully qualified type of the exception to ignore
+        /// A type entry, to match against error messages types to see if we should ignore them
         /// </summary>
-        [ConfigurationProperty("type", IsRequired = true)]
-        public string Type => this["type"] as string;
+        public class IgnoreType : SettingsCollectionElement
+        {
+            /// <summary>
+            /// The name that describes this ignored type
+            /// </summary>
+            [ConfigurationProperty("name")]
+            public override string Name => this["name"] as string;
+
+            /// <summary>
+            /// The fully qualified type of the exception to ignore
+            /// </summary>
+            [ConfigurationProperty("type", IsRequired = true)]
+            public string Type => this["type"] as string;
+        }
     }
 }

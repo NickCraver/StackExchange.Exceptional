@@ -2,7 +2,7 @@
 
 namespace StackExchange.Exceptional
 {
-    public partial class Settings
+    internal partial class Settings
     {
         /// <summary>
         /// The Ignore section of the configuration, optional and no errors will be blocked from logging if not specified
@@ -26,24 +26,42 @@ namespace StackExchange.Exceptional
             /// </summary>
             [ConfigurationProperty("Cookies")]
             public SettingsCollection<LogFilter> CookieFilters => this["Cookies"] as SettingsCollection<LogFilter>;
+
+            /// <summary>
+            /// Runs after deserialization, to populate <see cref="ExceptionalSettings.LogFilters"/>.
+            /// </summary>
+            protected override void PostDeserialize()
+            {
+                base.PostDeserialize();
+
+                var s = ExceptionalSettings.Current.LogFilters;
+                foreach (LogFilter f in FormFilters)
+                {
+                    s.Form[f.Name] = f.ReplaceWith;
+                }
+                foreach (LogFilter c in CookieFilters)
+                {
+                    s.Cookie[c.Name] = c.ReplaceWith;
+                }
+            }
         }
-    }
-
-    /// <summary>
-    /// A filter entry with the forn variable name and what to replace the value with when logging
-    /// </summary>
-    public class LogFilter : Settings.SettingsCollectionElement
-    {
-        /// <summary>
-        /// The form parameter name to ignore
-        /// </summary>
-        [ConfigurationProperty("name", IsRequired = true)]
-        public override string Name => this["name"] as string;
 
         /// <summary>
-        /// The value to log instead of the real value
+        /// A filter entry with the forn variable name and what to replace the value with when logging
         /// </summary>
-        [ConfigurationProperty("replaceWith")]
-        public string ReplaceWith => this["replaceWith"] as string;
+        public class LogFilter : SettingsCollectionElement
+        {
+            /// <summary>
+            /// The form parameter name to ignore
+            /// </summary>
+            [ConfigurationProperty("name", IsRequired = true)]
+            public override string Name => this["name"] as string;
+
+            /// <summary>
+            /// The value to log instead of the real value
+            /// </summary>
+            [ConfigurationProperty("replaceWith")]
+            internal string ReplaceWith => this["replaceWith"] as string;
+        }
     }
 }

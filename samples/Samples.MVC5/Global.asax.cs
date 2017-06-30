@@ -24,8 +24,10 @@ namespace Samples.MVC5
             // SQL Example
             //ErrorStore.Setup("My Error Log Name", new SQLErrorStore(connectionString: "Data Source=.;Initial Catalog=Exceptions;Integrated Security=SSPI;"));
 
+            var settings = ExceptionalSettings.Current;
+
             // Optionally add custom data to any logged exception (visible on the exception detail page):
-            ErrorStore.GetCustomData = (exception, context, data) =>
+            TODOShittyExperienceForTheUser.GetCustomData = (exception, context, data) =>
                 {
                     // exception is the exception thrown
                     // context is the HttpContext of the request (could be null, e.g. background thread exception)
@@ -37,17 +39,17 @@ namespace Samples.MVC5
 
             // Setting the jQuery URL, in case you need this to be an internally hosted jQuery for example
             // By default, this will pull from the google CDN
-            ErrorStore.jQueryURL = "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js";
+            settings.Render.JQueryURL = "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js";
 
-            ErrorStore.AddJSInclude("~/Content/errors.js");
-            ErrorStore.OnBeforeLog += (sender, args) =>
+            settings.Render.JSIncludes.Add("/Content/errors.js");
+            StackExchange.Exceptional.Error.OnBeforeLog += (sender, args) =>
                 {
                     args.Error.Message += " - This was appended in the OnBeforeLog handler.";
                     //args.Abort = true; - you could stop the exception from being logged here
                 };
-            ErrorStore.OnAfterLog += (sender, args) =>
+            StackExchange.Exceptional.Error.OnAfterLog += (sender, args) =>
                 {
-                    Trace.WriteLine("The logged exception GUID was: " + args.ErrorGuid);
+                    Trace.WriteLine("The logged exception GUID was: " + args.ErrorGuid.ToString());
                     // optionally var e = args.GetError() to fetch the actual error from the store
                 };
 
@@ -66,7 +68,7 @@ namespace Samples.MVC5
         {
             // Note: When dealing with non-web applications, or logging from background threads, 
             // you would pass, null in instead of a HttpContext object.
-            ErrorStore.LogException(e, HttpContext.Current);
+            e.Log(HttpContext.Current);
         }
     }
 }

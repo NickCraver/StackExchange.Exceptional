@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StackExchange.Exceptional;
+using System;
 using System.Transactions;
 using System.Web.Mvc;
 
@@ -6,6 +7,11 @@ namespace Samples.MVC5.Controllers
 {
     public class TestController : Controller
     {
+        public ActionResult Settings()
+        {
+            return Json(ExceptionalSettings.Current, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult Form()
         {
             Response.SetCookie(new System.Web.HttpCookie("authToken", "test value"));

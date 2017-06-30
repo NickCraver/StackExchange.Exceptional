@@ -6,81 +6,44 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Transactions;
-using System.Web;
 using StackExchange.Exceptional.Email;
 using StackExchange.Exceptional.Stores;
-using StackExchange.Exceptional.Extensions;
+using StackExchange.Exceptional.Internal;
 
 namespace StackExchange.Exceptional
 {
     /// <summary>
     /// Represents an error log capable of storing and retrieving errors generated in an ASP.NET Web application.
     /// </summary>
-    public abstract partial class ErrorStore
+    public abstract class ErrorStore
     {
         private static ErrorStore _defaultStore;
-        
-        [ThreadStatic]
-        private static List<Regex> _ignoreRegexes;
-        [ThreadStatic]
-        private static List<string> _ignoreExceptions;
-
         private static ConcurrentQueue<Error> _writeQueue;
-
-        private static bool _enableLogging = true;
         private static Thread _retryThread;
         private static readonly object _retryLock = new object();
-        // TODO: possibly make this configurable
-        internal const int _retryDelayMiliseconds = 2000;
         private static bool _isInRetry;
-        private static Exception _retryException;
-        internal const string CustomDataErrorKey = "CustomDataFetchError";
+        private Exception _retryException;
 
         /// <summary>
-        /// The default number of exceptions (rollups count as 1) to buffer in memory in the event of an error store outage
+        /// The settings for this store.
         /// </summary>
-        public const int DefaultBackupQueueSize = 1000;
-        /// <summary>
-        /// The default number of seconds to roll up errors for.  Identical stack trace errors within 10 minutes get a DuplicateCount++ instead of a separate exception logged.
-        /// </summary>
-        public const int DefaultRollupSeconds = 600;
+        public ErrorStoreSettings Settings { get; }
 
         /// <summary>
         /// Base constructor of the error store to set common properties
         /// </summary>
-        protected ErrorStore(ErrorStoreSettings settings) : this(settings.RollupSeconds, settings.BackupQueueSize) {}
-
-        /// <summary>
-        /// Creates an error store with the specified rollup
-        /// </summary>
-        protected ErrorStore(int rollupSeconds, int backupQueueSize = DefaultBackupQueueSize)
+        /// <param name="settings">The <see cref="ErrorStoreSettings"/> for this store.</param>     
+        protected ErrorStore(ErrorStoreSettings settings)
         {
-            if (rollupSeconds > 0)
-                RollupThreshold = TimeSpan.FromSeconds(rollupSeconds);
-
-            if (backupQueueSize > 0)
-                BackupQueueSize = backupQueueSize;
-            else
-                BackupQueueSize = DefaultBackupQueueSize;
+            Settings = settings;
         }
-
-        /// <summary>
-        /// The size of the backup/retry queue for logging, defaults to 1000
-        /// </summary>
-        public int BackupQueueSize { get; set; }
 
         /// <summary>
         /// Gets if this error store is 
         /// </summary>
         public bool InFailureMode => _isInRetry;
-
-        /// <summary>
-        /// The Rollup threshold within which errors logged rapidly are rolled up
-        /// </summary>
-        protected TimeSpan? RollupThreshold;
 
         /// <summary>
         /// The last time this error store failed to write an error
@@ -90,65 +53,84 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Logs an error in log for the application
         /// </summary>
+        /// <param name="error">The error to log.</param>
         protected abstract void LogError(Error error);
 
         /// <summary>
         /// Retrieves a single error based on Id
         /// </summary>
+        /// <param name="guid">The guid of the error to retrieve.</param>
         protected abstract Error GetError(Guid guid);
 
         /// <summary>
         /// Prevents error identfied by 'id' from being deleted when the error log is full, if the store supports it
         /// </summary>
+        /// <param name="guid">The guid of the error to protect.</param>
         protected abstract bool ProtectError(Guid guid);
 
         /// <summary>
-        /// Protects a list of errors in the log
+        /// Protects a list of errors in the log.
         /// </summary>
+        /// <param name="guids">The guids of the errors to protect.</param>
         protected virtual bool ProtectErrors(IEnumerable<Guid> guids)
         {
             var success = true;
             foreach (var guid in guids)
+            {
                 if (!ProtectError(guid))
+                {
                     success = false;
+                }
+            }
             return success;
         }
 
         /// <summary>
-        /// Deletes a specific error from the log
+        /// Deletes a specific error from the log.
         /// </summary>
+        /// <param name="guid">The guid of the error to delete.</param>
         protected abstract bool DeleteError(Guid guid);
 
         /// <summary>
-        /// Deletes a list of errors from the log, only if they are not protected
+        /// Deletes a list of errors from the log, only if they are not protected.
         /// </summary>
+        /// <param name="guids">The guids of the errors to delete.</param>
         protected virtual bool DeleteErrors(IEnumerable<Guid> guids)
         {
             var success = true;
             foreach (var guid in guids)
+            {
                 if (!DeleteError(guid))
+                {
                     success = false;
+                }
+            }
             return success;
         }
 
         /// <summary>
         /// Deletes a specific error from the log, any traces of it
         /// </summary>
-        protected virtual bool HardDeleteError(Guid guid) { return DeleteError(guid); }
+        /// <param name="guid">The <see cref="Guid"/> ID of the error to hard delete.</param>
+        protected virtual bool HardDeleteError(Guid guid) => DeleteError(guid);
 
         /// <summary>
         /// Deletes all non-protected errors from the log
         /// </summary>
+        /// <param name="applicationName">The name of the application to delete all errors for.</param>
         protected abstract bool DeleteAllErrors(string applicationName = null);
 
         /// <summary>
         /// Retrieves all of the errors in the log
         /// </summary>
-        protected abstract int GetAllErrors(List<Error> list, string applicationName = null);
+        /// <param name="applicationName">The name of the application to get all errors for.</param>
+        protected abstract List<Error> GetAllErrors(string applicationName = null);
 
         /// <summary>
         /// Retrieves a count of application errors since the specified date, or all time if null
         /// </summary>
+        /// <param name="since">The date to get errors since.</param>
+        /// <param name="applicationName">The application name to get an error count for.</param>
         protected abstract int GetErrorCount(DateTime? since = null, string applicationName = null);
 
         /// <summary>
@@ -160,28 +142,12 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Gets the name of the application to which the log is scoped.
         /// </summary>
-        public static string ApplicationName => _applicationName ?? (_applicationName = Settings.Current.ApplicationName);
+        public static string ApplicationName => _applicationName ?? (_applicationName = ExceptionalSettings.Current.ApplicationName);
 
         /// <summary>
         /// Gets the name of the machine logging these errors.
         /// </summary>
         public virtual string MachineName => Environment.MachineName;
-
-        /// <summary>
-        /// Gets the list of exceptions to ignore specified in the configuration file
-        /// </summary>
-        public static List<Regex> IgnoreRegexes
-        {
-            get { return _ignoreRegexes ?? (_ignoreRegexes = Settings.Current.Ignore.Regexes.All.Select(r => r.PatternRegex).ToList()); }
-        }
-
-        /// <summary>
-        /// Gets the list of exceptions to ignore specified in the configuration file
-        /// </summary>
-        public static List<string> IgnoreExceptions
-        {
-            get { return _ignoreExceptions ?? (_ignoreExceptions = Settings.Current.Ignore.Types.All.Select(r => r.Type).ToList()); }
-        }
 
         /// <summary>
         /// Gets the default error store specified in the configuration, 
@@ -208,11 +174,12 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Gets the last exception that happened when trying to log exceptions
         /// </summary>
-        public static Exception LastRetryException => _retryException;
+        public Exception LastRetryException => _retryException;
 
         /// <summary>
         /// Logs an error in log for the application
         /// </summary>
+        /// <param name="error">The error to log.</param>
         public void Log(Error error)
         {
             if (error == null) throw new ArgumentNullException(nameof(error));
@@ -247,10 +214,11 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Deletes all non-protected errors from the log
         /// </summary>
+        /// <param name="guid">The guid of the error to protect.</param>
         public bool Protect(Guid guid)
         {
             if (_isInRetry) return false; // no protecting allowed when failing, since we don't respect it in the queue anyway
-            
+
             using (new TransactionScope(TransactionScopeOption.Suppress))
             {
                 return ProtectError(guid);
@@ -260,6 +228,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Protects a list of errors in the log
         /// </summary>
+        /// <param name="guids">The guids of the errors to protect.</param>
         public bool ProtectList(IEnumerable<Guid> guids)
         {
             if (_isInRetry) return false; // no protecting allowed when failing, since we don't respect it in the queue anyway
@@ -281,6 +250,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Deletes an error from the log with the specified id
         /// </summary>
+        /// <param name="guid">The guid of the error to delete.</param>
         public bool Delete(Guid guid)
         {
             if (_isInRetry) return false; // no deleting from the retry queue
@@ -302,6 +272,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Deletes a list of non-protected errors from the log
         /// </summary>
+        /// <param name="guids">The guids of the errors to delete.</param>
         public bool DeleteList(IEnumerable<Guid> guids)
         {
             if (_isInRetry) return false; // no deleting from the retry queue
@@ -323,6 +294,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Deletes all non-protected errors from the log
         /// </summary>
+        /// <param name="applicationName">The name of the application to delete all errors for.</param>
         public bool DeleteAll(string applicationName = null)
         {
             if (_isInRetry)
@@ -348,6 +320,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Gets a specific exception with the specified guid
         /// </summary>
+        /// <param name="guid">The guid of the error to retrieve.</param>
         public Error Get(Guid guid)
         {
             if (_isInRetry)
@@ -363,22 +336,25 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Gets all in the store, including those in the backup queue if it's in use
         /// </summary>
-        public int GetAll(List<Error> errors, string applicationName = null)
+        /// <param name="applicationName">The name of the application to get all errors for.</param>
+        public List<Error> GetAll(string applicationName = null)
         {
             if (_isInRetry)
             {
-                errors.AddRange(WriteQueue);
-                return errors.Count;
+                // Dupe it!
+                return new List<Error>(WriteQueue);
             }
 
-            try { return GetAllErrors(errors, applicationName); }
+            try { return GetAllErrors(applicationName); }
             catch (Exception ex) { BeginRetry(ex); }
-            return 0;
+            return new List<Error>();
         }
 
         /// <summary>
         /// Gets the count of exceptions, optionally those since a certain date
         /// </summary>
+        /// <param name="since">The minimum date to fetch errors after.</param>
+        /// <param name="applicationName">The application name to fetch errors for.</param>
         public int GetCount(DateTime? since = null, string applicationName = null)
         {
             if (_isInRetry)
@@ -392,10 +368,11 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Queues an error into the backup/retry queue
+        /// Queues an error into the backup/retry queue.
         /// </summary>
-        /// <remarks>These will be written to the store when we're able to connect again</remarks>
-        public void QueueError(Error e)
+        /// <param name="e">The error to queue for writing.</param>
+        /// <remarks>These will be written to the store when we're able to connect again.</remarks>
+        protected void QueueError(Error e)
         {
             // try and rollup in the queue, to save space
             foreach (var err in WriteQueue.Where(err => e.ErrorHash == err.ErrorHash))
@@ -406,14 +383,14 @@ namespace StackExchange.Exceptional
             }
 
             // only queue if we're under the cap
-            if (WriteQueue.Count < BackupQueueSize)
+            if (WriteQueue.Count < Settings.BackupQueueSize)
                 WriteQueue.Enqueue(e);
 
             // spin up the retry mechanism
             BeginRetry();
         }
 
-        private static void BeginRetry(Exception ex = null)
+        private void BeginRetry(Exception ex = null)
         {
             lock (_retryLock)
             {
@@ -421,20 +398,20 @@ namespace StackExchange.Exceptional
                 _isInRetry = true;
 
                 // are we already spun up?
-                if (_retryThread != null && _retryThread.IsAlive) return;
+                if (_retryThread?.IsAlive == true) return;
 
                 _retryThread = new Thread(TryFlushQueue);
                 _retryThread.Start();
             }
         }
 
-        private static void TryFlushQueue()
+        private void TryFlushQueue()
         {
             if (!_isInRetry && WriteQueue.IsEmpty) return;
 
             while (true)
             {
-                Thread.Sleep(_retryDelayMiliseconds);
+                Thread.Sleep(Settings.BackupQueueRetryInterval);
 
                 // if the error store is still down, sleep again
                 if (!Default.Test()) continue;
@@ -442,9 +419,8 @@ namespace StackExchange.Exceptional
                 // empty queue
                 while (!WriteQueue.IsEmpty)
                 {
-                    Error e;
                     // if we can't pop one off, get out of here
-                    if (!WriteQueue.TryDequeue(out e)) return;
+                    if (!WriteQueue.TryDequeue(out Error e)) return;
 
                     try
                     {
@@ -488,7 +464,7 @@ namespace StackExchange.Exceptional
 
         private static ErrorStore GetErrorStoreFromConfig()
         {
-            return GetFromSettings(Settings.Current.ErrorStore) ?? new MemoryErrorStore();
+            return GetFromSettings(ExceptionalSettings.Current.Store) ?? new MemoryErrorStore();
         }
 
         private static ErrorStore GetFromSettings(ErrorStoreSettings settings)
@@ -498,17 +474,13 @@ namespace StackExchange.Exceptional
             // a bit of validation
             if (settings.Type.IsNullOrEmpty())
                 throw new ArgumentOutOfRangeException(nameof(settings), "ErrorStore 'type' must be specified");
-            if (settings.Size < 1) 
+            if (settings.Size < 1)
                 throw new ArgumentOutOfRangeException(nameof(settings),"ErrorStore 'size' must be positive");
 
             var storeTypes = GetErrorStores();
             // Search by convention first
-            var match = storeTypes.FirstOrDefault(s => s.Name == settings.Type + "ErrorStore");
-            if (match == null)
-            {
-                // well shit, free for all!
-                match = storeTypes.FirstOrDefault(s => s.Name.Contains(settings.Type));
-            }
+            // or...free for all!
+            Type match = storeTypes.Find(s => s.Name == settings.Type + "ErrorStore") ?? storeTypes.Find(s => s.Name.Contains(settings.Type));
 
             if (match == null)
             {
@@ -530,8 +502,8 @@ namespace StackExchange.Exceptional
             var result = new List<Type>();
             // Get the current directory, based on Where StackExchange.Exceptional.dll is located
 
-            var assemblyUri = new Uri(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
-            var dir = System.IO.Path.GetDirectoryName(assemblyUri.LocalPath);
+            var assemblyUri = new Uri(Assembly.GetExecutingAssembly().GetName().CodeBase);
+            var dir = Path.GetDirectoryName(assemblyUri.LocalPath);
 
             if (String.IsNullOrEmpty(dir))
             {
@@ -560,138 +532,6 @@ namespace StackExchange.Exceptional
                 Trace.WriteLine("Error loading error stores: " + ex.Message);
             }
             return result;
-        }
-
-        /// <summary>
-        /// For logging an exception with no HttpContext, most commonly used in non-web applications 
-        /// so that they don't have to carry a reference to System.Web
-        /// </summary>
-        /// <param name="ex">The exception to log</param>
-        /// <param name="appendFullStackTrace">Whether to append a full stack trace to the exception's detail</param>
-        /// <param name="rollupPerServer">Whether to log up per-server, e.g. errors are only duplicates if they have same stack on the same machine</param>
-        /// <param name="customData">Any custom data to store with the exception like UserId, etc...this will be rendered as JSON in the error view for script use</param>
-        public static Error LogExceptionWithoutContext(Exception ex, bool appendFullStackTrace = false, bool rollupPerServer = false, Dictionary<string, string> customData = null)
-        {
-            return LogException(ex, null, appendFullStackTrace, rollupPerServer, customData);
-        }
-
-        /// <summary>
-        /// Logs an exception to the configured error store, or the in-memory default store if none is configured
-        /// </summary>
-        /// <param name="ex">The exception to log</param>
-        /// <param name="context">The HTTPContext to record variables from.  If this isn't a web request, pass <see langword="null" /> in here</param>
-        /// <param name="appendFullStackTrace">Whether to append a full stack trace to the exception's detail</param>
-        /// <param name="rollupPerServer">Whether to log up per-server, e.g. errors are only duplicates if they have same stack on the same machine</param>
-        /// <param name="customData">Any custom data to store with the exception like UserId, etc...this will be rendered as JSON in the error view for script use</param>
-        /// <param name="applicationName">If specified, the application name to log with, if not specified the name in the config is used</param>
-        /// <returns>The Error created, if one was created and logged, null if nothing was logged</returns>
-        /// <remarks>
-        /// When dealing with a non web requests, pass <see langword="null" /> in for context.  
-        /// It shouldn't be forgotten for most web application usages, so it's not an optional parameter.
-        /// </remarks>
-        public static Error LogException(Exception ex, HttpContext context, bool appendFullStackTrace = false, bool rollupPerServer = false, Dictionary<string, string> customData = null, string applicationName = null)
-        {
-            if (!_enableLogging) return null;
-            try
-            {
-                if (IgnoreRegexes.Any(re => re.IsMatch(ex.ToString())))
-                    return null;
-                if (IgnoreExceptions.Any(type => IsDescendentOf(ex.GetType(), type.ToString())))
-                    return null;
-
-                if (customData == null && GetCustomData != null)
-                {
-                    customData = new Dictionary<string, string>();
-                    try
-                    {
-                        GetCustomData(ex, context, customData);
-                    }
-                    catch (Exception cde)
-                    {
-                        // if there was an error getting custom errors, log it so we can display such in the view...and not fail to log the original error
-                        customData.Add(CustomDataErrorKey, cde.ToString());
-                    }
-                }
-
-                var error = new Error(ex, context, applicationName)
-                                {
-                                    RollupPerServer = rollupPerServer,
-                                    CustomData = customData ?? new Dictionary<string, string>()
-                                };
-
-                if (GetIPAddress != null)
-                {
-                    try
-                    {
-                        error.IPAddress = GetIPAddress();
-                    }
-                    catch (Exception gipe)
-                    {
-                        // if there was an error getting the IP, log it so we can display such in the view...and not fail to log the original error
-                        error.CustomData.Add(CustomDataErrorKey, "Fetching IP Adddress: " + gipe);
-                    }
-                }
-
-                var exCursor = ex;
-                while (exCursor != null)
-                {
-                    error.AddFromData(exCursor);
-                    exCursor = exCursor.InnerException;
-                }
-
-                if (appendFullStackTrace)
-                {
-                    var frames = new StackTrace(fNeedFileInfo: true).GetFrames();
-                    if (frames != null && frames.Length > 2)
-                        error.Detail += "\n\nFull Trace:\n\n" + string.Join("", frames.Skip(2));
-                    error.ErrorHash = error.GetHash();
-                }
-
-                if (OnBeforeLog != null)
-                {
-                    try
-                    {
-                        var args = new ErrorBeforeLogEventArgs(error);
-                        OnBeforeLog(Default, args);
-                        if (args.Abort) return null; // if we've been told to abort, then abort dammit!
-                    }
-                    catch (Exception e)
-                    {
-                        Trace.WriteLine(e);
-                    }
-                }
-
-                Trace.WriteLine(ex); // always echo the error to trace for local debugging
-                Default.Log(error);
-
-                if (OnAfterLog != null)
-                {
-                    try
-                    {
-                        OnAfterLog(Default, new ErrorAfterLogEventArgs(error));
-                    }
-                    catch (Exception e)
-                    {
-                        Trace.WriteLine(e);
-                    }
-                }
-                return error;
-            }
-            catch (Exception e)
-            {
-                Trace.WriteLine(e);
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Returns true if t is of className, or descendent from className
-        /// </summary>
-        private static bool IsDescendentOf(Type t, string className)
-        {
-            if (t.FullName == className) return true;
-
-            return t.BaseType != null && IsDescendentOf(t.BaseType, className);
         }
 
         /// <summary>

@@ -1,15 +1,15 @@
-﻿using System;
+﻿using StackExchange.Exceptional.Internal;
+using System;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Mail;
-using StackExchange.Exceptional.Extensions;
 
 namespace StackExchange.Exceptional.Email
 {
     /// <summary>
     /// Error emailing handler
     /// </summary>
-    public class ErrorEmailer
+    public static class ErrorEmailer
     {
         /// <summary>
         /// Address to send messages to
@@ -31,7 +31,7 @@ namespace StackExchange.Exceptional.Email
         static ErrorEmailer()
         {
             // Override with exceptional specific settings (user may want this mail to go to another place, or only specify mail settings here, etc.)
-            var eSettings = Settings.Current.Email;
+            var eSettings = ExceptionalSettings.Current.Email;
             Setup(eSettings);
         }
 
@@ -39,7 +39,7 @@ namespace StackExchange.Exceptional.Email
         /// Configure the emailer - note that if config isn't valid this sill silently fail
         /// </summary>
         /// <param name="eSettings">Settings to use to configure error emailing</param>
-        public static void Setup(IEmailSettings eSettings)
+        public static void Setup(ExceptionalSettings.EmailSettings eSettings)
         {
             if (!eSettings.ToAddress.HasValue())
             {
@@ -64,7 +64,6 @@ namespace StackExchange.Exceptional.Email
 
             PreventDuplicates = eSettings.PreventDuplicates;
             Enabled = true;
-            
         }
 
         /// <summary>
@@ -78,7 +77,6 @@ namespace StackExchange.Exceptional.Email
             if (PreventDuplicates && error.IsDuplicate) return;
             try
             {
-
                 using (var message = new MailMessage())
                 {
                     message.To.Add(ToAddress);
@@ -113,8 +111,8 @@ namespace StackExchange.Exceptional.Email
 
         private static string GetErrorHtml(Error error)
         {
-            var razorView = new ErrorEmail {error = error};
-            return razorView.TransformText();
+            var email = new ErrorEmail (error);
+            return email.Render();
         }
     }
 }

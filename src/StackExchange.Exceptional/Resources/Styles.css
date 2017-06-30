@@ -1,20 +1,33 @@
-body { 
-    font-size: 75%;
-    font-family: Verdana, Tahoma, Arial, "Helvetica Neue", Helvetica, Sans-Serif;
+html, body {
+    height: 100%;
+    font-size: 11px;
+    font-family: sans-serif;
     color: #232323;
     background-color: white;
     padding: 0;
     margin: 0;
 }
-h1 { font-size: 22px; color: Maroon; font-weight:bold; margin: 0.5em 0; }
-footer {
-	padding: 10px;
-	color: #ccc;
-    font-size: 0.9em;
-    overflow: auto;
+.wrapper { min-height: 100%; margin-bottom: -45px; }
+h1 {
+    font-size: 20px;
+    font-weight: normal;
+    color: Maroon;
+    margin: 0.3em 0;
 }
+h1 span {
+    font-size: 12px;
+    color: #888;
+}
+footer {
+    color: #888;
+    height: 25px;
+    padding: 10px;
+    overflow: hidden;
+}
+.bottom { height: 25px; }
+.empty { text-align: center; color: #888; margin-top: 50px; }
+.empty h1 { color: #3a965c; }
 .version-info { float:right; color:#bbb; }
-.server-time { font-size:100%; }
 
 a { color: #0033CC; }
 table { width: 100%; border-collapse: collapse; }
@@ -23,18 +36,17 @@ th { text-align: left; padding: 0.4em; color: #555555; vertical-align: top; }
 pre { font-family: Consolas, Monaco, monospace; }
 p { margin: 0; padding: 0; margin-bottom:0.5em; }
 
-#top-header {
+header {
     color: white;
-    padding: 4px 0;
+    font-size: 14px;
+    padding: 4px;
     -moz-box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5);
     box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5);
-    background: transparent url('top-bg.png') repeat-x left top;
+    background: repeating-linear-gradient(45deg,#282D4D,#282D4D 2px,#2A3A5C 2px,#2A3A5C 3px);
     color: white;
 }
-#top-header.failure { background: transparent url('top-bg-fail.png') repeat-x left top; }
-
-#top-header .top-label {
-    padding-left: 5px;
+header.failure {
+    background: repeating-linear-gradient(45deg,#c94c4c,#c94c4c 2px,#bf3838 2px,#bf3838 3px);
 }
 
 .failure-mode {
@@ -51,6 +63,7 @@ p { margin: 0; padding: 0; margin-bottom:0.5em; }
 #content {
     padding: 8px 5px 5px 5px;
     margin: 0 auto;
+    min-height: 100%;
 }
 
 #ErrorLog {
@@ -62,8 +75,7 @@ p { margin: 0; padding: 0; margin-bottom:0.5em; }
     border-bottom: solid 1px #ECECEC;
 }
 
-#ErrorLog thead tr th { white-space: nowrap; }
-
+#ErrorLog thead tr th {  white-space: nowrap; }
 .alt-rows tbody tr:nth-child(even), .even-row { background-color: white; }
 .alt-rows tbody tr:nth-child(odd), .odd-row { background-color: #F2F2F2; }
 .alt-rows tbody tr td {
@@ -73,15 +85,13 @@ p { margin: 0; padding: 0; margin-bottom:0.5em; }
     border-top: solid 1px transparent;
     border-bottom: solid 1px transparent;
 }
-
 .alt-rows tbody tr.error td:nth-child(2) {
     -moz-user-select: none;
     -ms-user-select: none;
     -webkit-user-select: none;
     user-select: none;
 }
-.alt-rows tbody tr.error.selected td
-{
+.alt-rows tbody tr.error.selected td {
     background-color: #ffffcc;
 }
 .alt-rows tbody tr:hover td {
@@ -96,7 +106,6 @@ p { margin: 0; padding: 0; margin-bottom:0.5em; }
     white-space: normal;
 }
 .hidden { display:none; }
-
 .type-col { font-weight: bold; }
 .code-col, .date-col, .time-col { text-align: right; }
 
@@ -127,7 +136,7 @@ p { margin: 0; padding: 0; margin-bottom:0.5em; }
 .error-detail {
     background-color: #ffffcc;
     padding: 1em;
-    overflow: scroll;
+    overflow: auto;
     font: Consolas, monospace;
 }
 .sql-detail { background-color: #eee; padding: 8px; }
@@ -153,7 +162,6 @@ p { margin: 0; padding: 0; margin-bottom:0.5em; }
 	color:Maroon;
 	font-weight:bold;
 }
-
 .loading {
     background: url('loading.gif') no-repeat center center;
     text-indent: -99999px;

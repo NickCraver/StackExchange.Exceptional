@@ -3,125 +3,92 @@ using System.Configuration;
 
 namespace StackExchange.Exceptional
 {
-    public partial class Settings
+    internal partial class Settings
     {
         /// <summary>
         /// The ErrorStore section of the configuration, optional and will default to a MemoryErrorStore if not specified
         /// </summary>
         [ConfigurationProperty("Email")]
         public EmailSettingsConfig Email => this["Email"] as EmailSettingsConfig;
-    }
-
-
-    /// <summary>
-    /// Interface for email settings, either direct or from a config
-    /// </summary>
-    public interface IEmailSettings
-    {
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="ToAddress"]/*' />
-        string ToAddress { get; }
-
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="FromAddress"]/*' />
-        string FromAddress { get; }
-
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="FromDisplayName"]/*' />
-        string FromDisplayName { get; }
-
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPHost"]/*' />
-        string SMTPHost { get; }
-
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPPort"]/*' />
-        /// 
-        int SMTPPort { get; }
-
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPUserName"]/*' />
-        string SMTPUserName { get; }
-
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPPassword"]/*' />
-        string SMTPPassword { get; }
-
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPEnableSSL"]/*' />
-        bool SMTPEnableSSL { get; }
-
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="PreventDuplicates"]/*' />
-        bool PreventDuplicates { get; }
-    }
-    
-    /// <summary>
-    /// Email settings configuration, for configuring Email sending from code
-    /// </summary>
-    public class EmailSettings : IEmailSettings
-    {
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="ToAddress"]/*' />
-        public string ToAddress { get; set; }
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="FromAddress"]/*' />
-        public string FromAddress { get; set; }
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="FromDisplayName"]/*' />
-        public string FromDisplayName { get; set; }
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPHost"]/*' />
-        public string SMTPHost { get; set; }
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPPort"]/*' />
-        public int SMTPPort { get; set; }
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPUserName"]/*' />
-        public string SMTPUserName { get; set; }
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPPassword"]/*' />
-        public string SMTPPassword { get; set; }
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPEnableSSL"]/*' />
-        public bool SMTPEnableSSL { get; set; }
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="PreventDuplicates"]/*' />
-        public bool PreventDuplicates { get; set; }
 
         /// <summary>
-        /// Creates an email settings object defaulting the SMTP port to 25
+        /// A settings object describing email properties
         /// </summary>
-        public EmailSettings()
+        public class EmailSettingsConfig : ConfigurationElement
         {
-            SMTPPort = 25;
-        }
-    }
+            /// <summary>
+            /// The address to send email messages to.
+            /// </summary>
+            [ConfigurationProperty("toAddress", IsRequired = true)]
+            public string ToAddress => this["toAddress"] as string;
 
-    /// <summary>
-    /// A settings object describing email properties
-    /// </summary>
-    public class EmailSettingsConfig : ConfigurationElement, IEmailSettings
-    {
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="ToAddress"]/*' />
-        [ConfigurationProperty("toAddress", IsRequired = true)]
-        public string ToAddress => this["toAddress"] as string;
+            /// <summary>
+            /// The address to send email messages from.
+            /// </summary>
+            [ConfigurationProperty("fromAddress")]
+            public string FromAddress => this["fromAddress"] as string;
 
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="FromAddress"]/*' />
-        [ConfigurationProperty("fromAddress")]
-        public string FromAddress => this["fromAddress"] as string;
+            /// <summary>
+            /// The display name to send email messages from.
+            /// </summary>
+            [ConfigurationProperty("fromDisplayName")]
+            public string FromDisplayName => this["fromDisplayName"] as string;
 
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="FromDisplayName"]/*' />
-        [ConfigurationProperty("fromDisplayName")]
-        public string FromDisplayName => this["fromDisplayName"] as string;
+            /// <summary>
+            /// The SMTP server to send mail through.
+            /// </summary>
+            [ConfigurationProperty("smtpHost")]
+            public string SMTPHost => this["smtpHost"] as string;
 
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPHost"]/*' />
-        [ConfigurationProperty("smtpHost")]
-        public string SMTPHost => this["smtpHost"] as string;
+            /// <summary>
+            /// The port to send mail on (if SMTP server is specified via <see cref="SMTPHost"/>).
+            /// Default is 25
+            /// </summary>
+            [ConfigurationProperty("smtpPort"), DefaultValue(typeof(int), "25")]
+            public int SMTPPort => (int)this["smtpPort"];
 
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPPort"]/*' />
-        [ConfigurationProperty("smtpPort"), DefaultValue(typeof (int), "25")]
-        public int SMTPPort => (int)this["smtpPort"];
+            /// <summary>
+            /// The SMTP username to use, if authentication is needed
+            /// </summary>
+            [ConfigurationProperty("smtpUserName")]
+            public string SMTPUserName => this["smtpUserName"] as string;
 
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPUserName"]/*' />
-        [ConfigurationProperty("smtpUserName")]
-        public string SMTPUserName => this["smtpUserName"] as string;
+            /// <summary>
+            /// The SMTP password to use, if authentication is needed.
+            /// </summary>
+            [ConfigurationProperty("smtpPassword")]
+            public string SMTPPassword => this["smtpPassword"] as string;
 
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPPassword"]/*' />
-        [ConfigurationProperty("smtpPassword")]
-        public string SMTPPassword => this["smtpPassword"] as string;
+            /// <summary>
+            /// Whether to use SSL when sending via SMTP.
+            /// </summary>
+            [ConfigurationProperty("smtpEnableSsl"), DefaultValue(typeof(bool), "false")]
+            public bool SMTPEnableSSL => (bool)this["smtpEnableSsl"];
 
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="SMTPEnableSSL"]/*' />
-        [ConfigurationProperty("smtpEnableSsl"), DefaultValue(typeof(bool), "false")]
-        public bool SMTPEnableSSL => (bool)this["smtpEnableSsl"];
+            /// <summary>
+            /// Flags whether or not emails are sent for duplicate errors.
+            /// </summary>
+            [ConfigurationProperty("preventDuplicates"), DefaultValue(typeof(bool), "false")]
+            public bool PreventDuplicates => (bool)this["preventDuplicates"];
 
-        /// <include file='SharedDocs.xml' path='SharedDocs/IEmailSettings/Member[@name="PreventDuplicates"]/*' />
-        [ConfigurationProperty("preventDuplicates"), DefaultValue(typeof(bool), "false")]
-        public bool PreventDuplicates
-        {
-            get { return (bool)this["preventDuplicates"]; }
+            /// <summary>
+            /// Runs after deserialization, to populate <see cref="ExceptionalSettings.Email"/>.
+            /// </summary>
+            protected override void PostDeserialize()
+            {
+                base.PostDeserialize();
+
+                var s = ExceptionalSettings.Current.Email;
+                s.ToAddress = ToAddress;
+                s.FromAddress = FromAddress;
+                s.FromDisplayName = FromDisplayName;
+                s.SMTPHost = SMTPHost;
+                s.SMTPPort = SMTPPort;
+                s.SMTPUserName = SMTPUserName;
+                s.SMTPPassword = SMTPPassword;
+                s.SMTPEnableSSL = SMTPEnableSSL;
+                s.PreventDuplicates = PreventDuplicates;
+            }
         }
     }
 }

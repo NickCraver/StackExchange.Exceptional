@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using StackExchange.Exceptional.Handlers;
+using StackExchange.Exceptional.Internal;
 using StackExchange.Exceptional.Pages;
-using StackExchange.Exceptional.Extensions;
 
 namespace StackExchange.Exceptional
 {
@@ -15,14 +15,16 @@ namespace StackExchange.Exceptional
     /// </summary>
     public class HandlerFactory : IHttpHandlerFactory
     {
+        static HandlerFactory() => Settings.LoadSettings();
+
         /// <summary>
-        /// Gets the HttpHandler for executing the request, used to proxy requests through here (e.g. MVC) or by the HttpModule directly
+        /// Gets the HttpHandler for executing the request, used to proxy requests through here (e.g. MVC) or by the HttpModule directly.
         /// </summary>
-        /// <param name="context">The HTTPContext for the request</param>
-        /// <param name="requestType">The type of request, GET/POST</param>
-        /// <param name="url">The URL of the request</param>
-        /// <param name="pathTranslated">The translated path of the request</param>
-        /// <returns>The HTTPHandler that can execute the request</returns>
+        /// <param name="context">The HTTPContext for the request.</param>
+        /// <param name="requestType">The type of request, GET/POST.</param>
+        /// <param name="url">The URL of the request.</param>
+        /// <param name="pathTranslated">The translated path of the request.</param>
+        /// <returns>The HTTPHandler that can execute the request.</returns>
         public virtual IHttpHandler GetHandler(HttpContext context, string requestType, string url, string pathTranslated)
         {
             // In MVC requests, PathInfo isn't set - determine via Path..
@@ -38,20 +40,21 @@ namespace StackExchange.Exceptional
                     return Enumerable.Empty<Guid>();
                 };
 
-            switch(context.Request.HttpMethod)
+            string errorGuid;
+
+            switch (context.Request.HttpMethod)
             {
                 // The chrome team, in their infinite wisdom, started pre-fetching URLs, making /delete-all being a GET a PITA
                 case "POST":
                     switch (resource.ToLower(CultureInfo.InvariantCulture))
                     {
                         case "delete":
-                            string errorGuid = context.Request.Form["guid"] ?? "";
+                            errorGuid = context.Request.Form["guid"] ?? "";
                             bool result = false;
                             if (errorGuid.HasValue())
                             {
                                 result = ErrorStore.Default.Delete(errorGuid.ToGuid());
                             }
-
                             return JSONPHandler(context, result) ?? new RedirectHandler(context.Request.Path.Replace("/delete", ""), false);
 
                         case "delete-all":
@@ -60,7 +63,7 @@ namespace StackExchange.Exceptional
 
                         case "delete-list":
                             bool delListResult = ErrorStore.Default.DeleteList(getFormGuids());
-                            return new ContentHandler(new { result = delListResult }.ToJson(), "text/javascript");
+                            return JsonResult(delListResult);
 
                         case "protect":
                             // send back a "true" or "false" - this will be handled in javascript
@@ -69,7 +72,7 @@ namespace StackExchange.Exceptional
 
                         case "protect-list":
                             bool protectListResult = ErrorStore.Default.ProtectList(getFormGuids());
-                            return new ContentHandler(new { result = protectListResult }.ToJson(), "text/javascript");
+                            return JsonResult(protectListResult);
 
                         default:
                             return new ContentHandler("Invalid POST Request", "text/html");
@@ -78,15 +81,17 @@ namespace StackExchange.Exceptional
                     switch (resource.ToLower(CultureInfo.InvariantCulture))
                     {
                         case "delete":
-                            string errorGuid = context.Request.QueryString["guid"] ?? "";
+                            errorGuid = context.Request.QueryString["guid"] ?? "";
                             if (errorGuid.HasValue())
                             {
                                 ErrorStore.Default.Delete(errorGuid.ToGuid());
                             }
-                            return new RedirectHandler(context.Request.Path.Replace("/delete", ""), true);
+                            return new RedirectHandler(TrimEnd(context.Request.Path, "/delete"), true);
 
                         case "info":
-                            return new ErrorInfo { Guid = context.Request.QueryString["guid"].ToGuid() };
+                            errorGuid = context.Request.QueryString["guid"] ?? "";
+                            var error = errorGuid.HasValue() ? ErrorStore.Default.Get(errorGuid.ToGuid()) : null;
+                            return Render(new ErrorDetailPage(error, ErrorStore.Default, TrimEnd(context.Request.Path, "/info")));
 
                         case "json":
                             return new ErrorJsonHandler();
@@ -97,17 +102,8 @@ namespace StackExchange.Exceptional
                         case "js":
                             return new ResourceHandler("Scripts.js", "text/javascript");
 
-                        case "html5shiv":
-                            return new ResourceHandler("html5shiv.js", "text/javascript");
-
-                        case "top-bg.png":
-                            return new ResourceHandler("top-bg.png", "image/png");
-
                         case "loading.gif":
                             return new ResourceHandler("loading.gif", "image/gif");
-
-                        case "top-bg-fail.png":
-                            return new ResourceHandler("top-bg-fail.png", "image/png");
 
                         case "test":
                             throw new Exception("This is a test. Please disregard. If this were a real emergency, it'd have a different message.");
@@ -115,12 +111,21 @@ namespace StackExchange.Exceptional
                         default:
                             context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
                             context.Response.Cache.SetNoStore();
-                            return new ErrorList();
+                            return Render(new ErrorListPage(ErrorStore.Default, url));
                     }
                 default:
                     return new ContentHandler("Unsupported request method: " + context.Request.HttpMethod, "text/html");
             }
         }
+
+        private string TrimEnd(string s, string value) =>
+            s.EndsWith(value) ? s.Remove(s.LastIndexOf(value, StringComparison.Ordinal)) : s;
+
+        private ContentHandler JsonResult(bool result) =>
+            new ContentHandler($@"{{""result"":{(result ? "true" : "false")}}}", "text/javascript");
+
+        private ContentHandler Render(WebPage page) =>
+            new ContentHandler(page.Render(), "text/html");
 
         private IHttpHandler JSONPHandler(HttpContext context, bool result)
         {
@@ -135,6 +140,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Enables the factory to reuse an existing handler instance.
         /// </summary>
+        /// <param name="handler">The handler to release.</param>
         public virtual void ReleaseHandler(IHttpHandler handler) { }
     }
 }

@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+  <PropertyGroup>
+    <AssemblyName>StackExchange.Exceptional.Shared</AssemblyName>
+    <Description>You shouldn't reference this - Exceptional's shared library for all frameworks</Description>
+    <TargetFrameworks>net45</TargetFrameworks>
+    <RootNamespace>StackExchange.Exceptional</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="1.50.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <EmbeddedResource Include="Resources\*" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Transactions" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="ErrorStore.*.cs">
+      <DependentUpon>ErrorStore.cs</DependentUpon>
+    </Compile>
+    <Compile Update="ExceptionalSettings.*.cs">
+      <DependentUpon>ExceptionalSettings.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+</Project>

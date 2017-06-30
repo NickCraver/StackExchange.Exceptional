@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using StackExchange.Exceptional.Extensions;
+using StackExchange.Exceptional.Internal;
 
 namespace StackExchange.Exceptional.Stores
 {
@@ -18,12 +18,12 @@ namespace StackExchange.Exceptional.Stores
         /// <summary>
         /// The maximum count of errors stored before the first is overwritten.
         /// </summary>
-        public const int MaximumSize = 500;
+        public const int MaximumSize = 1000;
 
         /// <summary>
         /// The default maximum count of errors stored before the first is overwritten.
         /// </summary>        
-        public const int DefaultSize = 200;
+        public const int DefaultSize = 250;
 
         /// <summary>
         /// Creates a new instance of <see cref="MemoryErrorStore"/> with defaults.
@@ -33,6 +33,7 @@ namespace StackExchange.Exceptional.Stores
         /// <summary>
         /// Creates a new instance of <see cref="MemoryErrorStore"/> with the given size.
         /// </summary>
+        /// <param name="settings">The <see cref="ErrorStoreSettings"/> for this store.</param>  
         public MemoryErrorStore(ErrorStoreSettings settings) : base(settings)
         {
             _size = Math.Min(settings.Size, MaximumSize);
@@ -42,8 +43,11 @@ namespace StackExchange.Exceptional.Stores
         /// Creates a new instance of <see cref="MemoryErrorStore"/> with the given size.
         /// </summary>
         /// <param name="size">How many errors to limit the log to, the size+1th error (oldest) will be removed if exceeded</param>
-        /// <param name="rollupSeconds">The rollup seconds, defaults to <see cref="ErrorStore.DefaultRollupSeconds"/>, duplicate errors within this time period will be rolled up</param>
-        public MemoryErrorStore(int size = DefaultSize, int rollupSeconds = DefaultRollupSeconds) : base(rollupSeconds)
+        public MemoryErrorStore(int size = DefaultSize)
+            : base(new ErrorStoreSettings()
+            {
+                Size = size
+            })
         {
             _size = Math.Min(size, MaximumSize);
         }
@@ -62,7 +66,7 @@ namespace StackExchange.Exceptional.Stores
         {
             lock (_lock)
             {
-                var error = _errors.FirstOrDefault(e => e.GUID == guid);
+                var error = _errors.Find(e => e.GUID == guid);
                 if (error != null)
                 {
                     error.IsProtected = true;
@@ -84,10 +88,11 @@ namespace StackExchange.Exceptional.Stores
                 return _errors.RemoveAll(e => e.GUID == guid) > 0;
             }
         }
-        
+
         /// <summary>
         /// Deleted all errors in the log, by clearing the in-memory log
         /// </summary>
+        /// <param name="applicationName">The name of the application to delete all errors for.</param>
         /// <returns>True in all cases</returns>
         protected override bool DeleteAllErrors(string applicationName = null)
         {
@@ -113,10 +118,10 @@ namespace StackExchange.Exceptional.Stores
                 if (_errors == null)
                     _errors = new List<Error>(_size);
 
-                if (RollupThreshold.HasValue && _errors.Count > 0)
+                if (Settings.RollupPeriod.HasValue && _errors.Count > 0)
                 {
-                    var minDate = DateTime.UtcNow.Add(RollupThreshold.Value.Negate());
-                    var dupe = _errors.FirstOrDefault(e => e.ErrorHash == error.ErrorHash && e.CreationDate > minDate);
+                    var minDate = DateTime.UtcNow.Subtract(Settings.RollupPeriod.Value);
+                    var dupe = _errors.Find(e => e.ErrorHash == error.ErrorHash && e.CreationDate > minDate);
                     if (dupe != null)
                     {
                         dupe.DuplicateCount += error.DuplicateCount;
@@ -127,7 +132,7 @@ namespace StackExchange.Exceptional.Stores
 
                 if (_errors.Count >= _size)
                 {
-                    _errors.Remove(_errors.FirstOrDefault(e => !e.IsProtected));
+                    _errors.Remove(_errors.Find(e => !e.IsProtected));
                 }
 
                 _errors.Add(error);
@@ -143,18 +148,19 @@ namespace StackExchange.Exceptional.Stores
         {
             lock (_lock)
             {
-                return _errors == null ? null : _errors.FirstOrDefault(e => e.GUID == guid);
+                return _errors?.FirstOrDefault(e => e.GUID == guid);
             }
         }
 
         /// <summary>
         /// Retrieves all of the errors in the log
         /// </summary>
-        protected override int GetAllErrors(List<Error> errors, string applicationName = null)
+        /// <param name="applicationName">The name of the application to get all errors for.</param>
+        protected override List<Error> GetAllErrors(string applicationName = null)
         {
             lock (_lock)
             {
-                if (_errors == null) return 0;
+                if (_errors == null) return new List<Error>();
 
                 IEnumerable<Error> result = _errors;
                 if (applicationName.HasValue())
@@ -162,14 +168,15 @@ namespace StackExchange.Exceptional.Stores
                     result = result.Where(e => e.ApplicationName == applicationName);
                 }
 
-                errors.AddRange(result.Select(e => e.Clone()));
-                return _errors.Count;
+                return result.Select(e => e.Clone()).ToList();
             }
         }
 
         /// <summary>
         /// Retrieves a count of application errors since the specified date, or all time if null
         /// </summary>
+        /// <param name="since">The date to get errors since.</param>
+        /// <param name="applicationName">The application name to get an error count for.</param>
         protected override int GetErrorCount(DateTime? since = null, string applicationName = null)
         {
             lock (_lock)
@@ -183,7 +190,6 @@ namespace StackExchange.Exceptional.Stores
                 }
 
                 return !since.HasValue ? _errors.Count : _errors.Count(e => e.CreationDate >= since);
-
             }
         }
     }

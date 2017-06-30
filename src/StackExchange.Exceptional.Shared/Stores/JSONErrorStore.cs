@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System;
 using System.Text.RegularExpressions;
-using StackExchange.Exceptional.Extensions;
+using StackExchange.Exceptional.Internal;
 
 namespace StackExchange.Exceptional.Stores
 {
@@ -13,6 +13,11 @@ namespace StackExchange.Exceptional.Stores
     /// </summary>
     public sealed class JSONErrorStore : ErrorStore
     {
+        /// <summary>
+        /// Name for this error store
+        /// </summary>
+        public override string Name => "JSON File Error Store";
+
         private readonly string _path;
         private readonly int _size = DefaultSize;
 
@@ -27,30 +32,27 @@ namespace StackExchange.Exceptional.Stores
         public const int DefaultSize = 200;
 
         /// <summary>
+        /// Creates a new instance of <see cref="JSONErrorStore"/> with the specified path string.
+        /// </summary>
+        /// <param name="path">The folder path to use to store errors</param>
+        /// <param name="size">How many errors to limit the log to, the size+1th error (oldest) will be removed if exceeded</param>
+        public JSONErrorStore(string path, int size = DefaultSize)
+            : this(new ErrorStoreSettings
+            {
+                Path = path,
+                Size = size
+            })
+        { }
+
+        /// <summary>
         /// Creates a new instance of <see cref="JSONErrorStore"/> with the given configuration.
-        /// </summary>        
+        /// </summary>
+        /// <param name="settings">The <see cref="ErrorStoreSettings"/> for this store.</param>    
         public JSONErrorStore(ErrorStoreSettings settings) : base(settings)
         {
             _size = Math.Min(settings.Size, MaximumSize);
             _path = settings.Path.ResolvePath();
         }
-
-        /// <summary>
-        /// Creates a new instance of <see cref="JSONErrorStore"/> with the specified path string.
-        /// </summary>
-        /// <param name="path">The folder path to use to store errors</param>
-        /// <param name="size">How many errors to limit the log to, the size+1th error (oldest) will be removed if exceeded</param>
-        /// <param name="rollupSeconds">The rollup seconds, defaults to <see cref="ErrorStore.DefaultRollupSeconds"/>, duplicate errors within this time period will be rolled up</param>
-        public JSONErrorStore(string path, int size = DefaultSize, int rollupSeconds = DefaultRollupSeconds) : base(rollupSeconds)
-        {
-            _size = Math.Min(size, MaximumSize);
-            _path = path.ResolvePath();
-        }
-
-        /// <summary>
-        /// Name for this error store
-        /// </summary>
-        public override string Name => "JSON File Error Store";
 
         /// <summary>
         /// Protects an error from deletion, by making it ReadOnly
@@ -59,8 +61,7 @@ namespace StackExchange.Exceptional.Stores
         /// <returns>True if the error was found and proected, false otherwise</returns>
         protected override bool ProtectError(Guid guid)
         {
-            FileInfo f;
-            if (!TryGetErrorFile(guid, out f))
+            if (!TryGetErrorFile(guid, out FileInfo f))
                 return false;
 
             f.Attributes |= FileAttributes.ReadOnly;
@@ -74,11 +75,10 @@ namespace StackExchange.Exceptional.Stores
         /// <returns>True if the error was found and deleted, false otherwise</returns>
         protected override bool DeleteError(Guid guid)
         {
-            FileInfo f;
-            if (!TryGetErrorFile(guid, out f))
+            if (!TryGetErrorFile(guid, out FileInfo f))
                 return false;
 
-            if (f.IsReadOnly) 
+            if (f.IsReadOnly)
                 f.Attributes ^= FileAttributes.ReadOnly;
 
             f.Delete();
@@ -88,6 +88,7 @@ namespace StackExchange.Exceptional.Stores
         /// <summary>
         /// Deleted all errors in the log, by clearing all *.json files in the folder
         /// </summary>
+        /// <param name="applicationName">The name of the application to delete all errors for.</param>
         /// <returns>True if any errors were deleted, false otherwise</returns>
         protected override bool DeleteAllErrors(string applicationName = null)
         {
@@ -134,18 +135,16 @@ namespace StackExchange.Exceptional.Stores
         {
             // will allow fast comparisons of messages to see if we can ignore an incoming exception
             var detailHash = error.ErrorHash?.ToString() ?? "no-stack-trace";
-            Error original;
 
             // before we persist 'error', see if there are any existing errors that it could be a duplicate of
-            if (TryFindOriginalError(detailHash, out original))
+            if (TryFindOriginalError(detailHash, out Error original))
             {
                 // just update the existing file after incrementing its "duplicate count"
                 original.DuplicateCount = original.DuplicateCount.GetValueOrDefault(0) + error.DuplicateCount;
                 error.GUID = original.GUID;
 
-                FileInfo f;
-                if (!TryGetErrorFile(original.GUID, out f))
-                    throw new ArgumentOutOfRangeException("Unable to find a file for error with GUID = " + original.GUID);
+                if (!TryGetErrorFile(original.GUID, out FileInfo f))
+                    throw new ArgumentOutOfRangeException("Unable to find a file for error with GUID = " + original.GUID.ToString());
 
                 using (var stream = f.Open(FileMode.Create))
                 using (var writer = new StreamWriter(stream))
@@ -184,20 +183,20 @@ namespace StackExchange.Exceptional.Stores
         protected override Error GetError(Guid guid)
         {
             string[] fileList = Directory.GetFiles(_path, $"*{guid.ToFileName()}.json");
-            
+
             if (fileList.Length < 1)
                 return null;
-            
+
             return Get(fileList[0]);
         }
 
         private Error Get(string path)
         {
-            if (path.IsNullOrEmpty()) 
+            if (path.IsNullOrEmpty())
                 return null;
-            
+
             var file = new FileInfo(path);
-            if (!file.Exists) 
+            if (!file.Exists)
                 return null;
 
             try
@@ -220,11 +219,12 @@ namespace StackExchange.Exceptional.Stores
         /// <summary>
         /// Retrieves all of the errors in the log folder
         /// </summary>
-        protected override int GetAllErrors(List<Error> errors, string applicationName = null)
+        /// <param name="applicationName">The name of the application to get all errors for.</param>
+        protected override List<Error> GetAllErrors(string applicationName = null)
         {
             string[] files = Directory.GetFiles(_path, "*.json");
 
-            if (files.Length < 1) return 0;
+            if (files.Length < 1) return new List<Error>();
 
             Array.Sort(files);
             Array.Reverse(files);
@@ -235,14 +235,14 @@ namespace StackExchange.Exceptional.Stores
                 result = result.Where(e => e.ApplicationName == applicationName);
             }
 
-            errors.AddRange(result);
-
-            return files.Length;
+            return result.ToList();
         }
 
         /// <summary>
         /// Retrieves a count of application errors since the specified date, or all time if null
         /// </summary>
+        /// <param name="since">The date to get errors since.</param>
+        /// <param name="applicationName">The application name to get an error count for.</param>
         protected override int GetErrorCount(DateTime? since = null, string applicationName = null)
         {
             string[] fileList = Directory.GetFiles(_path, "*.json");
@@ -266,7 +266,7 @@ namespace StackExchange.Exceptional.Stores
             }
             return i;
         }
-        
+
         private bool TryGetErrorFile(Guid guid, out FileInfo file)
         {
             string[] fileList = Directory.GetFiles(_path, $"*{guid.ToFileName()}.json");
@@ -280,13 +280,15 @@ namespace StackExchange.Exceptional.Stores
             file = new FileInfo(fileList[0]);
             return true;
         }
-        
+
         /// <summary>
         /// Answers the older exception that 'possibleDuplicate' matches, returning null if no match is found.
         /// </summary>
+        /// <param name="messageHash">The hash of the error message (located in the filename).</param>
+        /// <param name="original">The original error, if found. Null if no matches are found.</param>
         private bool TryFindOriginalError(string messageHash, out Error original)
         {
-            if (!RollupThreshold.HasValue || RollupThreshold.Value.Ticks == 0)
+            if (!Settings.RollupPeriod.HasValue || Settings.RollupPeriod == TimeSpan.Zero)
             {
                 original = null;
                 return false;
@@ -296,7 +298,7 @@ namespace StackExchange.Exceptional.Stores
 
             if (files.Length > 0)
             {
-                var earliestDate = DateTime.UtcNow.Add(RollupThreshold.Value.Negate());
+                var earliestDate = DateTime.UtcNow.Subtract(Settings.RollupPeriod.Value);
 
                 // order by newest
                 Array.Sort(files);
@@ -318,7 +320,9 @@ namespace StackExchange.Exceptional.Stores
                         }
                     }
                     else
+                    {
                         break; // no other files are newer, no use checking
+                    }
                 }
             }
 
@@ -331,7 +335,7 @@ namespace StackExchange.Exceptional.Stores
             string[] files = Directory.GetFiles(_path, "error*.*");
 
             if (files.Length <= _size) return; // room left below the cap
-            
+
             Array.Sort(files); // sort by timestamps
 
             // we'll remove any errors with index less than this upper bound

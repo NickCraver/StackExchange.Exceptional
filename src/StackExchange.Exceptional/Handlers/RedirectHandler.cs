@@ -4,8 +4,8 @@ namespace StackExchange.Exceptional.Handlers
 {
     internal sealed class RedirectHandler : IHttpHandler
     {
-        private string _url;
-        private bool _redirectIfAjax;
+        private readonly string _url;
+        private readonly bool _redirectIfAjax;
 
         public RedirectHandler(string url, bool redirectIfAjax)
         {
