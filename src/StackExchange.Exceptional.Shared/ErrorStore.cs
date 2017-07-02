@@ -534,6 +534,7 @@ namespace StackExchange.Exceptional
             return result;
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Gets the connection string from the connectionStrings configuration element, from web.config or app.config, throws if not found.
         /// </summary>
@@ -549,5 +550,6 @@ namespace StackExchange.Exceptional
                 throw new ConfigurationErrorsException("A connection string was not found for the connection string name provided");
             return connectionString.ConnectionString;
         }
+#endif
     }
 }

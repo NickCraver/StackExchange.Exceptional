@@ -21,7 +21,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="**\*.cshtml" />
-    <EmbeddedResource Include="Resources\*.*" />
     <Compile Update="Settings.*.cs" DependentUpon="Settings.cs" AutoGen="True" />
   </ItemGroup>
 </Project>
