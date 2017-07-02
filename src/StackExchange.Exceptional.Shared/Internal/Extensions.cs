@@ -181,7 +181,7 @@ namespace StackExchange.Exceptional.Internal
         /// </summary>
         public const string UnknownIP = "0.0.0.0";
 
-        private static readonly Regex IPv4Regex = new Regex(@"\b([0-9]{1,3}\.){3}[0-9]{1,3}$", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+        private static readonly char[] commaSpace = new char[] { ',', ' ' };
 
         /// <summary>
         /// Retrieves the IP address of the current request -- handles proxies and private networks.
@@ -190,14 +190,25 @@ namespace StackExchange.Exceptional.Internal
         public static string GetRemoteIP(this NameValueCollection serverVariables)
         {
             var ip = serverVariables["REMOTE_ADDR"]; // could be a proxy -- beware
-            var ipForwarded = serverVariables["HTTP_X_FORWARDED_FOR"];
+            var forwardedFor = serverVariables["HTTP_X_FORWARDED_FOR"] ?? "";
 
-            // check if we were forwarded from a proxy
-            if (ipForwarded.HasValue())
+            var remoteIPs = forwardedFor.Split(commaSpace, StringSplitOptions.RemoveEmptyEntries);
+            // Loop from the end until we get the first IP that's *not* internal:
+            for (var i = remoteIPs.Length - 1; i >= 0; i--)
             {
-                ipForwarded = IPv4Regex.Match(ipForwarded).Value;
-                if (ipForwarded.HasValue() && (IPNet.TryParse(ipForwarded, out var net) && !net.IsPrivate))
-                    ip = ipForwarded;
+                var remoteIp = remoteIPs[i];
+                // Nothing? Toss it.
+                if (remoteIp == null) continue;
+                // Not valid? Toss it.
+                if (!IPNet.TryParse(remoteIp, out IPNet remoteIpNet)) continue;
+                // Usual prod behavior: Never match a private address, unless it's the last.
+                // Get the first IP outside current networks.
+                // Take the first external IP we match, or the last IP we match - e.g. from another web server
+                if (!remoteIpNet.IsPrivate || i == 0)
+                {
+                    ip = remoteIp;
+                    break;
+                }
             }
 
             return ip.HasValue() ? ip : UnknownIP;
