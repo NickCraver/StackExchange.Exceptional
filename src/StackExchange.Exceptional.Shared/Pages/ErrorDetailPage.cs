@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using StackExchange.Exceptional.Internal;
+using System;
 
 namespace StackExchange.Exceptional.Pages
 {
@@ -10,14 +11,20 @@ namespace StackExchange.Exceptional.Pages
     /// </summary>
     public class ErrorDetailPage : WebPage
     {
+        private readonly Guid _guid;
+
         /// <summary>
         /// Creates an <see cref="ErrorDetailPage"/>.
         /// </summary>
         /// <param name="error">The error we're rendering details.</param>
         /// <param name="store">The store this error is from.</param>
         /// <param name="baseURL">The base URL for the current request.</param>
-        public ErrorDetailPage(Error error, ErrorStore store, string baseURL)
-            : base(error, store, baseURL, "Error - " + error.Message) { }
+        /// <param name="guid">The id for the error (populate even if the error is null)</param>
+        public ErrorDetailPage(Error error, ErrorStore store, string baseURL, Guid guid)
+            : base(error, store, baseURL, "Error - " + (error?.Message ?? "Not Found"))
+        {
+            _guid = guid;
+        }
 
         /// <summary>
         /// Renders the main contents of the page.
@@ -73,7 +80,7 @@ namespace StackExchange.Exceptional.Pages
             sb.AppendLine("<div id=\"ErrorInfo\">");
             if (Error == null)
             {
-                sb.AppendLine("  <h1 class=\"not-found\">Error not found.</h1>");
+                sb.AppendFormat("  <h1 class=\"not-found\">Oh no! Error {0} was not found!</h1>", _guid).AppendLine();
             }
             else
             {

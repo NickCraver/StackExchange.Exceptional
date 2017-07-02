@@ -90,8 +90,9 @@ namespace StackExchange.Exceptional
 
                         case "info":
                             errorGuid = context.Request.QueryString["guid"] ?? "";
-                            var error = errorGuid.HasValue() ? ErrorStore.Default.Get(errorGuid.ToGuid()) : null;
-                            return Render(new ErrorDetailPage(error, ErrorStore.Default, TrimEnd(context.Request.Path, "/info")));
+                            var guid = errorGuid.ToGuid();
+                            var error = errorGuid.HasValue() ? ErrorStore.Default.Get(guid) : null;
+                            return Render(new ErrorDetailPage(error, ErrorStore.Default, TrimEnd(context.Request.Path, "/info"), guid));
 
                         case "json":
                             return new ErrorJsonHandler();
