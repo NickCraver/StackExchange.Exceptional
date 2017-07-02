@@ -46,10 +46,8 @@ $(function () {
         id: 'errorDate',
         is: function () { return false; },
         format: function (s, t, cell) {
-            var date = $(cell).find('span').attr('title'); // e.g. 3/30/2011 9:57:59 PM -- 2011-03-31 01:57:59Z
+            var date = $(cell).find('span').attr('title'); // e.g. 2011-03-31 01:57:59Z
             if (!date) return 0;
-
-            date = date.substr(date.indexOf('-- ') + 3); // only look at the 2nd UTC time
 
             var exp = /(\d{4})-(\d{1,2})-(\d{1,2})\W*(\d{1,2}):(\d{1,2}):(\d{1,2})Z/i.exec(date);
             return new Date(exp[1], exp[2] - 1, exp[3], exp[4], exp[5], exp[6], 0).getTime();
@@ -71,15 +69,16 @@ $(function () {
     // update title on main error log page to show count
     document.title = $('#errorcount').text();
 
-    table.delegate('a.delete-link', 'click', function () {
+    table.delegate('a.js-delete-link', 'click', function (e) {
+        e.preventDefault();
         var jThis = $(this);
 
         // if we've "protected" this error, confirm the deletion
         if (jThis.closest('tr.protected').length && !confirm('Really delete this protected error?')) return false;
 
-        var url = jThis.attr('href'),
+        var url = jThis.data('url'),
             jRow = jThis.closest('tr'),
-            jCell = jThis.attr('href', 'javascript:void(0)').closest('td').addClass('loading');
+            jCell = jThis.closest('td').addClass('loading');
 
         $.ajax({
             type: 'POST',
@@ -91,17 +90,17 @@ $(function () {
                 table.trigger("update");
             },
             error: function () {
-                $(this).attr('href', url);
                 jCell.removeClass('loading');
                 alert('Error occurred when trying to delete');
             }
         });
         return false;
     });
-    table.delegate('a.protect-link', 'click', function () {
-        var url = $(this).attr('href'),
+    table.delegate('a.js-protect-link', 'click', function (e) {
+        e.preventDefault();
+        var url = $(this).data('url'),
             jRow = $(this).closest('tr'),
-            jCell = $(this).attr('href', 'javascript:void(0)').closest('td').addClass('loading');
+            jCell = $(this).closest('td').addClass('loading');
 
         $.ajax({
             type: 'POST',
@@ -113,7 +112,6 @@ $(function () {
                 jRow.addClass('protected');
             },
             error: function () {
-                $(this).attr('href', url);
                 alert('Error occurred when trying to protect');
             },
             complete: function () {
@@ -198,7 +196,7 @@ $(function () {
             $.ajax({
                 type: 'POST',
                 context: this,
-                url: $(this).attr('href'),
+                url: $(this).data('url'),
                 success: function () {
                     window.location.reload(true);
                 },

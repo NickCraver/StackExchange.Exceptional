@@ -83,10 +83,10 @@ namespace StackExchange.Exceptional.Pages
                 {
                     sb.Append("        <tr data-id=\"").Append(e.GUID.ToString()).Append("\" class=\"error").Append(e.IsProtected ? " protected" : "").AppendLine("\">")
                       .Append("          <td>")
-                      .Append("<a href=\"").Append(Url("delete")).AppendLine("\" class=\"delete-link\" title=\"Delete this error\">&nbsp;X&nbsp;</a>");
+                      .Append("<a href=\"#\" data-url=\"").Append(Url("delete")).AppendLine("\" class=\"delete-link js-delete-link\" title=\"Delete this error\">&nbsp;X&nbsp;</a>");
                     if (!e.IsProtected)
                     {
-                        sb.Append(" <a href=\"").Append(Url("protect")).Append("\" class=\"protect-link\" title=\"Protect this error\">&nbsp;P&nbsp;</a>");
+                        sb.Append(" <a href=\"#\" data-url=\"").Append(Url("protect")).Append("\" class=\"protect-link js-protect-link\" title=\"Protect this error\">&nbsp;P&nbsp;</a>");
                     }
                     sb.AppendLine("</td>")
                       .Append("          <td class=\"type-col\" title=\"").AppendHtmlEncode(e.Type).Append("\">")
@@ -123,11 +123,11 @@ namespace StackExchange.Exceptional.Pages
                   .AppendLine("    </table>");
                 if (errors.Any(e => !e.IsProtected))
                 {
-                    sb.AppendLine("    <div class=\"clear-all-div\">")
-                      .AppendLine("      <a class=\"delete-link clear-all-link\" href=\"")
+                    sb.Append("    <div class=\"clear-all-div\">")
+                      .Append("<a class=\"delete-link js-delete-link clear-all-link\" href=\"#\" data-url=\"")
                       .Append(Url("delete-all"))
-                      .AppendLine("\">&nbsp;X&nbsp;- Clear all non-protected errors</a>")
-                      .AppendLine("    </div>");
+                      .Append("\">&nbsp;X&nbsp;- Clear all non-protected errors</a>")
+                      .AppendLine("</div>");
                 }
             }
         }
