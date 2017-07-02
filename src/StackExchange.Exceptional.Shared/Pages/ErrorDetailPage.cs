@@ -80,7 +80,7 @@ namespace StackExchange.Exceptional.Pages
             sb.AppendLine("<div id=\"ErrorInfo\">");
             if (Error == null)
             {
-                sb.AppendFormat("  <h1 class=\"not-found\">Oh no! Error {0} was not found!</h1>", _guid).AppendLine();
+                sb.AppendFormat("  <h1 class=\"not-found\">Oh no! Error {0} was not found!</h1>", _guid.ToString()).AppendLine();
             }
             else
             {
