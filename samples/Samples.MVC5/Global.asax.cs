@@ -37,8 +37,6 @@ namespace Samples.MVC5
                     data.Add("Links get linkified", "http://www.google.com");
                 };
 
-            // Setting the jQuery URL, in case you need this to be an internally hosted jQuery for example
-            // By default, this will pull from the google CDN
             settings.Render.JSIncludes.Add("/Content/errors.js");
             StackExchange.Exceptional.Error.OnBeforeLog += (sender, args) =>
                 {

@@ -79,13 +79,11 @@ namespace StackExchange.Exceptional.Pages
             if (Error != null)
             {
                 sb.Append("      <script>var Exception = ");
-                sb.Append(Error.ToJson());
-                //Error.WriteDetailedJson(sb);
+                Error.WriteDetailedJson(sb);
                 sb.AppendLine(";</script>");
             }
 
-            sb.AppendFormat("    <script src=\"{0}\"></script>", Settings.Render.JQueryURL).AppendLine()
-              .AppendFormat("    <script src=\"{0}\"></script>", Url("js")).AppendLine();
+            sb.AppendFormat("    <script src=\"{0}\"></script>", Url("js")).AppendLine();
             foreach (var js in Settings.Render.JSIncludes)
             {
                 sb.AppendFormat("    <script src=\"{0}\"></script>", js).AppendLine();
@@ -112,5 +110,20 @@ namespace StackExchange.Exceptional.Pages
               .AppendLine("  </body>")
               .AppendLine("</html>");
         }
+
+        // The icons below are from Font Awesome by Dave Gandy
+        // Home: http://fontawesome.io/
+        // License: http://fontawesome.io/license/
+        // Port project: https://github.com/encharm/Font-Awesome-SVG-PNG
+
+        /// <summary>
+        /// SVG Icon: X
+        /// </summary>
+        protected const string IconX = "<svg class='icon x' viewBox='0 0 1792 1792'><path d='M1490 1322q0 40-28 68l-136 136q-28 28-68 28t-68-28l-294-294-294 294q-28 28-68 28t-68-28l-136-136q-28-28-28-68t28-68l294-294-294-294q-28-28-28-68t28-68l136-136q28-28 68-28t68 28l294 294 294-294q28-28 68-28t68 28l136 136q28 28 28 68t-28 68l-294 294 294 294q28 28 28 68z'/></svg>";
+
+        /// <summary>
+        /// SVG Icon: Lock
+        /// </summary>
+        protected const string IconLock = "<svg class='icon lock' viewBox='0 0 1792 1792'><path d='M640 768h512v-192q0-106-75-181t-181-75-181 75-75 181v192zm832 96v576q0 40-28 68t-68 28h-960q-40 0-68-28t-28-68v-576q0-40 28-68t68-28h32v-192q0-184 132-316t316-132 316 132 132 316v192h32q40 0 68 28t28 68z'/></svg>";
     }
 }

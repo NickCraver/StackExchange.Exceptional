@@ -8,8 +8,6 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.2" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -19,12 +17,11 @@
     <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\*.*" />
-    <Compile Update="ErrorStore.*.cs">
-      <DependentUpon>ErrorStore.cs</DependentUpon>
-    </Compile>
-    <Compile Update="ExceptionalSettings.*.cs">
-      <DependentUpon>ExceptionalSettings.cs</DependentUpon>
-    </Compile>
+    <EmbeddedResource Include="Resources\Bundle.min.js">
+      <DependentUpon>Bundle.js</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Styles.min.css">
+      <DependentUpon>Styles.css</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

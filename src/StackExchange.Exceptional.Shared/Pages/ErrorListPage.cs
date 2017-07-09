@@ -29,7 +29,11 @@ namespace StackExchange.Exceptional.Pages
 
             if (Store.InFailureMode)
             {
-                sb.AppendLine("    <div class=\"failure-mode\">Error log is in failure mode, ")
+                sb.Append("    <div class=\"failure-mode\">")
+                  // From https://github.com/encharm/Font-Awesome-SVG-PNG by https://github.com/Rush
+                  // MIT License: https://github.com/encharm/Font-Awesome-SVG-PNG/blob/master/LICENSE
+                  .Append("<svg viewBox=\"0 0 1792 1792\"><path d=\"M1024 1375v-190q0-14-9.5-23.5t-22.5-9.5h-192q-13 0-22.5 9.5t-9.5 23.5v190q0 14 9.5 23.5t22.5 9.5h192q13 0 22.5-9.5t9.5-23.5zm-2-374l18-459q0-12-10-19-13-11-24-11h-220q-11 0-24 11-10 7-10 21l17 457q0 10 10 16.5t24 6.5h185q14 0 23.5-6.5t10.5-16.5zm-14-934l768 1408q35 63-2 126-17 29-46.5 46t-63.5 17h-1536q-34 0-63.5-17t-46.5-46q-37-63-2-126l768-1408q17-31 47-49t65-18 65 18 47 49z\"/></svg>")
+                  .Append("Error log is in failure mode, ")
                   .Append(ErrorStore.WriteQueue.Count)
                   .Append(" ")
                   .Append(ErrorStore.WriteQueue.Count == 1 ? "entry" : "entries")
@@ -47,6 +51,7 @@ namespace StackExchange.Exceptional.Pages
                       .AppendLine()
                       .AppendLine("-->");
                 }
+                sb.Append("</div>");
             }
             if (errors.Count == 0)
             {
@@ -68,8 +73,8 @@ namespace StackExchange.Exceptional.Pages
                   .Append(@"    <table id=""ErrorLog"" class=""alt-rows"">
       <thead>
         <tr>
-          <th class=""type-col"">&nbsp;</th>
-          <th class=""type-col"">Type</th>
+          <th></th>
+          <th>Type</th>
           <th>Error</th>
           <th>Url</th>
           <th>Remote IP</th>
@@ -83,14 +88,14 @@ namespace StackExchange.Exceptional.Pages
                 {
                     sb.Append("        <tr data-id=\"").Append(e.GUID.ToString()).Append("\" class=\"error").Append(e.IsProtected ? " protected" : "").AppendLine("\">")
                       .Append("          <td>")
-                      .Append("<a href=\"#\" data-url=\"").Append(Url("delete")).AppendLine("\" class=\"delete-link js-delete-link\" title=\"Delete this error\">&nbsp;X&nbsp;</a>");
+                      .Append("<a href=\"#\" data-url=\"").Append(Url("delete")).Append("\" class=\"delete-link js-delete-link\" title=\"Delete this error\">").Append(IconX).Append("</a>");
                     if (!e.IsProtected)
                     {
-                        sb.Append(" <a href=\"#\" data-url=\"").Append(Url("protect")).Append("\" class=\"protect-link js-protect-link\" title=\"Protect this error\">&nbsp;P&nbsp;</a>");
+                        sb.Append(" <a href=\"#\" data-url=\"").Append(Url("protect")).Append("\" class=\"protect-link js-protect-link\" title=\"Protect this error\">").Append(IconLock).Append("</a>");
                     }
                     sb.AppendLine("</td>")
-                      .Append("          <td class=\"type-col\" title=\"").AppendHtmlEncode(e.Type).Append("\">")
-                      .AppendHtmlEncode(e.Type.ToShortException())
+                      .Append("          <td title=\"").AppendHtmlEncode(e.Type).Append("\">")
+                      .AppendHtmlEncode(e.Type.ToShortTypeName())
                       .AppendLine("</td>")
                       .Append("          <td class=\"error-col\"><a href=\"").Append(Url("info?guid=" + e.GUID.ToString()))
                       .Append("\" class=\"info-link\">").AppendHtmlEncode(e.Message).Append("</a>");
@@ -123,10 +128,12 @@ namespace StackExchange.Exceptional.Pages
                   .AppendLine("    </table>");
                 if (errors.Any(e => !e.IsProtected))
                 {
-                    sb.Append("    <div class=\"clear-all-div\">")
-                      .Append("<a class=\"delete-link js-delete-link clear-all-link\" href=\"#\" data-url=\"")
+                    sb.Append("    <div>")
+                      .Append("<a class=\"js-delete-link clear-all-link\" href=\"#\" data-url=\"")
                       .Append(Url("delete-all"))
-                      .Append("\">&nbsp;X&nbsp;- Clear all non-protected errors</a>")
+                      .Append("\">")
+                      .Append(IconX)
+                      .Append(" Clear all non-protected errors</a>")
                       .AppendLine("</div>");
                 }
             }

@@ -98,10 +98,10 @@ namespace StackExchange.Exceptional
                             return new ErrorJsonHandler();
 
                         case "css":
-                            return new ResourceHandler("Styles.css", "text/css");
+                            return new ResourceHandler("Styles.min.css", "text/css");
 
                         case "js":
-                            return new ResourceHandler("Scripts.js", "text/javascript");
+                            return new ResourceHandler("Bundle.min.js", "text/javascript");
 
                         case "loading.gif":
                             return new ResourceHandler("loading.gif", "image/gif");

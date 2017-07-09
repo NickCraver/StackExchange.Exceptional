@@ -236,7 +236,7 @@ namespace StackExchange.Exceptional.Internal
         /// Gets the short exception name, e.g. "System.IndexOutOfRange" returns just "IndexOutOfRange".
         /// </summary>
         /// <param name="type">The type to get a short name for.</param>
-        public static string ToShortException(this string type)
+        public static string ToShortTypeName(this string type)
         {
             if (type.IsNullOrEmpty()) return string.Empty;
             var shortType = type.Split(_dotSplit).Last();

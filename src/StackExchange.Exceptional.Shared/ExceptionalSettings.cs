@@ -75,11 +75,6 @@ namespace StackExchange.Exceptional
             /// Be sure to resolve the path before passing it in here, as it will be rendered literally in the &lt;link href="" attribute.
             /// </summary>
             public List<string> CSSIncludes { get; } = new List<string>();
-
-            /// <summary>
-            /// The URL to use for jQuery on the pages rendered by Exceptional
-            /// </summary>
-            public string JQueryURL { get; set; } = "//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js";
         }
 
         /// <summary>
