@@ -23,13 +23,19 @@ html, body {
     margin-bottom: -45px;
 }
 
+main {
+    padding: 8px;
+    margin: 0 auto;
+    min-height: 100%;
+}
+
 h1 {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: normal;
     color: @error-title-color;
     margin: 0.3em 0;
 
-    span {
+    .sub {
         font-size: 12px;
         color: @info-color;
     }
@@ -44,11 +50,28 @@ h3 {
     }
 }
 
+header {
+    color: @background-color;
+    font-size: 14px;
+    padding: 4px;
+    box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5);
+    background: repeating-linear-gradient(45deg,#282d4d,#282d4d 2px,#2f355a 2px,#2f355a 3px);
+
+    &.failure {
+        background: repeating-linear-gradient(45deg,#c94c4c,#c94c4c 2px,#bf3838 2px,#bf3838 3px);
+    }
+}
+
 footer {
     color: @info-color;
     height: @footer-height;
     padding: @footer-padding;
     overflow: hidden;
+
+    .version-info {
+        float: right;
+        color: #aaa;
+    }
 }
 
 .bottom {
@@ -66,46 +89,12 @@ footer {
     }
 }
 
-.version-info {
-    float: right;
-    color: #aaa;
-}
-
 a {
     color: #3d85b0;
-}
+    text-decoration: none;
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th {
-    text-align: left;
-    padding: 5px 4px 4px 4px;
-    color: #555;
-    vertical-align: top;
-}
-
-td {
-    padding: 0.4em;
-    vertical-align: top;
-}
-
-pre {
-    font-family: Consolas, Monaco, monospace;
-    margin: 0.2em;
-}
-
-header {
-    color: @background-color;
-    font-size: 14px;
-    padding: 4px;
-    box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5);
-    background: repeating-linear-gradient(45deg,#282d4d,#282d4d 2px,#2f355a 2px,#2f355a 3px);
-
-    &.failure {
-        background: repeating-linear-gradient(45deg,#c94c4c,#c94c4c 2px,#bf3838 2px,#bf3838 3px);
+    &:hover {
+        text-decoration: underline;
     }
 }
 
@@ -129,102 +118,121 @@ header {
     }
 }
 
-#content {
-    padding: 8px 5px 5px 5px;
-    margin: 0 auto;
-    min-height: 100%;
+pre {
+    padding: 0.5em;
+    overflow: auto;
+    font-family: Consolas, Monaco, monospace;
+
+    &.stack {
+        background-color: #ffffcc;
+    }
+
+    &.command {
+        background-color: #eee;
+    }
 }
 
-#ErrorLog {
-    margin: 0;
-    border: 0;
-    margin-bottom: 10px;
-    border-collapse: separate;
-    border-spacing: 0;
-    border-bottom: solid 1px #ECECEC;
+table {
+    width: 100%;
+    border-collapse: collapse;
 
-    thead tr th {
-        white-space: nowrap;
+    th, td {
+        vertical-align: top;
+        font-size: 11px;
     }
 
-    tr td:nth-child(2) {
-        /* Type column */
-        color: #6f6f6f;
+    th {
+        text-align: left;
+        padding: 0.5em 0.4em 0.4em 0.4em;
+        color: #555;
     }
 
-    a {
-        text-decoration: none;
+    td {
+        padding: 0.4em 0.2em;
+    }
 
-        &:hover {
-            text-decoration: underline;
+    &.alt-rows {
+        tbody {
+            tr {
+                &:nth-child(even) {
+                    background-color: @alt-row-even-color;
+                }
+
+                &:nth-child(odd) {
+                    background-color: @alt-row-odd-color;
+                }
+            }
         }
     }
-}
 
-.alt-rows {
-    th {
-        border-top: solid 1px @alt-row-hover-color;
+    &.key-value {
+        tr {
+            td {
+                padding: 0.4em;
+            }
+
+            td:nth-child(1) {
+                width: 200px;
+            }
+
+            td:nth-child(2) {
+                font-family: Consolas, Monaco, monospace;
+            }
+        }
     }
 
-    tbody {
-        tr {
-            cursor: pointer;
-            td {
-                padding: 4px 2px;
-                font-size: 11px;
-                white-space: nowrap;
-                border-top: solid 1px @alt-row-hover-color;
+    &.hover {
+        border-collapse: separate;
+        border-spacing: 0;
+        border-bottom: solid 1px #ececec;
 
-                &.error-col {
-                    white-space: normal;
-                }
-            }
+        tbody {
+            tr {
+                cursor: pointer;
 
-            &:hover {
                 td {
-                    background-color: @alt-row-hover-color;
-                }
-            }
-
-            &:nth-child(even) {
-                background-color: @alt-row-even-color;
-            }
-
-            &:nth-child(odd) {
-                background-color: @alt-row-odd-color;
-            }
-
-            &.error {
-                td:nth-child(2) {
-                    -moz-user-select: none;
-                    -ms-user-select: none;
-                    -webkit-user-select: none;
-                    user-select: none;
+                    &.wrap {
+                        white-space: normal;
+                    }
                 }
 
-                &.selected {
-                    background-color: #fcf8e3;
+                &:hover {
+                    td {
+                        background-color: @alt-row-hover-color;
+                    }
+                }
 
-                    &:hover {
-                        background-color: #faf2cc;
+                &.error {
+                    td:nth-child(2) {
+                        -moz-user-select: none;
+                        -ms-user-select: none;
+                        -webkit-user-select: none;
+                        user-select: none;
+                    }
+
+                    &.selected {
+                        background-color: #fcf8e3;
+
+                        &:hover {
+                            td {
+                                background-color: #faf2cc;
+                            }
+                        }
                     }
                 }
             }
+        }
+    }
+
+    &.error-list {
+        tr td:nth-child(2) {
+            color: #6f6f6f;
         }
     }
 }
 
 .hidden {
     display: none;
-}
-
-.info-link, .url-link {
-    white-space: normal;
-    text-decoration: none;
-
-    &:hover {
-        text-decoration: underline;
-    }
 }
 
 .icon {
@@ -247,40 +255,38 @@ header {
         opacity: 1;
     }
 }
-
-.clear-all-link {
-    padding: 4px;
-    color: @action-link-color;
-    text-decoration: none;
+span .icon.lock {
+    fill: #008cba;
 }
 
-.info-delete-link {
-    color: #ddd;
+.subtitle {
+    color: #444;
+}
+
+.page-actions {
+    padding: 1em 0;
+
+    a {
+        border: solid 1px transparent;
+        padding: 4px;
+        border-radius: 5px;
+        color: @action-link-color;
+
+        &:hover {
+            border: solid 1px @action-link-color;
+            background-color: @alt-row-hover-color;
+            text-decoration: none;
+        }
+    }
+
+    .icon.x {
+        margin-top: -3px;
+        margin-top: -3px;
+    }
 }
 
 .duplicate-count {
     color: Red;
-}
-
-.error-title {
-    font-weight: bold;
-    font-size: 150%;
-    margin: 0 0 0.2em 0;
-}
-
-.error-type {
-    color: #444;
-}
-
-.error-detail {
-    background-color: #ffffcc;
-    padding: 0.5em;
-    overflow: auto;
-}
-
-.sql-detail {
-    background-color: #eee;
-    padding: 8px;
 }
 
 .custom-error-label {
@@ -289,14 +295,13 @@ header {
     padding-left: 4px;
 }
 
-.custom-data .error-detail {
-    padding: 0.5em;
-    margin-top: 4px;
-}
-
-.error-time {
-    font-size: 110%;
+.sub-info {
+    font-size: 1.1em;
     color: #555;
+
+    span {
+        color: #ddd;
+    }
 }
 
 .side-scroll {
@@ -304,30 +309,11 @@ header {
     overflow: auto;
 }
 
-.kv-table {
-    border-collapse: collapse;
-    border: 0;
-
-    tr:nth-child(odd) {
-        background-color: @alt-row-odd-color;
-    }
-
-    td, th {
-        padding: 0.4em;
-    }
-
-    tr {
-        td:nth-child(1) {
-            width: 200px;
-        }
-        td:nth-child(2) {
-            font-family: Consolas, Monaco, monospace;
-        }
-    }
-}
-
-.loading {
-    background: url('loading.gif') no-repeat center center;
+td.loading {
+    width: 32px;
+    padding: 0;
+    // Loader style adopted from https://loading.io/spinner/custom/21038
+    background: url("data:image/svg+xml;utf8,<svg width='32px' height='20px' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='xMidYMid'><g transform='translate(25 50)'><circle cx='0' cy='0' r='7' fill='#2fa6c4' transform='scale(0.00340694 0.00340694)'><animateTransform attributeName='transform' type='scale' begin='-0.3333333333333333s' calcMode='spline' keySplines='0.3 0 0.7 1;0.3 0 0.7 1' values='0;1;0' keyTimes='0;0.5;1' dur='1s' repeatCount='indefinite'></animateTransform></circle></g><g transform='translate(50 50)'><circle cx='0' cy='0' r='7' fill='#2fa6c4' transform='scale(0.31409 0.31409)'><animateTransform attributeName='transform' type='scale' begin='-0.16666666666666666s' calcMode='spline' keySplines='0.3 0 0.7 1;0.3 0 0.7 1' values='0;1;0' keyTimes='0;0.5;1' dur='1s' repeatCount='indefinite'></animateTransform></circle></g><g transform='translate(75 50)'><circle cx='0' cy='0' r='7' fill='#2fa6c4' transform='scale(0.774545 0.774545)'><animateTransform attributeName='transform' type='scale' begin='0s' calcMode='spline' keySplines='0.3 0 0.7 1;0.3 0 0.7 1' values='0;1;0' keyTimes='0;0.5;1' dur='1s' repeatCount='indefinite'></animateTransform></circle></g></svg>") center no-repeat;
     text-indent: -99999px;
 }
 

@@ -78,7 +78,7 @@ namespace StackExchange.Exceptional.Pages
             sb.AppendFormat("    <script>var baseUrl = '{0}';</script>", Url("")).AppendLine();
             if (Error != null)
             {
-                sb.Append("      <script>var Exception = ");
+                sb.Append("    <script>var Exception = ");
                 Error.WriteDetailedJson(sb);
                 sb.AppendLine(";</script>");
             }
@@ -92,20 +92,18 @@ namespace StackExchange.Exceptional.Pages
               .AppendLine("  <body>")
               .AppendLine("    <div class=\"wrapper\">")
               .AppendFormat("      <header{0}>Exceptions Log: {1}</header>", Store.InFailureMode ? "class=\"failure\"" : "", Settings.ApplicationName.HtmlEncode()).AppendLine()
-              .AppendLine("      <section id=\"content\">");
+              .AppendLine("      <main>");
 
             // Render the page inheriting from us
             RenderInnerHtml(sb);
-            sb.AppendLine()
-              .AppendLine("      </section>")
+            sb.AppendLine("      </main>")
               .AppendLine("      <div class=\"bottom\"></div>")
               .AppendLine("    </div>")
               .AppendLine("    <footer>")
-              .AppendLine("      <div class=\"version-info\">Exceptional ").Append(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version)
+              .Append("      <div class=\"version-info\">Exceptional ").Append(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version)
               .Append("<br/>")
-              .AppendHtmlEncode(Store.Name).AppendLine()
-              .AppendLine("      </div>")
-              .AppendLine("      <div class=\"server-time\">Server time is ").Append(DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")).AppendLine("</div>")
+              .AppendHtmlEncode(Store.Name).AppendLine("</div>")
+              .Append("      <div class=\"server-time\">Server time is ").Append(DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")).AppendLine("</div>")
               .AppendLine("    </footer>")
               .AppendLine("  </body>")
               .AppendLine("</html>");

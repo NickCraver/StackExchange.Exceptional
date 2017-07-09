@@ -103,9 +103,6 @@ namespace StackExchange.Exceptional
                         case "js":
                             return new ResourceHandler("Bundle.min.js", "text/javascript");
 
-                        case "loading.gif":
-                            return new ResourceHandler("loading.gif", "image/gif");
-
                         case "test":
                             throw new Exception("This is a test. Please disregard. If this were a real emergency, it'd have a different message.");
 

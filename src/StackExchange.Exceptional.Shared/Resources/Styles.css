@@ -12,13 +12,18 @@ body {
   min-height: 100%;
   margin-bottom: -45px;
 }
+main {
+  padding: 8px;
+  margin: 0 auto;
+  min-height: 100%;
+}
 h1 {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: normal;
   color: #9e2626;
   margin: 0.3em 0;
 }
-h1 span {
+h1 .sub {
   font-size: 12px;
   color: #888;
 }
@@ -29,11 +34,25 @@ h3 {
 h3.title-error {
   color: #9e2626;
 }
+header {
+  color: #fff;
+  font-size: 14px;
+  padding: 4px;
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5);
+  background: repeating-linear-gradient(45deg, #282d4d, #282d4d 2px, #2f355a 2px, #2f355a 3px);
+}
+header.failure {
+  background: repeating-linear-gradient(45deg, #c94c4c, #c94c4c 2px, #bf3838 2px, #bf3838 3px);
+}
 footer {
   color: #888;
   height: 25px;
   padding: 10px;
   overflow: hidden;
+}
+footer .version-info {
+  float: right;
+  color: #aaa;
 }
 .bottom {
   height: 45px;
@@ -47,40 +66,12 @@ footer {
 .empty h1 {
   color: #3a965c;
 }
-.version-info {
-  float: right;
-  color: #aaa;
-}
 a {
   color: #3d85b0;
+  text-decoration: none;
 }
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-th {
-  text-align: left;
-  padding: 5px 4px 4px 4px;
-  color: #555;
-  vertical-align: top;
-}
-td {
-  padding: 0.4em;
-  vertical-align: top;
-}
-pre {
-  font-family: Consolas, Monaco, monospace;
-  margin: 0.2em;
-}
-header {
-  color: #fff;
-  font-size: 14px;
-  padding: 4px;
-  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5);
-  background: repeating-linear-gradient(45deg, #282d4d, #282d4d 2px, #2f355a 2px, #2f355a 3px);
-}
-header.failure {
-  background: repeating-linear-gradient(45deg, #c94c4c, #c94c4c 2px, #bf3838 2px, #bf3838 3px);
+a:hover {
+  text-decoration: underline;
 }
 .failure-mode {
   width: 350px;
@@ -100,79 +91,80 @@ header.failure {
   fill: #fff;
   vertical-align: middle;
 }
-#content {
-  padding: 8px 5px 5px 5px;
-  margin: 0 auto;
-  min-height: 100%;
+pre {
+  padding: 0.5em;
+  overflow: auto;
+  font-family: Consolas, Monaco, monospace;
 }
-#ErrorLog {
-  margin: 0;
-  border: 0;
-  margin-bottom: 10px;
-  border-collapse: separate;
-  border-spacing: 0;
-  border-bottom: solid 1px #ECECEC;
+pre.stack {
+  background-color: #ffffcc;
 }
-#ErrorLog thead tr th {
-  white-space: nowrap;
+pre.command {
+  background-color: #eee;
 }
-#ErrorLog tr td:nth-child(2) {
-  /* Type column */
-  color: #6f6f6f;
+table {
+  width: 100%;
+  border-collapse: collapse;
 }
-#ErrorLog a {
-  text-decoration: none;
-}
-#ErrorLog a:hover {
-  text-decoration: underline;
-}
-.alt-rows th {
-  border-top: solid 1px #f5f5f5;
-}
-.alt-rows tbody tr {
-  cursor: pointer;
-}
-.alt-rows tbody tr td {
-  padding: 4px 2px;
+table th,
+table td {
+  vertical-align: top;
   font-size: 11px;
-  white-space: nowrap;
-  border-top: solid 1px #f5f5f5;
 }
-.alt-rows tbody tr td.error-col {
-  white-space: normal;
+table th {
+  text-align: left;
+  padding: 0.5em 0.4em 0.4em 0.4em;
+  color: #555;
 }
-.alt-rows tbody tr:hover td {
-  background-color: #f5f5f5;
+table td {
+  padding: 0.4em 0.2em;
 }
-.alt-rows tbody tr:nth-child(even) {
+table.alt-rows tbody tr:nth-child(even) {
   background-color: #fff;
 }
-.alt-rows tbody tr:nth-child(odd) {
+table.alt-rows tbody tr:nth-child(odd) {
   background-color: #f9f9f9;
 }
-.alt-rows tbody tr.error td:nth-child(2) {
+table.key-value tr td {
+  padding: 0.4em;
+}
+table.key-value tr td:nth-child(1) {
+  width: 200px;
+}
+table.key-value tr td:nth-child(2) {
+  font-family: Consolas, Monaco, monospace;
+}
+table.hover {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-bottom: solid 1px #ececec;
+}
+table.hover tbody tr {
+  cursor: pointer;
+}
+table.hover tbody tr td.wrap {
+  white-space: normal;
+}
+table.hover tbody tr:hover td {
+  background-color: #f5f5f5;
+}
+table.hover tbody tr.error td:nth-child(2) {
   -moz-user-select: none;
   -ms-user-select: none;
   -webkit-user-select: none;
   user-select: none;
 }
-.alt-rows tbody tr.error.selected {
+table.hover tbody tr.error.selected {
   background-color: #fcf8e3;
 }
-.alt-rows tbody tr.error.selected:hover {
+table.hover tbody tr.error.selected:hover td {
   background-color: #faf2cc;
+}
+table.error-list tr td:nth-child(2) {
+  color: #6f6f6f;
 }
 .hidden {
   display: none;
-}
-.info-link,
-.url-link {
-  white-space: normal;
-  text-decoration: none;
-}
-.info-link:hover,
-.url-link:hover {
-  text-decoration: underline;
 }
 .icon {
   width: 12px;
@@ -191,70 +183,52 @@ header.failure {
 .icon:hover {
   opacity: 1;
 }
-.clear-all-link {
+span .icon.lock {
+  fill: #008cba;
+}
+.subtitle {
+  color: #444;
+}
+.page-actions {
+  padding: 1em 0;
+}
+.page-actions a {
+  border: solid 1px transparent;
   padding: 4px;
+  border-radius: 5px;
   color: #9e2626;
+}
+.page-actions a:hover {
+  border: solid 1px #9e2626;
+  background-color: #f5f5f5;
   text-decoration: none;
 }
-.info-delete-link {
-  color: #ddd;
+.page-actions .icon.x {
+  margin-top: -3px;
 }
 .duplicate-count {
   color: Red;
-}
-.error-title {
-  font-weight: bold;
-  font-size: 150%;
-  margin: 0 0 0.2em 0;
-}
-.error-type {
-  color: #444;
-}
-.error-detail {
-  background-color: #ffffcc;
-  padding: 0.5em;
-  overflow: auto;
-}
-.sql-detail {
-  background-color: #eee;
-  padding: 8px;
 }
 .custom-error-label {
   color: #9e2626;
   font-weight: bold;
   padding-left: 4px;
 }
-.custom-data .error-detail {
-  padding: 0.5em;
-  margin-top: 4px;
-}
-.error-time {
-  font-size: 110%;
+.sub-info {
+  font-size: 1.1em;
   color: #555;
+}
+.sub-info span {
+  color: #ddd;
 }
 .side-scroll {
   width: 100%;
   overflow: auto;
 }
-.kv-table {
-  border-collapse: collapse;
-  border: 0;
-}
-.kv-table tr:nth-child(odd) {
-  background-color: #f9f9f9;
-}
-.kv-table td,
-.kv-table th {
-  padding: 0.4em;
-}
-.kv-table tr td:nth-child(1) {
-  width: 200px;
-}
-.kv-table tr td:nth-child(2) {
-  font-family: Consolas, Monaco, monospace;
-}
-.loading {
-  background: url('Source/loading.gif') no-repeat center center;
+td.loading {
+  width: 32px;
+  padding: 0;
+  background: url("data:image/svg+xml;utf8,<svg width='32px' height='20px' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='xMidYMid'><g transform='translate(25 50)'><circle cx='0' cy='0' r='7' fill='#2fa6c4' transform='scale(0.00340694 0.00340694)'><animateTransform attributeName='transform' type='scale' begin='-0.3333333333333333s' calcMode='spline' keySplines='0.3 0 0.7 1;0.3 0 0.7 1' values='0;1;0' keyTimes='0;0.5;1' dur='1s' repeatCount='indefinite'></animateTransform></circle></g><g transform='translate(50 50)'><circle cx='0' cy='0' r='7' fill='#2fa6c4' transform='scale(0.31409 0.31409)'><animateTransform attributeName='transform' type='scale' begin='-0.16666666666666666s' calcMode='spline' keySplines='0.3 0 0.7 1;0.3 0 0.7 1' values='0;1;0' keyTimes='0;0.5;1' dur='1s' repeatCount='indefinite'></animateTransform></circle></g><g transform='translate(75 50)'><circle cx='0' cy='0' r='7' fill='#2fa6c4' transform='scale(0.774545 0.774545)'><animateTransform attributeName='transform' type='scale' begin='0s' calcMode='spline' keySplines='0.3 0 0.7 1;0.3 0 0.7 1' values='0;1;0' keyTimes='0;0.5;1' dur='1s' repeatCount='indefinite'></animateTransform></circle></g></svg>") center no-repeat;
   text-indent: -99999px;
 }
 /* Animations */

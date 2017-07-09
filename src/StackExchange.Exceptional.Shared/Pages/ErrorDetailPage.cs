@@ -53,18 +53,16 @@ namespace StackExchange.Exceptional.Pages
                 {
                     var hiddenRows = new StringBuilder();
                     sb.AppendLine("    <div class=\"side-scroll\">")
-                      .AppendLine("      <table class=\"kv-table\">");
+                      .AppendLine("      <table class=\"alt-rows key-value\">")
+                      .AppendLine("        <tbody>");
                     foreach (var k in keys)
                     {
                         // If this has no value, skip it
-                        if (vars[k].IsNullOrEmpty())
+                        if (vars[k].HasValue())
                         {
-                            continue;
+                            // If this is a hidden row, buffer it up, since CSS has no clean mechanism for :visible:nth-row(odd) type styling behavior
+                            (DefaultHttpKeys.Contains(k) ? hiddenRows : sb).AppendFormat("        <tr><td>{0}</td><td>{1}</td></tr>", k, Linkify(vars[k])).AppendLine();
                         }
-                        // If this is a hidden row, buffer it up, since CSS has no clean mechanism for :visible:nth-row(odd) type styling behavior
-                        var hidden = DefaultHttpKeys.Contains(k);
-                        var toWrite = hidden ? hiddenRows : sb;
-                        toWrite.AppendFormat("        <tr{2}><td>{0}</td><td>{1}</td></tr>", k, Linkify(vars[k]), hidden ? " class=\"hidden\"" : "").AppendLine();
                     }
                     if (vars["HTTP_HOST"].HasValue() && vars["URL"].HasValue())
                     {
@@ -72,45 +70,50 @@ namespace StackExchange.Exceptional.Pages
                         var url = string.Format("http{3}://{0}{1}{2}", vars["HTTP_HOST"], vars["URL"], vars["QUERY_STRING"].HasValue() ? "?" + vars["QUERY_STRING"] : "", ssl ? "s" : "");
                         sb.AppendFormat("        <tr><td>URL and Query</td><td>{0}</td></tr>", vars["REQUEST_METHOD"] == "GET" ? Linkify(url) : url.HtmlEncode()).AppendLine();
                     }
-                    sb.Append(hiddenRows)
-                      .AppendLine("      </table>")
+                    sb.AppendLine("        </tbody>");
+                    if (hiddenRows.Length > 0)
+                    {
+                        sb.AppendLine("        <tbody class=\"hidden\">")
+                          .Append(hiddenRows)
+                          .AppendLine("        </tbody>");
+                    }
+                    sb.AppendLine("      </table>")
                       .AppendLine("    </div>");
                 }
                 if (errored)
                 {
                     sb.AppendFormat("<span class=\"custom-error-label\">Get {0} threw an exception:</span>", title)
-                      .AppendFormat("<pre class=\"error-detail\">{0}</pre>", fetchError.HtmlEncode());
+                      .AppendFormat("<pre class=\"stack\"><code>{0}</code></pre>", fetchError.HtmlEncode());
                 }
                 sb.AppendFormat("  </div>");
             }
 
-            sb.AppendLine("<div id=\"ErrorInfo\">");
             if (Error == null)
             {
                 sb.AppendFormat("  <h1 class=\"not-found\">Oh no! Error {0} was not found!</h1>", _guid.ToString()).AppendLine();
             }
             else
             {
-                sb.Append("  <h1 class=\"error-title\">").AppendHtmlEncode(Error.Message).AppendLine("</h1>")
-                  .Append("  <div class=\"error-type\">").AppendHtmlEncode(Error.Type);
+                sb.Append("  <h1>").AppendHtmlEncode(Error.Message).AppendLine("</h1>")
+                  .Append("  <div class=\"subtitle\">").AppendHtmlEncode(Error.Type);
                 if (Error.DuplicateCount > 1)
                 {
                     sb.Append(" <span class=\"duplicate-count\">(thrown ").Append(Error.DuplicateCount.Value).AppendLine(" times)</span>");
                 }
                 sb.AppendLine("</div>")
-                  .Append("  <pre class=\"error-detail\">").AppendHtmlEncode(Error.Detail).AppendLine().AppendLine("</pre>")
-                  .Append("  <p class=\"error-time\">occurred <b title=\"")
-                    .AppendHtmlEncode(Error.CreationDate.ToLongDateString()).Append(" at ").AppendHtmlEncode(Error.CreationDate.ToLongTimeString())
-                    .Append("\">")
-                    .Append(Error.CreationDate.ToRelativeTime())
-                    .Append("</b> on ")
-                    .Append(" <span class=\"info-delete-link\">(<a class=\"info-link\" href=\"delete?guid=").Append(Error.GUID.ToString()).AppendLine("\">delete</a>)</span></p>");
+                  .Append("  <pre class=\"stack\"><code>").AppendHtmlEncode(Error.Detail).AppendLine().AppendLine("</code></pre>")
+                  .Append("  <p class=\"sub-info\">occurred <b title=\"")
+                  .AppendHtmlEncode(Error.CreationDate.ToLongDateString()).Append(" at ").AppendHtmlEncode(Error.CreationDate.ToLongTimeString())
+                  .Append("\">")
+                  .Append(Error.CreationDate.ToRelativeTime())
+                  .Append("</b> on ")
+                  .Append(" <span>(<a href=\"delete?guid=").Append(Error.GUID.ToString()).AppendLine("\">delete</a>)</span></p>");
                 if (Error.SQL.HasValue())
                 {
                     sb.AppendLine("  <h3>SQL</h3>")
-                      .AppendLine("  <pre class=\"sql-detail prettyprint lang-sql\">")
+                      .Append("  <pre class=\"command prettyprint lang-sql\"><code>")
                       .AppendHtmlEncode(Error.SQL)
-                      .AppendLine("</pre>");
+                      .AppendLine("</code></pre>");
                 }
                 RenderVariableTable("Server Variables", "server-variables", Error.ServerVariables);
 
@@ -130,7 +133,7 @@ namespace StackExchange.Exceptional.Pages
                     if (cdKeys.Any(k => k != Constants.CustomDataErrorKey))
                     {
                         sb.AppendLine("    <div class=\"side-scroll\">")
-                          .AppendLine("      <table class=\"kv-table\">");
+                          .AppendLine("      <table class=\"alt-rows key-value\">");
                         foreach (var cd in cdKeys)
                         {
                             sb.Append("        <tr>")
@@ -144,7 +147,7 @@ namespace StackExchange.Exceptional.Pages
                     if (errored)
                     {
                         sb.AppendLine("    <span class=\"custom-error-label\">GetCustomData threw an exception:</span>")
-                          .AppendLine("    <pre class=\"error-detail\">").Append(Error.CustomData[Constants.CustomDataErrorKey]).AppendLine("</pre>");
+                          .AppendLine("    <pre class=\"stack\"><code>").Append(Error.CustomData[Constants.CustomDataErrorKey]).AppendLine("</code></pre>");
                     }
                     sb.AppendLine("  </div>");
                 }
@@ -153,7 +156,6 @@ namespace StackExchange.Exceptional.Pages
                 RenderVariableTable("Cookies", "cookies", Error.Cookies);
                 RenderVariableTable("RequestHeaders", "headers", Error.RequestHeaders);
             }
-            sb.AppendLine("</div>");
         }
     }
 }
