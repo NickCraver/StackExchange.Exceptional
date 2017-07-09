@@ -455,8 +455,6 @@ namespace StackExchange.Exceptional
         /// </summary>
         public string ToJson() => JsonConvert.SerializeObject(this);
 
-        private readonly JsonSerializer _requestSerializerJson = new JsonSerializer();
-
         /// <summary>
         /// Gets a JSON representation for this error suitable for cross-domain.
         /// </summary>
@@ -464,52 +462,61 @@ namespace StackExchange.Exceptional
         public void WriteDetailedJson(StringBuilder sb)
         {
             using (var sw = new StringWriter(sb))
+            using (var w = new JsonTextWriter(sw))
             {
-                using (var w = new JsonTextWriter(sw))
+                w.StringEscapeHandling = StringEscapeHandling.EscapeHtml;
+                JsonTextWriter WriteName(string name)
                 {
-                    JsonTextWriter WriteName(string name)
-                    {
-                        w.WritePropertyName(name);
-                        return w;
-                    }
-                    JsonTextWriter WriteDictionary(string name, List<NameValuePair> pairs)
-                    {
-                        WriteName(name).WriteStartObject();
-                        foreach (var p in pairs)
-                        {
-                            WriteName(p.Name).WriteValue(p.Value);
-                        }
-                        w.WriteEndObject();
-                        return w;
-                    }
-                    w.WriteStartObject();
-                    WriteName(nameof(GUID)).WriteValue(GUID);
-                    WriteName(nameof(ApplicationName)).WriteValue(ApplicationName);
-                    WriteName(nameof(CreationDate)).WriteValue(CreationDate.ToEpochTime());
-                    WriteName(nameof(CustomData)).WriteValue(CustomData);
-                    WriteName(nameof(DeletionDate)).WriteValue(DeletionDate.ToEpochTime());
-                    WriteName(nameof(Detail)).WriteValue(Detail);
-                    WriteName(nameof(DuplicateCount)).WriteValue(DuplicateCount);
-                    WriteName(nameof(ErrorHash)).WriteValue(ErrorHash);
-                    WriteName(nameof(HTTPMethod)).WriteValue(HTTPMethod);
-                    WriteName(nameof(Host)).WriteValue(Host);
-                    WriteName(nameof(IPAddress)).WriteValue(IPAddress);
-                    WriteName(nameof(IsProtected)).WriteValue(IsProtected);
-                    WriteName(nameof(MachineName)).WriteValue(MachineName);
-                    WriteName(nameof(Message)).WriteValue(Message);
-                    WriteName(nameof(SQL)).WriteValue(SQL);
-                    WriteName(nameof(Source)).WriteValue(Source);
-                    WriteName(nameof(StatusCode)).WriteValue(StatusCode);
-                    WriteName(nameof(Type)).WriteValue(Type);
-                    WriteName(nameof(Url)).WriteValue(Url);
-                    WriteName(nameof(QueryString)).WriteValue(ServerVariables?["QUERY_STRING"]);
-                    WriteDictionary(nameof(ServerVariables), ServerVariablesSerializable);
-                    WriteDictionary(nameof(Cookies), CookiesSerializable);
-                    WriteDictionary(nameof(RequestHeaders), RequestHeadersSerializable);
-                    WriteDictionary(nameof(QueryString), QueryStringSerializable);
-                    WriteDictionary(nameof(Form), FormSerializable);
-                    w.WriteEndObject();
+                    w.WritePropertyName(name);
+                    return w;
                 }
+                JsonTextWriter WritePairs(string name, List<NameValuePair> pairs)
+                {
+                    WriteName(name).WriteStartObject();
+                    foreach (var p in pairs)
+                    {
+                        WriteName(p.Name).WriteValue(p.Value);
+                    }
+                    w.WriteEndObject();
+                    return w;
+                }
+                JsonTextWriter WriteDictionary(string name, Dictionary<string, string> pairs)
+                {
+                    WriteName(name).WriteStartObject();
+                    foreach (var p in pairs)
+                    {
+                        WriteName(p.Key).WriteValue(p.Value);
+                    }
+                    w.WriteEndObject();
+                    return w;
+                }
+                w.WriteStartObject();
+                WriteName(nameof(GUID)).WriteValue(GUID);
+                WriteName(nameof(ApplicationName)).WriteValue(ApplicationName);
+                WriteName(nameof(CreationDate)).WriteValue(CreationDate.ToEpochTime());
+                WriteName(nameof(DeletionDate)).WriteValue(DeletionDate.ToEpochTime());
+                WriteName(nameof(Detail)).WriteValue(Detail);
+                WriteName(nameof(DuplicateCount)).WriteValue(DuplicateCount);
+                WriteName(nameof(ErrorHash)).WriteValue(ErrorHash);
+                WriteName(nameof(HTTPMethod)).WriteValue(HTTPMethod);
+                WriteName(nameof(Host)).WriteValue(Host);
+                WriteName(nameof(IPAddress)).WriteValue(IPAddress);
+                WriteName(nameof(IsProtected)).WriteValue(IsProtected);
+                WriteName(nameof(MachineName)).WriteValue(MachineName);
+                WriteName(nameof(Message)).WriteValue(Message);
+                WriteName(nameof(SQL)).WriteValue(SQL);
+                WriteName(nameof(Source)).WriteValue(Source);
+                WriteName(nameof(StatusCode)).WriteValue(StatusCode);
+                WriteName(nameof(Type)).WriteValue(Type);
+                WriteName(nameof(Url)).WriteValue(Url);
+                WriteName(nameof(QueryString)).WriteValue(ServerVariables?["QUERY_STRING"]);
+                WriteDictionary(nameof(CustomData), CustomData);
+                WritePairs(nameof(ServerVariables), ServerVariablesSerializable);
+                WritePairs(nameof(Cookies), CookiesSerializable);
+                WritePairs(nameof(RequestHeaders), RequestHeadersSerializable);
+                WritePairs(nameof(QueryString), QueryStringSerializable);
+                WritePairs(nameof(Form), FormSerializable);
+                w.WriteEndObject();
             }
         }
 

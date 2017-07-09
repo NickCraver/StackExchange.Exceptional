@@ -39,8 +39,6 @@ namespace Samples.MVC5
 
             // Setting the jQuery URL, in case you need this to be an internally hosted jQuery for example
             // By default, this will pull from the google CDN
-            settings.Render.JQueryURL = "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js";
-
             settings.Render.JSIncludes.Add("/Content/errors.js");
             StackExchange.Exceptional.Error.OnBeforeLog += (sender, args) =>
                 {
