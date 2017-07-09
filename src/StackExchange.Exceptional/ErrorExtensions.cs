@@ -118,7 +118,7 @@ namespace StackExchange.Exceptional
         /// <param name="context">The <see cref="HttpContext"/> related to the request.</param>
         public static void SetContextProperties(this Error error, HttpContext context)
         {
-            if (context == null) return;
+            if (context == null || context.Handler == null) return;
 
             var request = context.Request;
 
