@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 using System.Web.Routing;
 
 namespace Samples.MVC5
@@ -28,6 +29,7 @@ namespace Samples.MVC5
                             subResource = UrlParameter.Optional
                         }
                 );
+            MvcApplication.LogException(new Exception("Startup simulation: RegisterRoutes Exception!"));
         }
     }
 }

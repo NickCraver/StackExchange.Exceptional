@@ -1,4 +1,4 @@
-﻿using System.Web;
+﻿using System;
 using System.Web.Optimization;
 
 namespace Samples.MVC5
@@ -9,6 +9,7 @@ namespace Samples.MVC5
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/site.css"));
+            MvcApplication.LogException(new Exception("Startup simulation: RegisterBundles Exception!"));
         }
     }
 }
