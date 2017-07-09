@@ -473,9 +473,12 @@ namespace StackExchange.Exceptional
                 JsonTextWriter WritePairs(string name, List<NameValuePair> pairs)
                 {
                     WriteName(name).WriteStartObject();
-                    foreach (var p in pairs)
+                    if (pairs != null)
                     {
-                        WriteName(p.Name).WriteValue(p.Value);
+                        foreach (var p in pairs)
+                        {
+                            WriteName(p.Name).WriteValue(p.Value);
+                        }
                     }
                     w.WriteEndObject();
                     return w;
@@ -483,9 +486,12 @@ namespace StackExchange.Exceptional
                 JsonTextWriter WriteDictionary(string name, Dictionary<string, string> pairs)
                 {
                     WriteName(name).WriteStartObject();
-                    foreach (var p in pairs)
+                    if (pairs != null)
                     {
-                        WriteName(p.Key).WriteValue(p.Value);
+                        foreach (var p in pairs)
+                        {
+                            WriteName(p.Key).WriteValue(p.Value);
+                        }
                     }
                     w.WriteEndObject();
                     return w;
