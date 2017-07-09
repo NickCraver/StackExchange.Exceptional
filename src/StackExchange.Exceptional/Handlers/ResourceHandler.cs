@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Reflection;
 using System.Web;
 
 namespace StackExchange.Exceptional.Handlers
