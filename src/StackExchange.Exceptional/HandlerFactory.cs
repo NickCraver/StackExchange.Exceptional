@@ -49,7 +49,6 @@ namespace StackExchange.Exceptional
                     {
                         case KnownRoutes.Delete:
                             errorGuid = context.Request.Form["guid"] ?? "";
-                            bool result = false;
                             bool result = errorGuid.HasValue() && ErrorStore.Default.Delete(errorGuid.ToGuid());
                             return JSONPHandler(context, result) ?? new RedirectHandler(context.Request.Path.Replace("/delete", ""), false);
 
