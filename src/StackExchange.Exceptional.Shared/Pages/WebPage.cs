@@ -68,7 +68,7 @@ namespace StackExchange.Exceptional.Pages
               .AppendLine("<html>")
               .AppendLine("  <head>")
               .AppendFormat("    <title>{0}</title>", PageTitle.HtmlEncode()).AppendLine()
-              .AppendFormat("    <link rel=\"stylesheet\" type=\"text/css\" href=\"{0}\" />", Url("css")).AppendLine();
+              .AppendFormat("    <link rel=\"stylesheet\" type=\"text/css\" href=\"{0}?v={1}\" integrity=\"sha512-{1}\" crossorigin=\"anonymous\"/>", Url("css"), Resources.BundleCss.Sha512).AppendLine();
 
             foreach (var css in Settings.Render.CSSIncludes)
             {
@@ -83,7 +83,9 @@ namespace StackExchange.Exceptional.Pages
                 sb.AppendLine(";</script>");
             }
 
-            sb.AppendFormat("    <script src=\"{0}\"></script>", Url("js")).AppendLine();
+            //<script src="https://example.com/example-framework.js" integrity = "sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/uxy9rx7HNQlGYl1kPzQho1wx4JwY8wC" crossorigin = "anonymous" ></ script >
+
+            sb.AppendFormat("    <script src=\"{0}?v={1}\" integrity=\"sha512-{1}\" crossorigin=\"anonymous\"></script>", Url("js"), Resources.BundleJs.Sha512).AppendLine();
             foreach (var js in Settings.Render.JSIncludes)
             {
                 sb.AppendFormat("    <script src=\"{0}\"></script>", js).AppendLine();

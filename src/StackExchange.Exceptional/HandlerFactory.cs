@@ -98,10 +98,10 @@ namespace StackExchange.Exceptional
                             return new ErrorJsonHandler();
 
                         case "css":
-                            return new ResourceHandler("Styles.min.css", "text/css");
+                            return Render(Resources.BundleCss);
 
                         case "js":
-                            return new ResourceHandler("Bundle.min.js", "text/javascript");
+                            return Render(Resources.BundleJs);
 
                         case "test":
                             throw new Exception("This is a test. Please disregard. If this were a real emergency, it'd have a different message.");
@@ -124,6 +124,9 @@ namespace StackExchange.Exceptional
 
         private ContentHandler Render(WebPage page) =>
             new ContentHandler(page.Render(), "text/html");
+
+        private ContentHandler Render(Resources.ResourceCache cache) =>
+            new ContentHandler(cache.Content, cache.MimeType);
 
         private IHttpHandler JSONPHandler(HttpContext context, bool result)
         {

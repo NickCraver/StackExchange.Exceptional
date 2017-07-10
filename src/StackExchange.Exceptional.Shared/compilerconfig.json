@@ -1,6 +1,6 @@
 ﻿[
   {
-    "outputFile": "Resources/Styles.css",
+    "outputFile": "Resources/Bundle.css",
     "inputFile": "Resources/Source/Styles.less"
   }
 ]

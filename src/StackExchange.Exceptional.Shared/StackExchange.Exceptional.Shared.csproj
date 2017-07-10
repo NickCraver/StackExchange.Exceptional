@@ -20,8 +20,8 @@
     <EmbeddedResource Include="Resources\Bundle.min.js">
       <DependentUpon>Bundle.js</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Styles.min.css">
-      <DependentUpon>Styles.css</DependentUpon>
+    <EmbeddedResource Include="Resources\Bundle.min.css">
+      <DependentUpon>Bundle.css</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
 </Project>
