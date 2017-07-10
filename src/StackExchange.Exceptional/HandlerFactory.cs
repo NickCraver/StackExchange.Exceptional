@@ -30,7 +30,7 @@ namespace StackExchange.Exceptional
             // In MVC requests, PathInfo isn't set - determine via Path..
             // e.g. "/admin/errors/info" or "/admin/errors/"
             var match = Regex.Match(context.Request.Path, @"/?(?<resource>[\w\-\.]+)/?$");
-            var resource = match.Success ? match.Groups["resource"].Value : "";
+            var resource = match.Success ? match.Groups["resource"].Value.ToLower(CultureInfo.InvariantCulture) : "";
 
             Func<IEnumerable<Guid>> getFormGuids = () =>
                 {
@@ -44,33 +44,29 @@ namespace StackExchange.Exceptional
 
             switch (context.Request.HttpMethod)
             {
-                // The chrome team, in their infinite wisdom, started pre-fetching URLs, making /delete-all being a GET a PITA
                 case "POST":
-                    switch (resource.ToLower(CultureInfo.InvariantCulture))
+                    switch (resource)
                     {
-                        case "delete":
+                        case KnownRoutes.Delete:
                             errorGuid = context.Request.Form["guid"] ?? "";
                             bool result = false;
-                            if (errorGuid.HasValue())
-                            {
-                                result = ErrorStore.Default.Delete(errorGuid.ToGuid());
-                            }
+                            bool result = errorGuid.HasValue() && ErrorStore.Default.Delete(errorGuid.ToGuid());
                             return JSONPHandler(context, result) ?? new RedirectHandler(context.Request.Path.Replace("/delete", ""), false);
 
-                        case "delete-all":
+                        case KnownRoutes.DeleteAll:
                             bool delAllResult = ErrorStore.Default.DeleteAll();
                             return JSONPHandler(context, delAllResult) ?? new RedirectHandler(context.Request.Path.Replace("/delete-all", ""), false);
 
-                        case "delete-list":
+                        case KnownRoutes.DeleteList:
                             bool delListResult = ErrorStore.Default.DeleteList(getFormGuids());
                             return JsonResult(delListResult);
 
-                        case "protect":
+                        case KnownRoutes.Protect:
                             // send back a "true" or "false" - this will be handled in javascript
                             var pResult = ErrorStore.Default.Protect(context.Request.Form["guid"].ToGuid());
                             return JSONPHandler(context, pResult) ?? new ContentHandler(pResult.ToString(), "text/html");
 
-                        case "protect-list":
+                        case KnownRoutes.ProtectList:
                             bool protectListResult = ErrorStore.Default.ProtectList(getFormGuids());
                             return JsonResult(protectListResult);
 
@@ -78,32 +74,24 @@ namespace StackExchange.Exceptional
                             return new ContentHandler("Invalid POST Request", "text/html");
                     }
                 case "GET":
-                    switch (resource.ToLower(CultureInfo.InvariantCulture))
+                    errorGuid = context.Request.QueryString["guid"] ?? "";
+                    switch (resource)
                     {
-                        case "delete":
-                            errorGuid = context.Request.QueryString["guid"] ?? "";
-                            if (errorGuid.HasValue())
-                            {
-                                ErrorStore.Default.Delete(errorGuid.ToGuid());
-                            }
-                            return new RedirectHandler(TrimEnd(context.Request.Path, "/delete"), true);
-
-                        case "info":
-                            errorGuid = context.Request.QueryString["guid"] ?? "";
+                        case KnownRoutes.Info:
                             var guid = errorGuid.ToGuid();
                             var error = errorGuid.HasValue() ? ErrorStore.Default.Get(guid) : null;
                             return Render(new ErrorDetailPage(error, ErrorStore.Default, TrimEnd(context.Request.Path, "/info"), guid));
 
-                        case "json":
+                        case KnownRoutes.Json:
                             return new ErrorJsonHandler();
 
-                        case "css":
+                        case KnownRoutes.Css:
                             return Render(Resources.BundleCss);
 
-                        case "js":
+                        case KnownRoutes.Js:
                             return Render(Resources.BundleJs);
 
-                        case "test":
+                        case KnownRoutes.Test:
                             throw new Exception("This is a test. Please disregard. If this were a real emergency, it'd have a different message.");
 
                         default:

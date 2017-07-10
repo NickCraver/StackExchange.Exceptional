@@ -87,10 +87,10 @@ namespace StackExchange.Exceptional.Pages
                 {
                     sb.Append("            <tr data-id=\"").Append(e.GUID.ToString()).Append("\" class=\"error").Append(e.IsProtected ? " js-protected" : "").AppendLine("\">")
                       .Append("              <td>")
-                      .Append("<a href=\"#\" data-url=\"").Append(Url("delete")).Append("\" class=\"delete-link js-delete-link\" title=\"Delete this error\">").Append(IconX).Append("</a>");
+                      .Append("<a href=\"#\" class=\"js-delete-link\" title=\"Delete this error\">").Append(IconX).Append("</a>");
                     if (!e.IsProtected)
                     {
-                        sb.Append(" <a href=\"#\" data-url=\"").Append(Url("protect")).Append("\" class=\"js-protect-link\" title=\"Protect this error\">").Append(IconLock).Append("</a>");
+                        sb.Append(" <a href=\"#\" class=\"js-protect-link\" title=\"Protect this error\">").Append(IconLock).Append("</a>");
                     }
                     else
                     {
@@ -100,7 +100,7 @@ namespace StackExchange.Exceptional.Pages
                       .Append("              <td title=\"").AppendHtmlEncode(e.Type).Append("\">")
                       .AppendHtmlEncode(e.Type.ToShortTypeName())
                       .AppendLine("</td>")
-                      .Append("              <td class=\"wrap\"><a href=\"").Append(Url("info?guid=" + e.GUID.ToString()))
+                      .Append("              <td class=\"wrap\"><a href=\"").Append(Url(KnownRoutes.Info)).Append("?guid=" + e.GUID.ToString())
                       .Append("\">").AppendHtmlEncode(e.Message).Append("</a>");
                     if (e.DuplicateCount > 1)
                     {
@@ -132,9 +132,7 @@ namespace StackExchange.Exceptional.Pages
                 if (errors.Any(e => !e.IsProtected))
                 {
                     sb.Append("        <div class=\"page-actions\">")
-                      .Append("<a class=\"js-clear-all\" href=\"#\" data-url=\"")
-                      .Append(Url("delete-all"))
-                      .Append("\">")
+                      .Append("<a class=\"js-clear-all\" href=\"#\">")
                       .Append(IconX)
                       .Append(" Clear all non-protected errors</a>")
                       .AppendLine("</div>");
