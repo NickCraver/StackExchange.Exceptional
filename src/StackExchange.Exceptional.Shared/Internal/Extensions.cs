@@ -4,7 +4,6 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace StackExchange.Exceptional.Internal
 {
