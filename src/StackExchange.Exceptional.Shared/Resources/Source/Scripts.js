@@ -5,7 +5,7 @@
     };
     prettyPrint();
 
-    if (table.length == 0) {
+    if (table.length === 0) {
         return;
     }
 

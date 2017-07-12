@@ -82,7 +82,7 @@ namespace StackExchange.Exceptional.Pages
                 Error.WriteDetailedJson(sb);
                 sb.AppendLine(";</script>");
             }
-            
+
             sb.AppendFormat("    <script src=\"{0}?v={1}\" integrity=\"sha512-{1}\" crossorigin=\"anonymous\"></script>", Url(KnownRoutes.Js), Resources.BundleJs.Sha512).AppendLine();
             foreach (var js in Settings.Render.JSIncludes)
             {

@@ -23,6 +23,7 @@ namespace Samples.MVC5.Controllers
 
         public ActionResult FormSubmit(FormCollection fc)
         {
+            var used = fc;
             throw new Exception("Check out the log to see that this exception didn't log the password.");
         }
 
