@@ -97,10 +97,98 @@ pre {
   font-family: Consolas, Monaco, monospace;
 }
 pre.stack {
-  background-color: #ffffcc;
+  background-color: #fefbec;
+  border: solid 1px #f5f5f5;
+}
+pre.stack.table code {
+  display: table;
+}
+pre.stack.table .stack.row {
+  display: table-row;
+}
+pre.stack.table .stack.leadIn,
+pre.stack.table .stack.type,
+pre.stack.table .stack.method-section,
+pre.stack.table .stack.source-section {
+  display: table-cell;
+}
+pre.stack.table .stack.misc {
+  display: none;
+}
+pre.stack.table .stack.method-section .misc {
+  display: normal;
 }
 pre.command {
   background-color: #eee;
+}
+.stack.async {
+  opacity: 0.6;
+  display: none;
+}
+.stack.leadin,
+.stack.file,
+.stack.line-prefix,
+.stack.path,
+.stack.dot {
+  color: #bbb;
+}
+.stack.async-tag {
+  color: #d14;
+  font-weight: bold;
+}
+.stack.async-tag:before {
+  content: "(";
+}
+.stack.async-tag:after {
+  content: ")";
+}
+.stack.type {
+  color: #006696;
+}
+.stack.misc,
+.stack.parens,
+.stack.generic-type {
+  color: #444;
+}
+.stack.method {
+  color: #1fad83;
+}
+.stack.paramType {
+  color: #147FCC;
+}
+.stack.paramName {
+  color: #885D3B;
+}
+pre.stack.dark {
+  background-color: #2f3640;
+  border: solid 1px #f5f5f5;
+}
+pre.stack.dark .stack.leadin,
+pre.stack.dark .stack.path,
+pre.stack.dark .stack.line-prefix,
+pre.stack.dark .stack.dot {
+  color: #bbb;
+}
+pre.stack.dark .stack.async-tag {
+  color: #d14;
+}
+pre.stack.dark .stack.type {
+  color: #8e9caf;
+}
+pre.stack.dark .stack.misc,
+pre.stack.dark .stack.parens,
+pre.stack.dark .stack.line,
+pre.stack.dark .stack.generic-type {
+  color: #e6e9ed;
+}
+pre.stack.dark .stack.method {
+  color: #4fc1e9;
+}
+pre.stack.dark .stack.paramType {
+  color: #e6e9ed;
+}
+pre.stack.dark .stack.paramName {
+  color: #ed5565;
 }
 table {
   width: 100%;
@@ -159,6 +247,9 @@ table.hover tbody tr.error.selected {
 }
 table.hover tbody tr.error.selected:hover td {
   background-color: #faf2cc;
+}
+table.error-list tr td:nth-child(1) {
+  white-space: nowrap;
 }
 table.error-list tr td:nth-child(2) {
   color: #6f6f6f;
