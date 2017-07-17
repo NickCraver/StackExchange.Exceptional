@@ -19,23 +19,23 @@ namespace StackExchange.Exceptional
         private ExceptionalSettings Settings => ExceptionalSettings.Current;
 
         /// <summary>
-        /// Event handler to run before an exception is logged to the store
+        /// Event handler to run before an exception is logged to the store.
         /// </summary>
         public static event EventHandler<ErrorBeforeLogEventArgs> OnBeforeLog;
 
         /// <summary>
-        /// Event handler to run after an exception has been logged to the store
+        /// Event handler to run after an exception has been logged to the store.
         /// </summary>
         public static event EventHandler<ErrorAfterLogEventArgs> OnAfterLog;
 
         /// <summary>
-        /// The Id on this error, strictly for primary keying on persistent stores
+        /// The ID on this error, strictly for primary keying on persistent stores.
         /// </summary>
         [JsonIgnore]
         public long Id { get; set; }
 
         /// <summary>
-        /// Unique identifier for this error, gernated on the server it came from
+        /// Unique identifier for this error, generated on the server it came from.
         /// </summary>
         public Guid GUID { get; set; }
 
@@ -54,9 +54,9 @@ namespace StackExchange.Exceptional
             Exception = e ?? throw new ArgumentNullException(nameof(e));
             var baseException = e;
 
-            // if it's not a .Net core exception, usually more information is being added
+            // If it's not a .NET framework exception, usually more information is being added,
             // so use the wrapper for the message, type, etc.
-            // if it's a .Net core exception type, drill down and get the innermost exception
+            // If it's a .NET framework exception type, drill down and get the innermost exception.
             if (IsBuiltInException(e))
                 baseException = e.GetBaseException();
 
@@ -155,19 +155,16 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// returns if the type of the exception is built into .Net core
+        /// Returns if the type of the exception is built into the .NET framework.
         /// </summary>
-        /// <param name="e">The exception to check</param>
-        /// <returns>True if the exception is a type from within the CLR, false if it's a user/third party type</returns>
-        private bool IsBuiltInException(Exception e)
-        {
-            return e.GetType().Module.ScopeName == "CommonLanguageRuntimeLibrary";
-        }
+        /// <param name="e">The exception to check.</param>
+        /// <returns>True if the exception is a type from within the CLR, false if it's a user/third party type.</returns>
+        private bool IsBuiltInException(Exception e) => e.GetType().Module.ScopeName == "CommonLanguageRuntimeLibrary";
 
         /// <summary>
-        /// Gets a unique-enough hash of this error.  Stored as a quick comparison mechanism to rollup duplicate errors.
+        /// Gets a unique-enough hash of this error. Stored as a quick comparison mechanism to rollup duplicate errors.
         /// </summary>
-        /// <returns>"Unique" hash for this error</returns>
+        /// <returns>A "Unique" hash for this error.</returns>
         public int? GetHash()
         {
             if (!Detail.HasValue()) return null;
@@ -180,110 +177,110 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Reflects if the error is protected from deletion
+        /// Whether this error is protected from deletion.
         /// </summary>
         public bool IsProtected { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="Exception"/> instance used to create this error
+        /// The <see cref="Exception"/> instance used to create this error.
         /// </summary>
         [JsonIgnore]
         public Exception Exception { get; set; }
 
         /// <summary>
-        /// Gets the name of the application that threw this exception
+        /// The name of the application that threw this exception.
         /// </summary>
         public string ApplicationName { get; set; }
 
         /// <summary>
-        /// Gets the hostname of where the exception occured
+        /// The hostname where the exception occured.
         /// </summary>
         public string MachineName { get; set; }
 
         /// <summary>
-        /// Get the type of error
+        /// The type error.
         /// </summary>
         public string Type { get; set; }
 
         /// <summary>
-        /// Gets the source of this error
+        /// The source of this error.
         /// </summary>
         public string Source { get; set; }
 
         /// <summary>
-        /// Gets the exception message
+        /// Txception message.
         /// </summary>
         public string Message { get; set; }
 
         /// <summary>
-        /// Gets the detail/stack trace of this error
+        /// The detail/stack trace of this error.
         /// </summary>
         public string Detail { get; set; }
 
         /// <summary>
-        /// The hash that describes this error
+        /// The hash that describes this error.
         /// </summary>
         public int? ErrorHash { get; set; }
 
         /// <summary>
-        /// Gets the time in UTC that the error occured
+        /// The time in UTC that the error originally occurred.
         /// </summary>
         public DateTime CreationDate { get; set; }
 
         /// <summary>
-        /// Gets the HTTP Status code associated with the request
+        /// The HTTP Status code associated with the request.
         /// </summary>
         public int? StatusCode { get; set; }
 
         /// <summary>
-        /// Gets the server variables collection for the request
+        /// The server variables collection for the request.
         /// </summary>
         [JsonIgnore]
         public NameValueCollection ServerVariables { get; set; }
 
         /// <summary>
-        /// Gets the query string collection for the request
+        /// The query string collection for the request.
         /// </summary>
         [JsonIgnore]
         public NameValueCollection QueryString { get; set; }
 
         /// <summary>
-        /// Gets the form collection for the request
+        /// The form collection for the request.
         /// </summary>
         [JsonIgnore]
         public NameValueCollection Form { get; set; }
 
         /// <summary>
-        /// Gets a collection representing the client cookies of the request
+        /// A collection representing the client cookies of the request.
         /// </summary>
         [JsonIgnore]
         public NameValueCollection Cookies { get; set; }
 
         /// <summary>
-        /// Gets a collection representing the headers sent with the request
+        /// A collection representing the headers sent with the request.
         /// </summary>
         [JsonIgnore]
         public NameValueCollection RequestHeaders { get; set; }
 
         /// <summary>
-        /// Gets a collection of custom data added at log time
+        /// A collection of custom data added at log time.
         /// </summary>
         public Dictionary<string, string> CustomData { get; set; }
 
         /// <summary>
-        /// The number of newer Errors that have been discarded because they match this Error and fall within the configured 
-        /// "IgnoreSimilarExceptionsThreshold" TimeSpan value.
+        /// The number of newer Errors that have been discarded because they match this Error and fall 
+        /// within the configured <see cref="ErrorStoreSettings.RollupPeriod"/> <see cref="TimeSpan"/> value.
         /// </summary>
         public int? DuplicateCount { get; set; }
 
         /// <summary>
-        /// This flag is to indicate that there were matches of this error when added to the queue or store.
+        /// Indicates if there were matches of this error when added to the queue or store.
         /// </summary>
         [JsonIgnore]
         public bool IsDuplicate { get; set; }
 
         /// <summary>
-        /// Gets the SQL command text assocaited with this error
+        /// Gets the SQL command text assocaited with this error.
         /// </summary>
         public string SQL { get; set; }
 
@@ -294,7 +291,7 @@ namespace StackExchange.Exceptional
 
         private string _host;
         /// <summary>
-        /// The URL host of the request causing this error
+        /// The URL host of the request causing this error.
         /// </summary>
         public string Host
         {
@@ -304,7 +301,7 @@ namespace StackExchange.Exceptional
 
         private string _url;
         /// <summary>
-        /// The URL path of the request causing this error
+        /// The URL path of the request causing this error.
         /// </summary>
         public string Url
         {
@@ -314,7 +311,7 @@ namespace StackExchange.Exceptional
 
         private string _httpMethod;
         /// <summary>
-        /// The HTTP Method causing this error, e.g. GET or POST
+        /// The HTTP Method causing this error, e.g. GET or POST.
         /// </summary>
         public string HTTPMethod
         {
@@ -324,7 +321,7 @@ namespace StackExchange.Exceptional
 
         private string _ipAddress;
         /// <summary>
-        /// The IPAddress of the request causing this error
+        /// The IPAddress of the request causing this error.
         /// </summary>
         public string IPAddress
         {
@@ -333,13 +330,14 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Json populated from database stored, deserialized after if needed
+        /// Json populated from database stored, deserialized after if needed.
         /// </summary>
         [JsonIgnore]
         public string FullJson { get; set; }
 
         /// <summary>
-        /// Whether to roll up errors per-server. E.g. should an identical error happening on 2 separate servers be a DuplicateCount++, or 2 separate errors.
+        /// Whether to roll up errors per-server. E.g. should an identical error happening on 2 separate servers 
+        /// be a <see cref="DuplicateCount"/>++, or 2 separate errors.
         /// </summary>
         [JsonIgnore]
         public bool RollupPerServer { get; set; }
@@ -350,9 +348,9 @@ namespace StackExchange.Exceptional
         public override string ToString() => Message;
 
         /// <summary>
-        /// Create a copy of the error and collections so if it's modified in memory logging is not affected
+        /// Create a copy of the error and collections so if it's modified in memory logging is not affected.
         /// </summary>
-        /// <returns>A clone of this error</returns>
+        /// <returns>A clone of this error.</returns>
         public Error Clone()
         {
             var copy = (Error) MemberwiseClone();
@@ -366,7 +364,7 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Variables strictly for JSON serialziation, to maintain non-dictonary behavior
+        /// Variables strictly for JSON serialization, to maintain non-dictonary behavior.
         /// </summary>
         public List<NameValuePair> ServerVariablesSerializable
         {
@@ -374,7 +372,7 @@ namespace StackExchange.Exceptional
             set => ServerVariables = GetNameValueCollection(value);
         }
         /// <summary>
-        /// Variables strictly for JSON serialziation, to maintain non-dictonary behavior
+        /// Variables strictly for JSON serialization, to maintain non-dictonary behavior.
         /// </summary>
         public List<NameValuePair> QueryStringSerializable
         {
@@ -382,7 +380,7 @@ namespace StackExchange.Exceptional
             set => QueryString = GetNameValueCollection(value);
         }
         /// <summary>
-        /// Variables strictly for JSON serialziation, to maintain non-dictonary behavior
+        /// Variables strictly for JSON serialization, to maintain non-dictonary behavior.
         /// </summary>
         public List<NameValuePair> FormSerializable
         {
@@ -390,63 +388,19 @@ namespace StackExchange.Exceptional
             set => Form = GetNameValueCollection(value);
         }
         /// <summary>
-        /// Variables strictly for JSON serialziation, to maintain non-dictonary behavior
+        /// Variables strictly for JSON serialization, to maintain non-dictonary behavior.
         /// </summary>
         public List<NameValuePair> CookiesSerializable
         {
             get => GetPairs(Cookies);
             set => Cookies = GetNameValueCollection(value);
         }
-
         /// <summary>
-        /// Variables strictly for JSON serialziation, to maintain non-dictonary behavior
+        /// Variables strictly for JSON serialization, to maintain non-dictonary behavior.
         /// </summary>
         public List<NameValuePair> RequestHeadersSerializable
         {
             get => GetPairs(RequestHeaders);
-            set => RequestHeaders = GetNameValueCollection(value);
-        }
-
-        // TODO: Remove in a separate commit
-
-        /// <summary>
-        /// Only for deserializing errors pre-spelling fix properly
-        /// </summary>
-        [JsonIgnore]
-        public List<NameValuePair> ServerVariablesSerialzable
-        {
-            set => ServerVariables = GetNameValueCollection(value);
-        }
-        /// <summary>
-        /// Only for deserializing errors pre-spelling fix properly
-        /// </summary>
-        [JsonIgnore]
-        public List<NameValuePair> QueryStringSerialzable
-        {
-            set => QueryString = GetNameValueCollection(value);
-        }
-        /// <summary>
-        /// Only for deserializing errors pre-spelling fix properly
-        /// </summary>
-        [JsonIgnore]
-        public List<NameValuePair> FormSerialzable
-        {
-            set => Form = GetNameValueCollection(value);
-        }
-        /// <summary>
-        /// Only for deserializing errors pre-spelling fix properly
-        /// </summary>
-        [JsonIgnore]
-        public List<NameValuePair> CookiesSerialzable
-        {
-            set => Cookies = GetNameValueCollection(value);
-        }
-        /// <summary>
-        /// Only for deserializing errors pre-spelling fix properly.
-        /// </summary>
-        [JsonIgnore]
-        public List<NameValuePair> RequestHeadersSerialzable
-        {
             set => RequestHeaders = GetNameValueCollection(value);
         }
 
@@ -527,24 +481,24 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Deserializes provided JSON into an Error object
+        /// Deserializes provided JSON into an Error object.
         /// </summary>
-        /// <param name="json">JSON representing an Error</param>
-        /// <returns>The Error object</returns>
+        /// <param name="json">JSON representing an Error.</param>
+        /// <returns>The Error object.</returns>
         public static Error FromJson(string json) => JsonConvert.DeserializeObject<Error>(json);
 
         /// <summary>
-        /// Serialization class in place of the NameValueCollection pairs
+        /// Serialization class in place of the NameValueCollection pairs.
         /// </summary>
-        /// <remarks>This exists because things like a querystring can havle multiple values, they are not a dictionary</remarks>
+        /// <remarks>This exists because things like a querystring can havle multiple values, they are not a dictionary.</remarks>
         public class NameValuePair
         {
             /// <summary>
-            /// The name for this variable
+            /// The name for this variable.
             /// </summary>
             public string Name { get; set; }
             /// <summary>
-            /// The value for this variable
+            /// The value for this variable.
             /// </summary>
             public string Value { get; set; }
         }
