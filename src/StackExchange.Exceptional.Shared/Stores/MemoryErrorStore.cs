@@ -125,6 +125,10 @@ namespace StackExchange.Exceptional.Stores
                     if (dupe != null)
                     {
                         dupe.DuplicateCount += error.DuplicateCount;
+                        if (dupe.LastLogDate == null || error.CreationDate > dupe.LastLogDate)
+                        {
+                            dupe.LastLogDate = error.CreationDate;
+                        }
                         error.GUID = dupe.GUID;
                         return;
                     }

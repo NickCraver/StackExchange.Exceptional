@@ -180,16 +180,18 @@ Update Exceptions
                     {
                         error.DuplicateCount,
                         error.ErrorHash,
+                        error.CreationDate,
                         ApplicationName = error.ApplicationName.Truncate(50),
                         minDate = DateTime.UtcNow.Subtract(Settings.RollupPeriod.Value)
                     });
                     var count = c.Execute(@"
-                    Update Exceptions 
-                      Set DuplicateCount = DuplicateCount + @DuplicateCount
-                    Where ErrorHash = @ErrorHash
-                    And ApplicationName = @ApplicationName
-                    And DeletionDate Is Null
-                    And CreationDate >= @minDate limit 1", queryParams);
+Update Exceptions 
+   Set DuplicateCount = DuplicateCount + @DuplicateCount,
+       LastLogDate = (Case When LastLogDate Is Null Or @CreationDate > LastLogDate Then @CreationDate Else LastLogDate End)
+ Where ErrorHash = @ErrorHash
+   And ApplicationName = @ApplicationName
+   And DeletionDate Is Null
+   And CreationDate >= @minDate limit 1", queryParams);
                     // if we found an exception that's a duplicate, jump out
                     if (count > 0)
                     {

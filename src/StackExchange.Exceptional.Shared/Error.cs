@@ -228,6 +228,11 @@ namespace StackExchange.Exceptional
         public DateTime CreationDate { get; set; }
 
         /// <summary>
+        /// The time in UTC that the error last occurred.
+        /// </summary>
+        public DateTime? LastLogDate { get; set; }
+
+        /// <summary>
         /// The HTTP Status code associated with the request.
         /// </summary>
         public int? StatusCode { get; set; }

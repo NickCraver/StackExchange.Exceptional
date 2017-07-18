@@ -141,6 +141,11 @@ namespace StackExchange.Exceptional.Stores
             {
                 // just update the existing file after incrementing its "duplicate count"
                 original.DuplicateCount = original.DuplicateCount.GetValueOrDefault(0) + error.DuplicateCount;
+                // Update the LastLogDate to the latest occurrence
+                if (original.LastLogDate == null || error.CreationDate > original.LastLogDate)
+                {
+                    original.LastLogDate = error.CreationDate;
+                }
                 error.GUID = original.GUID;
 
                 if (!TryGetErrorFile(original.GUID, out FileInfo f))

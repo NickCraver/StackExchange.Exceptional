@@ -179,6 +179,7 @@ Update Exceptions
                     {
                         error.DuplicateCount,
                         error.ErrorHash,
+                        error.CreationDate,
                         ApplicationName = error.ApplicationName.Truncate(50),
                         minDate = DateTime.UtcNow.Subtract(Settings.RollupPeriod.Value)
                     });
@@ -186,6 +187,7 @@ Update Exceptions
                     var count = c.Execute(@"
 Update Exceptions 
    Set DuplicateCount = DuplicateCount + @DuplicateCount,
+       LastLogDate = (Case When LastLogDate Is Null Or @CreationDate > LastLogDate Then @CreationDate Else LastLogDate End),
        @newGUID = GUID
  Where Id In (Select Top 1 Id
                 From Exceptions 

@@ -25,7 +25,7 @@ namespace StackExchange.Exceptional.Pages
         {
             var errors = Store.GetAll();
             var total = errors.Count;
-            errors = errors.OrderByDescending(e => e.CreationDate).ToList();
+            errors = errors.OrderByDescending(e => e.LastLogDate ?? e.CreationDate).ToList();
 
             if (Store.InFailureMode)
             {
@@ -118,9 +118,9 @@ namespace StackExchange.Exceptional.Pages
                     sb.AppendLine("</td>")
                       .Append("              <td>").AppendHtmlEncode(e.IPAddress).AppendLine("</td>")
                       .Append("              <td title=\"")
-                      .Append(e.CreationDate.ToUniversalTime().ToString("u"))
+                      .Append((e.LastLogDate ?? e.CreationDate).ToUniversalTime().ToString("u"))
                       .Append("\">")
-                      .AppendHtmlEncode(e.CreationDate.ToRelativeTime())
+                      .AppendHtmlEncode((e.LastLogDate ?? e.CreationDate).ToRelativeTime())
                       .AppendLine("</td>")
                       .Append("              <td>").AppendHtmlEncode(e.Host).AppendLine("</td>")
                       .Append("              <td>").AppendHtmlEncode(e.MachineName).AppendLine("</td>")
