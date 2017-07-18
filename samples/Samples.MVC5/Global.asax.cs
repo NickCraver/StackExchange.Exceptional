@@ -40,7 +40,7 @@ namespace Samples.MVC5
             settings.Render.JSIncludes.Add("/Content/errors.js");
             StackExchange.Exceptional.Error.OnBeforeLog += (sender, args) =>
                 {
-                    args.Error.Message += " - This was appended in the OnBeforeLog handler.";
+                    args.Error.Message += " (suffix from OnBeforeLog handler)";
                     //args.Abort = true; - you could stop the exception from being logged here
                 };
             StackExchange.Exceptional.Error.OnAfterLog += (sender, args) =>
