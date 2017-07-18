@@ -198,7 +198,9 @@ namespace StackExchange.Exceptional
                     pos = frame.Index + frame.Length;
                 }
                 // append anything left
-                sb.Append(stackTrace.Substring(pos));
+                sb.Append("<span class=\"stack misc\">")
+                  .AppendHtmlEncode(stackTrace.Substring(pos))
+                  .Append("</span>");
 
                 return sb.ToStringRecycle();
             }
