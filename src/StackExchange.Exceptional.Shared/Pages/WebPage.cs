@@ -91,7 +91,7 @@ namespace StackExchange.Exceptional.Pages
             sb.AppendLine("  </head>")
               .AppendLine("  <body>")
               .AppendLine("    <div class=\"wrapper\">")
-              .AppendFormat("      <header{0}>Exceptions Log: {1}</header>", Store.InFailureMode ? "class=\"failure\"" : "", Settings.ApplicationName.HtmlEncode()).AppendLine()
+              .AppendFormat("      <header{0}>Exceptions Log: {1}</header>", Store.InFailureMode ? " class=\"failure\"" : "", Settings.ApplicationName.HtmlEncode()).AppendLine()
               .AppendLine("      <main>");
 
             // Render the page inheriting from us

@@ -74,14 +74,14 @@ a:hover {
   text-decoration: underline;
 }
 .failure-mode {
-  width: 350px;
+  max-width: 90%;
   font-size: 12px;
-  background-color: #dc0000;
+  background-color: #bf3838;
   color: #fff;
   padding: 3px 2px 2px 2px;
   border-radius: 4px;
   text-align: center;
-  margin: 6px auto;
+  margin: 0 auto 6px auto;
   line-height: 22px;
 }
 .failure-mode svg {
@@ -90,6 +90,16 @@ a:hover {
   padding: 4px;
   fill: #fff;
   vertical-align: middle;
+}
+.failure-mode a {
+  color: #fff;
+  text-decoration: underline;
+}
+.failure-mode .details {
+  display: none;
+  line-height: 1em;
+  text-align: left;
+  margin: 4px;
 }
 pre {
   padding: 0.5em;

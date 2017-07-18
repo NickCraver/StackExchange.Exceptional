@@ -99,14 +99,14 @@ a {
 }
 
 .failure-mode {
-    width: 350px;
+    max-width: 90%;
     font-size: 12px;
-    background-color: #dc0000;
+    background-color: #bf3838;
     color: @background-color;
     padding: 3px 2px 2px 2px;
     border-radius: 4px;
     text-align: center;
-    margin: 6px auto;
+    margin: 0 auto 6px auto;
     line-height: 22px;
 
     svg {
@@ -115,6 +115,18 @@ a {
         padding: 4px;
         fill: @background-color;
         vertical-align: middle;
+    }
+
+    a {
+        color: @background-color;
+        text-decoration: underline;
+    }
+
+    .details {
+        display: none;
+        line-height: 1em;
+        text-align: left;
+        margin: 4px;
     }
 }
 

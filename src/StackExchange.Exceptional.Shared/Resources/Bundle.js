@@ -150,9 +150,9 @@ $(function () {
                 row.siblings().addBack().removeClass('selected');
             }
             row.parent()
-               .children()
-               .slice(Math.min(index, lastIndex), Math.max(index, lastIndex)).add(lastSelected).add(row)
-               .addClass('selected');
+                .children()
+                .slice(Math.min(index, lastIndex), Math.max(index, lastIndex)).add(lastSelected).add(row)
+                .addClass('selected');
             if (!e.ctrlKey) {
                 lastSelected = row.first();
             }
@@ -170,7 +170,7 @@ $(function () {
     // allow protection and deletion of range selection
     $(document).keyup(function (e) {
         var action, selected = $('.error.selected').not('.js-protected');
-        
+
         if (selected.length === 0) {
             return;
         }
@@ -186,10 +186,10 @@ $(function () {
             default:
                 return;
         }
-        
+
         var ids = selected.map(function () { return $(this).data('id'); }).get();
         selected.children('td:first-child').addClass('loading');
-        
+
         $.ajax({
             type: 'POST',
             traditional: true,
@@ -230,5 +230,9 @@ $(function () {
                 loading.removeClass('loading');
                 alert('Error occurred when trying to delete all errors.');
             });
+    }).delegate('a.js-show-details', 'click', function (e) {
+        e.preventDefault();
+        $(this).text($(this).text() == 'view details' ? 'hide details' : 'view details')
+               .parent().siblings('.details').toggle();
     });
 });

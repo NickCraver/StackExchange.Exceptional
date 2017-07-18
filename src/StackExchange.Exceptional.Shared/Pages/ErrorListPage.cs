@@ -42,11 +42,10 @@ namespace StackExchange.Exceptional.Pages
                 var le = Store.LastRetryException;
                 if (le != null)
                 {
-                    sb.Append("<br />Last Logging Exception: ").AppendHtmlEncode(le.Message)
-                      .AppendLine("<!-- Exception Details:")
-                      .AppendHtmlEncode(le.Message).AppendLine()
-                      .AppendHtmlEncode(le.StackTrace).AppendLine()
-                      .AppendLine("-->");
+                    sb.Append("<div>Last Logging Exception: ").AppendHtmlEncode(le.Message).AppendLine(" (<a href=\"#\" class=\"js-show-details\">view details</a>)</div>")
+                      .Append("<pre class=\"stack dark details\"><code>")
+                      .Append(Utils.StackTrace.HtmlPrettify(le.Message + "\n" + le.StackTrace))
+                      .AppendLine("</code></pre>");
                 }
                 sb.AppendLine("</div>");
             }
