@@ -475,12 +475,12 @@ namespace StackExchange.Exceptional
             if (settings.Type.IsNullOrEmpty())
                 throw new ArgumentOutOfRangeException(nameof(settings), "ErrorStore 'type' must be specified");
             if (settings.Size < 1)
-                throw new ArgumentOutOfRangeException(nameof(settings),"ErrorStore 'size' must be positive");
+                throw new ArgumentOutOfRangeException(nameof(settings), "ErrorStore 'size' must be positive");
 
             var storeTypes = GetErrorStores();
             // Search by convention first
             // or...free for all!
-            Type match = storeTypes.Find(s => s.Name == settings.Type + "ErrorStore") ?? storeTypes.Find(s => s.Name.Contains(settings.Type));
+            Type match = storeTypes.Find(s => s.Name == settings.Type + nameof(ErrorStore)) ?? storeTypes.Find(s => s.Name.Contains(settings.Type));
 
             if (match == null)
             {
@@ -499,39 +499,19 @@ namespace StackExchange.Exceptional
 
         private static List<Type> GetErrorStores()
         {
-            var result = new List<Type>();
-            // Get the current directory, based on Where StackExchange.Exceptional.dll is located
-
-            var assemblyUri = new Uri(Assembly.GetExecutingAssembly().GetName().CodeBase);
-            var dir = Path.GetDirectoryName(assemblyUri.LocalPath);
-
-            if (String.IsNullOrEmpty(dir))
-            {
-                Trace.WriteLine("Error loading Error stores, abs path: " + assemblyUri.AbsolutePath);
-                return result;
-            }
-
             try
             {
-                // It's intentional even the core error stores load this way, as a sanity check
-                foreach (var filename in Directory.GetFiles(dir, "StackExchange.Exceptional*.dll"))
-                {
-                    try
-                    {
-                        var assembly = Assembly.LoadFrom(filename);
-                        result.AddRange(assembly.GetTypes().Where(type => type.IsSubclassOf(typeof (ErrorStore))));
-                    }
-                    catch (Exception e)
-                    {
-                        Trace.WriteLine($"Error loading ErrorStore types from {filename}: {e.Message}");
-                    }
-                }
+                // Check for any implementers of ErrorStore anywhere
+                return AppDomain.CurrentDomain.GetAssemblies()
+                                .SelectMany(s => s.GetTypes())
+                                .Where(t => t.IsSubclassOf(typeof(ErrorStore)))
+                                .ToList();
             }
             catch (Exception ex)
             {
                 Trace.WriteLine("Error loading error stores: " + ex.Message);
             }
-            return result;
+            return new List<Type>();
         }
 
 #if !NETSTANDARD2_0
