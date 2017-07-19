@@ -36,9 +36,9 @@ SELECT IF (EXISTS(SELECT 1
           ,'Select ''Already There'''
           ,'CREATE INDEX `IX_Exceptions_GUID_ApplicationName_DeletionDate_CreationDate` ON `Exceptions`(`GUID`, `ApplicationName`, `DeletionDate`, `CreationDate` DESC);')
   INTO @a;
-PREPARE stmt1 FROM @a;
-EXECUTE stmt1;
-DEALLOCATE PREPARE stmt1;
+PREPARE q1 FROM @a;
+EXECUTE q1;
+DEALLOCATE PREPARE q1;
 
 SELECT IF (EXISTS(SELECT 1 
                     FROM INFORMATION_SCHEMA.STATISTICS
@@ -48,9 +48,9 @@ SELECT IF (EXISTS(SELECT 1
           ,'Select ''Already There'''
           ,'CREATE INDEX `IX_Exceptions_ErrorHash_AppName_CreationDate_DelDate` ON `Exceptions`(`ErrorHash`, `ApplicationName`, `CreationDate` DESC, `DeletionDate`);')
   INTO @a;
-PREPARE stmt1 FROM @a;
-EXECUTE stmt1;
-DEALLOCATE PREPARE stmt1;
+PREPARE q1 FROM @a;
+EXECUTE q1;
+DEALLOCATE PREPARE q1;
 
 /* Begin V2 Schema changes */
 
@@ -62,6 +62,18 @@ SELECT IF (EXISTS(SELECT 1
           ,'Select ''Already There'''
           ,'ALTER TABLE `Exceptions` ADD LastLogDate datetime NULL;')
   INTO @a;
-PREPARE stmt1 FROM @a;
-EXECUTE stmt1;
-DEALLOCATE PREPARE stmt1;
+PREPARE q1 FROM @a;
+EXECUTE q1;
+DEALLOCATE PREPARE q1;
+
+SELECT IF (EXISTS(SELECT 1 
+                    FROM INFORMATION_SCHEMA.COLUMNS
+                   WHERE TABLE_SCHEMA = DATABASE()
+                     AND TABLE_NAME = 'Exceptions'
+                     AND COLUMN_NAME = 'SQL')
+          ,'ALTER TABLE `Exceptions` DROP COLUMN `SQL`;'
+          ,'Select ''Already Gone''')
+  INTO @a;
+PREPARE q1 FROM @a;
+EXECUTE q1;
+DEALLOCATE PREPARE q1;

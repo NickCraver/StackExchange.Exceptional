@@ -206,8 +206,8 @@ Update Exceptions
                 error.FullJson = error.ToJson();
 
                 c.Execute(@"
-Insert Into Exceptions (GUID, ApplicationName, MachineName, CreationDate, Type, IsProtected, Host, Url, HTTPMethod, IPAddress, Source, Message, Detail, StatusCode, SQL, FullJson, ErrorHash, DuplicateCount)
-Values (@GUID, @ApplicationName, @MachineName, @CreationDate, @Type, @IsProtected, @Host, @Url, @HTTPMethod, @IPAddress, @Source, @Message, @Detail, @StatusCode, @SQL, @FullJson, @ErrorHash, @DuplicateCount)",
+Insert Into Exceptions (GUID, ApplicationName, MachineName, CreationDate, Type, IsProtected, Host, Url, HTTPMethod, IPAddress, Source, Message, Detail, StatusCode, FullJson, ErrorHash, DuplicateCount, LastLogDate)
+Values (@GUID, @ApplicationName, @MachineName, @CreationDate, @Type, @IsProtected, @Host, @Url, @HTTPMethod, @IPAddress, @Source, @Message, @Detail, @StatusCode, @FullJson, @ErrorHash, @DuplicateCount, @LastLogDate)",
                     new
                     {
                         error.GUID,
@@ -224,10 +224,10 @@ Values (@GUID, @ApplicationName, @MachineName, @CreationDate, @Type, @IsProtecte
                         Message = error.Message.Truncate(1000),
                         error.Detail,
                         error.StatusCode,
-                        error.SQL,
                         error.FullJson,
                         error.ErrorHash,
-                        error.DuplicateCount
+                        error.DuplicateCount,
+                        error.LastLogDate
                     });
             }
         }
@@ -256,6 +256,7 @@ Select *
             result.DuplicateCount = sqlError.DuplicateCount;
             result.DeletionDate = sqlError.DeletionDate;
             result.IsProtected = sqlError.IsProtected;
+            result.LastLogDate = sqlError.LastLogDate;
             return result;
         }
 
