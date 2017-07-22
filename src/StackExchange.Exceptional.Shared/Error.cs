@@ -82,6 +82,7 @@ namespace StackExchange.Exceptional
 
         internal void AddFormData(Exception exception)
         {
+            // Regardless of what Resharper may be telling you, .Data can be null on things like a null ref exception.
             if (exception.Data == null) return;
 
             // Historical special case
@@ -101,7 +102,7 @@ namespace StackExchange.Exceptional
                     CustomData["SQL-Procedure"] = se.Procedure;
                 }
             }
-            // Regardless of what Resharper may be telling you, .Data can be null on things like a null ref exception.
+
             if (Settings.DataIncludeRegex != null)
             {
                 if (CustomData == null)
@@ -294,7 +295,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         public string Host
         {
-            get => _host ?? (_host = ServerVariables == null ? "" : ServerVariables["HTTP_HOST"]);
+            get => _host ?? (_host = ServerVariables?["HTTP_HOST"] ?? "");
             set => _host = value;
         }
 
@@ -304,7 +305,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         public string Url
         {
-            get => _url ?? (_url = ServerVariables == null ? "" : ServerVariables["URL"]);
+            get => _url ?? (_url = ServerVariables?["URL"] ?? "");
             set => _url = value;
         }
 
@@ -314,7 +315,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         public string HTTPMethod
         {
-            get => _httpMethod ?? (_httpMethod = ServerVariables == null ? "" : ServerVariables["REQUEST_METHOD"]);
+            get => _httpMethod ?? (_httpMethod = ServerVariables?["REQUEST_METHOD"] ?? "");
             set => _httpMethod = value;
         }
 
@@ -324,7 +325,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         public string IPAddress
         {
-            get => _ipAddress ?? (_ipAddress = ServerVariables == null ? "" : ServerVariables.GetRemoteIP());
+            get => _ipAddress ?? (_ipAddress = ServerVariables?.GetRemoteIP() ?? "");
             set => _ipAddress = value;
         }
 
