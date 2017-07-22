@@ -1,7 +1,6 @@
 ﻿using StackExchange.Exceptional.Internal;
 using System;
 using System.Diagnostics;
-using System.Net;
 using System.Net.Mail;
 
 namespace StackExchange.Exceptional.Email
@@ -11,79 +10,44 @@ namespace StackExchange.Exceptional.Email
     /// </summary>
     public static class ErrorEmailer
     {
-        /// <summary>
-        /// Address to send messages to
-        /// </summary>
-        public static string ToAddress { get; private set; }
-        private static MailAddress FromAddress { get; set; }
-        private static string Host { get; set; }
-        private static int? Port { get; set; }
-
-        private static NetworkCredential Credentials { get; set; }
-        private static bool EnableSSL { get; set; }
-        private static bool PreventDuplicates { get; set; }
+        private static EmailSettings _settings;
+        private static EmailSettings Settings => _settings ?? ExceptionalSettings.Current.Email;
 
         /// <summary>
-        /// Whether email functionality is enabled
+        /// Whether email functionality is enabled.
         /// </summary>
-        public static bool Enabled { get; private set; }
+        public static bool Enabled => Settings.ToAddress.HasValue();
 
-        static ErrorEmailer()
+        /// <summary>
+        /// Configure the emailer - note that if config isn't valid this will silently fail.
+        /// </summary>
+        /// <param name="settings">Settings to use to configure error emailing.</param>
+        public static void Setup(EmailSettings settings)
         {
-            // Override with exceptional specific settings (user may want this mail to go to another place, or only specify mail settings here, etc.)
-            var eSettings = ExceptionalSettings.Current.Email;
-            Setup(eSettings);
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings), "You can't setup without settings, that's just crazy.");
+            Trace.WriteLine(settings.ToAddress.HasValue()
+                            ? "Email configured, sending to: " + settings.ToAddress
+                            : "Configuration invalid: " + nameof(settings.ToAddress) + " must have a value");
         }
 
         /// <summary>
-        /// Configure the emailer - note that if config isn't valid this sill silently fail
+        /// If enabled, sends an error email to the configured recipients.
         /// </summary>
-        /// <param name="eSettings">Settings to use to configure error emailing</param>
-        public static void Setup(ExceptionalSettings.EmailSettings eSettings)
+        /// <param name="error">The error the email is about.</param>
+        /// <param name="isDuplicate">Whether this error is a duplicate.</param>
+        public static void SendMail(Error error, bool isDuplicate)
         {
-            if (!eSettings.ToAddress.HasValue())
-            {
-                Trace.WriteLine("Configuration invalid: ToAddress must have a value");
-                return; // not enabled
-            }
-
-            ToAddress = eSettings.ToAddress;
-            if (eSettings.FromAddress.HasValue())
-            {
-                FromAddress = eSettings.FromDisplayName.HasValue()
-                                  ? new MailAddress(eSettings.FromAddress, eSettings.FromDisplayName)
-                                  : new MailAddress(eSettings.FromAddress);
-            }
-
-            if (eSettings.SMTPUserName.HasValue() && eSettings.SMTPPassword.HasValue())
-                Credentials = new NetworkCredential(eSettings.SMTPUserName, eSettings.SMTPPassword);
-
-            if (eSettings.SMTPHost.HasValue()) Host = eSettings.SMTPHost;
-            if (eSettings.SMTPPort != 25) Port = eSettings.SMTPPort;
-            EnableSSL = eSettings.SMTPEnableSSL;
-
-            PreventDuplicates = eSettings.PreventDuplicates;
-            Enabled = true;
-        }
-
-        /// <summary>
-        /// If enabled, sends an error email to the configured recipients
-        /// </summary>
-        /// <param name="error">The error the email is about</param>
-        public static void SendMail(Error error)
-        {
-            if (!Enabled) return;
             // The following prevents errors that have already been stored from being emailed a second time.
-            if (PreventDuplicates && error.IsDuplicate) return;
+            if (!Enabled || (Settings.PreventDuplicates && isDuplicate)) return;
             try
             {
                 using (var message = new MailMessage())
                 {
-                    message.To.Add(ToAddress);
-                    if (FromAddress != null) message.From = FromAddress;
+                    message.To.Add(Settings.ToAddress);
+                    if (Settings.FromMailAddress != null) message.From = Settings.FromMailAddress;
 
                     message.Subject = ErrorStore.ApplicationName + " error: " + error.Message.Replace(Environment.NewLine, " ");
-                    message.Body = GetErrorHtml(error);
+                    message.Body = new ErrorEmail(error).Render();
                     message.IsBodyHtml = true;
 
                     using (var client = GetClient())
@@ -101,18 +65,12 @@ namespace StackExchange.Exceptional.Email
         private static SmtpClient GetClient()
         {
             var client = new SmtpClient();
-            if (Credentials != null) client.Credentials = Credentials;
-            if (Host.HasValue()) client.Host = Host;
-            if (Port.HasValue) client.Port = Port.Value;
-            if (EnableSSL) client.EnableSsl = EnableSSL;
+            if (Settings.SMTPCredentials != null) client.Credentials = Settings.SMTPCredentials;
+            if (Settings.SMTPHost.HasValue()) client.Host = Settings.SMTPHost;
+            if (Settings.SMTPPort.HasValue) client.Port = Settings.SMTPPort.Value;
+            if (Settings.SMTPEnableSSL) client.EnableSsl = true;
 
             return client;
-        }
-
-        private static string GetErrorHtml(Error error)
-        {
-            var email = new ErrorEmail (error);
-            return email.Render();
         }
     }
 }

@@ -279,12 +279,6 @@ namespace StackExchange.Exceptional
         public int? DuplicateCount { get; set; }
 
         /// <summary>
-        /// Indicates if there were matches of this error when added to the queue or store.
-        /// </summary>
-        [JsonIgnore]
-        public bool IsDuplicate { get; set; }
-
-        /// <summary>
         /// Gets the SQL command text assocaited with this error.
         /// </summary>
         public string SQL { get; set; }

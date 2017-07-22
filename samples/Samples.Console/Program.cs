@@ -21,13 +21,12 @@ namespace Samples.Console
 
             // Example of a code-only email setup, alteratively this can be in the App.config
 
-            var emailSettings = new ExceptionalSettings.EmailSettings
+            ErrorEmailer.Setup(new EmailSettings
             {
                 FromAddress = "exceptions@site.com",
                 FromDisplayName = "Bob the Builder",
                 ToAddress = "dont.use@thisadress.com"
-            };
-            ErrorEmailer.Setup(emailSettings);
+            });
 
             // Optional: for logging all unhandled exceptions
             AppDomain.CurrentDomain.UnhandledException += ExceptionalHandler;

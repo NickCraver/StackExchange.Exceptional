@@ -186,12 +186,13 @@ namespace StackExchange.Exceptional
 
             // Track the GUID we made vs. what the store returns. If it's different, it's a dupe.
             var originalGuid = error.GUID;
+            bool isDuplicate = false;
             // if we're in a retry state, log directly to the queue
             if (_isInRetry)
             {
                 QueueError(error);
-                if (originalGuid != error.GUID) error.IsDuplicate = true;
-                ErrorEmailer.SendMail(error);
+                if (originalGuid != error.GUID) isDuplicate = true;
+                ErrorEmailer.SendMail(error, isDuplicate);
                 return;
             }
             try
@@ -200,8 +201,8 @@ namespace StackExchange.Exceptional
                 {
                     LogError(error);
                 }
-                if (originalGuid != error.GUID) error.IsDuplicate = true;
-                ErrorEmailer.SendMail(error);
+                if (originalGuid != error.GUID) isDuplicate = true;
+                ErrorEmailer.SendMail(error, isDuplicate);
             }
             catch (Exception ex)
             {
