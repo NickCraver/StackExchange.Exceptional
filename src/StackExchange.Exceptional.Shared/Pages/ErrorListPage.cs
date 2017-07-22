@@ -99,7 +99,7 @@ namespace StackExchange.Exceptional.Pages
                       .Append("              <td title=\"").AppendHtmlEncode(e.Type).Append("\">")
                       .AppendHtmlEncode(e.Type.ToShortTypeName())
                       .AppendLine("</td>")
-                      .Append("              <td class=\"wrap\"><a href=\"").Append(Url(KnownRoutes.Info)).Append("?guid=" + e.GUID.ToString())
+                      .Append("              <td class=\"wrap\"><a href=\"").Append(Url(KnownRoutes.Info)).Append("?guid=").Append(e.GUID.ToString())
                       .Append("\">").AppendHtmlEncode(e.Message).Append("</a>");
                     if (e.DuplicateCount > 1)
                     {
