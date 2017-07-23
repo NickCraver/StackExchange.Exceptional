@@ -59,15 +59,15 @@ namespace StackExchange.Exceptional
         protected abstract void LogError(Error error);
 
         /// <summary>
-        /// Retrieves a single error based on Id
+        /// Retrieves a single error based on Id.
         /// </summary>
-        /// <param name="guid">The guid of the error to retrieve.</param>
+        /// <param name="guid">The GUID of the error to retrieve.</param>
         protected abstract Error GetError(Guid guid);
 
         /// <summary>
         /// Prevents error identified by <paramref name="guid"/> from being deleted when the error log is full, if the store supports it.
         /// </summary>
-        /// <param name="guid">The guid of the error to protect.</param>
+        /// <param name="guid">The GUID of the error to protect.</param>
         protected abstract bool ProtectError(Guid guid);
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Deletes a specific error from the log.
         /// </summary>
-        /// <param name="guid">The guid of the error to delete.</param>
+        /// <param name="guid">The GUID of the error to delete.</param>
         protected abstract bool DeleteError(Guid guid);
 
         /// <summary>
@@ -242,7 +242,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Deletes all non-protected errors from the log.
         /// </summary>
-        /// <param name="guid">The guid of the error to protect.</param>
+        /// <param name="guid">The GUID of the error to protect.</param>
         public bool Protect(Guid guid)
         {
             if (_isInRetry) return false; // no protecting allowed when failing, since we don't respect it in the queue anyway
@@ -278,7 +278,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Deletes an error from the log with the specified <paramref name="guid"/>.
         /// </summary>
-        /// <param name="guid">The guid of the error to delete.</param>
+        /// <param name="guid">The GUID of the error to delete.</param>
         public bool Delete(Guid guid)
         {
             if (_isInRetry) return false; // no deleting from the retry queue
@@ -348,7 +348,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Gets a specific exception with the specified GUID.
         /// </summary>
-        /// <param name="guid">The guid of the error to retrieve.</param>
+        /// <param name="guid">The GUID of the error to retrieve.</param>
         public Error Get(Guid guid)
         {
             if (_isInRetry)
@@ -503,7 +503,7 @@ namespace StackExchange.Exceptional
             if (settings.Type.IsNullOrEmpty())
                 throw new ArgumentOutOfRangeException(nameof(settings), "ErrorStore 'type' must be specified");
             if (settings.Size < 1)
-                throw new ArgumentOutOfRangeException(nameof(settings), "ErrorStore 'size' must be positive");
+                throw new ArgumentOutOfRangeException(nameof(settings), "ErrorStore 'size' must be at least 1");
 
             var storeTypes = GetErrorStores();
             // Search by convention first
