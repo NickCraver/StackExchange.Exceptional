@@ -1,4 +1,5 @@
 ﻿using StackExchange.Exceptional.Internal;
+using StackExchange.Exceptional.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -16,6 +17,11 @@ namespace StackExchange.Exceptional
         /// Current instance of the settings element.
         /// </summary>
         public static ExceptionalSettings Current { get; set; } = new ExceptionalSettings();
+
+        /// <summary>
+        /// Notifiers to run just after an error is logged, like emailing it to a user.
+        /// </summary>
+        public List<IErrorNotifier> Notifiers { get; } = new List<IErrorNotifier>();
 
         /// <summary>
         /// Application name to log with.

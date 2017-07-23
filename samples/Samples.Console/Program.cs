@@ -1,7 +1,7 @@
 ﻿using System;
 using StackExchange.Exceptional;
-using StackExchange.Exceptional.Email;
 using StackExchange.Exceptional.Stores;
+using StackExchange.Exceptional.Notifiers;
 
 namespace Samples.Console
 {
@@ -19,10 +19,10 @@ namespace Samples.Console
             // How to do it with no roll-up
             //ErrorStore.Setup("Samples.Console", new JSONErrorStore(path: "Errors"));
 
-
-            ErrorEmailer.Setup(new EmailSettings
             // Example of a code-only email setup, alternatively this can be in the App.config
+            EmailNotifier.Setup(new EmailSettings
             {
+                SMTPHost = "localhost", // Use Papercut here for testing: https://github.com/ChangemakerStudios/Papercut
                 FromAddress = "exceptions@site.com",
                 FromDisplayName = "Bob the Builder",
                 ToAddress = "dont.use@thisadress.com"

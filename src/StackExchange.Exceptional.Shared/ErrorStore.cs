@@ -3,12 +3,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Transactions;
-using StackExchange.Exceptional.Email;
 using StackExchange.Exceptional.Stores;
 using StackExchange.Exceptional.Internal;
 
@@ -186,13 +183,12 @@ namespace StackExchange.Exceptional
 
             // Track the GUID we made vs. what the store returns. If it's different, it's a dupe.
             var originalGuid = error.GUID;
-            bool isDuplicate = false;
             // if we're in a retry state, log directly to the queue
             if (_isInRetry)
             {
                 QueueError(error);
-                if (originalGuid != error.GUID) isDuplicate = true;
-                ErrorEmailer.SendMail(error, isDuplicate);
+                if (originalGuid != error.GUID) error.IsDuplicate = true;
+                NotifyAll(error);
                 return;
             }
             try
@@ -201,14 +197,40 @@ namespace StackExchange.Exceptional
                 {
                     LogError(error);
                 }
-                if (originalGuid != error.GUID) isDuplicate = true;
-                ErrorEmailer.SendMail(error, isDuplicate);
+                if (originalGuid != error.GUID) error.IsDuplicate = true;
+                NotifyAll(error);
             }
             catch (Exception ex)
             {
                 _retryException = ex;
                 // if we fail to write the error to the store, queue it for re-writing
                 QueueError(error);
+            }
+        }
+
+        /// <summary>
+        /// Notify everything currently registered as a notifier.
+        /// </summary>
+        /// <param name="error">The error to notify things of.</param>
+        private void NotifyAll(Error error)
+        {
+            var settings = ExceptionalSettings.Current;
+            if (settings.Notifiers.Count > 0)
+            {
+                foreach (var n in settings.Notifiers)
+                {
+                    try
+                    {
+                        if (n?.Enabled == true)
+                        {
+                            n.Notify(error);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Trace.WriteLine("Error in NotifyAll: " + e);
+                    }
+                }
             }
         }
 

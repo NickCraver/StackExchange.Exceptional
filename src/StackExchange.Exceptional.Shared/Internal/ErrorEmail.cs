@@ -1,9 +1,8 @@
 ﻿using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
-using StackExchange.Exceptional.Internal;
 
-namespace StackExchange.Exceptional.Email
+namespace StackExchange.Exceptional.Internal
 {
     internal class ErrorEmail : HtmlBase
     {

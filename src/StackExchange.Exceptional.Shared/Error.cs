@@ -183,6 +183,13 @@ namespace StackExchange.Exceptional
         public bool IsProtected { get; set; }
 
         /// <summary>
+        /// For notifier usage - whether this error is a duplicate (already seen recently).
+        /// Recent is defined by the <see cref="ErrorStoreSettings.RollupPeriod"/> setting.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsDuplicate { get; set; }
+
+        /// <summary>
         /// The <see cref="Exception"/> instance used to create this error.
         /// </summary>
         [JsonIgnore]

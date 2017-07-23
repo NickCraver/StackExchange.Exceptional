@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using StackExchange.Exceptional.Internal;
+using StackExchange.Exceptional.Notifiers;
+using System.ComponentModel;
 using System.Configuration;
 
 namespace StackExchange.Exceptional
@@ -88,6 +90,11 @@ namespace StackExchange.Exceptional
                 s.SMTPPassword = SMTPPassword;
                 s.SMTPEnableSSL = SMTPEnableSSL;
                 s.PreventDuplicates = PreventDuplicates;
+
+                if (s.ToAddress.HasValue())
+                {
+                    EmailNotifier.Setup(s);
+                }
             }
         }
     }
