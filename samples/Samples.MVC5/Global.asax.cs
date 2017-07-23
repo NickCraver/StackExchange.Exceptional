@@ -15,16 +15,14 @@ namespace Samples.MVC5
     {
         protected void Application_Start()
         {
-            // Instead of any web.config entries, you can setup entirely through code
+            // Instead of any web.config entries, you can perform setup entirely through code
             // Setup Exceptional:
-            // memory example:
+            // Memory example:
             //ErrorStore.Setup("My Error Log Name", new MemoryErrorStore());
             // JSON example
             //ErrorStore.Setup("My Error Log Name", new JSONErrorStore(path: "~/Errors"));
             // SQL Example
             //ErrorStore.Setup("My Error Log Name", new SQLErrorStore(connectionString: "Data Source=.;Initial Catalog=Exceptions;Integrated Security=SSPI;"));
-
-            var settings = ExceptionalSettings.Current;
 
             // Optionally add custom data to any logged exception (visible on the exception detail page):
             TODOShittyExperienceForTheUser.GetCustomData = (exception, context, data) =>
@@ -34,10 +32,10 @@ namespace Samples.MVC5
                     // data is a Dictionary<string, string> to add custom data too
                     data.Add("Example string", DateTime.UtcNow.ToString());
                     data.Add("User Id", "You could fetch a user/account Id here, etc.");
-                    data.Add("Links get linkified", "http://www.google.com");
+                    data.Add("Links get linkified", "https://www.google.com");
                 };
 
-            settings.Render.JSIncludes.Add("/Content/errors.js");
+            ExceptionalSettings.Current.Render.JSIncludes.Add("/Content/errors.js");
             StackExchange.Exceptional.Error.OnBeforeLog += (sender, args) =>
                 {
                     args.Error.Message += " (suffix from OnBeforeLog handler)";
