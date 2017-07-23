@@ -163,7 +163,7 @@ namespace StackExchange.Exceptional
         private bool IsBuiltInException(Exception e) => e.GetType().Module.ScopeName == "CommonLanguageRuntimeLibrary";
 
         /// <summary>
-        /// Gets a unique-enough hash of this error. Stored as a quick comparison mechanism to rollup duplicate errors.
+        /// Gets a unique-enough hash of this error. Stored as a quick comparison mechanism to roll-up duplicate errors.
         /// </summary>
         /// <returns>A "Unique" hash for this error.</returns>
         public int? GetHash()
@@ -201,7 +201,7 @@ namespace StackExchange.Exceptional
         public string ApplicationName { get; set; }
 
         /// <summary>
-        /// The hostname where the exception occured.
+        /// The hostname where the exception occurred.
         /// </summary>
         public string MachineName { get; set; }
 
@@ -216,7 +216,7 @@ namespace StackExchange.Exceptional
         public string Source { get; set; }
 
         /// <summary>
-        /// Txception message.
+        /// Exception message.
         /// </summary>
         public string Message { get; set; }
 
@@ -287,7 +287,7 @@ namespace StackExchange.Exceptional
         public int? DuplicateCount { get; set; }
 
         /// <summary>
-        /// Gets the SQL command text assocaited with this error.
+        /// Gets the SQL command text associated with this error.
         /// </summary>
         public string SQL { get; set; }
 
@@ -371,7 +371,7 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Variables strictly for JSON serialization, to maintain non-dictonary behavior.
+        /// Variables strictly for JSON serialization, to maintain non-dictionary behavior.
         /// </summary>
         public List<NameValuePair> ServerVariablesSerializable
         {
@@ -379,7 +379,7 @@ namespace StackExchange.Exceptional
             set => ServerVariables = GetNameValueCollection(value);
         }
         /// <summary>
-        /// Variables strictly for JSON serialization, to maintain non-dictonary behavior.
+        /// Variables strictly for JSON serialization, to maintain non-dictionary behavior.
         /// </summary>
         public List<NameValuePair> QueryStringSerializable
         {
@@ -387,7 +387,7 @@ namespace StackExchange.Exceptional
             set => QueryString = GetNameValueCollection(value);
         }
         /// <summary>
-        /// Variables strictly for JSON serialization, to maintain non-dictonary behavior.
+        /// Variables strictly for JSON serialization, to maintain non-dictionary behavior.
         /// </summary>
         public List<NameValuePair> FormSerializable
         {
@@ -395,7 +395,7 @@ namespace StackExchange.Exceptional
             set => Form = GetNameValueCollection(value);
         }
         /// <summary>
-        /// Variables strictly for JSON serialization, to maintain non-dictonary behavior.
+        /// Variables strictly for JSON serialization, to maintain non-dictionary behavior.
         /// </summary>
         public List<NameValuePair> CookiesSerializable
         {
@@ -403,7 +403,7 @@ namespace StackExchange.Exceptional
             set => Cookies = GetNameValueCollection(value);
         }
         /// <summary>
-        /// Variables strictly for JSON serialization, to maintain non-dictonary behavior.
+        /// Variables strictly for JSON serialization, to maintain non-dictionary behavior.
         /// </summary>
         public List<NameValuePair> RequestHeadersSerializable
         {
@@ -497,7 +497,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Serialization class in place of the NameValueCollection pairs.
         /// </summary>
-        /// <remarks>This exists because things like a querystring can havle multiple values, they are not a dictionary.</remarks>
+        /// <remarks>This exists because things like a querystring can halve multiple values, they are not a dictionary.</remarks>
         public class NameValuePair
         {
             /// <summary>
