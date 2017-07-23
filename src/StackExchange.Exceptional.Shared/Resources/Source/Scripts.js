@@ -35,7 +35,7 @@
 
         $.post(baseUrl + 'delete', { guid: jRow.data('id') })
             .done(function () {
-                jRow.find('td').fadeOut('fast', function () { $(this).closest('tr').remove(); });
+                jRow.find('td').fadeOut(50, function () { $(this).closest('tr').remove(); });
                 table.trigger('update');
             })
             .fail(function () {
