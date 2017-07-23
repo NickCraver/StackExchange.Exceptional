@@ -9,19 +9,19 @@ namespace Samples.Console
     {
         private static void Main()
         {
-            // Example of code-only setup, alteratively this can be in the App.config
+            // Example of code-only setup, alternatively this can be in the App.config
             // rollupSeconds is 0 so a new file is always generated, for demonstration purposes
             ErrorStore.Setup("Samples.Console", new JSONErrorStore(new ErrorStoreSettings
             {
                 Path = "Errors",
                 RollupPeriod = null
             }));
-            // How to do it with no rollup
+            // How to do it with no roll-up
             //ErrorStore.Setup("Samples.Console", new JSONErrorStore(path: "Errors"));
 
-            // Example of a code-only email setup, alteratively this can be in the App.config
 
             ErrorEmailer.Setup(new EmailSettings
+            // Example of a code-only email setup, alternatively this can be in the App.config
             {
                 FromAddress = "exceptions@site.com",
                 FromDisplayName = "Bob the Builder",
@@ -54,7 +54,7 @@ namespace Samples.Console
             throw new Exception("I am an exception thrown on exit");
         }
 
-        // Optional, for logging all unhanled exceptions on the way out
+        // Optional, for logging all unhandled exceptions on the way out
         private static void ExceptionalHandler(object sender, UnhandledExceptionEventArgs e)
         {
             // e.ExceptionObject may not be an exception, refer to http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf
