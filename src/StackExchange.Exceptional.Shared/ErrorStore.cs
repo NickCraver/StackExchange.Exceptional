@@ -144,7 +144,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Gets the name of the application to which the log is scoped.
         /// </summary>
-        public static string ApplicationName => _applicationName ?? (_applicationName = ExceptionalSettings.Current.ApplicationName);
+        public static string ApplicationName => _applicationName ?? (_applicationName = Exceptional.Settings.Current.ApplicationName);
 
         /// <summary>
         /// Gets the name of the machine logging these errors.
@@ -219,7 +219,7 @@ namespace StackExchange.Exceptional
         /// <param name="error">The error to notify things of.</param>
         private void NotifyAll(Error error)
         {
-            var settings = ExceptionalSettings.Current;
+            var settings = Exceptional.Settings.Current;
             if (settings.Notifiers.Count > 0)
             {
                 foreach (var n in settings.Notifiers)
@@ -492,7 +492,7 @@ namespace StackExchange.Exceptional
 
         private static ErrorStore GetErrorStoreFromConfig()
         {
-            return GetFromSettings(ExceptionalSettings.Current.Store) ?? new MemoryErrorStore();
+            return GetFromSettings(Exceptional.Settings.Current.Store) ?? new MemoryErrorStore();
         }
 
         private static ErrorStore GetFromSettings(ErrorStoreSettings settings)

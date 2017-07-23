@@ -2,7 +2,7 @@
 
 namespace StackExchange.Exceptional
 {
-    internal partial class Settings
+    internal partial class ConfigSettings
     {
         /// <summary>
         /// The Ignore section of the configuration, optional and no errors will be blocked from logging if not specified.
@@ -28,13 +28,13 @@ namespace StackExchange.Exceptional
             public SettingsCollection<LogFilter> CookieFilters => this["Cookies"] as SettingsCollection<LogFilter>;
 
             /// <summary>
-            /// Runs after deserialization, to populate <see cref="ExceptionalSettings.LogFilters"/>.
+            /// Runs after deserialization, to populate <see cref="Settings.LogFilters"/>.
             /// </summary>
             protected override void PostDeserialize()
             {
                 base.PostDeserialize();
 
-                var s = ExceptionalSettings.Current.LogFilters;
+                var s = Settings.Current.LogFilters;
                 foreach (LogFilter f in FormFilters)
                 {
                     s.Form[f.Name] = f.ReplaceWith;

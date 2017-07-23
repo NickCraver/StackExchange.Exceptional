@@ -29,7 +29,7 @@ namespace StackExchange.Exceptional.Pages
         /// <summary>
         /// The current settings.
         /// </summary>
-        public ExceptionalSettings Settings => ExceptionalSettings.Current;
+        public Settings Settings => Settings.Current;
 
         /// <summary>
         /// Creates a new <see cref="WebPage"/> for rendering.

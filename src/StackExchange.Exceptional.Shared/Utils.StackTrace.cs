@@ -16,7 +16,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         public static class StackTrace
         {
-            // Inspired by StackTraceParser by Atif Aziz, repo: https://github.com/atifaziz/StackTraceParser
+            // Inspired by StackTraceParser by Atif Aziz, project home: https://github.com/atifaziz/StackTraceParser
             internal const string Space = @"[\x20\t]",
                                   NoSpace = @"[^\x20\t]";
             private static class Groups
@@ -298,7 +298,7 @@ namespace StackExchange.Exceptional
         public static StringBuilder AppendGenerics(this StringBuilder sb, string typeOrMethod)
         {
             const string _dotSpan = "<span class=\"stack dot\">.</span>";
-            var settings = ExceptionalSettings.Current.StackTrace;
+            var settings = Settings.Current.StackTrace;
             if (!settings.EnablePrettyGenerics)
             {
                 return sb.AppendHtmlEncode(typeOrMethod);
@@ -350,11 +350,11 @@ namespace StackExchange.Exceptional
             {
                 switch (settings.Language)
                 {
-                    case ExceptionalSettings.StackTraceSettings.CodeLanguage.VB:
+                    case Settings.CodeLanguage.VB:
                         sb.Append("(Of ");
                         break;
-                    case ExceptionalSettings.StackTraceSettings.CodeLanguage.CSharp:
-                    case ExceptionalSettings.StackTraceSettings.CodeLanguage.FSharp:
+                    case Settings.CodeLanguage.CSharp:
+                    case Settings.CodeLanguage.FSharp:
                         sb.Append("&lt;");
                         break;
                 }
@@ -380,7 +380,7 @@ namespace StackExchange.Exceptional
                         if (settings.IncludeGenericTypeNames)
                         {
                             sb.Append("<span class=\"stack generic-type\">");
-                            if (settings.Language == ExceptionalSettings.StackTraceSettings.CodeLanguage.FSharp)
+                            if (settings.Language == Settings.CodeLanguage.FSharp)
                             {
                                 sb.Append("'");
                             }
@@ -392,11 +392,11 @@ namespace StackExchange.Exceptional
 
                 switch (settings.Language)
                 {
-                    case ExceptionalSettings.StackTraceSettings.CodeLanguage.VB:
+                    case Settings.CodeLanguage.VB:
                         sb.Append(")");
                         break;
-                    case ExceptionalSettings.StackTraceSettings.CodeLanguage.CSharp:
-                    case ExceptionalSettings.StackTraceSettings.CodeLanguage.FSharp:
+                    case Settings.CodeLanguage.CSharp:
+                    case Settings.CodeLanguage.FSharp:
                         sb.Append("&gt;");
                         break;
                 }

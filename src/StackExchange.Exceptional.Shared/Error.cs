@@ -16,8 +16,6 @@ namespace StackExchange.Exceptional
     [Serializable]
     public class Error
     {
-        private ExceptionalSettings Settings => ExceptionalSettings.Current;
-
         /// <summary>
         /// Event handler to run before an exception is logged to the store.
         /// </summary>
@@ -61,7 +59,7 @@ namespace StackExchange.Exceptional
                 baseException = e.GetBaseException();
 
             GUID = Guid.NewGuid();
-            ApplicationName = applicationName ?? Settings.ApplicationName;
+            ApplicationName = applicationName ?? Settings.Current.ApplicationName;
             MachineName = Environment.MachineName;
             Type = baseException.GetType().FullName;
             Message = baseException.Message;
@@ -103,14 +101,14 @@ namespace StackExchange.Exceptional
                 }
             }
 
-            if (Settings.DataIncludeRegex != null)
+            if (Settings.Current.DataIncludeRegex != null)
             {
                 if (CustomData == null)
                     CustomData = new Dictionary<string, string>();
 
                 foreach (string k in exception.Data.Keys)
                 {
-                    if (!Settings.DataIncludeRegex.IsMatch(k)) continue;
+                    if (!Settings.Current.DataIncludeRegex.IsMatch(k)) continue;
                     CustomData[k] = exception.Data[k] != null ? exception.Data[k].ToString() : "";
                 }
             }

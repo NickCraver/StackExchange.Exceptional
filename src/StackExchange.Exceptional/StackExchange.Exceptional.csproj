@@ -21,6 +21,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="**\*.cshtml" />
-    <Compile Update="Settings.*.cs" DependentUpon="Settings.cs" AutoGen="True" />
+    <Compile Update="ConfigSettings.*.cs" DependentUpon="ConfigSettings.cs" />
   </ItemGroup>
 </Project>

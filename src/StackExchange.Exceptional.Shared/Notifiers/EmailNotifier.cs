@@ -28,7 +28,7 @@ namespace StackExchange.Exceptional.Notifiers
         /// <param name="settings">Settings to use to configure error emailing.</param>
         public EmailNotifier(EmailSettings settings = null)
         {
-            Settings = settings ?? ExceptionalSettings.Current.Email;
+            Settings = settings ?? Exceptional.Settings.Current.Email;
             Trace.WriteLine(Settings.ToAddress.HasValue()
                             ? "Email configured, sending to: " + Settings.ToAddress
                             : "Configuration invalid: " + nameof(Settings.ToAddress) + " must have a value");

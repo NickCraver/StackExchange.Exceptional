@@ -5,7 +5,7 @@ using System.Configuration;
 
 namespace StackExchange.Exceptional
 {
-    internal partial class Settings
+    internal partial class ConfigSettings
     {
         /// <summary>
         /// The ErrorStore section of the configuration, optional and will send no email if not present.
@@ -74,13 +74,13 @@ namespace StackExchange.Exceptional
             public bool PreventDuplicates => (bool)this["preventDuplicates"];
 
             /// <summary>
-            /// Runs after deserialization, to populate <see cref="ExceptionalSettings.Email"/>.
+            /// Runs after deserialization, to populate <see cref="Settings.Email"/>.
             /// </summary>
             protected override void PostDeserialize()
             {
                 base.PostDeserialize();
 
-                var s = ExceptionalSettings.Current.Email;
+                var s = Settings.Current.Email;
                 s.ToAddress = ToAddress;
                 s.FromAddress = FromAddress;
                 s.FromDisplayName = FromDisplayName;

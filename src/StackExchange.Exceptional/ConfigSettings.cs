@@ -8,11 +8,11 @@ namespace StackExchange.Exceptional
 {
     /// <summary>
     /// The Settings element for Exceptional's configuration.
-    /// This is the legacy web.config settings, that only serve as an adapter to populate <see cref="ExceptionalSettings"/>.
+    /// This is the legacy web.config settings, that only serve as an adapter to populate <see cref="Settings"/>.
     /// </summary>
-    internal partial class Settings : ConfigurationSection
+    internal partial class ConfigSettings : ConfigurationSection
     {
-        private static Settings _current;
+        private static ConfigSettings _current;
         /// <summary>
         /// Trigger deserialization, which loads settings from the .config file.
         /// </summary>
@@ -20,7 +20,7 @@ namespace StackExchange.Exceptional
         {
             if (_current == null)
             {
-                _current = ConfigurationManager.GetSection("Exceptional") as Settings;
+                _current = ConfigurationManager.GetSection("Exceptional") as ConfigSettings;
             }
         }
 
@@ -38,16 +38,16 @@ namespace StackExchange.Exceptional
         public string DataIncludePattern => this["dataIncludePattern"] as string;
 
         /// <summary>
-        /// Runs after deserialization, to populate <see cref="ExceptionalSettings"/>.
+        /// Runs after deserialization, to populate <see cref="Settings"/>.
         /// </summary>
         protected override void PostDeserialize()
         {
             base.PostDeserialize();
             // Main settings
-            ExceptionalSettings.Current.ApplicationName = ApplicationName;
+            Settings.Current.ApplicationName = ApplicationName;
             if (DataIncludePattern.HasValue())
             {
-                ExceptionalSettings.Current.DataIncludeRegex = new Regex(DataIncludePattern, RegexOptions.Singleline | RegexOptions.Compiled);
+                Settings.Current.DataIncludeRegex = new Regex(DataIncludePattern, RegexOptions.Singleline | RegexOptions.Compiled);
             }
         }
 

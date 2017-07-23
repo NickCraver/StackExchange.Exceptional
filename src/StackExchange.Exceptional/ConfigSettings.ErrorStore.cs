@@ -4,7 +4,7 @@ using System.Configuration;
 
 namespace StackExchange.Exceptional
 {
-    internal partial class Settings
+    internal partial class ConfigSettings
     {
         /// <summary>
         /// The ErrorStore section of the configuration, optional and will default to a <see cref="Stores.MemoryErrorStore"/> if not specified.
@@ -60,13 +60,13 @@ namespace StackExchange.Exceptional
             public int BackupQueueSize => (int)this["backupQueueSize"];
 
             /// <summary>
-            /// Runs after deserialization, to populate <see cref="ExceptionalSettings.Store"/>.
+            /// Runs after deserialization, to populate <see cref="Settings.Store"/>.
             /// </summary>
             protected override void PostDeserialize()
             {
                 base.PostDeserialize();
 
-                var s = ExceptionalSettings.Current.Store;
+                var s = Settings.Current.Store;
                 s.Type = Type;
                 s.Path = Path;
                 s.ConnectionString = ConnectionString;

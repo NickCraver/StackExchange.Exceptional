@@ -34,7 +34,7 @@ namespace StackExchange.Exceptional
         /// <param name="appendFullStackTrace">Whether to append a full stack trace to the exception's detail.</param>
         /// <param name="rollupPerServer">Whether to log up per-server, e.g. errors are only duplicates if they have same stack on the same machine.</param>
         /// <param name="customData">Any custom data to store with the exception like UserId, etc...this will be rendered as JSON in the error view for script use.</param>
-        /// <param name="applicationName">If specified, the application name to log with, if not specified the name in <see cref="ExceptionalSettings.ApplicationName"/> is used.</param>
+        /// <param name="applicationName">If specified, the application name to log with, if not specified the name in <see cref="Settings.ApplicationName"/> is used.</param>
         /// <returns>The Error created, if one was created and logged, null if nothing was logged.</returns>
         /// <remarks>
         /// When dealing with a non web requests, pass <see langword="null" /> in for context.  
@@ -42,11 +42,11 @@ namespace StackExchange.Exceptional
         /// </remarks>
         public static Error Log(this Exception ex, HttpContext context, bool? appendFullStackTrace = null, bool rollupPerServer = false, Dictionary<string, string> customData = null, string applicationName = null)
         {
-            if (!ExceptionalSettings.IsLoggingEnabled) return null;
+            if (!Settings.IsLoggingEnabled) return null;
             try
             {
-                Settings.LoadSettings();
-                var settings = ExceptionalSettings.Current;
+                ConfigSettings.LoadSettings();
+                var settings = Settings.Current;
                 if (settings.Ignore.Regexes?.Any(re => re.IsMatch(ex.ToString())) == true)
                     return null;
                 if (settings.Ignore.Types?.Any(type => ex.GetType().IsDescendentOf(type)) == true)
@@ -157,7 +157,7 @@ namespace StackExchange.Exceptional
             error.Form = tryGetCollection(r => r.Form);
 
             // Filter form variables for sensitive information
-            var formFilters = ExceptionalSettings.Current.LogFilters.Form;
+            var formFilters = Settings.Current.LogFilters.Form;
             if (formFilters?.Count > 0)
             {
                 foreach (var k in formFilters.Keys)
@@ -174,7 +174,7 @@ namespace StackExchange.Exceptional
                 {
                     var name = request.Cookies[i].Name;
                     string val = null;
-                    ExceptionalSettings.Current.LogFilters.Cookie?.TryGetValue(name, out val);
+                    Settings.Current.LogFilters.Cookie?.TryGetValue(name, out val);
                     error.Cookies.Add(name, val ?? request.Cookies[i].Value);
                 }
             }

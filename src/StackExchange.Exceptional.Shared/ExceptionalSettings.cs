@@ -11,12 +11,12 @@ namespace StackExchange.Exceptional
     /// <summary>
     /// Settings for Exceptional error logging.
     /// </summary>
-    public class ExceptionalSettings
+    public class Settings
     {
         /// <summary>
         /// Current instance of the settings element.
         /// </summary>
-        public static ExceptionalSettings Current { get; set; } = new ExceptionalSettings();
+        public static Settings Current { get; set; } = new Settings();
 
         /// <summary>
         /// Notifiers to run just after an error is logged, like emailing it to a user.
@@ -153,25 +153,6 @@ namespace StackExchange.Exceptional
         public class StackTraceSettings
         {
             /// <summary>
-            /// The language to use when prettifying StackTrace generics.
-            /// </summary>
-            public enum CodeLanguage
-            {
-                /// <summary>
-                /// C#
-                /// </summary>
-                CSharp,
-                /// <summary>
-                /// F#
-                /// </summary>
-                FSharp,
-                /// <summary>
-                /// Visual Basic
-                /// </summary>
-                VB
-            }
-
-            /// <summary>
             /// Replaces generic names like Dictionary`2 with Dictionary&lt;TKey,TValue&gt;.
             /// Specific formatting is based on the <see cref="Language"/> setting.
             /// </summary>
@@ -186,6 +167,25 @@ namespace StackExchange.Exceptional
             /// Defaults to true.
             /// </summary>
             public bool IncludeGenericTypeNames { get; set; } = true;
+        }
+
+        /// <summary>
+        /// The language to use when operating on errors and stack traces.
+        /// </summary>
+        public enum CodeLanguage
+        {
+            /// <summary>
+            /// C#
+            /// </summary>
+            CSharp,
+            /// <summary>
+            /// F#
+            /// </summary>
+            FSharp,
+            /// <summary>
+            /// Visual Basic
+            /// </summary>
+            VB
         }
     }
 

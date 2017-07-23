@@ -15,7 +15,7 @@ namespace StackExchange.Exceptional
     /// </summary>
     public class HandlerFactory : IHttpHandlerFactory
     {
-        static HandlerFactory() => Settings.LoadSettings();
+        static HandlerFactory() => ConfigSettings.LoadSettings();
 
         /// <summary>
         /// Gets the HttpHandler for executing the request, used to proxy requests through here (e.g. MVC) or by the HttpModule directly.

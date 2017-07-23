@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace StackExchange.Exceptional
 {
-    internal partial class Settings
+    internal partial class ConfigSettings
     {
         /// <summary>
         /// The Ignore section of the configuration, optional and no errors will be blocked from logging if not specified.
@@ -30,13 +30,13 @@ namespace StackExchange.Exceptional
             public SettingsCollection<IgnoreType> Types => this["Types"] as SettingsCollection<IgnoreType>;
 
             /// <summary>
-            /// Runs after deserialization, to populate <see cref="ExceptionalSettings.Ignore"/>.
+            /// Runs after deserialization, to populate <see cref="Settings.Ignore"/>.
             /// </summary>
             protected override void PostDeserialize()
             {
                 base.PostDeserialize();
 
-                var s = ExceptionalSettings.Current.Ignore;
+                var s = Settings.Current.Ignore;
                 foreach (IgnoreRegex r in Regexes)
                 {
                     s.Regexes.Add(r.PatternRegex);

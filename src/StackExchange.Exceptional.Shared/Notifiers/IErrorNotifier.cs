@@ -29,7 +29,7 @@
         /// <param name="notifier">The notifier to register.</param>
         public static T Register<T>(this T notifier) where T : IErrorNotifier
         {
-            var notifiers = ExceptionalSettings.Current.Notifiers;
+            var notifiers = Settings.Current.Notifiers;
             if (!notifiers.Contains(notifier))
             {
                 notifiers.Add(notifier);
@@ -42,6 +42,6 @@
         /// </summary>
         /// <param name="notifier">The notifier to remove.</param>
         /// <returns>Whether the notifier was removed. <c>false</c> indicates it was not present.</returns>
-        public static bool Deregister(IErrorNotifier notifier) => ExceptionalSettings.Current.Notifiers.Remove(notifier);
+        public static bool Deregister(IErrorNotifier notifier) => Settings.Current.Notifiers.Remove(notifier);
     }
 }

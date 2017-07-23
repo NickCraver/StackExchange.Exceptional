@@ -11,14 +11,14 @@ namespace Samples.MVC5.Controllers
     {
         public ActionResult Settings()
         {
-            return Json(ExceptionalSettings.Current, JsonRequestBehavior.AllowGet);
+            return Json(StackExchange.Exceptional.Settings.Current, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult Form()
         {
             Response.SetCookie(new System.Web.HttpCookie("authToken", "test value"));
             Response.SetCookie(new System.Web.HttpCookie("notAnAuthToken", "Turnip."));
-            ViewBag.Message = "This is a sample with a form which has filtered logging (e.g. password is ommitted).";
+            ViewBag.Message = "This is a sample with a form which has filtered logging (e.g. password is omitted).";
 
             return View();
         }

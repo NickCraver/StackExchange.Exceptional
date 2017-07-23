@@ -35,7 +35,7 @@ namespace Samples.MVC5
                     data.Add("Links get linkified", "https://www.google.com");
                 };
 
-            ExceptionalSettings.Current.Render.JSIncludes.Add("/Content/errors.js");
+            Settings.Current.Render.JSIncludes.Add("/Content/errors.js");
             StackExchange.Exceptional.Error.OnBeforeLog += (sender, args) =>
                 {
                     args.Error.Message += " (suffix from OnBeforeLog handler)";
