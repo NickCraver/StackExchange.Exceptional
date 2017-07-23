@@ -1,15 +1,18 @@
+
+using StackExchange.Exceptional.Internal;
+using StackExchange.Exceptional.Stores;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Transactions;
-using StackExchange.Exceptional.Stores;
-using StackExchange.Exceptional.Internal;
-using System.IO;
-using System.Reflection;
+#if !NETSTANDARD2_0
+using System.Configuration;
+#endif
 
 namespace StackExchange.Exceptional
 {
