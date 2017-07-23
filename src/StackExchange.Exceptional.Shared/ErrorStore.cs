@@ -8,6 +8,8 @@ using System.Threading;
 using System.Transactions;
 using StackExchange.Exceptional.Stores;
 using StackExchange.Exceptional.Internal;
+using System.IO;
+using System.Reflection;
 
 namespace StackExchange.Exceptional
 {
@@ -524,6 +526,13 @@ namespace StackExchange.Exceptional
         {
             try
             {
+                // Ensure all assemblies we expect are loaded before looking at types
+                var path = Path.GetDirectoryName(typeof(ErrorStore).Assembly.Location);
+                foreach (var filename in Directory.GetFiles(path, "StackExchange.Exceptional.*.dll"))
+                {
+                    Assembly.LoadFrom(filename);
+                }
+
                 // Check for any implementers of ErrorStore anywhere
                 return AppDomain.CurrentDomain.GetAssemblies()
                                 .SelectMany(s => s.GetTypes())
