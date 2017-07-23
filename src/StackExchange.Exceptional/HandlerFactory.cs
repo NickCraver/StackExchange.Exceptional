@@ -57,7 +57,7 @@ namespace StackExchange.Exceptional
                             return JSONPHandler(context, delAllResult) ?? new RedirectHandler(context.Request.Path.Replace("/delete-all", ""), false);
 
                         case KnownRoutes.DeleteList:
-                            bool delListResult = ErrorStore.Default.DeleteList(getFormGuids());
+                            bool delListResult = ErrorStore.Default.Delete(getFormGuids());
                             return JsonResult(delListResult);
 
                         case KnownRoutes.Protect:
@@ -66,7 +66,7 @@ namespace StackExchange.Exceptional
                             return JSONPHandler(context, pResult) ?? new ContentHandler(pResult.ToString(), "text/html");
 
                         case KnownRoutes.ProtectList:
-                            bool protectListResult = ErrorStore.Default.ProtectList(getFormGuids());
+                            bool protectListResult = ErrorStore.Default.Protect(getFormGuids());
                             return JsonResult(protectListResult);
 
                         default:

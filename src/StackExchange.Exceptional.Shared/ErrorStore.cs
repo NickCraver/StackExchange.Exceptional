@@ -29,7 +29,7 @@ namespace StackExchange.Exceptional
         public ErrorStoreSettings Settings { get; }
 
         /// <summary>
-        /// Base constructor of the error store to set common properties
+        /// Base constructor of the error store to set common properties.
         /// </summary>
         /// <param name="settings">The <see cref="ErrorStoreSettings"/> for this store.</param>     
         protected ErrorStore(ErrorStoreSettings settings)
@@ -38,17 +38,17 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Gets if this error store is 
+        /// Gets if this error store is in failure mode (retrying to log in an interval).
         /// </summary>
         public bool InFailureMode => _isInRetry;
 
         /// <summary>
-        /// The last time this error store failed to write an error
+        /// The last time this error store failed to write an error.
         /// </summary>
         protected DateTime? LastWriteFailure;
 
         /// <summary>
-        /// Logs an error in log for the application
+        /// Logs an error in log for the application.
         /// </summary>
         /// <param name="error">The error to log.</param>
         protected abstract void LogError(Error error);
@@ -60,7 +60,7 @@ namespace StackExchange.Exceptional
         protected abstract Error GetError(Guid guid);
 
         /// <summary>
-        /// Prevents error identfied by 'id' from being deleted when the error log is full, if the store supports it
+        /// Prevents error identified by <paramref name="guid"/> from being deleted when the error log is full, if the store supports it.
         /// </summary>
         /// <param name="guid">The guid of the error to protect.</param>
         protected abstract bool ProtectError(Guid guid);
@@ -68,7 +68,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Protects a list of errors in the log.
         /// </summary>
-        /// <param name="guids">The guids of the errors to protect.</param>
+        /// <param name="guids">The GUIDs of the errors to protect.</param>
         protected virtual bool ProtectErrors(IEnumerable<Guid> guids)
         {
             var success = true;
@@ -91,7 +91,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Deletes a list of errors from the log, only if they are not protected.
         /// </summary>
-        /// <param name="guids">The guids of the errors to delete.</param>
+        /// <param name="guids">The GUIDs of the errors to delete.</param>
         protected virtual bool DeleteErrors(IEnumerable<Guid> guids)
         {
             var success = true;
@@ -235,7 +235,7 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Deletes all non-protected errors from the log
+        /// Deletes all non-protected errors from the log.
         /// </summary>
         /// <param name="guid">The guid of the error to protect.</param>
         public bool Protect(Guid guid)
@@ -249,10 +249,10 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Protects a list of errors in the log
+        /// Protects a list of errors in the log.
         /// </summary>
-        /// <param name="guids">The guids of the errors to protect.</param>
-        public bool ProtectList(IEnumerable<Guid> guids)
+        /// <param name="guids">The GUIDs of the errors to protect.</param>
+        public bool Protect(IEnumerable<Guid> guids)
         {
             if (_isInRetry) return false; // no protecting allowed when failing, since we don't respect it in the queue anyway
 
@@ -271,7 +271,7 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Deletes an error from the log with the specified id
+        /// Deletes an error from the log with the specified <paramref name="guid"/>.
         /// </summary>
         /// <param name="guid">The guid of the error to delete.</param>
         public bool Delete(Guid guid)
@@ -293,10 +293,10 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Deletes a list of non-protected errors from the log
+        /// Deletes a list of non-protected errors from the log.
         /// </summary>
-        /// <param name="guids">The guids of the errors to delete.</param>
-        public bool DeleteList(IEnumerable<Guid> guids)
+        /// <param name="guids">The GUIDs of the errors to delete.</param>
+        public bool Delete(IEnumerable<Guid> guids)
         {
             if (_isInRetry) return false; // no deleting from the retry queue
 
@@ -315,7 +315,7 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Deletes all non-protected errors from the log
+        /// Deletes all non-protected errors from the log.
         /// </summary>
         /// <param name="applicationName">The name of the application to delete all errors for.</param>
         public bool DeleteAll(string applicationName = null)
@@ -341,7 +341,7 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Gets a specific exception with the specified guid
+        /// Gets a specific exception with the specified GUID.
         /// </summary>
         /// <param name="guid">The guid of the error to retrieve.</param>
         public Error Get(Guid guid)
@@ -357,7 +357,7 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Gets all in the store, including those in the backup queue if it's in use
+        /// Gets all in the store, including those in the backup queue if it's in use.
         /// </summary>
         /// <param name="applicationName">The name of the application to get all errors for.</param>
         public List<Error> GetAll(string applicationName = null)
@@ -374,7 +374,7 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Gets the count of exceptions, optionally those since a certain date
+        /// Gets the count of exceptions, optionally those since a certain date.
         /// </summary>
         /// <param name="since">The minimum date to fetch errors after.</param>
         /// <param name="applicationName">The application name to fetch errors for.</param>
@@ -397,7 +397,7 @@ namespace StackExchange.Exceptional
         /// <remarks>These will be written to the store when we're able to connect again.</remarks>
         protected void QueueError(Error e)
         {
-            // try and rollup in the queue, to save space
+            // try and roll-up in the queue, to save space
             foreach (var err in WriteQueue.Where(err => e.ErrorHash == err.ErrorHash))
             {
                 e.GUID = err.GUID;
@@ -467,7 +467,7 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Tests to see if this error store is working
+        /// Tests to see if this error store is working.
         /// </summary>
         public bool Test()
         {
