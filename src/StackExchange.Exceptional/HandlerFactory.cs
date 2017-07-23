@@ -61,7 +61,7 @@ namespace StackExchange.Exceptional
                             return JsonResult(delListResult);
 
                         case KnownRoutes.Protect:
-                            // send back a "true" or "false" - this will be handled in javascript
+                            // send back a "true" or "false" - this will be handled in JavaScript
                             var pResult = ErrorStore.Default.Protect(context.Request.Form["guid"].ToGuid());
                             return JSONPHandler(context, pResult) ?? new ContentHandler(pResult.ToString(), "text/html");
 

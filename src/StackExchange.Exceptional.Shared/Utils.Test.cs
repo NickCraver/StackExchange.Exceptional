@@ -19,7 +19,7 @@ namespace StackExchange.Exceptional
                 var ex = new Exception("This is a test async exception from Exceptional, I SAY GOOD DAY!");
                 ex.Data["SQL"] = "Select * From FUBARAsync -- This is a SQL command!";
                 ex.Data["Redis-Server"] = "REDIS01";
-                ex.Data["Some-Key"] = "Hellooooooooooo";
+                ex.Data["Some-Key"] = "Hello!";
                 throw ex;
             }
 #pragma warning restore CS1998

@@ -6,18 +6,19 @@ namespace StackExchange.Exceptional
     internal partial class Settings
     {
         /// <summary>
-        /// The Ignore section of the configuration, optional and no errors will be blocked from logging if not specified
+        /// The Ignore section of the configuration, optional and no errors will be blocked from logging if not specified.
         /// </summary>
         [ConfigurationProperty("IgnoreErrors")]
         public IgnoreSettings Ignore => this["IgnoreErrors"] as IgnoreSettings;
 
         /// <summary>
-        /// Ignore element for deserilization from a configuration, e.g. web.config or app.config
+        /// Ignore element for deserialization from a configuration, e.g. web.config or app.config
         /// </summary>
         public class IgnoreSettings : ConfigurationElement
         {
             /// <summary>
-            /// Regular expressions collection for errors to ignore.  Any errors with a .ToString() matching any regex here will not be logged
+            /// Regular expressions collection for errors to ignore.  
+            /// Any errors with a .ToString() matching any regular expression here will not be logged.
             /// </summary>
             [ConfigurationProperty("Regexes")]
             public SettingsCollection<IgnoreRegex> Regexes => this["Regexes"] as SettingsCollection<IgnoreRegex>;
@@ -48,42 +49,42 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// A regex entry, to match against error messages to see if we should ignore them
+        /// A regular expression entry, to match against error messages to see if we should ignore them.
         /// </summary>
         public class IgnoreRegex : SettingsCollectionElement
         {
             /// <summary>
-            /// The name that describes this regex
+            /// The name that describes this regular expression.
             /// </summary>
             [ConfigurationProperty("name")]
             public override string Name => this["name"] as string;
 
             /// <summary>
-            /// The Pattern to match on the exception message
+            /// The Pattern to match on the exception message.
             /// </summary>
             [ConfigurationProperty("pattern", IsRequired = true)]
             public string Pattern => this["pattern"] as string;
 
             private Regex _patternRegEx;
             /// <summary>
-            /// Regex object representing the pattern specified, compiled once for use against all future exceptions
+            /// <see cref="Regex"/> object representing the pattern specified, compiled once for use against all future exceptions.
             /// </summary>
             public Regex PatternRegex => _patternRegEx ?? (_patternRegEx = new Regex(Pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline));
         }
 
         /// <summary>
-        /// A type entry, to match against error messages types to see if we should ignore them
+        /// A type entry, to match against error messages types to see if we should ignore them.
         /// </summary>
         public class IgnoreType : SettingsCollectionElement
         {
             /// <summary>
-            /// The name that describes this ignored type
+            /// The name that describes this ignored type.
             /// </summary>
             [ConfigurationProperty("name")]
             public override string Name => this["name"] as string;
 
             /// <summary>
-            /// The fully qualified type of the exception to ignore
+            /// The fully qualified type of the exception to ignore.
             /// </summary>
             [ConfigurationProperty("type", IsRequired = true)]
             public string Type => this["type"] as string;

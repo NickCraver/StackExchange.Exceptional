@@ -42,7 +42,7 @@ namespace StackExchange.Exceptional.Stores
         /// <summary>
         /// Creates a new instance of <see cref="MemoryErrorStore"/> with the given size.
         /// </summary>
-        /// <param name="size">How many errors to limit the log to, the size+1th error (oldest) will be removed if exceeded</param>
+        /// <param name="size">How many errors to limit the log to, the size+1th error (oldest) will be removed if exceeded.</param>
         public MemoryErrorStore(int size = DefaultSize)
             : base(new ErrorStoreSettings()
             {
@@ -58,10 +58,10 @@ namespace StackExchange.Exceptional.Stores
         public override string Name => "Memory Error Store";
 
         /// <summary>
-        /// Protects an error from deletion, by setting IsProtected = true
+        /// Protects an error from deletion, by setting IsProtected = <c>true</c>.
         /// </summary>
-        /// <param name="guid">The guid of the error to protect</param>
-        /// <returns>True if the error was found and protected, false otherwise</returns>
+        /// <param name="guid">The GUID of the error to protect.</param>
+        /// <returns><c>true</c> if the error was found and protected, <c>false</c> otherwise.</returns>
         protected override bool ProtectError(Guid guid)
         {
             lock (_lock)
@@ -77,10 +77,10 @@ namespace StackExchange.Exceptional.Stores
         }
 
         /// <summary>
-        /// Deletes an error, by deleting it from the in-memory log
+        /// Deletes an error, by deleting it from the in-memory log.
         /// </summary>
-        /// <param name="guid">The guid of the error to delete</param>
-        /// <returns>True if the error was found and deleted, false otherwise</returns>
+        /// <param name="guid">The GUID of the error to delete.</param>
+        /// <returns><c>true</c> if the error was found and deleted, <c>false</c> otherwise.</returns>
         protected override bool DeleteError(Guid guid)
         {
             lock(_lock)
@@ -90,10 +90,10 @@ namespace StackExchange.Exceptional.Stores
         }
 
         /// <summary>
-        /// Deleted all errors in the log, by clearing the in-memory log
+        /// Deleted all errors in the log, by clearing the in-memory log.
         /// </summary>
         /// <param name="applicationName">The name of the application to delete all errors for.</param>
-        /// <returns>True in all cases</returns>
+        /// <returns><c>true</c> in all cases</returns>
         protected override bool DeleteAllErrors(string applicationName = null)
         {
             lock (_lock)
@@ -107,10 +107,11 @@ namespace StackExchange.Exceptional.Stores
         }
 
         /// <summary>
-        /// Logs the error to the in-memory error log
-        /// If the rollup conditions are met, then the matching error will have a DuplicateCount += @DuplicateCount (usually 1, unless in retry) rather than a distinct new row for the error
+        /// Logs the error to the in-memory error log.
+        /// If the roll-up conditions are met, then the matching error will have a 
+        /// DuplicateCount += @DuplicateCount (usually 1, unless in retry) rather than a distinct new entry for the error.
         /// </summary>
-        /// <param name="error">The error to log</param>
+        /// <param name="error">The error to log.</param>
         protected override void LogError(Error error)
         {
             lock(_lock)
@@ -144,10 +145,10 @@ namespace StackExchange.Exceptional.Stores
         }
 
         /// <summary>
-        /// Gets the error with the specified guid from the in-memory log
+        /// Gets the error with the specified GUID from the in-memory log.
         /// </summary>
-        /// <param name="guid">The guid of the error to retrieve</param>
-        /// <returns>The error object if found, null otherwise</returns>
+        /// <param name="guid">The GIUID of the error to retrieve.</param>
+        /// <returns>The error object if found, <c>null</c> otherwise.</returns>
         protected override Error GetError(Guid guid)
         {
             lock (_lock)
@@ -157,7 +158,7 @@ namespace StackExchange.Exceptional.Stores
         }
 
         /// <summary>
-        /// Retrieves all of the errors in the log
+        /// Retrieves all of the errors in the log.
         /// </summary>
         /// <param name="applicationName">The name of the application to get all errors for.</param>
         protected override List<Error> GetAllErrors(string applicationName = null)
@@ -177,7 +178,7 @@ namespace StackExchange.Exceptional.Stores
         }
 
         /// <summary>
-        /// Retrieves a count of application errors since the specified date, or all time if null
+        /// Retrieves a count of application errors since the specified date, or all time if <c>null</c>.
         /// </summary>
         /// <param name="since">The date to get errors since.</param>
         /// <param name="applicationName">The application name to get an error count for.</param>

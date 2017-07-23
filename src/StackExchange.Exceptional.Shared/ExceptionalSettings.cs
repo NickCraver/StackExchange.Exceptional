@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 namespace StackExchange.Exceptional
 {
     /// <summary>
-    /// The Settings for Exceptional error logging
+    /// Settings for Exceptional error logging.
     /// </summary>
     public class ExceptionalSettings
     {
@@ -23,8 +23,8 @@ namespace StackExchange.Exceptional
         public string ApplicationName { get; set; }
 
         /// <summary>
-        /// The Regex of data keys to include. For example, "Redis.*" would include all keys that start with Redis
-        /// For options, RegexOptions.IgnoreCase | RegexOptions.Singleline is recommended
+        /// The <see cref="Regex"/> of data keys to include. For example, "Redis.*" would include all keys that start with Redis.
+        /// For options, <see cref="RegexOptions.IgnoreCase"/> and <see cref="RegexOptions.Singleline"/> are recommended.
         /// </summary>
         public Regex DataIncludeRegex { get; set; }
 
@@ -34,7 +34,7 @@ namespace StackExchange.Exceptional
         public static bool IsLoggingEnabled { get; private set; } = true;
 
         /// <summary>
-        /// Re-enables error logging afer a <see cref="DisableLogging"/> call.
+        /// Re-enables error logging after a <see cref="DisableLogging"/> call.
         /// </summary>
         public static void EnableLogging() => IsLoggingEnabled = true;
 
@@ -42,13 +42,13 @@ namespace StackExchange.Exceptional
         /// Disables error logging, call <see cref="EnableLogging"/> to re-enable.
         /// </summary>
         /// <remarks>
-        /// This is useful when an app domain is being torn down, for example <code>IRegisteredObject.Stop()</code> when a web application is being stopped
+        /// This is useful when an <see cref="AppDomain"/> is being torn down, for example <code>IRegisteredObject.Stop()</code> when a web application is being stopped
         /// </remarks>
         public static void DisableLogging() => IsLoggingEnabled = false;
 
         /// <summary>
-        /// Method of getting the IP address for the error, defaults to retrieving it from server variables
-        /// but may need to be replaced in special nulti-proxy situations.
+        /// Method of getting the IP address for the error, defaults to retrieving it from server variables.
+        /// but may need to be replaced in special multi-proxy situations.
         /// </summary>
         public Func<string> GetIPAddress { get; set; }
 
@@ -58,12 +58,12 @@ namespace StackExchange.Exceptional
         public bool AppendFullStackTraces { get; set; }
 
         /// <summary>
-        /// Settings for the rendering of pages
+        /// Settings for the rendering of pages.
         /// </summary>
         public RenderSettings Render { get; } = new RenderSettings();
 
         /// <summary>
-        /// Settings for the rendering of pages
+        /// Settings for the rendering of pages.
         /// </summary>
         public class RenderSettings
         {
@@ -96,12 +96,14 @@ namespace StackExchange.Exceptional
         public class IgnoreSettings
         {
             /// <summary>
-            /// Regular expressions collection for errors to ignore.  Any errors with a .ToString() matching any regex here will not be logged
+            /// Regular expressions collection for errors to ignore.  
+            /// Any errors with a .ToString() matching any <see cref="Regex"/> here will not be logged.
             /// </summary>
             public List<Regex> Regexes { get; set; }
 
             /// <summary>
-            /// Types collection for errors to ignore.  Any errors with a Type matching any name here will not be logged
+            /// Types collection for errors to ignore.  
+            /// Any errors with a Type matching any name here will not be logged.
             /// </summary>
             public HashSet<string> Types { get; set; }
         }
@@ -123,7 +125,7 @@ namespace StackExchange.Exceptional
             public Dictionary<string, string> Form { get; set; } = new Dictionary<string, string>();
 
             /// <summary>
-            /// Cookie values to replace on save - this prevents logging auth tokens, etc.
+            /// Cookie values to replace on save - this prevents logging authentication tokens, etc.
             /// The key is the cookie name to match, the value is what to use when logging.
             /// </summary>
             public Dictionary<string, string> Cookie { get; set; } = new Dictionary<string, string>();
@@ -164,7 +166,7 @@ namespace StackExchange.Exceptional
             }
 
             /// <summary>
-            /// Repalces generic names like Dictionary`2 with Dictionary&lt;TKey,TValue&gt;.
+            /// Replaces generic names like Dictionary`2 with Dictionary&lt;TKey,TValue&gt;.
             /// Specific formatting is based on the <see cref="Language"/> setting.
             /// </summary>
             public bool EnablePrettyGenerics { get; set; } = true;
@@ -212,20 +214,20 @@ namespace StackExchange.Exceptional
 #endif
 
         /// <summary>
-        /// The size of this error log, either how many to keep or how many to display depending on type
+        /// The size of this error log, either how many to keep or how many to display depending on type.
         /// Defaults to 200.
         /// </summary>
         public int Size { get; set; } = 200;
 
         /// <summary>
-        /// The duration of error groups to rollup, similar errors within this timespan (those with the same stack trace) will be shown as duplicates
-        /// Defaults to 10 minutes
+        /// The duration of error groups to roll-up, similar errors within this timespan (those with the same stack trace) will be shown as duplicates.
+        /// Defaults to 10 minutes.
         /// </summary>
         public TimeSpan? RollupPeriod { get; set; } = TimeSpan.FromMinutes(10);
 
         /// <summary>
-        /// The size of the backup queue to use for the log, after rollups, it's how many entries in memory can be stored before culling the oldest
-        /// Defaults to 1000
+        /// The size of the backup queue to use for the log, after roll-ups, it's how many entries in memory can be stored before culling the oldest.
+        /// Defaults to 1000.
         /// </summary>
         public int BackupQueueSize { get; set; } = 1000;
 
@@ -236,7 +238,7 @@ namespace StackExchange.Exceptional
     }
 
     /// <summary>
-    /// Email settings configuration, for configuring Email sending from code
+    /// Email settings configuration, for configuring Email sending from code.
     /// </summary>
     public class EmailSettings
     {
@@ -300,11 +302,10 @@ namespace StackExchange.Exceptional
         public string SMTPHost { get; set; }
         /// <summary>
         /// The port to send mail on (if SMTP server is specified via <see cref="SMTPHost"/>).
-        /// Default is 25
         /// </summary>
         public int? SMTPPort { get; set; }
         /// <summary>
-        /// The SMTP username to use, if authentication is needed
+        /// The SMTP user name to use, if authentication is needed.
         /// </summary>
         public string SMTPUserName
         {

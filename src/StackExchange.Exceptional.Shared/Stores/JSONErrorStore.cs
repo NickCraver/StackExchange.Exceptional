@@ -14,7 +14,7 @@ namespace StackExchange.Exceptional.Stores
     public sealed class JSONErrorStore : ErrorStore
     {
         /// <summary>
-        /// Name for this error store
+        /// Name for this error store.
         /// </summary>
         public override string Name => "JSON File Error Store";
 
@@ -34,8 +34,8 @@ namespace StackExchange.Exceptional.Stores
         /// <summary>
         /// Creates a new instance of <see cref="JSONErrorStore"/> with the specified path string.
         /// </summary>
-        /// <param name="path">The folder path to use to store errors</param>
-        /// <param name="size">How many errors to limit the log to, the size+1th error (oldest) will be removed if exceeded</param>
+        /// <param name="path">The folder path to use to store errors.</param>
+        /// <param name="size">How many errors to limit the log to, the size+1th error (oldest) will be removed if exceeded.</param>
         public JSONErrorStore(string path, int size = DefaultSize)
             : this(new ErrorStoreSettings
             {
@@ -55,10 +55,10 @@ namespace StackExchange.Exceptional.Stores
         }
 
         /// <summary>
-        /// Protects an error from deletion, by making it ReadOnly
+        /// Protects an error from deletion, by making it read-only.
         /// </summary>
-        /// <param name="guid">The guid of the error to protect</param>
-        /// <returns>True if the error was found and proected, false otherwise</returns>
+        /// <param name="guid">The GUID of the error to protect</param>
+        /// <returns><c>true</c> if the error was found and protected, <c>false</c> otherwise.</returns>
         protected override bool ProtectError(Guid guid)
         {
             if (!TryGetErrorFile(guid, out FileInfo f))
@@ -69,10 +69,10 @@ namespace StackExchange.Exceptional.Stores
         }
 
         /// <summary>
-        /// Deletes an error, by deleting it from the logging folder
+        /// Deletes an error, by deleting it from the logging folder.
         /// </summary>
-        /// <param name="guid">The guid of the error to delete</param>
-        /// <returns>True if the error was found and deleted, false otherwise</returns>
+        /// <param name="guid">The GUID of the error to delete.</param>
+        /// <returns><c>true</c> if the error was found and deleted, <c>false</c> otherwise.</returns>
         protected override bool DeleteError(Guid guid)
         {
             if (!TryGetErrorFile(guid, out FileInfo f))
@@ -86,10 +86,10 @@ namespace StackExchange.Exceptional.Stores
         }
 
         /// <summary>
-        /// Deleted all errors in the log, by clearing all *.json files in the folder
+        /// Deleted all errors in the log, by clearing all *.json files in the folder.
         /// </summary>
         /// <param name="applicationName">The name of the application to delete all errors for.</param>
-        /// <returns>True if any errors were deleted, false otherwise</returns>
+        /// <returns><c>true</c> if any errors were deleted, <c>false</c> otherwise.</returns>
         protected override bool DeleteAllErrors(string applicationName = null)
         {
             string[] fileList = Directory.GetFiles(_path, "*.json");
@@ -127,10 +127,11 @@ namespace StackExchange.Exceptional.Stores
         }
 
         /// <summary>
-        /// Logs the JSON representation of an Error to the file store specified by the page for this store
-        /// If the rollup conditions are met, then the matching error will have a DuplicateCount += @DuplicateCount (usually 1, unless in retry) rather than a distinct new row for the error
+        /// Logs the JSON representation of an Error to the file store specified by the page for this store.
+        /// If the roll-up conditions are met, then the matching error will have a 
+        /// DuplicateCount += @DuplicateCount (usually 1, unless in retry) rather than a distinct new file for the error.
         /// </summary>
-        /// <param name="error">The error to log</param>
+        /// <param name="error">The error to log.</param>
         protected override void LogError(Error error)
         {
             // will allow fast comparisons of messages to see if we can ignore an incoming exception
@@ -181,10 +182,10 @@ namespace StackExchange.Exceptional.Stores
         }
 
         /// <summary>
-        /// Gets the error with the specified guid from the log/folder
+        /// Gets the error with the specified GUID from the log/folder.
         /// </summary>
-        /// <param name="guid">The guid of the error to retrieve</param>
-        /// <returns>The error object if found, null otherwise</returns>
+        /// <param name="guid">The GUID of the error to retrieve.</param>
+        /// <returns>The error object if found, null otherwise.</returns>
         protected override Error GetError(Guid guid)
         {
             string[] fileList = Directory.GetFiles(_path, $"*{guid.ToFileName()}.json");
@@ -222,7 +223,7 @@ namespace StackExchange.Exceptional.Stores
         }
 
         /// <summary>
-        /// Retrieves all of the errors in the log folder
+        /// Retrieves all of the errors in the log folder.
         /// </summary>
         /// <param name="applicationName">The name of the application to get all errors for.</param>
         protected override List<Error> GetAllErrors(string applicationName = null)
@@ -244,7 +245,7 @@ namespace StackExchange.Exceptional.Stores
         }
 
         /// <summary>
-        /// Retrieves a count of application errors since the specified date, or all time if null
+        /// Retrieves a count of application errors since the specified date, or all time if null.
         /// </summary>
         /// <param name="since">The date to get errors since.</param>
         /// <param name="applicationName">The application name to get an error count for.</param>
@@ -290,7 +291,7 @@ namespace StackExchange.Exceptional.Stores
         /// Answers the older exception that 'possibleDuplicate' matches, returning null if no match is found.
         /// </summary>
         /// <param name="messageHash">The hash of the error message (located in the filename).</param>
-        /// <param name="original">The original error, if found. Null if no matches are found.</param>
+        /// <param name="original">The original error, if found. <c>null</c> if no matches are found.</param>
         private bool TryFindOriginalError(string messageHash, out Error original)
         {
             if (!Settings.RollupPeriod.HasValue || Settings.RollupPeriod == TimeSpan.Zero)

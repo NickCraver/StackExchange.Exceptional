@@ -31,7 +31,8 @@ namespace StackExchange.Exceptional
         public string ApplicationName => this["applicationName"] as string;
 
         /// <summary>
-        /// The Regex pattern of data keys to include. For example, "Redis.*" would include all keys that start with Redis.
+        /// The regular expression pattern of data keys to include. 
+        /// For example, "Redis.*" would include all keys that start with Redis.
         /// </summary>
         [ConfigurationProperty("dataIncludePattern")]
         public string DataIncludePattern => this["dataIncludePattern"] as string;

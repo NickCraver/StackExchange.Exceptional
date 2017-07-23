@@ -15,12 +15,12 @@ namespace StackExchange.Exceptional
     {
         /// <summary>
         /// For logging an exception with no HttpContext, most commonly used in non-web applications 
-        /// so that they don't have to carry a reference to System.Web
+        /// so that they don't have to carry a reference to System.Web.
         /// </summary>
         /// <param name="ex">The exception to log</param>
-        /// <param name="appendFullStackTrace">Whether to append a full stack trace to the exception's detail</param>
-        /// <param name="rollupPerServer">Whether to log up per-server, e.g. errors are only duplicates if they have same stack on the same machine</param>
-        /// <param name="customData">Any custom data to store with the exception like UserId, etc...this will be rendered as JSON in the error view for script use</param>
+        /// <param name="appendFullStackTrace">Whether to append a full stack trace to the exception's detail.</param>
+        /// <param name="rollupPerServer">Whether to log up per-server, e.g. errors are only duplicates if they have same stack on the same machine.</param>
+        /// <param name="customData">Any custom data to store with the exception like UserId, etc...this will be rendered as JSON in the error view for script use.</param>
         public static Error LogWithoutContext(this Exception ex, bool appendFullStackTrace = false, bool rollupPerServer = false, Dictionary<string, string> customData = null)
         {
             return Log(ex, null, appendFullStackTrace, rollupPerServer, customData);
@@ -29,12 +29,12 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Logs an exception to the configured error store, or the in-memory default store if none is configured.
         /// </summary>
-        /// <param name="ex">The exception to log</param>
+        /// <param name="ex">The exception to log.</param>
         /// <param name="context">The HTTPContext to record variables from.  If this isn't a web request, pass <see langword="null" /> in here.</param>
         /// <param name="appendFullStackTrace">Whether to append a full stack trace to the exception's detail.</param>
         /// <param name="rollupPerServer">Whether to log up per-server, e.g. errors are only duplicates if they have same stack on the same machine.</param>
         /// <param name="customData">Any custom data to store with the exception like UserId, etc...this will be rendered as JSON in the error view for script use.</param>
-        /// <param name="applicationName">If specified, the application name to log with, if not specified the name in the config is used.</param>
+        /// <param name="applicationName">If specified, the application name to log with, if not specified the name in <see cref="ExceptionalSettings.ApplicationName"/> is used.</param>
         /// <returns>The Error created, if one was created and logged, null if nothing was logged.</returns>
         /// <remarks>
         /// When dealing with a non web requests, pass <see langword="null" /> in for context.  
@@ -89,7 +89,7 @@ namespace StackExchange.Exceptional
                     catch (Exception gipe)
                     {
                         // if there was an error getting the IP, log it so we can display such in the view...and not fail to log the original error
-                        error.CustomData.Add(Constants.CustomDataErrorKey, "Fetching IP Adddress: " + gipe);
+                        error.CustomData.Add(Constants.CustomDataErrorKey, "Fetching IP Address: " + gipe);
                     }
                 }
 

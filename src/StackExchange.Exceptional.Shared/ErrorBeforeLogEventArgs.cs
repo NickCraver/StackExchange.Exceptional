@@ -3,7 +3,7 @@
 namespace StackExchange.Exceptional
 {
     /// <summary>
-    /// Arguments for the event handler called before an exception is logged
+    /// Arguments for the event handler called before an exception is logged.
     /// </summary>
     public class ErrorBeforeLogEventArgs : EventArgs
     {
@@ -13,7 +13,7 @@ namespace StackExchange.Exceptional
         public bool Abort { get; set; }
 
         /// <summary>
-        /// The Error object in question
+        /// The Error object in question.
         /// </summary>
         public Error Error { get; }
 

@@ -16,6 +16,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         public static class StackTrace
         {
+            // Inspired by StackTraceParser by Atif Aziz, repo: https://github.com/atifaziz/StackTraceParser
             internal const string Space = @"[\x20\t]",
                                   NoSpace = @"[^\x20\t]";
             private static class Groups
@@ -35,7 +36,6 @@ namespace StackExchange.Exceptional
 
             private const string EndStack = "--- End of stack trace from previous location where exception was thrown ---";
 
-            // Inspired by StackTraceParser by Atif Aziz, repo: https://github.com/atifaziz/StackTraceParser
             // TODO: Patterns, or a bunch of these...
             private static readonly HashSet<string> _asyncFrames = new HashSet<string>()
             {
@@ -104,7 +104,7 @@ namespace StackExchange.Exceptional
                       .AppendHtmlEncode(leadIn.Value)
                       .Append("</span>");
 
-                    // Check if the next line is the end of an async handoff
+                    // Check if the next line is the end of an async hand-off
                     var nextEndStack = stackTrace.IndexOf(EndStack, m.Index + m.Length);
                     if (nextEndStack > -1 && nextEndStack < m.Index + m.Length + 3)
                     {
@@ -171,7 +171,7 @@ namespace StackExchange.Exceptional
                     }
                     sb.Append("</span>"); // method-section for table layout
 
-                    // TODO: regex replacement for SourceLink
+                    // TODO: regular expression replacement for SourceLink
                     if (path.Value.HasValue())
                     {
                         var subPath = GetSubPath(path.Value, type.Value);
@@ -318,7 +318,7 @@ namespace StackExchange.Exceptional
                 var match = _genericTypeRegex.Match(classes[i]);
                 if (match.Success)
                 {
-                    // If args aren't known, get the defaults
+                    // If arguments aren't known, get the defaults
                     if (args == null && int.TryParse(match.Groups["ArgCount"].Value, out int count))
                     {
                         if (count == 1)
@@ -335,7 +335,7 @@ namespace StackExchange.Exceptional
                         }
                     }
                     // In the known case, BaseClass is "System.Collections.Generic.Dictionary"
-                    // In the unknwon case, we're hitting here at "Class" only
+                    // In the unknown case, we're hitting here at "Class" only
                     sb.AppendHtmlEncode(match.Groups["BaseClass"].Value);
                     AppendArgs(args);
                 }
@@ -358,7 +358,7 @@ namespace StackExchange.Exceptional
                         sb.Append("&lt;");
                         break;
                 }
-                // Don't put crazy amounts of args in here
+                // Don't put crazy amounts of arguments in here
                 if (tArgs.Length > 5)
                 {
                     sb.Append("<span class=\"stack generic-type\">").Append(tArgs[0]).Append("</span>")

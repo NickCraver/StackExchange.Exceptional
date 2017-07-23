@@ -5,13 +5,13 @@ namespace StackExchange.Exceptional
     internal partial class Settings
     {
         /// <summary>
-        /// The Ignore section of the configuration, optional and no errors will be blocked from logging if not specified
+        /// The Ignore section of the configuration, optional and no errors will be blocked from logging if not specified.
         /// </summary>
         [ConfigurationProperty("LogFilters")]
         public LogFilterSettings LogFilters => this["LogFilters"] as LogFilterSettings;
 
         /// <summary>
-        /// Ignore element for deserilization from a configuration, e.g. web.config or app.config
+        /// Ignore element for deserialization from a configuration, e.g. web.config or app.config
         /// </summary>
         public class LogFilterSettings : ConfigurationElement
         {
@@ -22,7 +22,7 @@ namespace StackExchange.Exceptional
             public SettingsCollection<LogFilter> FormFilters => this["Form"] as SettingsCollection<LogFilter>;
 
             /// <summary>
-            /// Cookie values to replace on save - this prevents logging auth tokens, etc.
+            /// Cookie values to replace on save - this prevents logging authentication tokens, etc.
             /// </summary>
             [ConfigurationProperty("Cookies")]
             public SettingsCollection<LogFilter> CookieFilters => this["Cookies"] as SettingsCollection<LogFilter>;
@@ -47,18 +47,18 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// A filter entry with the forn variable name and what to replace the value with when logging
+        /// A filter entry with the form variable name and what to replace the value with when logging.
         /// </summary>
         public class LogFilter : SettingsCollectionElement
         {
             /// <summary>
-            /// The form parameter name to ignore
+            /// The form parameter name to ignore.
             /// </summary>
             [ConfigurationProperty("name", IsRequired = true)]
             public override string Name => this["name"] as string;
 
             /// <summary>
-            /// The value to log instead of the real value
+            /// The value to log instead of the real value.
             /// </summary>
             [ConfigurationProperty("replaceWith")]
             internal string ReplaceWith => this["replaceWith"] as string;

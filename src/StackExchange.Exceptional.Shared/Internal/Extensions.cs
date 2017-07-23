@@ -14,7 +14,7 @@ namespace StackExchange.Exceptional.Internal
     public static class Extensions
     {
         /// <summary>
-        /// Returns true if <paramref name="type"/> is <paramref name="ancestorName"/>, or descendent from <paramref name="ancestorName"/>.
+        /// Returns true if <paramref name="type"/> is <paramref name="ancestorName"/>, or descendant from <paramref name="ancestorName"/>.
         /// </summary>
         /// <param name="type">The <see cref="Type"/> to check.</param>
         /// <param name="ancestorName">The <see cref="Type"/> name to check for ancestry of.</param>
@@ -26,7 +26,7 @@ namespace StackExchange.Exceptional.Internal
         }
 
         /// <summary>
-        /// Returns a humanized string indicating how long ago something happened, eg "3 days ago".
+        /// Returns a humanized string indicating how long ago something happened, e.g. "3 days ago".
         /// For future dates, returns when this DateTime will occur from <see cref="DateTime.UtcNow"/>.
         /// </summary>
         /// <param name="dt">The <see cref="DateTime"/> to represents as a relative time string.</param>
@@ -45,11 +45,11 @@ namespace StackExchange.Exceptional.Internal
             {
                 return ts.Seconds == 1 ? "1 sec ago" : ts.Seconds.ToString() + " secs ago";
             }
-            if (delta < 3600) // 60 mins * 60 sec
+            if (delta < 3600) // 60 minutes * 60 seconds
             {
                 return ts.Minutes == 1 ? "1 min ago" : ts.Minutes.ToString() + " mins ago";
             }
-            if (delta < 86400)  // 24 hrs * 60 mins * 60 sec
+            if (delta < 86400)  // 24 hours * 60 minutes * 60 seconds
             {
                 return ts.Hours == 1 ? "1 hour ago" : ts.Hours.ToString() + " hours ago";
             }
@@ -79,11 +79,11 @@ namespace StackExchange.Exceptional.Internal
             {
                 return ts.Seconds == 1 ? "in 1 second" : "in " + ts.Seconds.ToString() + " seconds";
             }
-            if (delta < 3600) // 60 mins * 60 sec
+            if (delta < 3600) // 60 minutes * 60 seconds
             {
                 return ts.Minutes == 1 ? "in 1 minute" : "in " + ts.Minutes.ToString() + " minutes";
             }
-            if (delta < 86400) // 24 hrs * 60 mins * 60 sec
+            if (delta < 86400) // 24 hours * 60 minutes * 60 seconds
             {
                 return ts.Hours == 1 ? "in 1 hour" : "in " + ts.Hours.ToString() + " hours";
             }
@@ -126,10 +126,10 @@ namespace StackExchange.Exceptional.Internal
         }
 
         /// <summary>
-        /// Appends s tring, HTML encoding the contents first.
+        /// Appends a <see cref="string"/>, HTML encoding the contents first.
         /// </summary>
         /// <param name="sb">The <see cref="StringBuilder"/> to append to.</param>
-        /// <param name="s">The stirng to encode and append.</param>
+        /// <param name="s">The <see cref="string"/> to encode and append.</param>
         /// <returns>The original <see cref="StringBuilder"/> for chaining.</returns>
         public static StringBuilder AppendHtmlEncode(this StringBuilder sb, string s) => sb.Append(s.HtmlEncode());
 
@@ -214,9 +214,9 @@ namespace StackExchange.Exceptional.Internal
         }
 
         /// <summary>
-        /// Converts a string to a guid, or empty guid if empty or invalid.
+        /// Converts a string to a GUID, or <see cref="Guid.Empty"/> if empty or invalid.
         /// </summary>
-        /// <param name="input">The string to attempt conversion to a guid.</param>
+        /// <param name="input">The <see cref="string"/> to attempt conversion to a <see cref="Guid"/>.</param>
         public static Guid ToGuid(this string input)
         {
             Guid.TryParse(input, out Guid result);
@@ -224,9 +224,9 @@ namespace StackExchange.Exceptional.Internal
         }
 
         /// <summary>
-        /// Strips non-essential characters (dashes!) from a guid.
+        /// Strips non-essential characters (dashes!) from a GUID.
         /// </summary>
-        /// <param name="guid">The guid to string dashes from.</param>
+        /// <param name="guid">The GUID to strip dashes from.</param>
         public static string ToFileName(this Guid guid) => guid.ToString().Replace("-", "");
 
         private static readonly char[] _dotSplit = new char[] { '.' };
@@ -263,24 +263,24 @@ namespace StackExchange.Exceptional.Internal
         private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0);
 
         /// <summary>
-        /// Returns a unix Epoch time given a <see cref="DateTime"/>.
+        /// Returns a Unix Epoch time given a <see cref="DateTime"/>.
         /// </summary>
         /// <param name="dt">The <see cref="DateTime"/> to convert.</param>
         public static long ToEpochTime(this DateTime dt) => (long)(dt - Epoch).TotalSeconds;
 
         /// <summary>
-        /// Returns a unix Epoch time if given a value, and null otherwise.
+        /// Returns a Unix Epoch time if given a value, and null otherwise.
         /// </summary>
         /// <param name="dt">The <see cref="DateTime"/> to convert.</param>
         public static long? ToEpochTime(this DateTime? dt) => dt.HasValue ? (long?)ToEpochTime(dt.Value) : null;
 
         /// <summary>
-        /// Takes a NameValuePair collection and reduces it down to a JSON object in kay/value pair form.
+        /// Takes a NameValuePair collection and reduces it down to a JSON object in key/value pair form.
         /// </summary>
         /// <param name="collection">The collection to convert to a dictionary.</param>
         /// <remarks>
         /// This is not technically correct for all cases, since a querystring can contain multiple 
-        /// occurences of the same variable for example, this reduces it down to 1 occurence for the acessibility tradeoff.
+        /// occurrences of the same variable for example, this reduces it down to 1 occurrence for the accessibility trade-off.
         /// </remarks>
         public static Dictionary<string, string> ToJsonDictionary(this List<Error.NameValuePair> collection)
         {

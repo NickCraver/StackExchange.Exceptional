@@ -175,7 +175,7 @@ namespace StackExchange.Exceptional.Internal
 
         /// <summary>
         /// Private IP Ranges reserved for internal use by ARIN
-        /// These are not routable on the global internet
+        /// These are not routable on the global Internet
         /// </summary>
         private static readonly List<IPNet> ReservedPrivateRanges = new List<IPNet>
             {
@@ -322,10 +322,10 @@ namespace StackExchange.Exceptional.Internal
             }
 
             ///<summary>
-            /// Gets the number of bits set in a uint, taken from 
+            /// Gets the number of bits set in a <see cref="uint"/>, taken from 
             /// https://stackoverflow.com/questions/109023/how-to-count-the-number-of-set-bits-in-a-32-bit-integer
             /// </summary>
-            /// <param name="i">The value to check</param>
+            /// <param name="i">The value to check.</param>
             private static int NumberOfSetBitsImpl(uint i)
             {
                 i -= (i >> 1) & 0x55555555U;
@@ -334,10 +334,10 @@ namespace StackExchange.Exceptional.Internal
             }
 
             ///<summary>
-            /// Gets the number of bits set in a ulong, taken from 
+            /// Gets the number of bits set in a <see cref="ulong"/>, taken from 
             /// https://stackoverflow.com/questions/2709430/count-number-of-bits-in-a-64-bit-long-big-integer
             /// </summary>
-            /// <param name="i">The value to check</param>
+            /// <param name="i">The value to check.</param>
             private static int NumberOfSetBitsImpl(ulong i)
             {
                 i -= (i >> 1) & 0x5555555555555555UL;

@@ -6,7 +6,7 @@ namespace StackExchange.Exceptional
     internal partial class Settings
     {
         /// <summary>
-        /// The ErrorStore section of the configuration, optional and will default to a MemoryErrorStore if not specified
+        /// The ErrorStore section of the configuration, optional and will send no email if not present.
         /// </summary>
         [ConfigurationProperty("Email")]
         public EmailSettingsConfig Email => this["Email"] as EmailSettingsConfig;
@@ -48,7 +48,7 @@ namespace StackExchange.Exceptional
             public int SMTPPort => (int)this["smtpPort"];
 
             /// <summary>
-            /// The SMTP username to use, if authentication is needed
+            /// The SMTP user name to use, if authentication is needed.
             /// </summary>
             [ConfigurationProperty("smtpUserName")]
             public string SMTPUserName => this["smtpUserName"] as string;

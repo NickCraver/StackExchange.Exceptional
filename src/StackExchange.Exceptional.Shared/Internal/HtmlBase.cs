@@ -1,12 +1,11 @@
-﻿using StackExchange.Exceptional.Internal;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace StackExchange.Exceptional.Internal
 {
     /// <summary>
-    /// Represents a class that outputs some HTML
+    /// Represents a class that outputs some HTML.
     /// </summary>
     public abstract class HtmlBase
     {
@@ -74,11 +73,11 @@ namespace StackExchange.Exceptional.Internal
         /// Sanitizes a URL for safety.
         /// </summary>
         /// <param name="url">The URL string to sanitize.</param>
-        /// <returns>The santized URL.</returns>
+        /// <returns>The sanitized URL.</returns>
         protected static string SanitizeUrl(string url) => url.IsNullOrEmpty() ? url : _sanitizeUrl.Replace(url, "");
 
         /// <summary>
-        /// Linkifies a URL, returning an anhcor-wrapped version if sane.
+        /// Linkifies a URL, returning an anchor-wrapped version if sane.
         /// </summary>
         /// <param name="s">The URL string to attempt to linkify.</param>
         /// <param name="color">The HTML color to use (hex code or name).</param>
