@@ -1,9 +1,9 @@
 using Newtonsoft.Json;
+using StackExchange.Exceptional.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Web.Script.Serialization;
 
 namespace StackExchange.Exceptional.Handlers
 {
@@ -20,14 +20,9 @@ namespace StackExchange.Exceptional.Handlers
                      : DateTime.MinValue;
 
             var errors = ErrorStore.Default.GetAll();
-
             var result = errors.Where(error => error.CreationDate >= since).Select(error => new JsonError(error)).ToList();
 
-            //serializer.Serialize(context.Response.Output, result);
-
-            var ser = new JavaScriptSerializer();
-            var json = ser.Serialize(result);
-            context.Response.Output.Write(json);
+            serializer.Serialize(context.Response.Output, result);
         }
 
         private class JsonError
@@ -48,7 +43,7 @@ namespace StackExchange.Exceptional.Handlers
                 Id = error.Id.ToString();
                 Message = error.Message;
                 DuplicateCount = error.DuplicateCount ?? 0;
-                EpochTime = (long)(error.CreationDate - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds;
+                EpochTime = error.CreationDate.ToEpochTime();
                 Type = error.Type;
                 IP = error.IPAddress;
                 Host = error.Host;
