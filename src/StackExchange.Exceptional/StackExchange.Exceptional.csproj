@@ -7,7 +7,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../StackExchange.Exceptional.Shared/StackExchange.Exceptional.Shared.csproj" />
-    <PackageReference Include="Dapper" Version="1.50.2" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -20,7 +19,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="**\*.cshtml" />
     <Compile Update="ConfigSettings.*.cs" DependentUpon="ConfigSettings.cs" />
   </ItemGroup>
 </Project>

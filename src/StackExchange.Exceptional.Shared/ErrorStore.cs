@@ -111,25 +111,25 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Deletes a specific error from the log, any traces of it
+        /// Deletes a specific error from the log, any traces of it.
         /// </summary>
         /// <param name="guid">The <see cref="Guid"/> ID of the error to hard delete.</param>
         protected virtual bool HardDeleteError(Guid guid) => DeleteError(guid);
 
         /// <summary>
-        /// Deletes all non-protected errors from the log
+        /// Deletes all non-protected errors from the log.
         /// </summary>
         /// <param name="applicationName">The name of the application to delete all errors for.</param>
         protected abstract bool DeleteAllErrors(string applicationName = null);
 
         /// <summary>
-        /// Retrieves all of the errors in the log
+        /// Retrieves all of the errors in the log.
         /// </summary>
         /// <param name="applicationName">The name of the application to get all errors for.</param>
         protected abstract List<Error> GetAllErrors(string applicationName = null);
 
         /// <summary>
-        /// Retrieves a count of application errors since the specified date, or all time if null
+        /// Retrieves a count of application errors since the specified date, or all time if <c>null</c>.
         /// </summary>
         /// <param name="since">The date to get errors since.</param>
         /// <param name="applicationName">The application name to get an error count for.</param>
@@ -169,17 +169,17 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Gets the write queue for errors, which is populated in the case of a write failure
+        /// Gets the write queue for errors, which is populated in the case of a write failure.
         /// </summary>
         public static ConcurrentQueue<Error> WriteQueue => _writeQueue ?? (_writeQueue = new ConcurrentQueue<Error>());
 
         /// <summary>
-        /// Gets the last exception that happened when trying to log exceptions
+        /// Gets the last exception that happened when trying to log exceptions.
         /// </summary>
         public Exception LastRetryException => _retryException;
 
         /// <summary>
-        /// Logs an error in log for the application
+        /// Logs an error in log for the application.
         /// </summary>
         /// <param name="error">The error to log.</param>
         public void Log(Error error)
