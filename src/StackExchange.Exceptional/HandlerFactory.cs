@@ -30,7 +30,7 @@ namespace StackExchange.Exceptional
             // In MVC requests, PathInfo isn't set - determine via Path..
             // e.g. "/admin/errors/info" or "/admin/errors/"
             var match = Regex.Match(context.Request.Path, @"/?(?<resource>[\w\-\.]+)/?$");
-            var resource = match.Success ? match.Groups["resource"].Value.ToLower(CultureInfo.InvariantCulture) : "";
+            var resource = match.Success ? match.Groups["resource"].Value.ToLower(CultureInfo.InvariantCulture) : string.Empty;
 
             Func<IEnumerable<Guid>> getFormGuids = () =>
                 {

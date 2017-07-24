@@ -105,7 +105,7 @@ $(function () {
         var jRow = jThis.closest('tr'),
             jCell = jThis.closest('td').addClass('loading');
 
-        $.post(baseUrl + 'delete', { guid: jRow.data('id') })
+        $.post(baseUrl + Actions.Delete, { guid: jRow.data('id') })
             .done(function () {
                 jRow.find('td').fadeOut(50, function () { $(this).closest('tr').remove(); });
                 table.trigger('update');
@@ -122,7 +122,7 @@ $(function () {
             jRow = jThis.closest('tr'),
             jCell = jThis.closest('td').addClass('loading');
 
-        $.post(baseUrl + 'protect', { guid: jRow.data('id') })
+        $.post(baseUrl + Actions.Protect, { guid: jRow.data('id') })
             .done(function () {
                 var span = $("<span title=\"This error is protected\" />").append(jThis.children());
                 jThis.replaceWith(span);
