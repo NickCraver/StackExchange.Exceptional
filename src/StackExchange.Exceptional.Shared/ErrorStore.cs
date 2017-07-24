@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Transactions;
+using System.Threading.Tasks;
 #if !NETSTANDARD2_0
 using System.Configuration;
 #endif
@@ -68,18 +69,18 @@ namespace StackExchange.Exceptional
         /// Prevents error identified by <paramref name="guid"/> from being deleted when the error log is full, if the store supports it.
         /// </summary>
         /// <param name="guid">The GUID of the error to protect.</param>
-        protected abstract bool ProtectError(Guid guid);
+        protected abstract Task<bool> ProtectErrorAsync(Guid guid);
 
         /// <summary>
         /// Protects a list of errors in the log.
         /// </summary>
         /// <param name="guids">The GUIDs of the errors to protect.</param>
-        protected virtual bool ProtectErrors(IEnumerable<Guid> guids)
+        protected virtual async Task<bool> ProtectErrorsAsync(IEnumerable<Guid> guids)
         {
             var success = true;
             foreach (var guid in guids)
             {
-                if (!ProtectError(guid))
+                if (!await ProtectErrorAsync(guid).ConfigureAwait(false))
                 {
                     success = false;
                 }
@@ -91,18 +92,18 @@ namespace StackExchange.Exceptional
         /// Deletes a specific error from the log.
         /// </summary>
         /// <param name="guid">The GUID of the error to delete.</param>
-        protected abstract bool DeleteError(Guid guid);
+        protected abstract Task<bool> DeleteErrorAsync(Guid guid);
 
         /// <summary>
         /// Deletes a list of errors from the log, only if they are not protected.
         /// </summary>
         /// <param name="guids">The GUIDs of the errors to delete.</param>
-        protected virtual bool DeleteErrors(IEnumerable<Guid> guids)
+        protected virtual async Task<bool> DeleteErrorsAsync(IEnumerable<Guid> guids)
         {
             var success = true;
             foreach (var guid in guids)
             {
-                if (!DeleteError(guid))
+                if (!await DeleteErrorAsync(guid).ConfigureAwait(false))
                 {
                     success = false;
                 }
@@ -114,13 +115,13 @@ namespace StackExchange.Exceptional
         /// Deletes a specific error from the log, any traces of it.
         /// </summary>
         /// <param name="guid">The <see cref="Guid"/> ID of the error to hard delete.</param>
-        protected virtual bool HardDeleteError(Guid guid) => DeleteError(guid);
+        protected virtual Task<bool> HardDeleteErrorAsync(Guid guid) => DeleteErrorAsync(guid);
 
         /// <summary>
         /// Deletes all non-protected errors from the log.
         /// </summary>
         /// <param name="applicationName">The name of the application to delete all errors for.</param>
-        protected abstract bool DeleteAllErrors(string applicationName = null);
+        protected abstract Task<bool> DeleteAllErrorsAsync(string applicationName = null);
 
         /// <summary>
         /// Retrieves all of the errors in the log.
@@ -243,13 +244,13 @@ namespace StackExchange.Exceptional
         /// Deletes all non-protected errors from the log.
         /// </summary>
         /// <param name="guid">The GUID of the error to protect.</param>
-        public bool Protect(Guid guid)
+        public async Task<bool> ProtectAsync(Guid guid)
         {
             if (_isInRetry) return false; // no protecting allowed when failing, since we don't respect it in the queue anyway
 
             using (new TransactionScope(TransactionScopeOption.Suppress))
             {
-                return ProtectError(guid);
+                return await ProtectErrorAsync(guid).ConfigureAwait(false);
             }
         }
 
@@ -257,7 +258,7 @@ namespace StackExchange.Exceptional
         /// Protects a list of errors in the log.
         /// </summary>
         /// <param name="guids">The GUIDs of the errors to protect.</param>
-        public bool Protect(IEnumerable<Guid> guids)
+        public async Task<bool> ProtectAsync(IEnumerable<Guid> guids)
         {
             if (_isInRetry) return false; // no protecting allowed when failing, since we don't respect it in the queue anyway
 
@@ -265,7 +266,7 @@ namespace StackExchange.Exceptional
             {
                 using (new TransactionScope(TransactionScopeOption.Suppress))
                 {
-                    return ProtectErrors(guids);
+                    return await ProtectErrorsAsync(guids).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -279,7 +280,7 @@ namespace StackExchange.Exceptional
         /// Deletes an error from the log with the specified <paramref name="guid"/>.
         /// </summary>
         /// <param name="guid">The GUID of the error to delete.</param>
-        public bool Delete(Guid guid)
+        public async Task<bool> DeleteAsync(Guid guid)
         {
             if (_isInRetry) return false; // no deleting from the retry queue
 
@@ -287,7 +288,7 @@ namespace StackExchange.Exceptional
             {
                 using (new TransactionScope(TransactionScopeOption.Suppress))
                 {
-                    return DeleteError(guid);
+                    return await DeleteErrorAsync(guid).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -301,7 +302,7 @@ namespace StackExchange.Exceptional
         /// Deletes a list of non-protected errors from the log.
         /// </summary>
         /// <param name="guids">The GUIDs of the errors to delete.</param>
-        public bool Delete(IEnumerable<Guid> guids)
+        public async Task<bool> DeleteAsync(IEnumerable<Guid> guids)
         {
             if (_isInRetry) return false; // no deleting from the retry queue
 
@@ -309,7 +310,7 @@ namespace StackExchange.Exceptional
             {
                 using (new TransactionScope(TransactionScopeOption.Suppress))
                 {
-                    return DeleteErrors(guids);
+                    return await DeleteErrorsAsync(guids).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -323,7 +324,7 @@ namespace StackExchange.Exceptional
         /// Deletes all non-protected errors from the log.
         /// </summary>
         /// <param name="applicationName">The name of the application to delete all errors for.</param>
-        public bool DeleteAll(string applicationName = null)
+        public async Task<bool> DeleteAllAsync(string applicationName = null)
         {
             if (_isInRetry)
             {
@@ -335,7 +336,7 @@ namespace StackExchange.Exceptional
             {
                 using (new TransactionScope(TransactionScopeOption.Suppress))
                 {
-                    return DeleteAllErrors(applicationName);
+                    return await DeleteAllErrorsAsync(applicationName).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -433,7 +434,7 @@ namespace StackExchange.Exceptional
             }
         }
 
-        private void TryFlushQueue()
+        private async void TryFlushQueue()
         {
             if (!_isInRetry && WriteQueue.IsEmpty) return;
 
@@ -442,7 +443,7 @@ namespace StackExchange.Exceptional
                 Thread.Sleep(Settings.BackupQueueRetryInterval);
 
                 // if the error store is still down, sleep again
-                if (!Default.Test()) continue;
+                if (!(await Default.TestAsync().ConfigureAwait(false))) continue;
 
                 // empty queue
                 while (!WriteQueue.IsEmpty)
@@ -474,13 +475,13 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Tests to see if this error store is working.
         /// </summary>
-        public bool Test()
+        public async Task<bool> TestAsync()
         {
             try
             {
                 var error = new Error(new Exception("Test Exception"));
                 LogError(error);
-                HardDeleteError(error.GUID);
+                await HardDeleteErrorAsync(error.GUID).ConfigureAwait(false);
                 return true;
             }
             catch (Exception e)

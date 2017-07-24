@@ -5,19 +5,10 @@ namespace StackExchange.Exceptional.Handlers
     internal sealed class RedirectHandler : IHttpHandler
     {
         private readonly string _url;
-        private readonly bool _redirectIfAjax;
 
-        public RedirectHandler(string url, bool redirectIfAjax)
-        {
-            _url = url;
-            _redirectIfAjax = redirectIfAjax;
-        }
+        public RedirectHandler(string url) => _url = url;
 
-        public void ProcessRequest(HttpContext context)
-        {
-            if (!_redirectIfAjax && context.Request.Headers["X-Requested-With"] == "XMLHttpRequest") return;
-            context.Response.Redirect(_url);
-        }
+        public void ProcessRequest(HttpContext context) => context.Response.Redirect(_url);
 
         public bool IsReusable => false;
     }

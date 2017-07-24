@@ -5,6 +5,7 @@ using System.Linq;
 using System;
 using System.Text.RegularExpressions;
 using StackExchange.Exceptional.Internal;
+using System.Threading.Tasks;
 
 namespace StackExchange.Exceptional.Stores
 {
@@ -59,13 +60,13 @@ namespace StackExchange.Exceptional.Stores
         /// </summary>
         /// <param name="guid">The GUID of the error to protect</param>
         /// <returns><c>true</c> if the error was found and protected, <c>false</c> otherwise.</returns>
-        protected override bool ProtectError(Guid guid)
+        protected override Task<bool> ProtectErrorAsync(Guid guid)
         {
             if (!TryGetErrorFile(guid, out FileInfo f))
-                return false;
+                return Task.FromResult(false);
 
             f.Attributes |= FileAttributes.ReadOnly;
-            return true;
+            return Task.FromResult(true);
         }
 
         /// <summary>
@@ -73,16 +74,16 @@ namespace StackExchange.Exceptional.Stores
         /// </summary>
         /// <param name="guid">The GUID of the error to delete.</param>
         /// <returns><c>true</c> if the error was found and deleted, <c>false</c> otherwise.</returns>
-        protected override bool DeleteError(Guid guid)
+        protected override Task<bool> DeleteErrorAsync(Guid guid)
         {
             if (!TryGetErrorFile(guid, out FileInfo f))
-                return false;
+                return Task.FromResult(false);
 
             if (f.IsReadOnly)
                 f.Attributes ^= FileAttributes.ReadOnly;
 
             f.Delete();
-            return true;
+            return Task.FromResult(true);
         }
 
         /// <summary>
@@ -90,11 +91,11 @@ namespace StackExchange.Exceptional.Stores
         /// </summary>
         /// <param name="applicationName">The name of the application to delete all errors for.</param>
         /// <returns><c>true</c> if any errors were deleted, <c>false</c> otherwise.</returns>
-        protected override bool DeleteAllErrors(string applicationName = null)
+        protected override Task<bool> DeleteAllErrorsAsync(string applicationName = null)
         {
             string[] fileList = Directory.GetFiles(_path, "*.json");
             if (fileList.Length == 0)
-                return false;
+                return Task.FromResult(false);
 
             var deleted = 0;
             foreach (var fn in fileList)
@@ -123,7 +124,7 @@ namespace StackExchange.Exceptional.Stores
                     Trace.WriteLine("Error Deleting file '" + fn + "' from the store: " + ex.Message);
                 }
             }
-            return deleted > 0;
+            return Task.FromResult(deleted > 0);
         }
 
         /// <summary>

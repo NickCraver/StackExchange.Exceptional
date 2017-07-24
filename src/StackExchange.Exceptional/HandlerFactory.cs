@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web;
 using StackExchange.Exceptional.Handlers;
 using StackExchange.Exceptional.Internal;
@@ -45,35 +46,29 @@ namespace StackExchange.Exceptional
             switch (context.Request.HttpMethod)
             {
                 case "POST":
+                    errorGuid = context.Request.Form["guid"] ?? string.Empty;
                     switch (resource)
                     {
                         case KnownRoutes.Delete:
-                            errorGuid = context.Request.Form["guid"] ?? "";
-                            bool result = errorGuid.HasValue() && ErrorStore.Default.Delete(errorGuid.ToGuid());
-                            return JSONPHandler(context, result) ?? new RedirectHandler(context.Request.Path.Replace("/delete", ""), false);
+                            return JsonResult(ErrorStore.Default.DeleteAsync(errorGuid.ToGuid()));
 
                         case KnownRoutes.DeleteAll:
-                            bool delAllResult = ErrorStore.Default.DeleteAll();
-                            return JSONPHandler(context, delAllResult) ?? new RedirectHandler(context.Request.Path.Replace("/delete-all", ""), false);
+                            return JsonResult(ErrorStore.Default.DeleteAllAsync());
 
                         case KnownRoutes.DeleteList:
-                            bool delListResult = ErrorStore.Default.Delete(getFormGuids());
-                            return JsonResult(delListResult);
+                            return JsonResult(ErrorStore.Default.DeleteAsync(getFormGuids()));
 
                         case KnownRoutes.Protect:
-                            // send back a "true" or "false" - this will be handled in JavaScript
-                            var pResult = ErrorStore.Default.Protect(context.Request.Form["guid"].ToGuid());
-                            return JSONPHandler(context, pResult) ?? new ContentHandler(pResult.ToString(), "text/html");
+                            return JsonResult(ErrorStore.Default.ProtectAsync(errorGuid.ToGuid()));
 
                         case KnownRoutes.ProtectList:
-                            bool protectListResult = ErrorStore.Default.Protect(getFormGuids());
-                            return JsonResult(protectListResult);
+                            return JsonResult(ErrorStore.Default.ProtectAsync(getFormGuids()));
 
                         default:
                             return new ContentHandler("Invalid POST Request", "text/html");
                     }
                 case "GET":
-                    errorGuid = context.Request.QueryString["guid"] ?? "";
+                    errorGuid = context.Request.QueryString["guid"] ?? string.Empty;
                     switch (resource)
                     {
                         case KnownRoutes.Info:
@@ -106,29 +101,34 @@ namespace StackExchange.Exceptional
         private string TrimEnd(string s, string value) =>
             s.EndsWith(value) ? s.Remove(s.LastIndexOf(value, StringComparison.Ordinal)) : s;
 
-        private ContentHandler JsonResult(bool result) =>
-            new ContentHandler($@"{{""result"":{(result ? "true" : "false")}}}", "text/javascript");
+        private JsonAsyncHandler JsonResult(Task<bool> task) => new JsonAsyncHandler(task);
 
-        private ContentHandler Render(WebPage page) =>
-            new ContentHandler(page.Render(), "text/html");
+        private ContentHandler Render(WebPage page) => new ContentHandler(page.Render(), "text/html");
 
-        private ContentHandler Render(Resources.ResourceCache cache) =>
-            new ContentHandler(cache.Content, cache.MimeType);
+        private ContentHandler Render(Resources.ResourceCache cache) => new ContentHandler(cache.Content, cache.MimeType);
 
-        private IHttpHandler JSONPHandler(HttpContext context, bool result)
-        {
-            if (context.Request.QueryString["jsonp"].HasValue())
-            {
-                var response = $"{context.Request.QueryString["jsonp"]}({result.ToString().ToLower()});";
-                return new ContentHandler(response, "text/javascript");
-            }
-            return null;
-        }
+        private RedirectHandler Redirect(string url) => new RedirectHandler(url);
 
         /// <summary>
         /// Enables the factory to reuse an existing handler instance.
         /// </summary>
         /// <param name="handler">The handler to release.</param>
         public virtual void ReleaseHandler(IHttpHandler handler) { }
+    }
+
+    internal class JsonAsyncHandler : HttpTaskAsyncHandler
+    {
+        private Task<bool> _task { get; }
+        public JsonAsyncHandler(Task<bool> task)
+        {
+            _task = task;
+        }
+
+        public override async Task ProcessRequestAsync(HttpContext context)
+        {
+            var result = await _task.ConfigureAwait(false);
+            context.Response.ContentType = "text/javascript";
+            context.Response.Write($@"{{""result"":{(result ? "true" : "false")}}}");
+        }
     }
 }

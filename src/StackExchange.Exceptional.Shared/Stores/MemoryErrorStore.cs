@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using StackExchange.Exceptional.Internal;
+using System.Threading.Tasks;
 
 namespace StackExchange.Exceptional.Stores
 {
@@ -62,7 +63,7 @@ namespace StackExchange.Exceptional.Stores
         /// </summary>
         /// <param name="guid">The GUID of the error to protect.</param>
         /// <returns><c>true</c> if the error was found and protected, <c>false</c> otherwise.</returns>
-        protected override bool ProtectError(Guid guid)
+        protected override Task<bool> ProtectErrorAsync(Guid guid)
         {
             lock (_lock)
             {
@@ -70,10 +71,10 @@ namespace StackExchange.Exceptional.Stores
                 if (error != null)
                 {
                     error.IsProtected = true;
-                    return true;
+                    return Task.FromResult(true);
                 }
             }
-            return false;
+            return Task.FromResult(false);
         }
 
         /// <summary>
@@ -81,11 +82,11 @@ namespace StackExchange.Exceptional.Stores
         /// </summary>
         /// <param name="guid">The GUID of the error to delete.</param>
         /// <returns><c>true</c> if the error was found and deleted, <c>false</c> otherwise.</returns>
-        protected override bool DeleteError(Guid guid)
+        protected override Task<bool> DeleteErrorAsync(Guid guid)
         {
             lock(_lock)
             {
-                return _errors.RemoveAll(e => e.GUID == guid) > 0;
+                return Task.FromResult(_errors.RemoveAll(e => e.GUID == guid) > 0);
             }
         }
 
@@ -93,8 +94,8 @@ namespace StackExchange.Exceptional.Stores
         /// Deleted all errors in the log, by clearing the in-memory log.
         /// </summary>
         /// <param name="applicationName">The name of the application to delete all errors for.</param>
-        /// <returns><c>true</c> in all cases</returns>
-        protected override bool DeleteAllErrors(string applicationName = null)
+        /// <returns><c>true</c> in all cases.</returns>
+        protected override Task<bool> DeleteAllErrorsAsync(string applicationName = null)
         {
             lock (_lock)
             {
@@ -103,7 +104,7 @@ namespace StackExchange.Exceptional.Stores
                 else
                     _errors.RemoveAll(e => !e.IsProtected);
             }
-            return true;
+            return Task.FromResult(true);
         }
 
         /// <summary>

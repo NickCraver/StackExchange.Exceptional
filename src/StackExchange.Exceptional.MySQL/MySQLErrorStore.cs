@@ -4,6 +4,7 @@ using Dapper;
 using MySql.Data.MySqlClient;
 using StackExchange.Exceptional.Stores;
 using StackExchange.Exceptional.Internal;
+using System.Threading.Tasks;
 
 namespace StackExchange.Exceptional.MySQL
 {
@@ -68,14 +69,14 @@ namespace StackExchange.Exceptional.MySQL
         /// </summary>
         /// <param name="guid">The GUID of the error to protect.</param>
         /// <returns><c>true</c> if the error was found and protected, <c>false</c> otherwise.</returns>
-        protected override bool ProtectError(Guid guid)
+        protected override async Task<bool> ProtectErrorAsync(Guid guid)
         {
             using (var c = GetConnection())
             {
-                return c.Execute(@"
+                return await c.ExecuteAsync(@"
 Update Exceptions 
    Set IsProtected = 1, DeletionDate = Null
- Where GUID = @guid", new { guid }) > 0;
+ Where GUID = @guid", new { guid }).ConfigureAwait(false) > 0;
             }
         }
 
@@ -84,14 +85,14 @@ Update Exceptions
         /// </summary>
         /// <param name="guids">The GUIDs of the errors to protect.</param>
         /// <returns><c>true</c> if the errors were found and protected, <c>false</c> otherwise.</returns>
-        protected override bool ProtectErrors(IEnumerable<Guid> guids)
+        protected override async Task<bool> ProtectErrorsAsync(IEnumerable<Guid> guids)
         {
             using (var c = GetConnection())
             {
-                return c.Execute(@"
+                return await c.ExecuteAsync(@"
 Update Exceptions 
    Set IsProtected = 1, DeletionDate = Null
- Where GUID In @guids", new { guids }) > 0;
+ Where GUID In @guids", new { guids }).ConfigureAwait(false) > 0;
             }
         }
 
@@ -100,15 +101,15 @@ Update Exceptions
         /// </summary>
         /// <param name="guid">The GUID of the error to delete.</param>
         /// <returns><c>true</c> if the error was found and deleted, <c>false</c> otherwise.</returns>
-        protected override bool DeleteError(Guid guid)
+        protected override async Task<bool> DeleteErrorAsync(Guid guid)
         {
             using (var c = GetConnection())
             {
-                return c.Execute(@"
+                return await c.ExecuteAsync(@"
 Update Exceptions 
    Set DeletionDate = UTC_DATE() 
  Where GUID = @guid 
-   And DeletionDate Is Null", new { guid, ApplicationName }) > 0;
+   And DeletionDate Is Null", new { guid, ApplicationName }).ConfigureAwait(false) > 0;
             }
         }
 
@@ -117,15 +118,15 @@ Update Exceptions
         /// </summary>
         /// <param name="guids">The GUIDs of the errors to delete.</param>
         /// <returns><c>true</c> if the errors were found and deleted, <c>false</c> otherwise.</returns>
-        protected override bool DeleteErrors(IEnumerable<Guid> guids)
+        protected override async Task<bool> DeleteErrorsAsync(IEnumerable<Guid> guids)
         {
             using (var c = GetConnection())
             {
-                return c.Execute(@"
+                return await c.ExecuteAsync(@"
 Update Exceptions 
    Set DeletionDate = UTC_DATE() 
  Where GUID In @guids
-   And DeletionDate Is Null", new { guids }) > 0;
+   And DeletionDate Is Null", new { guids }).ConfigureAwait(false) > 0;
             }
         }
 
@@ -135,14 +136,14 @@ Update Exceptions
         /// </summary>
         /// <param name="guid">The GUID of the error to hard delete.</param>
         /// <returns>True if the error was found and deleted, false otherwise.</returns>
-        protected override bool HardDeleteError(Guid guid)
+        protected override async Task<bool> HardDeleteErrorAsync(Guid guid)
         {
             using (var c = GetConnection())
             {
-                return c.Execute(@"
+                return await c.ExecuteAsync(@"
 Delete From Exceptions 
  Where GUID = @guid
-   And ApplicationName = @ApplicationName", new { guid, ApplicationName }) > 0;
+   And ApplicationName = @ApplicationName", new { guid, ApplicationName }).ConfigureAwait(false) > 0;
             }
         }
 
@@ -151,16 +152,16 @@ Delete From Exceptions
         /// </summary>
         /// <param name="applicationName">The name of the application to delete all errors for.</param>
         /// <returns><c>true</c> if any errors were deleted, <c>false</c> otherwise.</returns>
-        protected override bool DeleteAllErrors(string applicationName = null)
+        protected override async Task<bool> DeleteAllErrorsAsync(string applicationName = null)
         {
             using (var c = GetConnection())
             {
-                return c.Execute(@"
+                return await c.ExecuteAsync(@"
 Update Exceptions 
    Set DeletionDate = UTC_DATE() 
  Where DeletionDate Is Null 
    And IsProtected = 0 
-   And ApplicationName = @ApplicationName", new { ApplicationName = applicationName ?? ApplicationName }) > 0;
+   And ApplicationName = @ApplicationName", new { ApplicationName = applicationName ?? ApplicationName }).ConfigureAwait(false) > 0;
             }
         }
 
