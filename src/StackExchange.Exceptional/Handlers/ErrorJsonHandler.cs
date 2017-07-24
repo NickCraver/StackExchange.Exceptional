@@ -27,17 +27,17 @@ namespace StackExchange.Exceptional.Handlers
 
         private class JsonError
         {
-            public string HostName { get; set; }
-            public string Message { get; set; }
-            public int DuplicateCount { get; set; }
-            public long EpochTime { get; set; }
-            public string Id { get; set; }
-            public string Type { get; set; }
-            public string IP { get; set; }
-            public string Host { get; set; }
-            public string Url { get; set; }
-            public bool Protected { get; set; }
-            public Dictionary<string, string> CustomData { get; set; }
+            public string HostName { get; }
+            public string Message { get; }
+            public int DuplicateCount { get; }
+            public long EpochTime { get; }
+            public string Id { get; }
+            public string Type { get; }
+            public string IP { get; }
+            public string Host { get; }
+            public string Url { get; }
+            public bool Protected { get; }
+            public Dictionary<string, string> CustomData { get; }
             public JsonError(Error error)
             {
                 Id = error.Id.ToString();
@@ -54,6 +54,6 @@ namespace StackExchange.Exceptional.Handlers
             }
         }
 
-        public bool IsReusable => false;
+        public bool IsReusable => true;
     }
 }
