@@ -84,7 +84,7 @@ namespace StackExchange.Exceptional
                     {
                         case KnownRoutes.Info:
                             var guid = errorGuid.ToGuid();
-                            var error = errorGuid.HasValue() ? ErrorStore.Default.Get(guid) : null;
+                            var error = errorGuid.HasValue() ? await ErrorStore.Default.GetAsync(guid).ConfigureAwait(false) : null;
                             Page(new ErrorDetailPage(error, ErrorStore.Default, TrimEnd(context.Request.Path, "/info"), guid));
                             return;
                         case KnownRoutes.Json:
@@ -93,7 +93,7 @@ namespace StackExchange.Exceptional
                                      ? new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(sinceLong)
                                      : (DateTime?)null;
 
-                            var errors = ErrorStore.Default.GetAll();
+                            var errors = await ErrorStore.Default.GetAllAsync().ConfigureAwait(false);
                             if (since.HasValue)
                             {
                                 errors = errors.Where(e => e.CreationDate >= since).ToList();
@@ -111,7 +111,7 @@ namespace StackExchange.Exceptional
                         default:
                             context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
                             context.Response.Cache.SetNoStore();
-                            Page(new ErrorListPage(ErrorStore.Default, Url));
+                            Page(new ErrorListPage(ErrorStore.Default, Url, await ErrorStore.Default.GetAllAsync().ConfigureAwait(false)));
                             return;
                     }
                 default:

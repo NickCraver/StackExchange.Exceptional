@@ -1,4 +1,5 @@
 ﻿using StackExchange.Exceptional.Internal;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -9,13 +10,19 @@ namespace StackExchange.Exceptional.Pages
     /// </summary>
     public class ErrorListPage : WebPage
     {
+        private List<Error> Errors { get; }
+
         /// <summary>
         /// Creates an error listing page for rendering.
         /// </summary>
         /// <param name="store">The error store to use.</param>
         /// <param name="baseURL">The base URL for all links and items in the page.</param>
-        public ErrorListPage(ErrorStore store, string baseURL)
-            : base(null, store, baseURL, "Error Log") { }
+        /// <param name="errors">The list of errors to display on this page.</param>
+        public ErrorListPage(ErrorStore store, string baseURL, List<Error> errors)
+            : base(null, store, baseURL, "Error Log")
+        {
+            Errors = errors.OrderByDescending(e => e.LastLogDate ?? e.CreationDate).ToList();
+        }
 
         /// <summary>
         /// Renders the contents of the middle of the master page.
@@ -23,9 +30,7 @@ namespace StackExchange.Exceptional.Pages
         /// <param name="sb">The <see cref="StringBuilder"/> to render to.</param>
         protected override void RenderInnerHtml(StringBuilder sb)
         {
-            var errors = Store.GetAll();
-            var total = errors.Count;
-            errors = errors.OrderByDescending(e => e.LastLogDate ?? e.CreationDate).ToList();
+            var total = Errors.Count;
 
             if (Store.InFailureMode)
             {
@@ -49,7 +54,7 @@ namespace StackExchange.Exceptional.Pages
                 }
                 sb.AppendLine("</div>");
             }
-            if (errors.Count == 0)
+            if (total == 0)
             {
                 sb.AppendLine("        <div class=\"empty\">")
                   .AppendLine("          <h1>No errors yet, yay!</h1>")
@@ -58,7 +63,7 @@ namespace StackExchange.Exceptional.Pages
             }
             else
             {
-                var last = errors.FirstOrDefault(); // oh the irony
+                var last = Errors.FirstOrDefault(); // oh the irony
                 sb.Append("        <h1>")
                   .Append("<span class=\"js-error-count\">")
                   .Append(total)
@@ -82,7 +87,7 @@ namespace StackExchange.Exceptional.Pages
             </tr>
           </thead>
           <tbody>");
-                foreach (var e in errors)
+                foreach (var e in Errors)
                 {
                     sb.Append("            <tr data-id=\"").Append(e.GUID.ToString()).Append("\" class=\"error").Append(e.IsProtected ? " js-protected" : "").AppendLine("\">")
                       .Append("              <td>")
@@ -128,7 +133,7 @@ namespace StackExchange.Exceptional.Pages
                 }
                 sb.AppendLine("          </tbody>")
                   .AppendLine("        </table>");
-                if (errors.Any(e => !e.IsProtected))
+                if (Errors.Any(e => !e.IsProtected))
                 {
                     sb.Append("        <div class=\"page-actions\">")
                       .Append("<a class=\"js-clear-all\" href=\"#\">")

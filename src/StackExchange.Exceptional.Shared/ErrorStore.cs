@@ -63,7 +63,7 @@ namespace StackExchange.Exceptional
         /// Retrieves a single error based on Id.
         /// </summary>
         /// <param name="guid">The GUID of the error to retrieve.</param>
-        protected abstract Error GetError(Guid guid);
+        protected abstract Task<Error> GetErrorAsync(Guid guid);
 
         /// <summary>
         /// Prevents error identified by <paramref name="guid"/> from being deleted when the error log is full, if the store supports it.
@@ -129,14 +129,14 @@ namespace StackExchange.Exceptional
         /// Retrieves all of the errors in the log.
         /// </summary>
         /// <param name="applicationName">The name of the application to get all errors for.</param>
-        protected abstract List<Error> GetAllErrors(string applicationName = null);
+        protected abstract Task<List<Error>> GetAllErrorsAsync(string applicationName = null);
 
         /// <summary>
         /// Retrieves a count of application errors since the specified date, or all time if <c>null</c>.
         /// </summary>
         /// <param name="since">The date to get errors since.</param>
         /// <param name="applicationName">The application name to get an error count for.</param>
-        protected abstract int GetErrorCount(DateTime? since = null, string applicationName = null);
+        protected abstract Task<int> GetErrorCountAsync(DateTime? since = null, string applicationName = null);
 
         /// <summary>
         /// Get the name of this error log store implementation.
@@ -354,14 +354,14 @@ namespace StackExchange.Exceptional
         /// Gets a specific exception with the specified GUID.
         /// </summary>
         /// <param name="guid">The GUID of the error to retrieve.</param>
-        public Error Get(Guid guid)
+        public async Task<Error> GetAsync(Guid guid)
         {
             if (_isInRetry)
             {
                 return WriteQueue.FirstOrDefault(e => e.GUID == guid);
             }
 
-            try { return GetError(guid); }
+            try { return await GetErrorAsync(guid).ConfigureAwait(false); }
             catch (Exception ex) { BeginRetry(ex); }
             return null;
         }
@@ -370,7 +370,7 @@ namespace StackExchange.Exceptional
         /// Gets all in the store, including those in the backup queue if it's in use.
         /// </summary>
         /// <param name="applicationName">The name of the application to get all errors for.</param>
-        public List<Error> GetAll(string applicationName = null)
+        public async Task<List<Error>> GetAllAsync(string applicationName = null)
         {
             if (_isInRetry)
             {
@@ -378,7 +378,7 @@ namespace StackExchange.Exceptional
                 return new List<Error>(WriteQueue);
             }
 
-            try { return GetAllErrors(applicationName); }
+            try { return await GetAllErrorsAsync(applicationName).ConfigureAwait(false); }
             catch (Exception ex) { BeginRetry(ex); }
             return new List<Error>();
         }
@@ -388,14 +388,14 @@ namespace StackExchange.Exceptional
         /// </summary>
         /// <param name="since">The minimum date to fetch errors after.</param>
         /// <param name="applicationName">The application name to fetch errors for.</param>
-        public int GetCount(DateTime? since = null, string applicationName = null)
+        public async Task<int> GetCountAsync(DateTime? since = null, string applicationName = null)
         {
             if (_isInRetry)
             {
                 return WriteQueue.Count;
             }
 
-            try { return GetErrorCount(since, applicationName); }
+            try { return await GetErrorCountAsync(since, applicationName).ConfigureAwait(false); }
             catch (Exception ex) { BeginRetry(ex); }
             return 0;
         }

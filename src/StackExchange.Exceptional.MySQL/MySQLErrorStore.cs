@@ -241,15 +241,15 @@ Values (@GUID, @ApplicationName, @MachineName, @CreationDate, @Type, @IsProtecte
         /// </summary>
         /// <param name="guid">The GUID of the error to retrieve.</param>
         /// <returns>The error object if found, <c>null</c> otherwise.</returns>
-        protected override Error GetError(Guid guid)
+        protected override async Task<Error> GetErrorAsync(Guid guid)
         {
             Error sqlError;
             using (var c = GetConnection())
             {
-                sqlError = c.QueryFirstOrDefault<Error>(@"
+                sqlError = await c.QueryFirstOrDefaultAsync<Error>(@"
 Select * 
   From Exceptions 
- Where GUID = @guid", new { guid });
+ Where GUID = @guid", new { guid }).ConfigureAwait(false);
             }
             if (sqlError == null) return null;
 
@@ -265,16 +265,16 @@ Select *
         /// Retrieves all non-deleted application errors in the database.
         /// </summary>
         /// <param name="applicationName">The name of the application to get all errors for.</param>
-        protected override List<Error> GetAllErrors(string applicationName = null)
+        protected override async Task<List<Error>> GetAllErrorsAsync(string applicationName = null)
         {
             using (var c = GetConnection())
             {
-                return c.Query<Error>(@"
+                return (await c.QueryAsync<Error>(@"
 Select * 
   From Exceptions 
  Where DeletionDate Is Null
    And ApplicationName = @ApplicationName
-Order By CreationDate Desc limit @max", new { max = _displayCount, ApplicationName = applicationName ?? ApplicationName }).AsList();
+Order By CreationDate Desc limit @max", new { max = _displayCount, ApplicationName = applicationName ?? ApplicationName }).ConfigureAwait(false)).AsList();
             }
         }
 
@@ -283,16 +283,16 @@ Order By CreationDate Desc limit @max", new { max = _displayCount, ApplicationNa
         /// </summary>
         /// <param name="since">The date to get errors since.</param>
         /// <param name="applicationName">The application name to get an error count for.</param>
-        protected override int GetErrorCount(DateTime? since = null, string applicationName = null)
+        protected override async Task<int> GetErrorCountAsync(DateTime? since = null, string applicationName = null)
         {
             using (var c = GetConnection())
             {
-                return c.QueryFirstOrDefault<int>(@"
+                return await c.QueryFirstOrDefaultAsync<int>(@"
 Select Count(*) 
   From Exceptions 
  Where DeletionDate Is Null
    And ApplicationName = @ApplicationName" + (since.HasValue ? " And CreationDate > @since" : ""),
-                    new { since, ApplicationName = applicationName ?? ApplicationName });
+                    new { since, ApplicationName = applicationName ?? ApplicationName }).ConfigureAwait(false);
             }
         }
 
