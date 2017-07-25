@@ -22,29 +22,32 @@ namespace StackExchange.Exceptional
 
         public override async Task ProcessRequestAsync(HttpContext context)
         {
-            void JsonResult(bool result)
-            {
-                context.Response.ContentType = "text/javascript";
-                context.Response.Write($@"{{""result"":{(result ? "true" : "false")}}}");
-            }
             void Content(string content, string mime = "text/html")
             {
                 context.Response.ContentType = mime;
                 context.Response.Write(content);
             }
+            void JsonResult(bool result) => Content(@"{""result"":" + (result ? "true" : "false") + "}", "text/javascript");
             void Page(WebPage page) => Content(page.Render());
-            void Resource(Resources.ResourceCache cache) => Content(cache.Content, cache.MimeType);
+            void Resource(Resources.ResourceCache cache)
+            {
+                context.Response.Cache.SetCacheability(HttpCacheability.Private);
+                context.Response.Cache.SetMaxAge(TimeSpan.FromDays(1));
+                Content(cache.Content, cache.MimeType);
+            }
 
             // In MVC requests, PathInfo isn't set - determine via Path..
-            // e.g. "/admin/errors/info" or "/admin/errors/"
+            // e.g. "/errors/info" or "/errors/"
             var match = Regex.Match(context.Request.Path, @"/?(?<resource>[\w\-\.]+)/?$");
             var resource = match.Success ? match.Groups["resource"].Value.ToLower(CultureInfo.InvariantCulture) : string.Empty;
 
             Func<IEnumerable<Guid>> getFormGuids = () =>
             {
-                var idsStr = context.Request.Form["ids"];
-                try { if (idsStr.HasValue()) return idsStr.Split(',').Select(Guid.Parse); }
-                catch { return Enumerable.Empty<Guid>(); }
+                try
+                {
+                    return context.Request.Form["ids"]?.Split(',').Select(Guid.Parse) ?? Enumerable.Empty<Guid>();
+                }
+                catch { /* fall through */ }
                 return Enumerable.Empty<Guid>();
             };
 
@@ -105,7 +108,6 @@ namespace StackExchange.Exceptional
                             return;
                         case KnownRoutes.Test:
                             throw new Exception("This is a test. Please disregard. If this were a real emergency, it'd have a different message.");
-
                         default:
                             context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
                             context.Response.Cache.SetNoStore();
