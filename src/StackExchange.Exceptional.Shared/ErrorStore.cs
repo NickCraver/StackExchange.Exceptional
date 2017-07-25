@@ -77,6 +77,7 @@ namespace StackExchange.Exceptional
         /// <param name="guids">The GUIDs of the errors to protect.</param>
         protected virtual async Task<bool> ProtectErrorsAsync(IEnumerable<Guid> guids)
         {
+            if (guids == null) return false;
             var success = true;
             foreach (var guid in guids)
             {
@@ -100,6 +101,7 @@ namespace StackExchange.Exceptional
         /// <param name="guids">The GUIDs of the errors to delete.</param>
         protected virtual async Task<bool> DeleteErrorsAsync(IEnumerable<Guid> guids)
         {
+            if (guids == null) return false;
             var success = true;
             foreach (var guid in guids)
             {
@@ -260,6 +262,7 @@ namespace StackExchange.Exceptional
         /// <param name="guids">The GUIDs of the errors to protect.</param>
         public async Task<bool> ProtectAsync(IEnumerable<Guid> guids)
         {
+            if (guids == null) return false;
             if (_isInRetry) return false; // no protecting allowed when failing, since we don't respect it in the queue anyway
 
             try
@@ -304,6 +307,7 @@ namespace StackExchange.Exceptional
         /// <param name="guids">The GUIDs of the errors to delete.</param>
         public async Task<bool> DeleteAsync(IEnumerable<Guid> guids)
         {
+            if (guids == null) return false;
             if (_isInRetry) return false; // no deleting from the retry queue
 
             try
