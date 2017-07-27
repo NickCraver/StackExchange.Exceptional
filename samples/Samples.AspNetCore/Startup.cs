@@ -38,7 +38,6 @@ namespace Samples.AspNetCore
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-
             app.UseExceptionalMiddleware();
 
             app.UseStaticFiles();
