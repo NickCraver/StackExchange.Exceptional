@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\StackExchange.Exceptional.Shared\StackExchange.Exceptional.Shared.csproj" />
+    <ProjectReference Include="..\StackExchange.Exceptional.Shared\StackExchange.Exceptional.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

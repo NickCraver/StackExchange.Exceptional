@@ -16,7 +16,8 @@ namespace StackExchange.Exceptional
     {
         private RequestDelegate _next;
 
-        static ExceptionalMiddleware() {
+        static ExceptionalMiddleware()
+        {
             var builder = new ConfigurationBuilder()
                .SetBasePath(Directory.GetCurrentDirectory())
               .AddJsonFile("appsettings.json");
@@ -32,7 +33,7 @@ namespace StackExchange.Exceptional
         public ExceptionalMiddleware(RequestDelegate next)
         {
             _next = next;
-   
+
         }
 
         public async Task Invoke(HttpContext context)
@@ -40,6 +41,18 @@ namespace StackExchange.Exceptional
             try
             {
                 await _next.Invoke(context);
+            }
+            catch (Exception ex)
+            {
+                ex.Log(context);
+            }
+        }
+
+        public static async Task HandleRequestAsync(HttpContext context)
+        {
+            try
+            {
+                await new HandlerFactoryMiddleware(null).Invoke(context);
             }
             catch (Exception ex)
             {
