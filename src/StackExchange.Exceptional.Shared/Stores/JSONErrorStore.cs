@@ -5,6 +5,7 @@ using System.Linq;
 using System;
 using System.Text.RegularExpressions;
 using StackExchange.Exceptional.Internal;
+using System.Threading.Tasks;
 
 namespace StackExchange.Exceptional.Stores
 {
@@ -59,13 +60,13 @@ namespace StackExchange.Exceptional.Stores
         /// </summary>
         /// <param name="guid">The GUID of the error to protect</param>
         /// <returns><c>true</c> if the error was found and protected, <c>false</c> otherwise.</returns>
-        protected override bool ProtectError(Guid guid)
+        protected override Task<bool> ProtectErrorAsync(Guid guid)
         {
             if (!TryGetErrorFile(guid, out FileInfo f))
-                return false;
+                return Task.FromResult(false);
 
             f.Attributes |= FileAttributes.ReadOnly;
-            return true;
+            return Task.FromResult(true);
         }
 
         /// <summary>
@@ -73,16 +74,16 @@ namespace StackExchange.Exceptional.Stores
         /// </summary>
         /// <param name="guid">The GUID of the error to delete.</param>
         /// <returns><c>true</c> if the error was found and deleted, <c>false</c> otherwise.</returns>
-        protected override bool DeleteError(Guid guid)
+        protected override Task<bool> DeleteErrorAsync(Guid guid)
         {
             if (!TryGetErrorFile(guid, out FileInfo f))
-                return false;
+                return Task.FromResult(false);
 
             if (f.IsReadOnly)
                 f.Attributes ^= FileAttributes.ReadOnly;
 
             f.Delete();
-            return true;
+            return Task.FromResult(true);
         }
 
         /// <summary>
@@ -90,11 +91,11 @@ namespace StackExchange.Exceptional.Stores
         /// </summary>
         /// <param name="applicationName">The name of the application to delete all errors for.</param>
         /// <returns><c>true</c> if any errors were deleted, <c>false</c> otherwise.</returns>
-        protected override bool DeleteAllErrors(string applicationName = null)
+        protected override Task<bool> DeleteAllErrorsAsync(string applicationName = null)
         {
             string[] fileList = Directory.GetFiles(_path, "*.json");
             if (fileList.Length == 0)
-                return false;
+                return Task.FromResult(false);
 
             var deleted = 0;
             foreach (var fn in fileList)
@@ -123,7 +124,7 @@ namespace StackExchange.Exceptional.Stores
                     Trace.WriteLine("Error Deleting file '" + fn + "' from the store: " + ex.Message);
                 }
             }
-            return deleted > 0;
+            return Task.FromResult(deleted > 0);
         }
 
         /// <summary>
@@ -186,7 +187,9 @@ namespace StackExchange.Exceptional.Stores
         /// </summary>
         /// <param name="guid">The GUID of the error to retrieve.</param>
         /// <returns>The error object if found, null otherwise.</returns>
-        protected override Error GetError(Guid guid)
+        protected override Task<Error> GetErrorAsync(Guid guid) => Task.FromResult(GetError(guid));
+
+        private Error GetError(Guid guid)
         {
             string[] fileList = Directory.GetFiles(_path, $"*{guid.ToFileName()}.json");
 
@@ -226,11 +229,11 @@ namespace StackExchange.Exceptional.Stores
         /// Retrieves all of the errors in the log folder.
         /// </summary>
         /// <param name="applicationName">The name of the application to get all errors for.</param>
-        protected override List<Error> GetAllErrors(string applicationName = null)
+        protected override Task<List<Error>> GetAllErrorsAsync(string applicationName = null)
         {
             string[] files = Directory.GetFiles(_path, "*.json");
 
-            if (files.Length < 1) return new List<Error>();
+            if (files.Length < 1) return Task.FromResult(new List<Error>());
 
             Array.Sort(files);
             Array.Reverse(files);
@@ -241,7 +244,7 @@ namespace StackExchange.Exceptional.Stores
                 result = result.Where(e => e.ApplicationName == applicationName);
             }
 
-            return result.ToList();
+            return Task.FromResult(result.ToList());
         }
 
         /// <summary>
@@ -249,11 +252,11 @@ namespace StackExchange.Exceptional.Stores
         /// </summary>
         /// <param name="since">The date to get errors since.</param>
         /// <param name="applicationName">The application name to get an error count for.</param>
-        protected override int GetErrorCount(DateTime? since = null, string applicationName = null)
+        protected override Task<int> GetErrorCountAsync(DateTime? since = null, string applicationName = null)
         {
             string[] fileList = Directory.GetFiles(_path, "*.json");
 
-            if (!since.HasValue) return fileList.Length;
+            if (!since.HasValue) return Task.FromResult(fileList.Length);
 
             var i = 0;
             foreach (var fn in fileList.ToList().OrderByDescending(f => f))
@@ -270,7 +273,7 @@ namespace StackExchange.Exceptional.Stores
                 else
                     break; // exit as soon as we passed the date we're looking back to
             }
-            return i;
+            return Task.FromResult(i);
         }
 
         private bool TryGetErrorFile(Guid guid, out FileInfo file)

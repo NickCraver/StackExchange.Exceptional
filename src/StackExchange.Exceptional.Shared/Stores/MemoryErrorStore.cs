@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using StackExchange.Exceptional.Internal;
+using System.Threading.Tasks;
 
 namespace StackExchange.Exceptional.Stores
 {
@@ -62,7 +63,7 @@ namespace StackExchange.Exceptional.Stores
         /// </summary>
         /// <param name="guid">The GUID of the error to protect.</param>
         /// <returns><c>true</c> if the error was found and protected, <c>false</c> otherwise.</returns>
-        protected override bool ProtectError(Guid guid)
+        protected override Task<bool> ProtectErrorAsync(Guid guid)
         {
             lock (_lock)
             {
@@ -70,10 +71,10 @@ namespace StackExchange.Exceptional.Stores
                 if (error != null)
                 {
                     error.IsProtected = true;
-                    return true;
+                    return Task.FromResult(true);
                 }
             }
-            return false;
+            return Task.FromResult(false);
         }
 
         /// <summary>
@@ -81,11 +82,11 @@ namespace StackExchange.Exceptional.Stores
         /// </summary>
         /// <param name="guid">The GUID of the error to delete.</param>
         /// <returns><c>true</c> if the error was found and deleted, <c>false</c> otherwise.</returns>
-        protected override bool DeleteError(Guid guid)
+        protected override Task<bool> DeleteErrorAsync(Guid guid)
         {
             lock(_lock)
             {
-                return _errors.RemoveAll(e => e.GUID == guid) > 0;
+                return Task.FromResult(_errors.RemoveAll(e => e.GUID == guid) > 0);
             }
         }
 
@@ -93,8 +94,8 @@ namespace StackExchange.Exceptional.Stores
         /// Deleted all errors in the log, by clearing the in-memory log.
         /// </summary>
         /// <param name="applicationName">The name of the application to delete all errors for.</param>
-        /// <returns><c>true</c> in all cases</returns>
-        protected override bool DeleteAllErrors(string applicationName = null)
+        /// <returns><c>true</c> in all cases.</returns>
+        protected override Task<bool> DeleteAllErrorsAsync(string applicationName = null)
         {
             lock (_lock)
             {
@@ -103,7 +104,7 @@ namespace StackExchange.Exceptional.Stores
                 else
                     _errors.RemoveAll(e => !e.IsProtected);
             }
-            return true;
+            return Task.FromResult(true);
         }
 
         /// <summary>
@@ -149,11 +150,11 @@ namespace StackExchange.Exceptional.Stores
         /// </summary>
         /// <param name="guid">The GIUID of the error to retrieve.</param>
         /// <returns>The error object if found, <c>null</c> otherwise.</returns>
-        protected override Error GetError(Guid guid)
+        protected override Task<Error> GetErrorAsync(Guid guid)
         {
             lock (_lock)
             {
-                return _errors?.FirstOrDefault(e => e.GUID == guid);
+                return Task.FromResult(_errors?.FirstOrDefault(e => e.GUID == guid));
             }
         }
 
@@ -161,11 +162,11 @@ namespace StackExchange.Exceptional.Stores
         /// Retrieves all of the errors in the log.
         /// </summary>
         /// <param name="applicationName">The name of the application to get all errors for.</param>
-        protected override List<Error> GetAllErrors(string applicationName = null)
+        protected override Task<List<Error>> GetAllErrorsAsync(string applicationName = null)
         {
             lock (_lock)
             {
-                if (_errors == null) return new List<Error>();
+                if (_errors == null) return Task.FromResult(new List<Error>());
 
                 IEnumerable<Error> result = _errors;
                 if (applicationName.HasValue())
@@ -173,7 +174,7 @@ namespace StackExchange.Exceptional.Stores
                     result = result.Where(e => e.ApplicationName == applicationName);
                 }
 
-                return result.Select(e => e.Clone()).ToList();
+                return Task.FromResult(result.Select(e => e.Clone()).ToList());
             }
         }
 
@@ -182,19 +183,19 @@ namespace StackExchange.Exceptional.Stores
         /// </summary>
         /// <param name="since">The date to get errors since.</param>
         /// <param name="applicationName">The application name to get an error count for.</param>
-        protected override int GetErrorCount(DateTime? since = null, string applicationName = null)
+        protected override Task<int> GetErrorCountAsync(DateTime? since = null, string applicationName = null)
         {
             lock (_lock)
             {
-                if (_errors == null) return 0;
+                if (_errors == null) return Task.FromResult(0);
                 if (applicationName.HasValue())
                 {
-                    return !since.HasValue
+                    return Task.FromResult(!since.HasValue
                         ? _errors.Count(e => e.ApplicationName == applicationName)
-                        : _errors.Count(e => e.CreationDate >= since && e.ApplicationName == applicationName);
+                        : _errors.Count(e => e.CreationDate >= since && e.ApplicationName == applicationName));
                 }
 
-                return !since.HasValue ? _errors.Count : _errors.Count(e => e.CreationDate >= since);
+                return Task.FromResult(!since.HasValue ? _errors.Count : _errors.Count(e => e.CreationDate >= since));
             }
         }
     }

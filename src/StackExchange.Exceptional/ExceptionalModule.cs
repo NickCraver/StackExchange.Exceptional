@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace StackExchange.Exceptional
@@ -39,6 +40,30 @@ namespace StackExchange.Exceptional
         {
             var app = (HttpApplication)sender;
             app.Server.GetLastError()?.Log(app.Context);
+        }
+
+        /// <summary>
+        /// Convenience method for handling a request, for usage in your routing, MVC, etc. See example.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// [Route("/path/my-route")]
+        /// public Task Exceptions() => ExceptionalModule.HandleRequestAsync(System.Web.HttpContext.Current);
+        /// </code>
+        /// </example>
+        /// <param name="context">The context to process, usually System.Web.HttpContext.Current.</param>
+        /// <returns>A task to await.</returns>
+        public static async Task HandleRequestAsync(HttpContext context)
+        {
+            var page = new HandlerFactory().GetHandler(context, context.Request.RequestType, context.Request.Url.ToString(), context.Request.PathInfo);
+            if (page is HttpTaskAsyncHandler apage)
+            {
+                await apage.ProcessRequestAsync(context).ConfigureAwait(false);
+            }
+            else
+            {
+                page.ProcessRequest(context);
+            }
         }
     }
 }

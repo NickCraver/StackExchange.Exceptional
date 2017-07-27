@@ -2,6 +2,8 @@
 using StackExchange.Exceptional;
 using StackExchange.Exceptional.Stores;
 using StackExchange.Exceptional.Notifiers;
+using static System.Console;
+using System.Threading.Tasks;
 
 namespace Samples.Console
 {
@@ -31,7 +33,8 @@ namespace Samples.Console
             // Optional: for logging all unhandled exceptions
             AppDomain.CurrentDomain.UnhandledException += ExceptionalHandler;
 
-            DisplayExceptionStats();
+            // Normally we wouldn't want to .GetAwaiter().GetResult(), but async Main is only on a the latest platforms at the moment
+            DisplayExceptionStats().GetAwaiter().GetResult();
             PauseForInput();
 
             try
@@ -44,10 +47,10 @@ namespace Samples.Console
                 ex.LogWithoutContext();
             }
 
-            DisplayExceptionStats();
+            DisplayExceptionStats().GetAwaiter().GetResult();
             PauseForInput();
 
-            System.Console.WriteLine("This next one will crash the program, but will be logged on the way out...");
+            WriteLine("This next one will crash the program, but will be logged on the way out...");
             PauseForInput();
 
             // one not explicitly caught, will be logged by ExceptionHandler
@@ -59,29 +62,27 @@ namespace Samples.Console
         {
             // e.ExceptionObject may not be an exception, refer to http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf
             // section 10.5, CLS Rule 40 if you're curious on why this check needs to happen
-            var exception = e.ExceptionObject as Exception;
-
-            exception?.LogWithoutContext();
+            (e.ExceptionObject as Exception)?.LogWithoutContext();
         }
 
-        private static void DisplayExceptionStats()
+        private static async Task DisplayExceptionStats()
         {
-            System.Console.WriteLine(ErrorStore.Default.Name + " for " + ErrorStore.Default.Name);
-            var count = ErrorStore.Default.GetCount();
-            System.Console.WriteLine("Exceptions in the log: " + count.ToString());
+            WriteLine(ErrorStore.Default.Name + " for " + ErrorStore.Default.Name);
+            var count = await ErrorStore.Default.GetCountAsync().ConfigureAwait(false);
+            WriteLine("Exceptions in the log: " + count.ToString());
 
-            var errors = ErrorStore.Default.GetAll();
+            var errors = await ErrorStore.Default.GetAllAsync().ConfigureAwait(false);
 
             if (errors.Count == 0) return;
 
             var last = errors[0];
-            System.Console.WriteLine($"Latest: {last.Message} on {last.CreationDate.ToString()}");
+            WriteLine($"Latest: {last.Message} on {last.CreationDate.ToString()}");
         }
 
         private static void PauseForInput()
         {
-            System.Console.WriteLine("Press any key to continue...");
-            System.Console.ReadLine();
+            WriteLine("Press any key to continue...");
+            ReadLine();
         }
     }
 }
