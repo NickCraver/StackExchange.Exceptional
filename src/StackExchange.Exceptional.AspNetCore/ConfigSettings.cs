@@ -2,6 +2,7 @@
 using StackExchange.Exceptional.Internal;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -13,7 +14,7 @@ namespace StackExchange.Exceptional
     /// </summary>
     internal partial class ConfigSettings 
     {
-        private IConfiguration _current;
+        private static IConfiguration _current;
         private readonly IConfigurationRoot _config;
 
         public ConfigSettings(IConfigurationRoot config)
@@ -24,11 +25,14 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Trigger deserialization, which loads settings from the .config file.
         /// </summary>
-        public void LoadSettings()
+        public static void LoadSettings()
         {
             if (_current == null)
             {
-                _current = _config.GetSection("Exceptional");
+                var builder = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json");
+                _current = builder.Build().GetSection("Exceptional");
             }
         }
 

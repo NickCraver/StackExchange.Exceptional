@@ -47,11 +47,7 @@ namespace StackExchange.Exceptional
             if (!Settings.IsLoggingEnabled) return null;
             try
             {
-                var builder = new ConfigurationBuilder()
-      .SetBasePath(Directory.GetCurrentDirectory())
-     .AddJsonFile("appsettings.json");
-
-                new ConfigSettings(builder.Build()).LoadSettings();
+                ConfigSettings.LoadSettings();
                 var settings = Settings.Current;
                 if (settings.Ignore.Regexes?.Any(re => re.IsMatch(ex.ToString())) == true)
                     return null;

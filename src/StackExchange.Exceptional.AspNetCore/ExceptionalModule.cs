@@ -16,15 +16,8 @@ namespace StackExchange.Exceptional
     {
         private RequestDelegate _next;
 
-        static ExceptionalMiddleware()
-        {
-            var builder = new ConfigurationBuilder()
-               .SetBasePath(Directory.GetCurrentDirectory())
-              .AddJsonFile("appsettings.json");
-
-            new ConfigSettings(builder.Build()).LoadSettings();
-        }
-
+        static ExceptionalMiddleware() => ConfigSettings.LoadSettings();
+        
         /// <summary>
         /// Gets the <see cref="ErrorStore"/> instance to which the module will log exceptions.
         /// </summary>        
@@ -33,7 +26,6 @@ namespace StackExchange.Exceptional
         public ExceptionalMiddleware(RequestDelegate next)
         {
             _next = next;
-
         }
 
         public async Task Invoke(HttpContext context)

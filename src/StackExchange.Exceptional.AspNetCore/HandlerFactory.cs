@@ -14,12 +14,7 @@ namespace StackExchange.Exceptional
     {
         private RequestDelegate _next;
 
-        static HandlerFactoryMiddleware()
-        {
-            var builder = new ConfigurationBuilder()
-               .SetBasePath(Directory.GetCurrentDirectory())
-              .AddJsonFile("appsettings.json");
-        }
+        static HandlerFactoryMiddleware() => ConfigSettings.LoadSettings();
 
         public HandlerFactoryMiddleware(RequestDelegate next)
         {
