@@ -1,10 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using StackExchange.Exceptional.Internal;
-using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace StackExchange.Exceptional
 {
@@ -19,7 +14,7 @@ namespace StackExchange.Exceptional
 
         public ConfigSettings(IConfigurationRoot config)
         {
-            this._config = config;
+            _config = config;
         }
 
         /// <summary>
