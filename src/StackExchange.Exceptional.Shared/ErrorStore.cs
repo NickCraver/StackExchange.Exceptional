@@ -496,8 +496,8 @@ namespace StackExchange.Exceptional
         }
 
         private static ErrorStore GetErrorStoreFromConfig()
-        {  //GetFromSettings(Exceptional.Settings.Current.Store) ?? 
-            return new MemoryErrorStore();
+        {
+            return GetFromSettings(Exceptional.Settings.Current.Store) ?? new MemoryErrorStore();
         }
 
         private static ErrorStore GetFromSettings(ErrorStoreSettings settings)

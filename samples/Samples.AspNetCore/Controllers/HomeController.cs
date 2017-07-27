@@ -22,6 +22,11 @@ namespace Samples.MVC5.Controllers
         /// mechanisms are already in place.
         /// </summary>
         /// <remarks>If mapping via RouteAttribute: [Route("errors/{path?}/{subPath?}")]</remarks>
-        public Task Exceptions() => ExceptionalMiddleware.HandleRequestAsync(HttpContext);
+        public async Task<IActionResult> Exceptions()
+        { 
+            RequestDelegate next = (i) => { return null; };
+            await new HandlerFactoryMiddleware(next).Invoke(HttpContext);      
+            return null;
+        }
     }
 }
