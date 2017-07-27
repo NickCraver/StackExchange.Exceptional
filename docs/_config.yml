@@ -1,20 +1,18 @@
-title: Exceptional
-subtitle: Documentation
+title: 'Exceptional'
+subtitle: 'Documentation'
 codeurl: 'https://github.com/NickCraver/StackExchange.Exceptional'
-baseurl: '' # the subpath of your site, e.g. /blog
+baseurl: ''
 highlighter: rouge
 exclude: ['README.md']
-
-theme: minima
 markdown: kramdown
-redcarpet: 
-  extensions: [
-          'no_intra_emphasis',
-          'fenced_code_blocks',
-          'autolink',
-          'strikethrough',
-          'superscript',
-          'with_toc_data',
-          'tables',
-          'hardwrap'
-      ]
+redcarpet:
+    extensions: [
+        'no_intra_emphasis',
+        'fenced_code_blocks',
+        'autolink',
+        'strikethrough',
+        'superscript',
+        'with_toc_data',
+        'tables',
+        'hardwrap'
+    ]
