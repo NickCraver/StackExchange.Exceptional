@@ -81,3 +81,7 @@ Desktop.ini
 
 # Mac crap
 .DS_Store
+
+docs/Gemfile.lock
+docs/_site/
+docs/.sass-cache/
