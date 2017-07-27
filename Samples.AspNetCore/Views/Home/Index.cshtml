@@ -1,0 +1,85 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+@section featured {
+    <section class="featured">
+        <div class="content-wrapper">
+            <hgroup class="title">
+                <h2>@ViewBag.Message</h2>
+            </hgroup>
+            <p>
+                Be sure to check out <a href="https://github.com/NickCraver/StackExchange.Exceptional/wiki">the project wikis</a> for additional info.
+            </p>
+        </div>
+    </section>
+}
+<h3>Sections to note about this project</h3>
+<p>
+    As an example refresh this page and check out the exceptions log above.  You'll see some bundles being called that don't actually exist, causing exceptions.
+    <ul>
+        <li>Web.config entries (look at web.config for more details/options)
+            <ul>
+                <li>Section declaration (<b>required</b>, unless using code setup):
+                    <pre class="prettyprint">
+&lt;section name="Exceptional" type="StackExchange.Exceptional.Settings" /&gt;
+</pre>
+                </li>
+                <li>Section (<b>required</b>, unless using code setup):
+                    <pre class="prettyprint">
+&lt;Exceptional applicationName="Samples.MVC5"&gt;
+  &lt;ErrorStore type="Memory" /&gt;
+&lt;/Exceptional&gt;
+</pre>
+                </li>
+                <li>Handler (<b>optional</b>, can use a route or dashboard to view errors instead):
+                    <pre class="prettyprint">
+&lt;add name="Exceptional" path="exceptions.axd" verb="POST,GET,HEAD" 
+     type="StackExchange.Exceptional.HandlerFactory, StackExchange.Exceptional" 
+     preCondition="integratedMode" /&gt;
+</pre>
+                </li>
+            </ul>
+        </li>
+        <li>Code (all <b>optional</b>)
+            <ul>
+                <li>Code Setup (instead of web.config, see Globl.asax.cs for more detail):
+                    <pre class="prettyprint">
+ErrorStore.Setup("My Error Log Name", new MemoryErrorStore());
+</pre>
+                </li>
+                <li>Custom Data Setup (optional, if you want to log any request info like UserId, etc.):
+                    <pre class="prettyprint">
+ErrorStore.GetCustomData = (exception, context, data) =>
+{
+  data.Add("User Id", CurrentUser.GetId());
+};
+</pre>
+                </li>
+                <li>Route to access exception list (just map a route to this):
+                    <pre class="prettyprint">
+public ActionResult Exceptions()
+{
+  var context = System.Web.HttpContext.Current;
+  var page = new HandlerFactory().GetHandler(context, Request.RequestType, Request.Url.ToString(), Request.PathInfo);
+  page.ProcessRequest(context);
+  return null;
+}
+</pre>
+                </li>
+                <li>Static method to log exceptions (not shown to a user, straight to the log - this isn't needed at all, but can be used to hook up error logging for all exceptions via Application_OnError, or just logging events directly):
+                    <pre class="prettyprint">
+  ErrorStore.LogException(new Exception("This is an exception"), HttpContext.Current);
+</pre>
+                </li>
+                <li>Include custom JS or CSS to include on error handler pages:
+                    <pre class="prettyprint">
+  ErrorStore.AddJSInclude("~/Content/errors.js");
+  ErrorStore.AddCSSInclude("~/Content/errors.css");
+</pre>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</p>
+<script src="~/Content/prettify.js"></script>
+<script>prettyPrint()</script>
