@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StackExchange.Exceptional;
+using StackExchange.Exceptional.Stores;
 
 namespace Samples.AspNetCore
 {
@@ -21,6 +22,8 @@ namespace Samples.AspNetCore
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+
+            ErrorStore.Setup("Samples.AspNetCore", new MemoryErrorStore());
         }
 
         public IConfigurationRoot Configuration { get; }
