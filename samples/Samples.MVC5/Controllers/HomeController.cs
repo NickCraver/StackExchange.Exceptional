@@ -1,5 +1,6 @@
-﻿using System.Web.Mvc;
-using StackExchange.Exceptional;
+﻿using StackExchange.Exceptional;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace Samples.MVC5.Controllers
 {
@@ -20,13 +21,6 @@ namespace Samples.MVC5.Controllers
         /// mechanisms are already in place.
         /// </summary>
         /// <remarks>If mapping via RouteAttribute: [Route("errors/{path?}/{subPath?}")]</remarks>
-        public ActionResult Exceptions()
-        {
-            var context = System.Web.HttpContext.Current;
-            var page = new HandlerFactory().GetHandler(context, Request.RequestType, Request.Url.ToString(), Request.PathInfo);
-            page.ProcessRequest(context);
-
-            return null;
-        }
+        public Task Exceptions() => ExceptionalModule.HandleRequestAsync(System.Web.HttpContext.Current);
     }
 }

@@ -1,9 +1,10 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 using System.Web.Routing;
 
 namespace Samples.MVC5
 {
-    public class RouteConfig
+    public static class RouteConfig
     {
         public static void RegisterRoutes(RouteCollection routes)
         {
@@ -28,6 +29,7 @@ namespace Samples.MVC5
                             subResource = UrlParameter.Optional
                         }
                 );
+            MvcApplication.LogException(new Exception("Startup simulation: RegisterRoutes Exception!"));
         }
     }
 }

@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+  <PropertyGroup>
+    <AssemblyName>StackExchange.Exceptional.Shared</AssemblyName>
+    <Description>You shouldn't reference this - Exceptional's shared library for all frameworks</Description>
+    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
+    <RootNamespace>StackExchange.Exceptional</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="1.50.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Transactions" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Bundle.min.js">
+      <DependentUpon>Bundle.js</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Bundle.min.css">
+      <DependentUpon>Bundle.css</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

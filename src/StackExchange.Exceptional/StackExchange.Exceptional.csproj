@@ -3,10 +3,10 @@
     <AssemblyName>StackExchange.Exceptional</AssemblyName>
     <Description>.NET Error handler used internally at Stack Overflow. Primarily for logging all unhandled exceptions to SQL, but also supporting JSON and Memory based logging.</Description>
     <PackageTags>SQL JSON Exception Handler Errors Stack Exchange Exceptional</PackageTags>
-    <TargetFrameworks>net40</TargetFrameworks>
+    <TargetFrameworks>net45</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="1.50.2" />
+    <ProjectReference Include="../StackExchange.Exceptional.Shared/StackExchange.Exceptional.Shared.csproj" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -19,15 +19,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="SharedDocs.xml" />
-    <None Include="**\*.cshtml" />
-    <None Include="StoresSetup\**\*.*" />
-    <EmbeddedResource Include="Resources\*.*" />
-    <Compile Update="ErrorStore.Extensibility.cs" DependentUpon="ErrorStore.cs" />
-    <Compile Update="Email\ErrorEmail.generated.cs" DependentUpon="ErrorEmail.cshtml" AutoGen="True" />
-    <Compile Update="Pages\ErrorInfo.generated.cs" DependentUpon="ErrorInfo.cshtml" AutoGen="True" />
-    <Compile Update="Pages\ErrorList.generated.cs" DependentUpon="ErrorList.cshtml" AutoGen="True" />
-    <Compile Update="Pages\Master.generated.cs" DependentUpon="Master.cshtml" AutoGen="True" />
-    <Compile Update="Settings.*.cs" DependentUpon="Settings.cs" AutoGen="True" />
+    <Compile Update="ConfigSettings.*.cs" DependentUpon="ConfigSettings.cs" />
   </ItemGroup>
 </Project>

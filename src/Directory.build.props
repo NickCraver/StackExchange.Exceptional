@@ -13,15 +13,15 @@
     <PackageProjectUrl>https://github.com/NickCraver/StackExchange.Exceptional</PackageProjectUrl>
     
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>embedded</DebugType>
+    <DebugType>pdbonly</DebugType>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <IncludeSymbols>false</IncludeSymbols>
+    <IncludeSymbols>true</IncludeSymbols>
     <IsTestProject>$(MSBuildProjectName.Contains('Test'))</IsTestProject>
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="SourceLink.Create.GitHub" Version="2.0.2" PrivateAssets="All" /> 
-    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.0.2" />
-    <DotNetCliToolReference Include="dotnet-sourcelink-git" Version="2.0.2" />
+    <PackageReference Include="SourceLink.Create.GitHub" Version="2.1.2" PrivateAssets="All" /> 
+    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.1.2" />
+    <DotNetCliToolReference Include="dotnet-sourcelink-git" Version="2.1.2" />
   </ItemGroup>
 </Project>

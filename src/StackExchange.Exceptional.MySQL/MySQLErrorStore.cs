@@ -1,25 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Dapper;
 using MySql.Data.MySqlClient;
-using StackExchange.Exceptional.Extensions;
 using StackExchange.Exceptional.Stores;
+using StackExchange.Exceptional.Internal;
+using System.Threading.Tasks;
 
 namespace StackExchange.Exceptional.MySQL
 {
     /// <summary>
-    ///     An <see cref="ErrorStore" /> implementation that uses MySQL as its backing store.
+    /// An <see cref="ErrorStore" /> implementation that uses MySQL as its backing store.
     /// </summary>
     public sealed class MySQLErrorStore : ErrorStore
     {
         /// <summary>
-        ///     The maximum count of errors to show.
+        /// Name for this error store.
+        /// </summary>
+        public override string Name => "MySQL Error Store";
+
+        /// <summary>
+        /// The maximum count of errors to show.
         /// </summary>
         public const int MaximumDisplayCount = 500;
 
         /// <summary>
-        ///     The default maximum count of errors shown at once.
+        /// The default maximum count of errors shown at once.
         /// </summary>
         public const int DefaultDisplayCount = 200;
 
@@ -27,183 +32,176 @@ namespace StackExchange.Exceptional.MySQL
         private readonly int _displayCount = DefaultDisplayCount;
 
         /// <summary>
-        ///     Creates a new instance of <see cref="SQLErrorStore" /> with the given configuration.
+        /// Creates a new instance of <see cref="SQLErrorStore" /> with the specified connection string.
         /// </summary>
+        /// <param name="connectionString">The database connection string to use.</param>
+        /// <param name="displayCount">How many errors to display in the log (for display ONLY, the log is not truncated to this value).</param>
+        public MySQLErrorStore(string connectionString, int displayCount = DefaultDisplayCount)
+            : this(new ErrorStoreSettings()
+            {
+                ConnectionString = connectionString,
+                Size = displayCount
+            }) { }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="SQLErrorStore" /> with the given configuration.
+        /// </summary>
+        /// <param name="settings">The <see cref="ErrorStoreSettings"/> for this store.</param>     
         public MySQLErrorStore(ErrorStoreSettings settings)
             : base(settings)
         {
             _displayCount = Math.Min(settings.Size, MaximumDisplayCount);
 
+#if NETSTANDARD2_0
+            _connectionString = settings.ConnectionString;
+#else
             _connectionString = settings.ConnectionString.IsNullOrEmpty()
                 ? GetConnectionStringByName(settings.ConnectionStringName)
                 : settings.ConnectionString;
+#endif
 
             if (_connectionString.IsNullOrEmpty())
                 throw new ArgumentOutOfRangeException(nameof(settings), "A connection string or connection string name must be specified when using a SQL error store");
         }
 
         /// <summary>
-        ///     Creates a new instance of <see cref="SQLErrorStore" /> with the specified connection string.
+        /// Protects an error from deletion, by making IsProtected = 1 in the database.
         /// </summary>
-        /// <param name="connectionString">The database connection string to use</param>
-        /// <param name="displayCount">
-        ///     How many errors to display in the log (for display ONLY, the log is not truncated to this
-        ///     value)
-        /// </param>
-        /// <param name="rollupSeconds">
-        ///     The rollup seconds, defaults to <see cref="ErrorStore.DefaultRollupSeconds" />, duplicate
-        ///     errors within this time period will be rolled up
-        /// </param>
-        public MySQLErrorStore(string connectionString, int displayCount = DefaultDisplayCount, int rollupSeconds = DefaultRollupSeconds)
-            : base(rollupSeconds)
-        {
-            _displayCount = Math.Min(displayCount, MaximumDisplayCount);
-
-            if (connectionString.IsNullOrEmpty()) throw new ArgumentOutOfRangeException(nameof(connectionString), "Connection string must be specified when using a SQL error store");
-            _connectionString = connectionString;
-        }
-
-        /// <summary>
-        ///     Name for this error store
-        /// </summary>
-        public override string Name => "MySQL Error Store";
-
-        /// <summary>
-        ///     Protects an error from deletion, by making IsProtected = 1 in the database
-        /// </summary>
-        /// <param name="guid">The guid of the error to protect</param>
-        /// <returns>True if the error was found and protected, false otherwise</returns>
-        protected override bool ProtectError(Guid guid)
+        /// <param name="guid">The GUID of the error to protect.</param>
+        /// <returns><c>true</c> if the error was found and protected, <c>false</c> otherwise.</returns>
+        protected override async Task<bool> ProtectErrorAsync(Guid guid)
         {
             using (var c = GetConnection())
             {
-                return c.Execute(@"
+                return await c.ExecuteAsync(@"
 Update Exceptions 
    Set IsProtected = 1, DeletionDate = Null
- Where GUID = @guid", new {guid}) > 0;
+ Where GUID = @guid", new { guid }).ConfigureAwait(false) > 0;
             }
         }
 
         /// <summary>
-        ///     Protects errors from deletion, by making IsProtected = 1 in the database
+        /// Protects errors from deletion, by making IsProtected = 1 in the database.
         /// </summary>
-        /// <param name="guids">The guids of the error to protect</param>
-        /// <returns>True if the errors were found and protected, false otherwise</returns>
-        protected override bool ProtectErrors(IEnumerable<Guid> guids)
+        /// <param name="guids">The GUIDs of the errors to protect.</param>
+        /// <returns><c>true</c> if the errors were found and protected, <c>false</c> otherwise.</returns>
+        protected override async Task<bool> ProtectErrorsAsync(IEnumerable<Guid> guids)
         {
             using (var c = GetConnection())
             {
-                return c.Execute(@"
+                return await c.ExecuteAsync(@"
 Update Exceptions 
    Set IsProtected = 1, DeletionDate = Null
- Where GUID In @guids", new {guids}) > 0;
+ Where GUID In @guids", new { guids }).ConfigureAwait(false) > 0;
             }
         }
 
         /// <summary>
-        ///     Deletes an error, by setting DeletionDate = UTC_DATE() in SQL
+        /// Deletes an error, by setting DeletionDate = UTC_DATE() in SQL.
         /// </summary>
-        /// <param name="guid">The guid of the error to delete</param>
-        /// <returns>True if the error was found and deleted, false otherwise</returns>
-        protected override bool DeleteError(Guid guid)
+        /// <param name="guid">The GUID of the error to delete.</param>
+        /// <returns><c>true</c> if the error was found and deleted, <c>false</c> otherwise.</returns>
+        protected override async Task<bool> DeleteErrorAsync(Guid guid)
         {
             using (var c = GetConnection())
             {
-                return c.Execute(@"
+                return await c.ExecuteAsync(@"
 Update Exceptions 
    Set DeletionDate = UTC_DATE() 
  Where GUID = @guid 
-   And DeletionDate Is Null", new {guid, ApplicationName}) > 0;
+   And DeletionDate Is Null", new { guid, ApplicationName }).ConfigureAwait(false) > 0;
             }
         }
 
         /// <summary>
-        ///     Deletes errors, by setting DeletionDate = UTC_DATE() in SQL
+        /// Deletes errors, by setting DeletionDate = UTC_DATE() in SQL.
         /// </summary>
-        /// <param name="guids">The guids of the error to delete</param>
-        /// <returns>True if the errors were found and deleted, false otherwise</returns>
-        protected override bool DeleteErrors(IEnumerable<Guid> guids)
+        /// <param name="guids">The GUIDs of the errors to delete.</param>
+        /// <returns><c>true</c> if the errors were found and deleted, <c>false</c> otherwise.</returns>
+        protected override async Task<bool> DeleteErrorsAsync(IEnumerable<Guid> guids)
         {
             using (var c = GetConnection())
             {
-                return c.Execute(@"
+                return await c.ExecuteAsync(@"
 Update Exceptions 
    Set DeletionDate = UTC_DATE() 
  Where GUID In @guids
-   And DeletionDate Is Null", new {guids}) > 0;
+   And DeletionDate Is Null", new { guids }).ConfigureAwait(false) > 0;
             }
         }
 
         /// <summary>
-        ///     Hard deletes an error, actually deletes the row from SQL rather than setting DeletionDate
-        ///     This is used to cleanup when testing the error store when attempting to come out of retry/failover mode after
-        ///     losing connection to SQL
+        /// Hard deletes an error, actually deletes the row from SQL rather than setting <see cref="Error.DeletionDate"/>.
+        /// This is used to cleanup when testing the error store when attempting to come out of retry/failover mode after losing connection to SQL.
         /// </summary>
-        /// <param name="guid">The guid of the error to hard delete</param>
-        /// <returns>True if the error was found and deleted, false otherwise</returns>
-        protected override bool HardDeleteError(Guid guid)
+        /// <param name="guid">The GUID of the error to hard delete.</param>
+        /// <returns>True if the error was found and deleted, false otherwise.</returns>
+        protected override async Task<bool> HardDeleteErrorAsync(Guid guid)
         {
             using (var c = GetConnection())
             {
-                return c.Execute(@"
+                return await c.ExecuteAsync(@"
 Delete From Exceptions 
  Where GUID = @guid
-   And ApplicationName = @ApplicationName", new {guid, ApplicationName}) > 0;
+   And ApplicationName = @ApplicationName", new { guid, ApplicationName }).ConfigureAwait(false) > 0;
             }
         }
 
         /// <summary>
-        ///     Deleted all errors in the log, by setting DeletionDate = UTC_DATE() in SQL
+        /// Deleted all errors in the log, by setting <see cref="Error.DeletionDate"/> = UTC_DATE() in SQL.
         /// </summary>
-        /// <returns>True if any errors were deleted, false otherwise</returns>
-        protected override bool DeleteAllErrors(string applicationName = null)
+        /// <param name="applicationName">The name of the application to delete all errors for.</param>
+        /// <returns><c>true</c> if any errors were deleted, <c>false</c> otherwise.</returns>
+        protected override async Task<bool> DeleteAllErrorsAsync(string applicationName = null)
         {
             using (var c = GetConnection())
             {
-                return c.Execute(@"
+                return await c.ExecuteAsync(@"
 Update Exceptions 
    Set DeletionDate = UTC_DATE() 
  Where DeletionDate Is Null 
    And IsProtected = 0 
-   And ApplicationName = @ApplicationName", new {ApplicationName = applicationName.IsNullOrEmptyReturn(ApplicationName)}) > 0;
+   And ApplicationName = @ApplicationName", new { ApplicationName = applicationName ?? ApplicationName }).ConfigureAwait(false) > 0;
             }
         }
 
         /// <summary>
-        ///     Logs the error to SQL
-        ///     If the rollup conditions are met, then the matching error will have a DuplicateCount += @DuplicateCount (usually 1,
-        ///     unless in retry) rather than a distinct new row for the error
+        /// Logs the error to SQL.
+        /// If the roll-up conditions are met, then the matching error will have a DuplicateCount += @DuplicateCount (usually 1,
+        /// unless in retry) rather than a distinct new row for the error.
         /// </summary>
-        /// <param name="error">The error to log</param>
+        /// <param name="error">The error to log.</param>
         protected override void LogError(Error error)
         {
             using (var c = GetConnection())
             {
-                if (RollupThreshold.HasValue && error.ErrorHash.HasValue)
+                if (Settings.RollupPeriod.HasValue && error.ErrorHash.HasValue)
                 {
                     var queryParams = new DynamicParameters(new
                     {
                         error.DuplicateCount,
                         error.ErrorHash,
+                        error.CreationDate,
                         ApplicationName = error.ApplicationName.Truncate(50),
-                        minDate = DateTime.UtcNow.Add(RollupThreshold.Value.Negate())
+                        minDate = DateTime.UtcNow.Subtract(Settings.RollupPeriod.Value)
                     });
                     var count = c.Execute(@"
-                    Update Exceptions 
-                      Set DuplicateCount = DuplicateCount + @DuplicateCount
-                    Where ErrorHash = @ErrorHash
-                    And ApplicationName = @ApplicationName
-                    And DeletionDate Is Null
-                    And CreationDate >= @minDate limit 1", queryParams);
+Update Exceptions 
+   Set DuplicateCount = DuplicateCount + @DuplicateCount,
+       LastLogDate = (Case When LastLogDate Is Null Or @CreationDate > LastLogDate Then @CreationDate Else LastLogDate End)
+ Where ErrorHash = @ErrorHash
+   And ApplicationName = @ApplicationName
+   And DeletionDate Is Null
+   And CreationDate >= @minDate limit 1", queryParams);
                     // if we found an exception that's a duplicate, jump out
                     if (count > 0)
                     {
-                        // MySQL .NET Connector doesn't support OUT params, so we need to query for the guid.
-                        error.GUID = c.Query<Guid>(@"Select guid from Exceptions 
+                        // MySQL .NET Connector doesn't support OUT parameters, so we need to query for the GUID.
+                        error.GUID = c.QueryFirst<Guid>(@"Select guid from Exceptions 
                                 Where ErrorHash = @ErrorHash
                                 And ApplicationName = @ApplicationName
                                 And DeletionDate Is Null
-                                And CreationDate >= @minDate limit 1 ", queryParams).First();
+                                And CreationDate >= @minDate limit 1 ", queryParams);
                         return;
                     }
                 }
@@ -211,8 +209,8 @@ Update Exceptions
                 error.FullJson = error.ToJson();
 
                 c.Execute(@"
-Insert Into Exceptions (GUID, ApplicationName, MachineName, CreationDate, Type, IsProtected, Host, Url, HTTPMethod, IPAddress, Source, Message, Detail, StatusCode, `SQL`, FullJson, ErrorHash, DuplicateCount)
-Values (@GUID, @ApplicationName, @MachineName, @CreationDate, @Type, @IsProtected, @Host, @Url, @HTTPMethod, @IPAddress, @Source, @Message, @Detail, @StatusCode, @SQL, @FullJson, @ErrorHash, @DuplicateCount)",
+Insert Into Exceptions (GUID, ApplicationName, MachineName, CreationDate, Type, IsProtected, Host, Url, HTTPMethod, IPAddress, Source, Message, Detail, StatusCode, FullJson, ErrorHash, DuplicateCount, LastLogDate)
+Values (@GUID, @ApplicationName, @MachineName, @CreationDate, @Type, @IsProtected, @Host, @Url, @HTTPMethod, @IPAddress, @Source, @Message, @Detail, @StatusCode, @FullJson, @ErrorHash, @DuplicateCount, @LastLogDate)",
                             new
                             {
                                 error.GUID,
@@ -229,29 +227,29 @@ Values (@GUID, @ApplicationName, @MachineName, @CreationDate, @Type, @IsProtecte
                                 Message = error.Message.Truncate(1000),
                                 error.Detail,
                                 error.StatusCode,
-                                error.SQL,
                                 error.FullJson,
                                 error.ErrorHash,
-                                error.DuplicateCount
+                                error.DuplicateCount,
+                                error.LastLogDate
                             });
             }
         }
 
         /// <summary>
-        ///     Gets the error with the specified guid from SQL
-        ///     This can return a deleted error as well, there's no filter based on DeletionDate
+        /// Gets the error with the specified GUID from SQL.
+        /// This can return a deleted error as well, there's no filter based on <see cref="Error.DeletionDate"/>.
         /// </summary>
-        /// <param name="guid">The guid of the error to retrieve</param>
-        /// <returns>The error object if found, null otherwise</returns>
-        protected override Error GetError(Guid guid)
+        /// <param name="guid">The GUID of the error to retrieve.</param>
+        /// <returns>The error object if found, <c>null</c> otherwise.</returns>
+        protected override async Task<Error> GetErrorAsync(Guid guid)
         {
             Error sqlError;
             using (var c = GetConnection())
             {
-                sqlError = c.Query<Error>(@"
+                sqlError = await c.QueryFirstOrDefaultAsync<Error>(@"
 Select * 
   From Exceptions 
- Where GUID = @guid", new {guid}).FirstOrDefault(); // a guid won't collide, but the AppName is for security
+ Where GUID = @guid", new { guid }).ConfigureAwait(false);
             }
             if (sqlError == null) return null;
 
@@ -264,42 +262,40 @@ Select *
         }
 
         /// <summary>
-        ///     Retrieves all non-deleted application errors in the database
+        /// Retrieves all non-deleted application errors in the database.
         /// </summary>
-        protected override int GetAllErrors(List<Error> errors, string applicationName = null)
+        /// <param name="applicationName">The name of the application to get all errors for.</param>
+        protected override async Task<List<Error>> GetAllErrorsAsync(string applicationName = null)
         {
             using (var c = GetConnection())
             {
-                errors.AddRange(c.Query<Error>(@"
+                return (await c.QueryAsync<Error>(@"
 Select * 
   From Exceptions 
  Where DeletionDate Is Null
    And ApplicationName = @ApplicationName
-Order By CreationDate Desc limit @max", new {max = _displayCount, ApplicationName = applicationName.IsNullOrEmptyReturn(ApplicationName)}));
+Order By CreationDate Desc limit @max", new { max = _displayCount, ApplicationName = applicationName ?? ApplicationName }).ConfigureAwait(false)).AsList();
             }
-
-            return errors.Count;
         }
 
         /// <summary>
-        ///     Retrieves a count of application errors since the specified date, or all time if null
+        /// Retrieves a count of application errors since the specified date, or all time if <c>null</c>.
         /// </summary>
-        protected override int GetErrorCount(DateTime? since = null, string applicationName = null)
+        /// <param name="since">The date to get errors since.</param>
+        /// <param name="applicationName">The application name to get an error count for.</param>
+        protected override async Task<int> GetErrorCountAsync(DateTime? since = null, string applicationName = null)
         {
             using (var c = GetConnection())
             {
-                return c.Query<int>(@"
+                return await c.QueryFirstOrDefaultAsync<int>(@"
 Select Count(*) 
   From Exceptions 
  Where DeletionDate Is Null
    And ApplicationName = @ApplicationName" + (since.HasValue ? " And CreationDate > @since" : ""),
-                    new {since, ApplicationName = applicationName.IsNullOrEmptyReturn(ApplicationName)}).FirstOrDefault();
+                    new { since, ApplicationName = applicationName ?? ApplicationName }).ConfigureAwait(false);
             }
         }
 
-        private MySqlConnection GetConnection()
-        {
-            return new MySqlConnection(_connectionString);
-        }
+        private MySqlConnection GetConnection() => new MySqlConnection(_connectionString);
     }
 }
