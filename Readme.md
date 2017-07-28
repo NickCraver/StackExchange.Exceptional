@@ -4,7 +4,7 @@ StackExchange.Exceptional is the error handler used internally by [Stack Exchang
 It also supports JSON and memory error stores, filtering of exceptions before logging, and fail/retry mechanisms for storing errors if there's an interruption in connecting to the error store.
 
 ## Configuration
-[See the wiki for how to get configured and logging in just a few minutes](https://github.com/NickCraver/StackExchange.Exceptional/wiki).
+[See the docs for how to get configured and logging in just a few minutes](https://nickcraver.com/StackExchange.Exceptional).
 
 ## Details
 While having some features centered around logging/showing exceptions from web applications, **it can be used with either web or console applications**. `HttpContext` is optional when logging exceptions. 
