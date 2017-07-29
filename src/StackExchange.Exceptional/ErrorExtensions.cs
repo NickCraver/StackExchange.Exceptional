@@ -89,7 +89,7 @@ namespace StackExchange.Exceptional
         /// <param name="error">The error to set properties on.</param>
         /// <param name="context">The <see cref="HttpContext"/> related to the request.</param>
         /// <returns>The passed-in <see cref="Error"/> for chaining.</returns>
-        public static Error SetProperties(this Error error, HttpContext context)
+        private static Error SetProperties(this Error error, HttpContext context)
         {
             if (error == null)
             {
