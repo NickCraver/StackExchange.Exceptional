@@ -25,7 +25,7 @@ namespace Samples.MVC5
             //ErrorStore.Setup("My Error Log Name", new SQLErrorStore(connectionString: "Data Source=.;Initial Catalog=Exceptions;Integrated Security=SSPI;"));
 
             // Optionally add custom data to any logged exception (visible on the exception detail page):
-            TODOShittyExperienceForTheUser.GetCustomData = (exception, context, data) =>
+            Settings.Current.GetCustomData = (exception, data) =>
                 {
                     // exception is the exception thrown
                     // context is the HttpContext of the request (could be null, e.g. background thread exception)

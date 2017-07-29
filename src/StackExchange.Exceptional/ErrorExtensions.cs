@@ -47,38 +47,31 @@ namespace StackExchange.Exceptional
             Dictionary<string, string> customData = null,
             string applicationName = null)
         {
-            if (!Settings.IsLoggingEnabled)
+            if (Settings.IsLoggingEnabled)
             {
-                return null;
-            }
-            try
-            {
-                // Legacy settings load (deserializes Web.config if needed)
-                ConfigSettings.LoadSettings();
-
-                // If we should be ignoring this exception, skip it entirely.
-                if (ex.ShouldBeIgnored(Settings.Current))
+                try
                 {
-                    return null;
+                    // Legacy settings load (deserializes Web.config if needed)
+                    ConfigSettings.LoadSettings();
+
+                    // If we should be ignoring this exception, skip it entirely.
+                    if (!ex.ShouldBeIgnored(Settings.Current))
+                    {
+                        // Create the error itself, populating CustomData with what was passed-in.
+                        var error = new Error(ex, applicationName, appendFullStackTrace, rollupPerServer, customData);
+                        // Get everything from the HttpContext
+                        error.SetProperties(context);
+
+                        if (error.LogToStore(ErrorStore.Default))
+                        {
+                            return error;
+                        }
+                    }
                 }
-
-                // Create the error itself, populating CustomData with what was passed-in.
-                var error = new Error(ex, applicationName, appendFullStackTrace, rollupPerServer);
-                // Get any custom data from the context
-                error.SetCustomData(customData, context, TODOShittyExperienceForTheUser.GetCustomData);
-                // Get everything from the HttpContext
-                error.SetProperties(context);
-                // Set the IP Address from the settings function
-                error.SetIPAddress(Settings.Current);
-
-                if (error.LogToStore(ErrorStore.Default))
+                catch (Exception e)
                 {
-                    return error;
+                    Trace.WriteLine(e);
                 }
-            }
-            catch (Exception e)
-            {
-                Trace.WriteLine(e);
             }
             return null;
         }

@@ -64,6 +64,11 @@ namespace StackExchange.Exceptional
         public bool AppendFullStackTraces { get; set; }
 
         /// <summary>
+        /// Method to get custom data for an error; will be called when custom data isn't already present.
+        /// </summary>
+        public Action<Exception, Dictionary<string, string>> GetCustomData { get; set; }
+
+        /// <summary>
         /// Settings for the rendering of pages.
         /// </summary>
         public RenderSettings Render { get; } = new RenderSettings();
