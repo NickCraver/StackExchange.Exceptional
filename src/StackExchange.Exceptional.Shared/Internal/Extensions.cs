@@ -38,26 +38,24 @@ namespace StackExchange.Exceptional.Internal
         /// <returns>The result: a dictionary if settings for GetCustomData are present and <c>null</c> if not.</returns>
         public static Error SetCustomData<T>(this Error error, Dictionary<string, string> initialData, T context, Action<Exception, T, Dictionary<string, string>> action)
         {
-            if (error == null)
+            if (error != null)
             {
-                return null;
-            }
-            error.CustomData = initialData;
-
-            if (action != null)
-            {
-                if (error.CustomData == null)
+                error.CustomData = initialData;
+                if (action != null)
                 {
-                    error.CustomData = new Dictionary<string, string>();
-                }
-                try
-                {
-                    action(error.Exception, context, error.CustomData);
-                }
-                catch (Exception cde)
-                {
-                    // if there was an error getting custom errors, log it so we can display such in the view...and not fail to log the original error
-                    error.CustomData.Add(Constants.CustomDataErrorKey, cde.ToString());
+                    if (error.CustomData == null)
+                    {
+                        error.CustomData = new Dictionary<string, string>();
+                    }
+                    try
+                    {
+                        action(error.Exception, context, error.CustomData);
+                    }
+                    catch (Exception cde)
+                    {
+                        // if there was an error getting custom errors, log it so we can display such in the view...and not fail to log the original error
+                        error.CustomData.Add(Constants.CustomDataErrorKey, cde.ToString());
+                    }
                 }
             }
             return error;
@@ -71,11 +69,7 @@ namespace StackExchange.Exceptional.Internal
         /// <returns>The passed-in <see cref="Error"/> for chaining.</returns>
         public static Error SetIPAddress(this Error error, Settings settings)
         {
-            if (error == null)
-            {
-                return null;
-            }
-            if (settings.GetIPAddress != null)
+            if (error != null && settings.GetIPAddress != null)
             {
                 try
                 {
@@ -91,7 +85,7 @@ namespace StackExchange.Exceptional.Internal
         }
 
         /// <summary>
-        /// Returns true if <paramref name="type"/> is <paramref name="ancestorName"/>, or descendant from <paramref name="ancestorName"/>.
+        /// Returns <c>true</c> if <paramref name="type"/> is <paramref name="ancestorName"/>, or descendant from <paramref name="ancestorName"/>.
         /// </summary>
         /// <param name="type">The <see cref="Type"/> to check.</param>
         /// <param name="ancestorName">The <see cref="Type"/> name to check for ancestry of.</param>
@@ -196,11 +190,8 @@ namespace StackExchange.Exceptional.Internal
         /// </summary>
         /// <param name="s">The <see cref="string"/> to truncate.</param>
         /// <param name="maxLength">The length to truncate the string to.</param>
-        public static string TruncateWithEllipsis(this string s, int maxLength)
-        {
-            const string ellipsis = "...";
-            return (s.HasValue() && s.Length > maxLength) ? (s.Truncate(maxLength - ellipsis.Length) + ellipsis) : s;
-        }
+        public static string TruncateWithEllipsis(this string s, int maxLength) => 
+            (s.HasValue() && s.Length > maxLength) ? (s.Truncate(maxLength - 1) + "…") : s;
 
         /// <summary>
         /// Appends a <see cref="string"/>, HTML encoding the contents first.
