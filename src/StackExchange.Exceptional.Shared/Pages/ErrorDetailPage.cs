@@ -104,7 +104,7 @@ namespace StackExchange.Exceptional.Pages
                   .Append("  <pre class=\"stack dark\"><code>").Append(Utils.StackTrace.HtmlPrettify(Error.Detail)).AppendLine().AppendLine("</code></pre>")
                   // TODO: Controls for show/hide of async .stack.row.async in the block above
                   // TODO: Remove - temporarily showing the raw while the user-friendlier display above gets tuned
-                  .Append("  <pre class=\"stack\"><code>").AppendHtmlEncode(Error.Detail).AppendLine().AppendLine("</code></pre>")
+                  //.Append("  <pre class=\"stack\"><code>").AppendHtmlEncode(Error.Detail).AppendLine().AppendLine("</code></pre>")
                   .Append("  <p class=\"sub-info\">occurred <b title=\"")
                   .AppendHtmlEncode(Error.CreationDate.ToLongDateString()).Append(" at ").AppendHtmlEncode(Error.CreationDate.ToLongTimeString())
                   .Append("\">")
