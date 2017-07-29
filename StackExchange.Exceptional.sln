@@ -5,10 +5,12 @@ VisualStudioVersion = 15.0.26724.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{9D33C076-4A0C-4366-89B8-9A735E6867EA}"
 	ProjectSection(SolutionItems) = preProject
+		build.cmd = build.cmd
 		build.ps1 = build.ps1
 		LICENSE-APACHE = LICENSE-APACHE
 		LICENSE-MIT = LICENSE-MIT
 		Readme.md = Readme.md
+		semver.txt = semver.txt
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.MVC5", "samples\Samples.MVC5\Samples.MVC5.csproj", "{D66CF910-FD29-429D-9B51-40864E7C8E56}"
