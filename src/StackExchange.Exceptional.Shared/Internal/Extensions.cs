@@ -40,7 +40,19 @@ namespace StackExchange.Exceptional.Internal
         {
             if (error != null)
             {
-                error.CustomData = initialData;
+                // Copy initial data if we need.
+                if (error.CustomData != null && initialData != null)
+                {
+                    foreach (var k in initialData.Keys)
+                    {
+                        error.CustomData[k] = initialData[k];
+                    }
+                }
+                else if (initialData != null)
+                {
+                    error.CustomData = initialData;
+                }
+
                 if (action != null)
                 {
                     if (error.CustomData == null)

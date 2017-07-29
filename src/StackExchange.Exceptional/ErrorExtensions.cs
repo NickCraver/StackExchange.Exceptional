@@ -8,7 +8,7 @@ using System.Web;
 namespace StackExchange.Exceptional
 {
     /// <summary>
-    /// Extensions methods for <see cref="Error"/>.
+    /// Extensions methods for logging an <see cref="Exception"/>.
     /// </summary>
     public static class ErrorExtensions
     {

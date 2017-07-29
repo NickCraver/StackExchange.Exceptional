@@ -89,12 +89,12 @@ namespace StackExchange.Exceptional
             var exCursor = e;
             while (exCursor != null)
             {
-                AddFormData(exCursor);
+                AddData(exCursor);
                 exCursor = exCursor.InnerException;
             }
         }
 
-        internal void AddFormData(Exception exception)
+        internal void AddData(Exception exception)
         {
             // Regardless of what Resharper may be telling you, .Data can be null on things like a null ref exception.
             if (exception.Data == null) return;
@@ -103,10 +103,11 @@ namespace StackExchange.Exceptional
             if (exception.Data.Contains("SQL"))
                 SQL = exception.Data["SQL"] as string;
 
+            void InitCustomData() => CustomData = CustomData ?? new Dictionary<string, string>();
+
             if (exception is SqlException se)
             {
-                if (CustomData == null)
-                    CustomData = new Dictionary<string, string>();
+                InitCustomData();
 
                 CustomData["SQL-Server"] = se.Server;
                 CustomData["SQL-ErrorNumber"] = se.Number.ToString();
@@ -117,15 +118,22 @@ namespace StackExchange.Exceptional
                 }
             }
 
-            if (Settings.Current.DataIncludeRegex != null)
+            if (exception.Data.Keys.Count > 0)
             {
-                if (CustomData == null)
-                    CustomData = new Dictionary<string, string>();
+                var regex = Settings.Current.DataIncludeRegex;
 
                 foreach (string k in exception.Data.Keys)
                 {
-                    if (!Settings.Current.DataIncludeRegex.IsMatch(k)) continue;
-                    CustomData[k] = exception.Data[k] != null ? exception.Data[k].ToString() : "";
+                    if (regex?.IsMatch(k) == true)
+                    {
+                        InitCustomData();
+                        CustomData[k] = exception.Data[k] != null ? exception.Data[k].ToString() : string.Empty;
+                    }
+                    else if (k.StartsWith(Constants.CustomDataKeyPrefix) && k.Length > Constants.CustomDataKeyPrefix.Length)
+                    {
+                        InitCustomData();
+                        CustomData[k.Substring(Constants.CustomDataKeyPrefix.Length)] = exception.Data[k]?.ToString();
+                    }
                 }
             }
         }

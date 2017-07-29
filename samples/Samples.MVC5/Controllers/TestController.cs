@@ -53,6 +53,7 @@ namespace Samples.MVC5.Controllers
             ex.Data["SQL"] = "Select * From FUBAR -- This is a SQL command!";
             ex.Data["Redis-Server"] = "REDIS01";
             ex.Data["Not-Included"] = "This key is skipped, because it's not in the web.config pattern";
+            ex.AddLogData("Via Extension", "Some logged data via the .AddLoggedData() method!");
             throw ex;
         }
 
