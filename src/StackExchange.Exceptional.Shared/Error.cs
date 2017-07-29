@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace StackExchange.Exceptional
@@ -47,7 +48,8 @@ namespace StackExchange.Exceptional
         /// </summary>
         /// <param name="e">The exception we intend to log.</param>
         /// <param name="applicationName">The application name to log as (used for overriding current settings).</param>
-        public Error(Exception e, string applicationName = null)
+        /// <param name="appendFullStackTrace">Whether to append a full stack trace to the exception's detail.</param>
+        public Error(Exception e, string applicationName = null, bool? appendFullStackTrace = false)
         {
             Exception = e ?? throw new ArgumentNullException(nameof(e));
             var baseException = e;
@@ -67,6 +69,16 @@ namespace StackExchange.Exceptional
             Detail = e.ToString();
             CreationDate = DateTime.UtcNow;
             DuplicateCount = 1;
+
+            // Calculate the StackTrace if needed
+            // TODO: Move this to generate Detail once instead of using .ToString()
+            // Mirror CoreFX code for now, and then move to SourceLink supporting code after
+            if (appendFullStackTrace ?? Settings.Current.AppendFullStackTraces)
+            {
+                var frames = new StackTrace(fNeedFileInfo: true).GetFrames();
+                if (frames?.Length > 2)
+                    Detail += "\n\nFull Trace:\n\n" + string.Join("", frames.Skip(2));
+            }
 
             ErrorHash = GetHash();
 

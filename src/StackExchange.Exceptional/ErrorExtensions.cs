@@ -47,9 +47,7 @@ namespace StackExchange.Exceptional
             {
                 ConfigSettings.LoadSettings();
                 var settings = Settings.Current;
-                if (settings.Ignore.Regexes?.Any(re => re.IsMatch(ex.ToString())) == true)
-                    return null;
-                if (settings.Ignore.Types?.Any(type => ex.GetType().IsDescendentOf(type)) == true)
+                if (ex.ShouldBeIgnored(settings))
                     return null;
 
                 if (customData == null && TODOShittyExperienceForTheUser.GetCustomData != null)
@@ -66,49 +64,24 @@ namespace StackExchange.Exceptional
                     }
                 }
 
-                var error = new Error(ex, applicationName)
+                var error = new Error(ex, applicationName, appendFullStackTrace)
                 {
                     RollupPerServer = rollupPerServer,
                     CustomData = customData ?? new Dictionary<string, string>()
                 };
 
-                if (ex is HttpException httpException)
-                {
-                    error.StatusCode = httpException.GetHttpCode();
-                }
-
                 // Get everything from the HttpContext
-                error.SetContextProperties(context);
+                error.SetProperties(context)
+                     .SetIPAddress(settings);
 
-                if (settings.GetIPAddress != null)
-                {
-                    try
-                    {
-                        error.IPAddress = settings.GetIPAddress();
-                    }
-                    catch (Exception gipe)
-                    {
-                        // if there was an error getting the IP, log it so we can display such in the view...and not fail to log the original error
-                        error.CustomData.Add(Constants.CustomDataErrorKey, "Fetching IP Address: " + gipe);
-                    }
-                }
-
-                if (appendFullStackTrace ?? settings.AppendFullStackTraces)
-                {
-                    var frames = new StackTrace(fNeedFileInfo: true).GetFrames();
-                    if (frames?.Length > 2)
-                        error.Detail += "\n\nFull Trace:\n\n" + string.Join("", frames.Skip(2));
-                    error.ErrorHash = error.GetHash();
-                }
-
-                var logged = error.LogToStore(ErrorStore.Default);
-                return logged ? error : null;
+                if (error.LogToStore(ErrorStore.Default))
+                    return error;
             }
             catch (Exception e)
             {
                 Trace.WriteLine(e);
-                return null;
             }
+            return null;
         }
 
         /// <summary>
@@ -116,13 +89,19 @@ namespace StackExchange.Exceptional
         /// </summary>
         /// <param name="error">The error to set properties on.</param>
         /// <param name="context">The <see cref="HttpContext"/> related to the request.</param>
-        public static void SetContextProperties(this Error error, HttpContext context)
+        /// <returns>The passed-in <see cref="Error"/> for chaining.</returns>
+        public static Error SetProperties(this Error error, HttpContext context)
         {
-            if (context == null || context.Handler == null) return;
+            if (error.Exception is HttpException httpException)
+            {
+                error.StatusCode = httpException.GetHttpCode();
+            }
+
+            if (context == null || context.Handler == null) return error;
 
             var request = context.Request;
 
-            Func<Func<HttpRequest, NameValueCollection>, NameValueCollection> tryGetCollection = getter =>
+            NameValueCollection TryGetCollection(Func<HttpRequest, NameValueCollection> getter)
             {
                 try
                 {
@@ -150,11 +129,11 @@ namespace StackExchange.Exceptional
                     Trace.WriteLine("Error parsing collection: " + e.Message);
                     return new NameValueCollection {[Constants.CollectionErrorKey] = e.Message };
                 }
-            };
+            }
 
-            error.ServerVariables = tryGetCollection(r => r.ServerVariables);
-            error.QueryString = tryGetCollection(r => r.QueryString);
-            error.Form = tryGetCollection(r => r.Form);
+            error.ServerVariables = TryGetCollection(r => r.ServerVariables);
+            error.QueryString = TryGetCollection(r => r.QueryString);
+            error.Form = TryGetCollection(r => r.Form);
 
             // Filter form variables for sensitive information
             var formFilters = Settings.Current.LogFilters.Form;
@@ -193,6 +172,8 @@ namespace StackExchange.Exceptional
                 if (request.Headers[header] != null)
                     error.RequestHeaders[header] = request.Headers[header];
             }
+
+            return error;
         }
     }
 }

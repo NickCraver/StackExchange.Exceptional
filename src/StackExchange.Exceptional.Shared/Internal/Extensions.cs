@@ -14,6 +14,45 @@ namespace StackExchange.Exceptional.Internal
     public static class Extensions
     {
         /// <summary>
+        /// Returns if an exception should be ignored according to the passed-in <see cref="Settings"/>.
+        /// </summary>
+        /// <param name="ex">The exception to check.</param>
+        /// <param name="settings">The settings to check <paramref name="ex"/> against.</param>
+        /// <returns>Whether this exception should be ignored.</returns>
+        public static bool ShouldBeIgnored(this Exception ex, Settings settings)
+        {
+            if (settings.Ignore.Regexes?.Any(re => re.IsMatch(ex.ToString())) == true)
+                return true;
+            if (settings.Ignore.Types?.Any(type => ex.GetType().IsDescendentOf(type)) == true)
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Sets the IPAddress of an error based on the passed-in <see cref="Settings"/>.
+        /// </summary>
+        /// <param name="error">The <see cref="Error"/> to set the IPAddress on.</param>
+        /// <param name="settings">The settings to check <see cref="Settings.GetIPAddress"/> on.</param>
+        /// <returns>The passed-in <see cref="Error"/> for chaining.</returns>
+        public static Error SetIPAddress(this Error error, Settings settings)
+        {
+            if (settings.GetIPAddress != null)
+            {
+                try
+                {
+                    error.IPAddress = settings.GetIPAddress();
+                }
+                catch (Exception gipe)
+                {
+                    // if there was an error getting the IP, log it so we can display such in the view...and not fail to log the original error
+                    error.CustomData.Add(Constants.CustomDataErrorKey, "Fetching IP Address: " + gipe);
+                }
+            }
+            return error;
+        }
+
+        /// <summary>
         /// Returns true if <paramref name="type"/> is <paramref name="ancestorName"/>, or descendant from <paramref name="ancestorName"/>.
         /// </summary>
         /// <param name="type">The <see cref="Type"/> to check.</param>
@@ -273,43 +312,5 @@ namespace StackExchange.Exceptional.Internal
         /// </summary>
         /// <param name="dt">The <see cref="DateTime"/> to convert.</param>
         public static long? ToEpochTime(this DateTime? dt) => dt.HasValue ? (long?)ToEpochTime(dt.Value) : null;
-
-        /// <summary>
-        /// Takes a NameValuePair collection and reduces it down to a JSON object in key/value pair form.
-        /// </summary>
-        /// <param name="collection">The collection to convert to a dictionary.</param>
-        /// <remarks>
-        /// This is not technically correct for all cases, since a querystring can contain multiple 
-        /// occurrences of the same variable for example, this reduces it down to 1 occurrence for the accessibility trade-off.
-        /// </remarks>
-        public static Dictionary<string, string> ToJsonDictionary(this List<Error.NameValuePair> collection)
-        {
-            var result = new Dictionary<string, string>();
-            if (collection == null) return result;
-            foreach (var pair in collection)
-            {
-                if (pair.Name.HasValue())
-                {
-                    result[pair.Name] = pair.Value;
-                }
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Turns a dictionary into a name value collection, for code reuse.
-        /// </summary>
-        /// <param name="dict">The dictionary to convert.</param>
-        public static NameValueCollection ToNameValueCollection(this Dictionary<string, string> dict)
-        {
-            if (dict == null) return new NameValueCollection();
-
-            var result = new NameValueCollection(dict.Count);
-            foreach (var kvp in dict)
-            {
-                result.Add(kvp.Key, kvp.Value);
-            }
-            return result;
-        }
     }
 }
