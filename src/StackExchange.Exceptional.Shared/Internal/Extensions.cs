@@ -190,7 +190,7 @@ namespace StackExchange.Exceptional.Internal
         /// </summary>
         /// <param name="s">The <see cref="string"/> to truncate.</param>
         /// <param name="maxLength">The length to truncate the string to.</param>
-        public static string TruncateWithEllipsis(this string s, int maxLength) => 
+        public static string TruncateWithEllipsis(this string s, int maxLength) =>
             (s.HasValue() && s.Length > maxLength) ? (s.Truncate(maxLength - 1) + "…") : s;
 
         /// <summary>
