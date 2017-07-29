@@ -40,42 +40,44 @@ namespace StackExchange.Exceptional
         /// When dealing with a non web requests, pass <see langword="null" /> in for context.  
         /// It shouldn't be forgotten for most web application usages, so it's not an optional parameter.
         /// </remarks>
-        public static Error Log(this Exception ex, HttpContext context, bool? appendFullStackTrace = null, bool rollupPerServer = false, Dictionary<string, string> customData = null, string applicationName = null)
+        public static Error Log(
+            this Exception ex,
+            HttpContext context,
+            bool? appendFullStackTrace = null,
+            bool rollupPerServer = false,
+            Dictionary<string, string> customData = null,
+            string applicationName = null)
         {
-            if (!Settings.IsLoggingEnabled) return null;
+            if (Settings.IsLoggingEnabled)
+            {
+                return null;
+            }
             try
             {
                 ConfigSettings.LoadSettings();
                 var settings = Settings.Current;
                 if (ex.ShouldBeIgnored(settings))
-                    return null;
-
-                if (customData == null && TODOShittyExperienceForTheUser.GetCustomData != null)
                 {
-                    customData = new Dictionary<string, string>();
-                    try
-                    {
-                        TODOShittyExperienceForTheUser.GetCustomData(ex, context, customData);
-                    }
-                    catch (Exception cde)
-                    {
-                        // if there was an error getting custom errors, log it so we can display such in the view...and not fail to log the original error
-                        customData.Add(Constants.CustomDataErrorKey, cde.ToString());
-                    }
+                    return null;
                 }
 
                 var error = new Error(ex, applicationName, appendFullStackTrace)
                 {
                     RollupPerServer = rollupPerServer,
-                    CustomData = customData ?? new Dictionary<string, string>()
+                    CustomData = customData
                 };
 
+                // Get any custom data from the context
+                error.SetCustomData(context, TODOShittyExperienceForTheUser.GetCustomData);
                 // Get everything from the HttpContext
-                error.SetProperties(context)
-                     .SetIPAddress(settings);
+                error.SetProperties(context);
+                // Set the IP Address from the settings function
+                error.SetIPAddress(settings);
 
                 if (error.LogToStore(ErrorStore.Default))
+                {
                     return error;
+                }
             }
             catch (Exception e)
             {

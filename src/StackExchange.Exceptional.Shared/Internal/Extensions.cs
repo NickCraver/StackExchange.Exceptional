@@ -21,12 +21,39 @@ namespace StackExchange.Exceptional.Internal
         /// <returns>Whether this exception should be ignored.</returns>
         public static bool ShouldBeIgnored(this Exception ex, Settings settings)
         {
-            if (settings.Ignore.Regexes?.Any(re => re.IsMatch(ex.ToString())) == true)
-                return true;
-            if (settings.Ignore.Types?.Any(type => ex.GetType().IsDescendentOf(type)) == true)
-                return true;
+            return settings.Ignore.Regexes?.Any(re => re.IsMatch(ex.ToString())) == true
+                || settings.Ignore.Types?.Any(type => ex.GetType().IsDescendentOf(type)) == true;
+        }
 
-            return false;
+        /// <summary>
+        /// Attempts to get the custom data for an error with the given function.
+        /// If the function is null (not set the norm), null is returned.
+        /// If an error occurs, the <see cref="Constants.CustomDataErrorKey"/> is populated.
+        /// </summary>
+        /// <typeparam name="T">The type of context in play.</typeparam>
+        /// <param name="error">The <see cref="Error"/> to set the custom data on.</param>
+        /// <param name="context">The context to use when getting custom data.</param>
+        /// <param name="action">The function to populate custom data (a new dictionary is passed in).</param>
+        /// <returns>The result: a dictionary if settings for GetCustomData are present and <c>null</c> if not.</returns>
+        public static Error SetCustomData<T>(this Error error, T context, Action<Exception, T, Dictionary<string, string>> action)
+        {
+            if (action != null)
+            {
+                if (error.CustomData == null)
+                {
+                    error.CustomData = new Dictionary<string, string>();
+                }
+                try
+                {
+                    action(error.Exception, context, error.CustomData);
+                }
+                catch (Exception cde)
+                {
+                    // if there was an error getting custom errors, log it so we can display such in the view...and not fail to log the original error
+                    error.CustomData.Add(Constants.CustomDataErrorKey, cde.ToString());
+                }
+            }
+            return error;
         }
 
         /// <summary>
