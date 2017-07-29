@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
-using System.Linq;
 using System.Web;
 
 namespace StackExchange.Exceptional
@@ -54,21 +53,20 @@ namespace StackExchange.Exceptional
             }
             try
             {
+                // Legacy settings load (deserializes Web.config if needed)
                 ConfigSettings.LoadSettings();
+
                 var settings = Settings.Current;
+                // If we should be ignoring this exception, skip it entirely.
                 if (ex.ShouldBeIgnored(settings))
                 {
                     return null;
                 }
 
-                var error = new Error(ex, applicationName, appendFullStackTrace)
-                {
-                    RollupPerServer = rollupPerServer,
-                    CustomData = customData
-                };
-
+                // Create the error itself, populating CustomData with what was passed-in.
+                var error = new Error(ex, applicationName, appendFullStackTrace, rollupPerServer);
                 // Get any custom data from the context
-                error.SetCustomData(context, TODOShittyExperienceForTheUser.GetCustomData);
+                error.SetCustomData(customData, context, TODOShittyExperienceForTheUser.GetCustomData);
                 // Get everything from the HttpContext
                 error.SetProperties(context);
                 // Set the IP Address from the settings function

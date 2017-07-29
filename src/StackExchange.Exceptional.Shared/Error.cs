@@ -49,7 +49,11 @@ namespace StackExchange.Exceptional
         /// <param name="e">The exception we intend to log.</param>
         /// <param name="applicationName">The application name to log as (used for overriding current settings).</param>
         /// <param name="appendFullStackTrace">Whether to append a full stack trace to the exception's detail.</param>
-        public Error(Exception e, string applicationName = null, bool? appendFullStackTrace = false)
+        /// <param name="rollupPerServer">Whether to log up per-server, e.g. errors are only duplicates if they have same stack on the same machine.</param>
+        public Error(Exception e,
+            string applicationName = null,
+            bool? appendFullStackTrace = false,
+            bool rollupPerServer = false)
         {
             Exception = e ?? throw new ArgumentNullException(nameof(e));
             var baseException = e;
@@ -80,7 +84,7 @@ namespace StackExchange.Exceptional
                     Detail += "\n\nFull Trace:\n\n" + string.Join("", frames.Skip(2));
             }
 
-            ErrorHash = GetHash();
+            ErrorHash = GetHash(rollupPerServer);
 
             var exCursor = e;
             while (exCursor != null)
@@ -175,13 +179,14 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Gets a unique-enough hash of this error. Stored as a quick comparison mechanism to roll-up duplicate errors.
         /// </summary>
+        /// <param name="includeMachine">Whether to include <see cref="MachineName"/> in the has calculation, creating per-machine roll-ups.</param>
         /// <returns>A "Unique" hash for this error.</returns>
-        public int? GetHash()
+        public int? GetHash(bool includeMachine)
         {
             if (!Detail.HasValue()) return null;
 
             var result = Detail.GetHashCode();
-            if (RollupPerServer && MachineName.HasValue())
+            if (includeMachine && MachineName.HasValue())
                 result = (result * 397)^ MachineName.GetHashCode();
 
             return result;
@@ -347,17 +352,10 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// Json populated from database stored, deserialized after if needed.
+        /// JSON populated from database stored, deserialized after if needed.
         /// </summary>
         [JsonIgnore]
         public string FullJson { get; set; }
-
-        /// <summary>
-        /// Whether to roll up errors per-server. E.g. should an identical error happening on 2 separate servers 
-        /// be a <see cref="DuplicateCount"/>++, or 2 separate errors.
-        /// </summary>
-        [JsonIgnore]
-        public bool RollupPerServer { get; set; }
 
         /// <summary>
         /// Returns the value of the <see cref="Message"/> property.
