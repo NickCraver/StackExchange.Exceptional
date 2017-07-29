@@ -48,7 +48,7 @@ namespace StackExchange.Exceptional
             Dictionary<string, string> customData = null,
             string applicationName = null)
         {
-            if (Settings.IsLoggingEnabled)
+            if (!Settings.IsLoggingEnabled)
             {
                 return null;
             }
