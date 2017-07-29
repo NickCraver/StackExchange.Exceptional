@@ -38,6 +38,10 @@ namespace StackExchange.Exceptional.Internal
         /// <returns>The result: a dictionary if settings for GetCustomData are present and <c>null</c> if not.</returns>
         public static Error SetCustomData<T>(this Error error, Dictionary<string, string> initialData, T context, Action<Exception, T, Dictionary<string, string>> action)
         {
+            if (error == null)
+            {
+                return null;
+            }
             error.CustomData = initialData;
 
             if (action != null)
@@ -67,6 +71,10 @@ namespace StackExchange.Exceptional.Internal
         /// <returns>The passed-in <see cref="Error"/> for chaining.</returns>
         public static Error SetIPAddress(this Error error, Settings settings)
         {
+            if (error == null)
+            {
+                return null;
+            }
             if (settings.GetIPAddress != null)
             {
                 try

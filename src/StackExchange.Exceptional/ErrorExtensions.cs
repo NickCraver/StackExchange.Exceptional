@@ -56,9 +56,8 @@ namespace StackExchange.Exceptional
                 // Legacy settings load (deserializes Web.config if needed)
                 ConfigSettings.LoadSettings();
 
-                var settings = Settings.Current;
                 // If we should be ignoring this exception, skip it entirely.
-                if (ex.ShouldBeIgnored(settings))
+                if (ex.ShouldBeIgnored(Settings.Current))
                 {
                     return null;
                 }
@@ -70,7 +69,7 @@ namespace StackExchange.Exceptional
                 // Get everything from the HttpContext
                 error.SetProperties(context);
                 // Set the IP Address from the settings function
-                error.SetIPAddress(settings);
+                error.SetIPAddress(Settings.Current);
 
                 if (error.LogToStore(ErrorStore.Default))
                 {
@@ -92,12 +91,19 @@ namespace StackExchange.Exceptional
         /// <returns>The passed-in <see cref="Error"/> for chaining.</returns>
         public static Error SetProperties(this Error error, HttpContext context)
         {
+            if (error == null)
+            {
+                return null;
+            }
+
             if (error.Exception is HttpException httpException)
             {
                 error.StatusCode = httpException.GetHttpCode();
             }
-
-            if (context == null || context.Handler == null) return error;
+            if (context == null || context.Handler == null)
+            {
+                return error;
+            }
 
             var request = context.Request;
 
