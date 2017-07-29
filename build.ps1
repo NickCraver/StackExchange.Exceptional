@@ -15,7 +15,9 @@ Write-Host "RunTests: $RunTests"
 
 $packageOutputFolder = "$PSScriptRoot\.nupkgs"
 $projectsToBuild =
+    'StackExchange.Exceptional.Shared',
     'StackExchange.Exceptional',
+    'StackExchange.Exceptional.AspNetCore',
     'StackExchange.Exceptional.MySQL'
 
 $testsToRun = @()
