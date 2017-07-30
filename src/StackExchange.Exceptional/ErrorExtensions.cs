@@ -138,10 +138,12 @@ namespace StackExchange.Exceptional
             var formFilters = Settings.Current.LogFilters.Form;
             if (formFilters?.Count > 0)
             {
-                foreach (var k in formFilters.Keys)
+                foreach (var kv in formFilters)
                 {
-                    if (error.Form[k] != null)
-                        error.Form[k] = formFilters[k];
+                    if (kv.Value != null)
+                    {
+                        error.Form[kv.Key] = kv.Value;
+                    }
                 }
             }
 
