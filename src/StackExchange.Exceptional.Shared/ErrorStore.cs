@@ -1,4 +1,3 @@
-
 using StackExchange.Exceptional.Internal;
 using StackExchange.Exceptional.Stores;
 using System;
@@ -58,6 +57,18 @@ namespace StackExchange.Exceptional
         /// </summary>
         /// <param name="error">The error to log.</param>
         protected abstract void LogError(Error error);
+
+        private static readonly Task _completed = Task.FromResult(true);
+
+        /// <summary>
+        /// Asynchronously logs an error in log for the application.
+        /// </summary>
+        /// <param name="error">The error to log.</param>
+        protected virtual Task LogErrorAsync(Error error)
+        {
+            LogError(error);
+            return _completed;
+        }
 
         /// <summary>
         /// Retrieves a single error based on Id.
@@ -181,47 +192,26 @@ namespace StackExchange.Exceptional
         /// </summary>
         public Exception LastRetryException => _retryException;
 
-        /// <summary>
-        /// Logs an error in log for the application.
-        /// </summary>
-        /// <param name="error">The error to log.</param>
-        public void Log(Error error)
+        private bool QueuedInRetry(Error error, Guid originalGuid)
         {
-            if (error == null) throw new ArgumentNullException(nameof(error));
-
-            // Track the GUID we made vs. what the store returns. If it's different, it's a dupe.
-            var originalGuid = error.GUID;
-            // if we're in a retry state, log directly to the queue
             if (_isInRetry)
             {
                 QueueError(error);
-                if (originalGuid != error.GUID) error.IsDuplicate = true;
-                NotifyAll(error);
-                return;
+                ProcessNotifications(error, originalGuid);
+                return true;
             }
-            try
-            {
-                using (new TransactionScope(TransactionScopeOption.Suppress))
-                {
-                    LogError(error);
-                }
-                if (originalGuid != error.GUID) error.IsDuplicate = true;
-                NotifyAll(error);
-            }
-            catch (Exception ex)
-            {
-                _retryException = ex;
-                // if we fail to write the error to the store, queue it for re-writing
-                QueueError(error);
-            }
+            return false;
         }
 
         /// <summary>
         /// Notify everything currently registered as a notifier.
         /// </summary>
         /// <param name="error">The error to notify things of.</param>
-        private void NotifyAll(Error error)
+        /// <param name="originalGuid">The GUID of the original error, for determining if this is a duplicate.</param>
+        private void ProcessNotifications(Error error, Guid originalGuid)
         {
+            if (originalGuid != error.GUID) error.IsDuplicate = true;
+
             var settings = Exceptional.Settings.Current;
             if (settings.Notifiers.Count > 0)
             {
@@ -239,6 +229,68 @@ namespace StackExchange.Exceptional
                         Trace.WriteLine("Error in NotifyAll: " + e);
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Logs an error in log for the application.
+        /// </summary>
+        /// <param name="error">The error to log.</param>
+        public void Log(Error error)
+        {
+            _ = error ?? throw new ArgumentNullException(nameof(error));
+
+            // Track the GUID we made vs. what the store returns. If it's different, it's a dupe.
+            var originalGuid = error.GUID;
+            // if we're in a retry state, log directly to the queue
+            if (QueuedInRetry(error, originalGuid))
+            {
+                return;
+            }
+            try
+            {
+                using (new TransactionScope(TransactionScopeOption.Suppress))
+                {
+                    LogError(error);
+                }
+                ProcessNotifications(error, originalGuid);
+            }
+            catch (Exception ex)
+            {
+                _retryException = ex;
+                // if we fail to write the error to the store, queue it for re-writing
+                QueueError(error);
+            }
+        }
+
+        /// <summary>
+        /// Logs an error in log for the application.
+        /// </summary>
+        /// <param name="error">The error to log.</param>
+        public async Task LogAsync(Error error)
+        {
+            _ = error ?? throw new ArgumentNullException(nameof(error));
+
+            // Track the GUID we made vs. what the store returns. If it's different, it's a dupe.
+            var originalGuid = error.GUID;
+            // if we're in a retry state, log directly to the queue
+            if (QueuedInRetry(error, originalGuid))
+            {
+                return;
+            }
+            try
+            {
+                using (new TransactionScope(TransactionScopeOption.Suppress))
+                {
+                    await LogErrorAsync(error).ConfigureAwait(false);
+                }
+                ProcessNotifications(error, originalGuid);
+            }
+            catch (Exception ex)
+            {
+                _retryException = ex;
+                // if we fail to write the error to the store, queue it for re-writing
+                QueueError(error);
             }
         }
 

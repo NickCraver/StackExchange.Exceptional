@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace StackExchange.Exceptional
 {
@@ -198,23 +199,55 @@ namespace StackExchange.Exceptional
         /// <returns>The error if logged, or null if logging was aborted.</returns>
         public bool LogToStore(ErrorStore store)
         {
+            var abort = BeforeLog(store);
+            if (abort) return true; // if we've been told to abort, then abort dammit!
+
+            Trace.WriteLine(Exception); // always echo the error to trace for local debugging
+            store.Log(this);
+
+            AfterLog(store);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Logs this error to a specific store.
+        /// </summary>
+        /// <param name="store">The store to log to.</param>
+        /// <returns>The error if logged, or null if logging was aborted.</returns>
+        public async Task<bool> LogToStoreAsync(ErrorStore store)
+        {
+            var abort = BeforeLog(store);
+            if (abort) return true; // if we've been told to abort, then abort dammit!
+
+            Trace.WriteLine(Exception); // always echo the error to trace for local debugging
+            await store.LogAsync(this).ConfigureAwait(false);
+
+            AfterLog(store);
+
+            return true;
+        }
+
+        private bool BeforeLog(ErrorStore store)
+        {
             if (OnBeforeLog != null)
             {
                 try
                 {
                     var args = new ErrorBeforeLogEventArgs(this);
                     OnBeforeLog(store, args);
-                    if (args.Abort) return false; // if we've been told to abort, then abort dammit!
+                    if (args.Abort) return true;
                 }
                 catch (Exception e)
                 {
                     Trace.WriteLine(e);
                 }
             }
+            return false;
+        }
 
-            Trace.WriteLine(Exception); // always echo the error to trace for local debugging
-            store.Log(this);
-
+        private void AfterLog(ErrorStore store)
+        {
             if (OnAfterLog != null)
             {
                 try
@@ -226,8 +259,6 @@ namespace StackExchange.Exceptional
                     Trace.WriteLine(e);
                 }
             }
-
-            return true;
         }
 
         /// <summary>
