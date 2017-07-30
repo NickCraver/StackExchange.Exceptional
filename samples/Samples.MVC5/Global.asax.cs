@@ -43,7 +43,7 @@ namespace Samples.MVC5
                 };
             StackExchange.Exceptional.Error.OnAfterLog += (sender, args) =>
                 {
-                    Trace.WriteLine("The logged exception GUID was: " + args.ErrorGuid.ToString());
+                    Trace.WriteLine("The logged exception GUID was: " + args.Error.GUID.ToString());
                     // optionally var e = args.GetError() to fetch the actual error from the store
                 };
 
