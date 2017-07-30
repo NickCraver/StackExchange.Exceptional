@@ -63,7 +63,7 @@ namespace StackExchange.Exceptional
             // If it's not a .NET framework exception, usually more information is being added,
             // so use the wrapper for the message, type, etc.
             // If it's a .NET framework exception type, drill down and get the innermost exception.
-            if (IsBuiltInException(e))
+            if (e.IsBCLException())
                 baseException = e.GetBaseException();
 
             GUID = Guid.NewGuid();
@@ -229,13 +229,6 @@ namespace StackExchange.Exceptional
 
             return true;
         }
-
-        /// <summary>
-        /// Returns if the type of the exception is built into the .NET framework.
-        /// </summary>
-        /// <param name="e">The exception to check.</param>
-        /// <returns>True if the exception is a type from within the CLR, false if it's a user/third party type.</returns>
-        private bool IsBuiltInException(Exception e) => e.GetType().Module.ScopeName == "CommonLanguageRuntimeLibrary";
 
         /// <summary>
         /// Gets a unique-enough hash of this error. Stored as a quick comparison mechanism to roll-up duplicate errors.

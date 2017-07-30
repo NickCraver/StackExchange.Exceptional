@@ -25,6 +25,13 @@ namespace StackExchange.Exceptional.Internal
         }
 
         /// <summary>
+        /// Returns if the type of the exception is built into the .NET framework.
+        /// </summary>
+        /// <param name="e">The exception to check.</param>
+        /// <returns>True if the exception is a type from within the CLR, false if it's a user/third party type.</returns>
+        public static bool IsBCLException(this Exception e) => e.GetType().Module.ScopeName == "CommonLanguageRuntimeLibrary";
+
+        /// <summary>
         /// Returns <c>true</c> if <paramref name="type"/> is <paramref name="ancestorName"/>, or descendant from <paramref name="ancestorName"/>.
         /// </summary>
         /// <param name="type">The <see cref="Type"/> to check.</param>
