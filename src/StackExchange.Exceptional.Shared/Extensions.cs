@@ -1,5 +1,7 @@
 ﻿using StackExchange.Exceptional.Internal;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace StackExchange.Exceptional
 {
@@ -8,6 +10,45 @@ namespace StackExchange.Exceptional
     /// </summary>
     public static class Extensions
     {
+        /// <summary>
+        /// For logging an exception with no HttpContext, most commonly used in non-web applications 
+        /// so that they don't have to carry a reference to System.Web.
+        /// </summary>
+        /// <param name="ex">The exception to log.</param>
+        /// <param name="appendFullStackTrace">Whether to append a full stack trace to the exception's detail.</param>
+        /// <param name="rollupPerServer">Whether to log up per-server, e.g. errors are only duplicates if they have same stack on the same machine.</param>
+        /// <param name="customData">Any custom data to store with the exception like UserId, etc...this will be rendered as JSON in the error view for script use.</param>
+        /// <param name="applicationName">If specified, the application name to log with, if not specified the name in <see cref="Settings.ApplicationName"/> is used.</param>
+        public static Error LogNoContext(
+            this Exception ex,
+            bool appendFullStackTrace = false,
+            bool rollupPerServer = false,
+            Dictionary<string, string> customData = null,
+            string applicationName = null)
+        {
+            if (Settings.IsLoggingEnabled)
+            {
+                try
+                {
+                    // If we should be ignoring this exception, skip it entirely.
+                    if (!ex.ShouldBeIgnored(Settings.Current))
+                    {
+                        // Create the error itself, populating CustomData with what was passed-in.
+                        var error = new Error(ex, applicationName, appendFullStackTrace, rollupPerServer, customData);
+                        if (error.LogToStore(ErrorStore.Default))
+                        {
+                            return error;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(e);
+                }
+            }
+            return null;
+        }
+
         /// <summary>
         /// Adds a key/value pair for logging to an exception, one that'll appear in exceptional
         /// </summary>

@@ -44,7 +44,7 @@ namespace Samples.Console
             catch (Exception ex)
             {
                 // logged, but caught so we don't crash
-                ex.LogWithoutContext();
+                ex.LogNoContext();
             }
 
             DisplayExceptionStats().GetAwaiter().GetResult();
@@ -62,7 +62,7 @@ namespace Samples.Console
         {
             // e.ExceptionObject may not be an exception, refer to http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf
             // section 10.5, CLS Rule 40 if you're curious on why this check needs to happen
-            (e.ExceptionObject as Exception)?.LogWithoutContext();
+            (e.ExceptionObject as Exception)?.LogNoContext();
         }
 
         private static async Task DisplayExceptionStats()
