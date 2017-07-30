@@ -10,7 +10,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// The Error object in question.
         /// </summary>
-        public Guid ErrorGuid { get; }
+        public Error Error { get; }
 
         /// <summary>
         /// Creates an ErrorAfterLogEventArgs object to be passed to event handlers.
@@ -18,14 +18,7 @@ namespace StackExchange.Exceptional
         /// <param name="e">The error to create <see cref="ErrorAfterLogEventArgs"/> for.</param>
         public ErrorAfterLogEventArgs(Error e)
         {
-            ErrorGuid = e.GUID;
+            Error = e;
         }
-
-        ///// <summary>
-        ///// Gets the current state of the Error that was logged.
-        ///// Important note: since this may be a duplicate of an earlier error it's an explicit fetch from the error store.
-        ///// </summary>
-        ///// <returns>The current state of the Error matching this GUID.</returns>
-        //public Error GetError() => ErrorStore.Default.Get(ErrorGuid);
     }
 }
