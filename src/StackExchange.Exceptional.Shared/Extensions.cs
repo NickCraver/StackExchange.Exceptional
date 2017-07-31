@@ -8,7 +8,7 @@ namespace StackExchange.Exceptional
     /// <summary>
     /// Extensions methods for <see cref="Exception"/>s.
     /// </summary>
-    public static class Extensions
+    public static partial class Extensions
     {
         /// <summary>
         /// For logging an exception with no HttpContext, most commonly used in non-web applications 

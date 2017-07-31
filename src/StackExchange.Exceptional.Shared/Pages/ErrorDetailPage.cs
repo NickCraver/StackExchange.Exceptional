@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using StackExchange.Exceptional.Internal;
 using System;
+using System.Collections.Generic;
 
 namespace StackExchange.Exceptional.Pages
 {
@@ -88,6 +89,24 @@ namespace StackExchange.Exceptional.Pages
                 sb.AppendFormat("  </div>");
             }
 
+            void RenderKeyValueTable(IEnumerable<KeyValuePair<string, string>> kvPairs)
+            {
+                if (kvPairs?.Any() == true)
+                {
+                    sb.AppendLine("    <div class=\"side-scroll\">")
+                      .AppendLine("      <table class=\"alt-rows key-value\">");
+                    foreach (var kv in kvPairs)
+                    {
+                        sb.Append("        <tr>")
+                          .Append("<td>").AppendHtmlEncode(kv.Key).Append("</td>")
+                          .Append("<td>").Append(Linkify(kv.Value)).Append("</td>")
+                          .AppendLine("</tr>");
+                    }
+                    sb.AppendLine("      </table>")
+                      .AppendLine("    </div>");
+                }
+            }
+
             if (Error == null)
             {
                 sb.AppendFormat("  <h1 class=\"not-found\">Oh no! Error {0} was not found!</h1>", _guid.ToString()).AppendLine();
@@ -101,7 +120,7 @@ namespace StackExchange.Exceptional.Pages
                     sb.Append(" <span class=\"duplicate-count\">(thrown ").Append(Error.DuplicateCount.Value).AppendLine(" times)</span>");
                 }
                 sb.AppendLine("</div>")
-                  .Append("  <pre class=\"stack dark\"><code>").Append(Utils.StackTrace.HtmlPrettify(Error.Detail)).AppendLine().AppendLine("</code></pre>")
+                  .Append("  <pre class=\"stack dark\"><code class=\"nohighlight\">").Append(Utils.StackTrace.HtmlPrettify(Error.Detail)).AppendLine().AppendLine("</code></pre>")
                   // TODO: Controls for show/hide of async .stack.row.async in the block above
                   // TODO: Remove - temporarily showing the raw while the user-friendlier display above gets tuned
                   //.Append("  <pre class=\"stack\"><code>").AppendHtmlEncode(Error.Detail).AppendLine().AppendLine("</code></pre>")
@@ -111,19 +130,30 @@ namespace StackExchange.Exceptional.Pages
                   .Append(Error.CreationDate.ToRelativeTime())
                   .Append("</b> on ")
                   .Append(" <span>(<a href=\"delete?guid=").Append(Error.GUID.ToString()).AppendLine("\">delete</a>)</span></p>");
-                if (Error.SQL.HasValue())
+                if (Error.Commands != null)
                 {
-                    sb.AppendLine("  <h3>SQL</h3>")
-                      .Append("  <pre class=\"command prettyprint lang-sql\"><code>")
-                      .AppendHtmlEncode(Error.SQL)
-                      .AppendLine("</code></pre>");
+                    foreach (var cmd in Error.Commands)
+                    {
+                        var lang = cmd.GetHighlightLanguage();
+                        sb.Append("  <h3>Command: ").AppendHtmlEncode(cmd.Type).AppendLine("</h3>")
+                          .Append("  <pre class=\"command\"><code");
+                        if (lang.HasValue())
+                        {
+                            sb.Append(" class=\"").Append(lang).Append("\"");
+                        }
+                        sb.Append(">")
+                          .AppendHtmlEncode(cmd.CommandString)
+                          .AppendLine("</code></pre>");
+
+                        RenderKeyValueTable(cmd.Data);
+                    }
                 }
                 RenderVariableTable("Server Variables", "server-variables", Error.ServerVariables);
 
                 if (Error.CustomData?.Count > 0)
                 {
                     var errored = Error.CustomData.ContainsKey(Constants.CustomDataErrorKey);
-                    var cdKeys = Error.CustomData.Keys.Where(k => k != Constants.CustomDataErrorKey);
+                    var cdKVs = Error.CustomData.Where(kv => kv.Key != Constants.CustomDataErrorKey);
                     sb.AppendLine("  <div class=\"custom-data\">");
                     if (errored)
                     {
@@ -133,19 +163,9 @@ namespace StackExchange.Exceptional.Pages
                     {
                         sb.AppendLine("    <h3>Custom</h3>");
                     }
-                    if (cdKeys.Any(k => k != Constants.CustomDataErrorKey))
+                    if (cdKVs.Any())
                     {
-                        sb.AppendLine("    <div class=\"side-scroll\">")
-                          .AppendLine("      <table class=\"alt-rows key-value\">");
-                        foreach (var cd in cdKeys)
-                        {
-                            sb.Append("        <tr>")
-                              .Append("<td>").AppendHtmlEncode(cd).Append("</td>")
-                              .Append("<td>").Append(Linkify(Error.CustomData[cd])).Append("</td>")
-                              .AppendLine("</tr>");
-                        }
-                        sb.AppendLine("      </table>")
-                          .AppendLine("    </div>");
+                        RenderKeyValueTable(cdKVs);
                     }
                     if (errored)
                     {

@@ -24,6 +24,12 @@ namespace StackExchange.Exceptional
         public List<IErrorNotifier> Notifiers { get; } = new List<IErrorNotifier>();
 
         /// <summary>
+        /// Data handlers, for adding any data desirable to an exception before logging, like Commands.
+        /// The key here is the full type name, e.g. "System.Data.SqlClient.SqlException"
+        /// </summary>
+        public Dictionary<string, Action<Error>> ExceptionActions { get; } = new Dictionary<string, Action<Error>>().AddDefault();
+
+        /// <summary>
         /// Application name to log with.
         /// </summary>
         public string ApplicationName { get; set; }

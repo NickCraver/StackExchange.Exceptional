@@ -83,15 +83,16 @@ namespace StackExchange.Exceptional.Internal
                   .Append("</p>")
                   .AppendLine();
 
-                if (!string.IsNullOrEmpty(error.SQL))
-                {
-                    sb.Append("  <h3 style=\"color: #224C00; font-family: Verdana, Tahoma, Arial, \'Helvetica Neue\', Helvetica, sans-serif; font-size: 14px; margin: 10px 0 5px 0;\">SQL</h3>")
-                      .AppendLine()
-                      .Append("  <pre style=\"background-color: #EEE; font-family: Consolas, Monaco, monospace; padding: 8px 8px 8px 8px; margin: 2px 0;\">")
-                      .AppendHtmlEncode(error.SQL)
-                      .Append("</pre>").AppendLine()
-                      .Append("<br/>").AppendLine();
-                }
+                // TODO: Commands
+                //if (!string.IsNullOrEmpty(error.SQL))
+                //{
+                //    sb.Append("  <h3 style=\"color: #224C00; font-family: Verdana, Tahoma, Arial, \'Helvetica Neue\', Helvetica, sans-serif; font-size: 14px; margin: 10px 0 5px 0;\">SQL</h3>")
+                //      .AppendLine()
+                //      .Append("  <pre style=\"background-color: #EEE; font-family: Consolas, Monaco, monospace; padding: 8px 8px 8px 8px; margin: 2px 0;\">")
+                //      .AppendHtmlEncode(error.SQL)
+                //      .Append("</pre>").AppendLine()
+                //      .Append("<br/>").AppendLine();
+                //}
 
                 RenderVariableTable("Server Variables", error.ServerVariables);
 

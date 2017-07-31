@@ -34,6 +34,18 @@ namespace Samples.MVC5
                     data.Add("User Id", "You could fetch a user/account Id here, etc.");
                     data.Add("Links get linkified", "https://www.google.com");
                 };
+            // Example of how to log command data for anything you want
+            // These display the command and the data key/value pairs in the log
+            Settings.Current.ExceptionActions.AddHandler<Utils.Test.RedisException>((e, ex) =>
+            {
+                var cmd = e.AddCommand(new Command("Redis"));
+                foreach (string k in ex.Data.Keys)
+                {
+                    var val = ex.Data[k] as string;
+                    if (k == "redis-command") cmd.CommandString = val;
+                    if (k.StartsWith("Redis-")) cmd.AddData(k.Substring("Redis-".Length), val);
+                }
+            });
 
             Settings.Current.Render.JSIncludes.Add("/Content/errors.js");
             StackExchange.Exceptional.Error.OnBeforeLog += (sender, args) =>

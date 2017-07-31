@@ -19,6 +19,9 @@
     <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Utils.*.cs">
+      <DependentUpon>Utils.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Resources\Bundle.min.js">
       <DependentUpon>Bundle.js</DependentUpon>
     </EmbeddedResource>

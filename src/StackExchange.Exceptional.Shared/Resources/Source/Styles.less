@@ -43,7 +43,7 @@ h1 {
 
 h3 {
     color: #444;
-    margin: 12px 0 5px 0;
+    margin: 12px 0 5px 4px;
 
     &.title-error {
         color: @error-title-color;
@@ -143,16 +143,20 @@ pre {
             code {
                 display: table;
             }
+
             .stack {
                 &.row {
                     display: table-row;
                 }
+
                 &.leadIn, &.type, &.method-section, &.source-section {
                     display: table-cell;
                 }
+
                 &.misc {
                     display: none;
                 }
+
                 &.method-section .misc {
                     display: normal;
                 }
@@ -162,6 +166,8 @@ pre {
 
     &.command {
         background-color: #eee;
+        padding: 0;
+        margin-top: 0;
     }
 }
 
@@ -455,5 +461,5 @@ td.loading {
     }
 }
 
-/* Prettify */
-@import "Prettify.less";
+/* Highlight.js */
+@import "highlight.less";

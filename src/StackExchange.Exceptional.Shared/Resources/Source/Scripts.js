@@ -3,7 +3,7 @@
         Protect: 'protect',
         Delete: 'delete'
     };
-    prettyPrint();
+    hljs.initHighlighting();
 
     if (table.length === 0) {
         return;

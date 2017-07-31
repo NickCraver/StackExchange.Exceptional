@@ -3,7 +3,6 @@ using StackExchange.Exceptional.Internal;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -111,25 +110,10 @@ namespace StackExchange.Exceptional
         /// <param name="exception">The current exception we're looping over.</param>
         private void AddData(Exception exception)
         {
+            ProcessHandlers(exception);
+
             // Regardless of what Resharper may be telling you, .Data can be null on things like a null ref exception.
             if (exception.Data == null) return;
-
-            // Historical special case
-            if (exception.Data.Contains("SQL"))
-                SQL = exception.Data["SQL"] as string;
-
-            if (exception is SqlException se)
-            {
-                InitCustomData();
-
-                CustomData["SQL-Server"] = se.Server;
-                CustomData["SQL-ErrorNumber"] = se.Number.ToString();
-                CustomData["SQL-LineNumber"] = se.LineNumber.ToString();
-                if (se.Procedure.HasValue())
-                {
-                    CustomData["SQL-Procedure"] = se.Procedure;
-                }
-            }
 
             if (exception.Data.Keys.Count > 0)
             {
@@ -149,6 +133,38 @@ namespace StackExchange.Exceptional
                     }
                 }
             }
+        }
+
+        private void ProcessHandlers(Exception exception)
+        {
+            // TODO: Potentially loop through all base types as well when seeking handlers
+            // For example, should a handler of "System.Exception" always run?
+            // If so, the bottom special case could be moved to a default handler on "System.Exception"
+            var handlers = Settings.Current.ExceptionActions;
+            if (handlers.TryGetValue(exception.GetType().FullName, out var handler))
+            {
+                handler(this);
+            }
+            // Historical special case
+            if (exception.Data?.Contains("SQL") == true)
+            {
+                AddCommand(new Command("SQL Server Query", exception.Data["SQL"] as string));
+            }
+        }
+
+        /// <summary>
+        /// Adds a command to log on this error.
+        /// </summary>
+        /// <param name="command">The command to add.</param>
+        /// <returns>The added command.</returns>
+        public Command AddCommand(Command command)
+        {
+            if (Commands == null)
+            {
+                Commands = new List<Command>();
+            }
+            Commands.Add(command);
+            return command;
         }
 
         /// <summary>
@@ -272,7 +288,7 @@ namespace StackExchange.Exceptional
 
             var result = Detail.GetHashCode();
             if (includeMachine && MachineName.HasValue())
-                result = (result * 397)^ MachineName.GetHashCode();
+                result = (result * 397) ^ MachineName.GetHashCode();
 
             return result;
         }
@@ -387,9 +403,18 @@ namespace StackExchange.Exceptional
         public int? DuplicateCount { get; set; }
 
         /// <summary>
-        /// Gets the SQL command text associated with this error.
+        /// Legacy: Sets the SQL command text associated with this error.
+        /// Strictly for deserialization of old errors.
         /// </summary>
-        public string SQL { get; set; }
+        public string SQL
+        {
+            set => AddCommand(new Command("SQL Server Query", value));
+        }
+
+        /// <summary>
+        /// The commands associated with this error. For example: SQL queries, Redis commands, elastic queries, etc.
+        /// </summary>
+        public List<Command> Commands { get; set; }
 
         /// <summary>
         /// Date this error was deleted (for stores that support deletion and retention, e.g. SQL)
@@ -564,13 +589,23 @@ namespace StackExchange.Exceptional
                 WriteName(nameof(IsProtected)).WriteValue(IsProtected);
                 WriteName(nameof(MachineName)).WriteValue(MachineName);
                 WriteName(nameof(Message)).WriteValue(Message);
-                WriteName(nameof(SQL)).WriteValue(SQL);
                 WriteName(nameof(Source)).WriteValue(Source);
                 WriteName(nameof(StatusCode)).WriteValue(StatusCode);
                 WriteName(nameof(Type)).WriteValue(Type);
                 WriteName(nameof(Url)).WriteValue(Url);
                 WriteName(nameof(QueryString)).WriteValue(ServerVariables?["QUERY_STRING"]);
                 WriteDictionary(nameof(CustomData), CustomData);
+                if (Commands != null)
+                {
+                    foreach (var c in Commands)
+                    {
+                        WriteName(nameof(Commands)).WriteStartObject();
+                        WriteName(nameof(c.Type)).WriteValue(c.Type);
+                        WriteName(nameof(c.CommandString)).WriteValue(c.CommandString);
+                        WriteDictionary(nameof(c.Data), c.Data);
+                        w.WriteEndObject();
+                    }
+                }
                 WritePairs(nameof(ServerVariables), ServerVariablesSerializable);
                 WritePairs(nameof(Cookies), CookiesSerializable);
                 WritePairs(nameof(RequestHeaders), RequestHeadersSerializable);

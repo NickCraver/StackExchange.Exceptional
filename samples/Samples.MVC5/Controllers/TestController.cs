@@ -48,6 +48,8 @@ namespace Samples.MVC5.Controllers
 
         public ActionResult Throw()
         {
+            TestLog(Utils.Test.GetRedisException());
+
             var ex = new Exception("This is an exception thrown from the Samples project! - Check out the log to see this exception.");
             // here's how your catch/throw might can add more info, for example SQL is special cased and shown in the UI:
             ex.Data["SQL"] = "Select * From FUBAR -- This is a SQL command!";
@@ -56,6 +58,8 @@ namespace Samples.MVC5.Controllers
             ex.AddLogData("Via Extension", "Some logged data via the .AddLoggedData() method!");
             throw ex;
         }
+
+        public ActionResult ThrowRedis() => throw Utils.Test.GetRedisException();
 
 #pragma warning disable RCS1174 // Remove redundant async/await.
 #pragma warning disable RCS1090 // Call 'ConfigureAwait(false)'.
@@ -73,7 +77,7 @@ namespace Samples.MVC5.Controllers
             }
             catch (Exception e)
             {
-                await TestLog(e);
+                await TestLogAsync(e);
             }
             // TODO: Make these switchable in the UI somewhere
             //ExceptionalSettings.Current.StackTrace.IncludeGenericTypeNames = false;
@@ -93,7 +97,7 @@ namespace Samples.MVC5.Controllers
 
         public async Task<ActionResult> ThrowStacks()
         {
-            await TestLog(
+            await TestLogAsync(
                 new ExplicitStackException("Test Dictionary", "KeyNotFoundException The given key was not present in the dictionary. at System.Collections.Generic.Dictionary`2.get_Item(TKey key) at Hangfire.SqlServer.SqlServerMonitoringApi.<>c.<DeletedJobs>b__15_1(SqlJob sqlJob, Job job, Dictionary`2 stateData) at Hangfire.SqlServer.SqlServerMonitoringApi.DeserializeJobs[TDto](ICollection`1 jobs, Func`4 selector) at Hangfire.SqlServer.SqlServerMonitoringApi.GetJobs[TDto](DbConnection connection, Int32 from, Int32 count, String stateName, Func`4 selector) at Hangfire.SqlServer.SqlServerMonitoringApi.<>c__DisplayClass15_0.<DeletedJobs>b__0(DbConnection connection) at Hangfire.SqlServer.SqlServerStorage.UseConnection[T](Func`2 func) at Hangfire.SqlServer.SqlServerMonitoringApi.DeletedJobs(Int32 from, Int32 count) at Hangfire.Dashboard.Pages.DeletedJobsPage.Execute() at Hangfire.Dashboard.RazorPage.TransformText(String body) at Hangfire.Dashboard.RazorPageDispatcher.Dispatch(DashboardContext context) at Hangfire.Dashboard.MiddlewareExtensions.<>c__DisplayClass1_2.<UseHangfireDashboard>b__1(IDictionary`2 env) at Microsoft.Owin.Mapping.MapMiddleware.<Invoke>d__0.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task) at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Microsoft.Owin.Mapping.MapMiddleware.<Invoke>d__0.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task) at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Microsoft.Owin.Mapping.MapMiddleware.<Invoke>d__0.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task) at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Microsoft.Owin.Mapping.MapMiddleware.<Invoke>d__0.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task) at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Microsoft.Owin.Mapping.MapMiddleware.<Invoke>d__0.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task) at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Microsoft.Owin.Mapping.MapMiddleware.<Invoke>d__0.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task) at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Microsoft.Owin.Mapping.MapMiddleware.<Invoke>d__0.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task) at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Microsoft.Owin.Mapping.MapMiddleware.<Invoke>d__0.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task) at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Microsoft.Owin.Mapping.MapMiddleware.<Invoke>d__0.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task) at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Microsoft.Owin.Mapping.MapMiddleware.<Invoke>d__0.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task) at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Microsoft.Owin.Mapping.MapMiddleware.<Invoke>d__0.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task) at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Microsoft.Owin.Mapping.MapMiddleware.<Invoke>d__0.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task) at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Microsoft.Owin.Mapping.MapMiddleware.<Invoke>d__0.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task) at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Microsoft.Owin.Mapping.MapMiddleware.<Invoke>d__0.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task) at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Microsoft.Owin.Mapping.MapMiddleware.<Invoke>d__0.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task) at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Microsoft.Owin.Mapping.MapMiddleware.<Invoke>d__0.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task) at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Microsoft.Owin.Mapping.MapMiddleware.<Invoke>d__0.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task) at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Microsoft.Owin.Host.SystemWeb.IntegratedPipeline.IntegratedPipelineContextStage.<RunApp>d__5.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task) at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Microsoft.Owin.Host.SystemWeb.IntegratedPipeline.IntegratedPipelineContext.<DoFinalWork>d__2.MoveNext() --- End of stack trace from previous location where exception was thrown --- at Microsoft.Owin.Host.SystemWeb.IntegratedPipeline.StageAsyncResult.End(IAsyncResult ar) at System.Web.HttpApplication.AsyncEventExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute() at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously)")
             );
             return Content("Thrown!");
@@ -101,7 +105,15 @@ namespace Samples.MVC5.Controllers
 #pragma warning restore RCS1174 // Remove redundant async/await.
 #pragma warning restore RCS1090 // Call 'ConfigureAwait(false)'.
 
-        private async Task TestLog(params Exception[] errors)
+        private void TestLog(params Exception[] errors)
+        {
+            foreach (var e in errors)
+            {
+                e.Log(System.Web.HttpContext.Current);
+            }
+        }
+
+        private async Task TestLogAsync(params Exception[] errors)
         {
             foreach (var e in errors)
             {

@@ -4,8 +4,7 @@
     "inputFiles": [
       "Resources/Source/jquery-3.2.1.min.js",
       "Resources/Source/jquery.tablesorter.min.js",
-      "Resources/Source/prettify.js",
-      "Resources/Source/prettify.lang-sql.js",
+      "Resources/Source/highlight.pack.js",
       "Resources/Source/Scripts.js"
     ]
   }
