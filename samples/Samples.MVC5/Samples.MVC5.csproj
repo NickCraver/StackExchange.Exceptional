@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <AssemblyName>Samples.Mvc5</AssemblyName>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net451</TargetFramework>
     <UseIISExpress>true</UseIISExpress>
     <OutputType>Library</OutputType>
     <OutputPath>bin\</OutputPath>

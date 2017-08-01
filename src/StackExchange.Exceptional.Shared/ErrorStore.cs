@@ -249,7 +249,7 @@ namespace StackExchange.Exceptional
             }
             try
             {
-                using (new TransactionScope(TransactionScopeOption.Suppress))
+                using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
                 {
                     LogError(error);
                 }
@@ -280,7 +280,7 @@ namespace StackExchange.Exceptional
             }
             try
             {
-                using (new TransactionScope(TransactionScopeOption.Suppress))
+                using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
                 {
                     await LogErrorAsync(error).ConfigureAwait(false);
                 }
@@ -302,7 +302,7 @@ namespace StackExchange.Exceptional
         {
             if (_isInRetry) return false; // no protecting allowed when failing, since we don't respect it in the queue anyway
 
-            using (new TransactionScope(TransactionScopeOption.Suppress))
+            using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             {
                 return await ProtectErrorAsync(guid).ConfigureAwait(false);
             }
@@ -319,7 +319,7 @@ namespace StackExchange.Exceptional
 
             try
             {
-                using (new TransactionScope(TransactionScopeOption.Suppress))
+                using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
                 {
                     return await ProtectErrorsAsync(guids).ConfigureAwait(false);
                 }
@@ -341,7 +341,7 @@ namespace StackExchange.Exceptional
 
             try
             {
-                using (new TransactionScope(TransactionScopeOption.Suppress))
+                using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
                 {
                     return await DeleteErrorAsync(guid).ConfigureAwait(false);
                 }
@@ -364,7 +364,7 @@ namespace StackExchange.Exceptional
 
             try
             {
-                using (new TransactionScope(TransactionScopeOption.Suppress))
+                using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
                 {
                     return await DeleteErrorsAsync(guids).ConfigureAwait(false);
                 }
@@ -390,7 +390,7 @@ namespace StackExchange.Exceptional
 
             try
             {
-                using (new TransactionScope(TransactionScopeOption.Suppress))
+                using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
                 {
                     return await DeleteAllErrorsAsync(applicationName).ConfigureAwait(false);
                 }
