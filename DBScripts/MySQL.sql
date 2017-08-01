@@ -77,3 +77,15 @@ SELECT IF (EXISTS(SELECT 1
 PREPARE q1 FROM @a;
 EXECUTE q1;
 DEALLOCATE PREPARE q1;
+
+SELECT IF (EXISTS(SELECT 1 
+                    FROM INFORMATION_SCHEMA.COLUMNS
+                   WHERE TABLE_SCHEMA = DATABASE()
+                     AND TABLE_NAME = 'Exceptions'
+                     AND COLUMN_NAME = 'Category')
+          ,'Select ''Already There'''
+          ,'ALTER TABLE `Exceptions` ADD Category nvarchar(100) NULL;')
+  INTO @a;
+PREPARE q1 FROM @a;
+EXECUTE q1;
+DEALLOCATE PREPARE q1;

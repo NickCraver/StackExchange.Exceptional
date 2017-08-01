@@ -15,11 +15,13 @@ namespace StackExchange.Exceptional
         /// so that they don't have to carry a reference to System.Web.
         /// </summary>
         /// <param name="ex">The exception to log.</param>
+        /// <param name="category">The category to associate with this exception.</param>
         /// <param name="rollupPerServer">Whether to log up per-server, e.g. errors are only duplicates if they have same stack on the same machine.</param>
         /// <param name="customData">Any custom data to store with the exception like UserId, etc...this will be rendered as JSON in the error view for script use.</param>
         /// <param name="applicationName">If specified, the application name to log with, if not specified the name in <see cref="Settings.ApplicationName"/> is used.</param>
         public static Error LogNoContext(
             this Exception ex,
+            string category = null,
             bool rollupPerServer = false,
             Dictionary<string, string> customData = null,
             string applicationName = null)
@@ -32,7 +34,7 @@ namespace StackExchange.Exceptional
                     if (!ex.ShouldBeIgnored(Settings.Current))
                     {
                         // Create the error itself, populating CustomData with what was passed-in.
-                        var error = new Error(ex, applicationName, rollupPerServer, customData);
+                        var error = new Error(ex, category, applicationName, rollupPerServer, customData);
                         if (error.LogToStore(ErrorStore.Default))
                         {
                             return error;

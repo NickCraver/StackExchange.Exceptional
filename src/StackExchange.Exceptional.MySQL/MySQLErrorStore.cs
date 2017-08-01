@@ -181,8 +181,8 @@ Update Exceptions
    And CreationDate >= @minDate limit 1 ";
 
         private const string _sqlLogInsert = @"
-Insert Into Exceptions (GUID, ApplicationName, MachineName, CreationDate, Type, IsProtected, Host, Url, HTTPMethod, IPAddress, Source, Message, Detail, StatusCode, FullJson, ErrorHash, DuplicateCount, LastLogDate)
-Values (@GUID, @ApplicationName, @MachineName, @CreationDate, @Type, @IsProtected, @Host, @Url, @HTTPMethod, @IPAddress, @Source, @Message, @Detail, @StatusCode, @FullJson, @ErrorHash, @DuplicateCount, @LastLogDate)";
+Insert Into Exceptions (GUID, ApplicationName, Category, MachineName, CreationDate, Type, IsProtected, Host, Url, HTTPMethod, IPAddress, Source, Message, Detail, StatusCode, FullJson, ErrorHash, DuplicateCount, LastLogDate)
+Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, @IsProtected, @Host, @Url, @HTTPMethod, @IPAddress, @Source, @Message, @Detail, @StatusCode, @FullJson, @ErrorHash, @DuplicateCount, @LastLogDate)";
 
         private DynamicParameters GetUpdateParams(Error error) =>
             new DynamicParameters(new
@@ -198,6 +198,7 @@ Values (@GUID, @ApplicationName, @MachineName, @CreationDate, @Type, @IsProtecte
         {
             error.GUID,
             ApplicationName = error.ApplicationName.Truncate(50),
+            Category = error.Category.Truncate(100),
             MachineName = error.MachineName.Truncate(50),
             error.CreationDate,
             Type = error.Type.Truncate(100),
