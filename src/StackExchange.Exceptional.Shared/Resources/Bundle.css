@@ -260,7 +260,7 @@ table.hover tbody tr.error.selected {
 table.hover tbody tr.error.selected:hover td {
   background-color: #faf2cc;
 }
-table.error-list tr td:nth-child(1) {
+table.error-list tr td {
   white-space: nowrap;
 }
 table.error-list tr td:nth-child(2) {
