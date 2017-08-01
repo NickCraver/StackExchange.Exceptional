@@ -389,15 +389,6 @@ namespace StackExchange.Exceptional
         public int? DuplicateCount { get; set; }
 
         /// <summary>
-        /// Legacy: Sets the SQL command text associated with this error.
-        /// Strictly for deserialization of old errors.
-        /// </summary>
-        public string SQL
-        {
-            set => AddCommand(new Command("SQL Server Query", value));
-        }
-
-        /// <summary>
         /// The commands associated with this error. For example: SQL queries, Redis commands, elastic queries, etc.
         /// </summary>
         public List<Command> Commands { get; set; }
@@ -646,6 +637,21 @@ namespace StackExchange.Exceptional
                 result.Add(p.Name, p.Value);
             }
             return result;
+        }
+        
+        /// <summary>
+        /// Legacy: Sets the SQL command text associated with this error.
+        /// Strictly for deserialization of old errors.
+        /// </summary>
+        public string SQL
+        {
+            set
+            {
+                if (value.HasValue())
+                {
+                    AddCommand(new Command("SQL Server Query", value));
+                }
+            }
         }
     }
 }
