@@ -19,6 +19,9 @@
     <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Error.*.cs">
+      <DependentUpon>Error.cs</DependentUpon>
+    </Compile>
     <Compile Update="Utils.*.cs">
       <DependentUpon>Utils.cs</DependentUpon>
     </Compile>

@@ -40,11 +40,7 @@ namespace StackExchange.Exceptional
         /// <param name="value">The value for this data.</param>
         public Command AddData(string key, string value)
         {
-            if (Data == null)
-            {
-                Data = new Dictionary<string, string>();
-            }
-            Data.Add(key, value);
+            (Data ?? (Data = new Dictionary<string, string>())).Add(key, value);
             return this;
         }
 

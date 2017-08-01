@@ -15,18 +15,8 @@ namespace StackExchange.Exceptional
     /// Represents a logical application error (as opposed to the actual <see cref="Exception"/> it may be representing).
     /// </summary>
     [Serializable]
-    public class Error
+    public partial class Error
     {
-        /// <summary>
-        /// Event handler to run before an exception is logged to the store.
-        /// </summary>
-        public static event EventHandler<ErrorBeforeLogEventArgs> OnBeforeLog;
-
-        /// <summary>
-        /// Event handler to run after an exception has been logged to the store.
-        /// </summary>
-        public static event EventHandler<ErrorAfterLogEventArgs> OnAfterLog;
-
         /// <summary>
         /// The ID on this error, strictly for primary keying on persistent stores.
         /// </summary>
@@ -159,11 +149,7 @@ namespace StackExchange.Exceptional
         /// <returns>The added command.</returns>
         public Command AddCommand(Command command)
         {
-            if (Commands == null)
-            {
-                Commands = new List<Command>();
-            }
-            Commands.Add(command);
+            (Commands ?? (Commands = new List<Command>())).Add(command);
             return command;
         }
 
