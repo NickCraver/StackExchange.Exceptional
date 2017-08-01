@@ -18,7 +18,6 @@ namespace StackExchange.Exceptional
         /// </summary>
         /// <param name="ex">The exception to log.</param>
         /// <param name="context">The HTTPContext to record variables from.  If this isn't a web request, pass <see langword="null" /> in here.</param>
-        /// <param name="appendFullStackTrace">Whether to append a full stack trace to the exception's detail.</param>
         /// <param name="rollupPerServer">Whether to log up per-server, e.g. errors are only duplicates if they have same stack on the same machine.</param>
         /// <param name="customData">Any custom data to store with the exception like UserId, etc...this will be rendered as JSON in the error view for script use.</param>
         /// <param name="applicationName">If specified, the application name to log with, if not specified the name in <see cref="Settings.ApplicationName"/> is used.</param>
@@ -30,7 +29,6 @@ namespace StackExchange.Exceptional
         public static Error Log(
             this Exception ex,
             HttpContext context,
-            bool? appendFullStackTrace = null,
             bool rollupPerServer = false,
             Dictionary<string, string> customData = null,
             string applicationName = null)
@@ -46,7 +44,7 @@ namespace StackExchange.Exceptional
                     if (!ex.ShouldBeIgnored(Settings.Current))
                     {
                         // Create the error itself, populating CustomData with what was passed-in.
-                        var error = new Error(ex, applicationName, appendFullStackTrace, rollupPerServer, customData);
+                        var error = new Error(ex, applicationName, rollupPerServer, customData);
                         // Get everything from the HttpContext
                         error.SetProperties(context);
 
@@ -69,7 +67,6 @@ namespace StackExchange.Exceptional
         /// </summary>
         /// <param name="ex">The exception to log.</param>
         /// <param name="context">The HTTPContext to record variables from.  If this isn't a web request, pass <see langword="null" /> in here.</param>
-        /// <param name="appendFullStackTrace">Whether to append a full stack trace to the exception's detail.</param>
         /// <param name="rollupPerServer">Whether to log up per-server, e.g. errors are only duplicates if they have same stack on the same machine.</param>
         /// <param name="customData">Any custom data to store with the exception like UserId, etc...this will be rendered as JSON in the error view for script use.</param>
         /// <param name="applicationName">If specified, the application name to log with, if not specified the name in <see cref="Settings.ApplicationName"/> is used.</param>
@@ -81,7 +78,6 @@ namespace StackExchange.Exceptional
         public static async Task<Error> LogAsync(
             this Exception ex,
             HttpContext context,
-            bool? appendFullStackTrace = null,
             bool rollupPerServer = false,
             Dictionary<string, string> customData = null,
             string applicationName = null)
@@ -97,7 +93,7 @@ namespace StackExchange.Exceptional
                     if (!ex.ShouldBeIgnored(Settings.Current))
                     {
                         // Create the error itself, populating CustomData with what was passed-in.
-                        var error = new Error(ex, applicationName, appendFullStackTrace, rollupPerServer, customData);
+                        var error = new Error(ex, applicationName, rollupPerServer, customData);
                         // Get everything from the HttpContext
                         error.SetProperties(context);
 

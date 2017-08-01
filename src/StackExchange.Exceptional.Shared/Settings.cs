@@ -65,9 +65,9 @@ namespace StackExchange.Exceptional
         public Func<string> GetIPAddress { get; set; }
 
         /// <summary>
-        /// Whether to append full stack traces to exceptions. Defaults to false.
+        /// Whether to append full stack traces to exceptions. Defaults to true.
         /// </summary>
-        public bool AppendFullStackTraces { get; set; }
+        public bool AppendFullStackTraces { get; set; } = true;
 
         /// <summary>
         /// Method to get custom data for an error; will be called when custom data isn't already present.
