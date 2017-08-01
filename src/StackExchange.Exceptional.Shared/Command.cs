@@ -59,7 +59,7 @@ namespace StackExchange.Exceptional
         public string GetHighlightLanguage()
         {
             // URLs
-            if (CommandString.StartsWith("http://") || CommandString.StartsWith("https://")) return "html";
+            if (CommandString?.StartsWith("http://") == true || CommandString?.StartsWith("https://") == true) return "html";
 
             // Languages that are inferred well:
             //if (Type.Contains("SQL")) return "sql";
