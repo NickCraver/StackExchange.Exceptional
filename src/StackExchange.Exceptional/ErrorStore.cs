@@ -641,6 +641,7 @@ namespace StackExchange.Exceptional
 
                 if (appendFullStackTrace)
                 {
+                    error.Detail += "\n\nFull Trace:\n\n" + new StackTrace(3, true);
                     error.ErrorHash = error.GetHash();
                 }
 
