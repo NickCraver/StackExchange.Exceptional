@@ -66,7 +66,7 @@ namespace Samples.MVC5
         {
             // Note: When dealing with non-web applications, or logging from background threads, 
             // you would pass, null in instead of a HttpContext object.
-            ErrorStore.LogException(e, HttpContext.Current);
+            ErrorStore.LogException(e, HttpContext.Current, appendFullStackTrace: true);
         }
     }
 }
