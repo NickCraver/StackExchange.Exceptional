@@ -547,11 +547,9 @@ namespace StackExchange.Exceptional
 
         internal static ErrorStore Get(ErrorStoreSettings settings)
         {
-            if (settings == null) return null;
+            if (settings?.Type == null) return new MemoryErrorStore();
 
             // a bit of validation
-            if (settings.Type.IsNullOrEmpty())
-                throw new ArgumentOutOfRangeException(nameof(settings), "ErrorStore 'type' must be specified");
             if (settings.Size < 1)
                 throw new ArgumentOutOfRangeException(nameof(settings), "ErrorStore 'size' must be at least 1");
 
