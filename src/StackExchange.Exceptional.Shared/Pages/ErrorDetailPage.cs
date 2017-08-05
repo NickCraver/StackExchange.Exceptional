@@ -174,10 +174,10 @@ namespace StackExchange.Exceptional.Pages
                     }
                     sb.AppendLine("  </div>");
                 }
-                RenderVariableTable("QueryString", "querystring", Error.QueryString);
+                RenderVariableTable("Querystring", "querystring", Error.QueryString);
                 RenderVariableTable("Form", "form", Error.Form);
                 RenderVariableTable("Cookies", "cookies", Error.Cookies);
-                RenderVariableTable("RequestHeaders", "headers", Error.RequestHeaders);
+                RenderVariableTable("Request Headers", "headers", Error.RequestHeaders);
             }
         }
     }
