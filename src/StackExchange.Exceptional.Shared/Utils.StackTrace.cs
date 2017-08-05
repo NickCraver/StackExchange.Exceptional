@@ -39,11 +39,12 @@ namespace StackExchange.Exceptional
             // TODO: Patterns, or a bunch of these...
             private static readonly HashSet<string> _asyncFrames = new HashSet<string>()
             {
-                "System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()",
+                "System.Runtime.CompilerServices.ConfiguredTaskAwaitable.ConfiguredTaskAwaiter.GetResult()",
+                "System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()",
                 "System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)",
                 "System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()",
-                "System.Runtime.CompilerServices.ConfiguredTaskAwaitable.ConfiguredTaskAwaiter.GetResult()",
-                "System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()"
+                "System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()",
+                "Microsoft.Extensions.Internal.ObjectMethodExecutorAwaitable.Awaiter.GetResult()"
             };
 
             // TODO: Adjust for URLs instead of files
