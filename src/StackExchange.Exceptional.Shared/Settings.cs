@@ -97,6 +97,17 @@ namespace StackExchange.Exceptional
             public List<string> CSSIncludes { get; } = new List<string>();
         }
 
+        private ErrorStore _defaultStore;
+        /// <summary>
+        /// Gets the default error store specified in the configuration, 
+        /// or the in-memory store if none is configured.
+        /// </summary>
+        public ErrorStore DefaultStore
+        {
+            get => _defaultStore ?? (_defaultStore = ErrorStore.Get(Store));
+            internal set => _defaultStore = value;
+        }
+
         /// <summary>
         /// The ErrorStore section of the configuration, optional and will default to a MemoryErrorStore if not specified.
         /// </summary>

@@ -67,11 +67,11 @@ namespace Samples.Console
 
         private static async Task DisplayExceptionStats()
         {
-            WriteLine(ErrorStore.Default.Name + " for " + ErrorStore.Default.Name);
-            var count = await ErrorStore.Default.GetCountAsync().ConfigureAwait(false);
+            WriteLine(Settings.Current.DefaultStore.Name + " for " + Settings.Current.DefaultStore.Name);
+            var count = await Settings.Current.DefaultStore.GetCountAsync().ConfigureAwait(false);
             WriteLine("Exceptions in the log: " + count.ToString());
 
-            var errors = await ErrorStore.Default.GetAllAsync().ConfigureAwait(false);
+            var errors = await Settings.Current.DefaultStore.GetAllAsync().ConfigureAwait(false);
 
             if (errors.Count == 0) return;
 

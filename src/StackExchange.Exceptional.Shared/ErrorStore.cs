@@ -21,11 +21,10 @@ namespace StackExchange.Exceptional
     /// </summary>
     public abstract class ErrorStore
     {
-        private static ErrorStore _defaultStore;
-        private static ConcurrentQueue<Error> _writeQueue;
-        private static Thread _retryThread;
-        private static readonly object _retryLock = new object();
-        private static bool _isInRetry;
+        private ConcurrentQueue<Error> _writeQueue;
+        private Thread _retryThread;
+        private readonly object _retryLock = new object();
+        private bool _isInRetry;
         private Exception _retryException;
 
         /// <summary>
@@ -166,26 +165,20 @@ namespace StackExchange.Exceptional
         public virtual string MachineName => Environment.MachineName;
 
         /// <summary>
-        /// Gets the default error store specified in the configuration, 
-        /// or the in-memory store if none is configured.
-        /// </summary>
-        public static ErrorStore Default => _defaultStore ?? (_defaultStore = GetErrorStoreFromConfig());
-
-        /// <summary>
         /// Sets the default error store to use for logging
         /// </summary>
         /// <param name="applicationName">The application name to use when logging errors</param>
         /// <param name="store">The error store used to store, e.g. <code>new SQLErrorStore(myConnectionString)</code></param>
         public static void Setup(string applicationName, ErrorStore store)
         {
-            _defaultStore = store;
+            Exceptional.Settings.Current.DefaultStore = store;
             _applicationName = applicationName;
         }
 
         /// <summary>
         /// Gets the write queue for errors, which is populated in the case of a write failure.
         /// </summary>
-        public static ConcurrentQueue<Error> WriteQueue => _writeQueue ?? (_writeQueue = new ConcurrentQueue<Error>());
+        public ConcurrentQueue<Error> WriteQueue => _writeQueue ?? (_writeQueue = new ConcurrentQueue<Error>());
 
         /// <summary>
         /// Gets the last exception that happened when trying to log exceptions.
@@ -499,7 +492,7 @@ namespace StackExchange.Exceptional
                 Thread.Sleep(Settings.BackupQueueRetryInterval);
 
                 // if the error store is still down, sleep again
-                if (!(await Default.TestAsync().ConfigureAwait(false))) continue;
+                if (!(await TestAsync().ConfigureAwait(false))) continue;
 
                 // empty queue
                 while (!WriteQueue.IsEmpty)
@@ -509,12 +502,12 @@ namespace StackExchange.Exceptional
 
                     try
                     {
-                        Default.LogError(e);
+                        LogError(e);
                     }
                     catch
                     {
                         // if we had an error logging, stick it back in the queue and jump out, else we'll iterate this thing forever
-                        Default.QueueError(e);
+                        QueueError(e);
                         break;
                     }
                 }
@@ -549,10 +542,10 @@ namespace StackExchange.Exceptional
 
         private static ErrorStore GetErrorStoreFromConfig()
         {
-            return GetFromSettings(Exceptional.Settings.Current.Store) ?? new MemoryErrorStore();
+            return Get(Exceptional.Settings.Current.Store) ?? new MemoryErrorStore();
         }
 
-        private static ErrorStore GetFromSettings(ErrorStoreSettings settings)
+        internal static ErrorStore Get(ErrorStoreSettings settings)
         {
             if (settings == null) return null;
 

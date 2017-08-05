@@ -27,11 +27,6 @@ namespace StackExchange.Exceptional
         public virtual void Dispose() { }
 
         /// <summary>
-        /// Gets the <see cref="ErrorStore"/> instance to which the module will log exceptions.
-        /// </summary>        
-        public virtual ErrorStore ErrorStore => ErrorStore.Default;
-
-        /// <summary>
         /// The handler called when an unhandled exception bubbles up to the module.
         /// </summary>
         /// <param name="sender">The source of the error.</param>

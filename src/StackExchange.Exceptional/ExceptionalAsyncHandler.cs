@@ -51,6 +51,7 @@ namespace StackExchange.Exceptional
                 return Enumerable.Empty<Guid>();
             };
 
+            var store = Settings.Current.DefaultStore;
             string errorGuid;
 
             switch (context.Request.HttpMethod)
@@ -60,19 +61,19 @@ namespace StackExchange.Exceptional
                     switch (resource)
                     {
                         case KnownRoutes.Delete:
-                            JsonResult(await ErrorStore.Default.DeleteAsync(errorGuid.ToGuid()).ConfigureAwait(false));
+                            JsonResult(await store.DeleteAsync(errorGuid.ToGuid()).ConfigureAwait(false));
                             return;
                         case KnownRoutes.DeleteAll:
-                            JsonResult(await ErrorStore.Default.DeleteAllAsync().ConfigureAwait(false));
+                            JsonResult(await store.DeleteAllAsync().ConfigureAwait(false));
                             return;
                         case KnownRoutes.DeleteList:
-                            JsonResult(await ErrorStore.Default.DeleteAsync(getFormGuids()).ConfigureAwait(false));
+                            JsonResult(await store.DeleteAsync(getFormGuids()).ConfigureAwait(false));
                             return;
                         case KnownRoutes.Protect:
-                            JsonResult(await ErrorStore.Default.ProtectAsync(errorGuid.ToGuid()).ConfigureAwait(false));
+                            JsonResult(await store.ProtectAsync(errorGuid.ToGuid()).ConfigureAwait(false));
                             return;
                         case KnownRoutes.ProtectList:
-                            JsonResult(await ErrorStore.Default.ProtectAsync(getFormGuids()).ConfigureAwait(false));
+                            JsonResult(await store.ProtectAsync(getFormGuids()).ConfigureAwait(false));
                             return;
                         default:
                             Content("Invalid POST Request");
@@ -84,8 +85,8 @@ namespace StackExchange.Exceptional
                     {
                         case KnownRoutes.Info:
                             var guid = errorGuid.ToGuid();
-                            var error = errorGuid.HasValue() ? await ErrorStore.Default.GetAsync(guid).ConfigureAwait(false) : null;
-                            Page(new ErrorDetailPage(error, ErrorStore.Default, TrimEnd(context.Request.Path, "/info"), guid));
+                            var error = errorGuid.HasValue() ? await store.GetAsync(guid).ConfigureAwait(false) : null;
+                            Page(new ErrorDetailPage(error, store, TrimEnd(context.Request.Path, "/info"), guid));
                             return;
                         case KnownRoutes.Json:
                             context.Response.ContentType = "application/json";
@@ -93,7 +94,7 @@ namespace StackExchange.Exceptional
                                      ? new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(sinceLong)
                                      : (DateTime?)null;
 
-                            var errors = await ErrorStore.Default.GetAllAsync().ConfigureAwait(false);
+                            var errors = await store.GetAllAsync().ConfigureAwait(false);
                             if (since.HasValue)
                             {
                                 errors = errors.Where(e => e.CreationDate >= since).ToList();
@@ -111,7 +112,7 @@ namespace StackExchange.Exceptional
                         default:
                             context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
                             context.Response.Cache.SetNoStore();
-                            Page(new ErrorListPage(ErrorStore.Default, Url, await ErrorStore.Default.GetAllAsync().ConfigureAwait(false)));
+                            Page(new ErrorListPage(store, Url, await store.GetAllAsync().ConfigureAwait(false)));
                             return;
                     }
                 default:

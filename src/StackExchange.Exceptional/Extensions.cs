@@ -50,7 +50,7 @@ namespace StackExchange.Exceptional
                         // Get everything from the HttpContext
                         error.SetProperties(context);
 
-                        if (error.LogToStore(ErrorStore.Default))
+                        if (error.LogToStore())
                         {
                             return error;
                         }
@@ -101,7 +101,7 @@ namespace StackExchange.Exceptional
                         // Get everything from the HttpContext
                         error.SetProperties(context);
 
-                        if (await error.LogToStoreAsync(ErrorStore.Default).ConfigureAwait(false))
+                        if (await error.LogToStoreAsync().ConfigureAwait(false))
                         {
                             return error;
                         }

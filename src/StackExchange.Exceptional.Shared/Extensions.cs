@@ -35,7 +35,7 @@ namespace StackExchange.Exceptional
                     {
                         // Create the error itself, populating CustomData with what was passed-in.
                         var error = new Error(ex, category, applicationName, rollupPerServer, customData);
-                        if (error.LogToStore(ErrorStore.Default))
+                        if (error.LogToStore())
                         {
                             return error;
                         }

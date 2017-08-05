@@ -196,10 +196,11 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Logs this error to a specific store.
         /// </summary>
-        /// <param name="store">The store to log to.</param>
+        /// <param name="store">The store to log to, is null the default is used.</param>
         /// <returns>The error if logged, or null if logging was aborted.</returns>
-        public bool LogToStore(ErrorStore store)
+        public bool LogToStore(ErrorStore store = null)
         {
+            store = store ?? Settings.Current.DefaultStore;
             var abort = BeforeLog(store);
             if (abort) return true; // if we've been told to abort, then abort dammit!
 
@@ -214,10 +215,11 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Logs this error to a specific store.
         /// </summary>
-        /// <param name="store">The store to log to.</param>
+        /// <param name="store">The store to log to, if null the default is used.</param>
         /// <returns>The error if logged, or null if logging was aborted.</returns>
-        public async Task<bool> LogToStoreAsync(ErrorStore store)
+        public async Task<bool> LogToStoreAsync(ErrorStore store = null)
         {
+            store = store ?? Settings.Current.DefaultStore;
             var abort = BeforeLog(store);
             if (abort) return true; // if we've been told to abort, then abort dammit!
 
