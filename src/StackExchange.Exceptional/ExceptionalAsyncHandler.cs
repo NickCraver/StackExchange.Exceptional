@@ -35,6 +35,7 @@ namespace StackExchange.Exceptional
                 context.Response.Cache.SetMaxAge(TimeSpan.FromDays(1));
                 Content(cache.Content, cache.MimeType);
             }
+            string TrimEnd(string s, string value) => s.EndsWith(value) ? s.Remove(s.LastIndexOf(value, StringComparison.Ordinal)) : s;
 
             // In MVC requests, PathInfo isn't set - determine via Path..
             // e.g. "/errors/info" or "/errors/"
@@ -120,8 +121,5 @@ namespace StackExchange.Exceptional
                     return;
             }
         }
-
-        private string TrimEnd(string s, string value) =>
-            s.EndsWith(value) ? s.Remove(s.LastIndexOf(value, StringComparison.Ordinal)) : s;
     }
 }

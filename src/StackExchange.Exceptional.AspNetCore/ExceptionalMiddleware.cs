@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using StackExchange.Exceptional.Internal;
 using StackExchange.Exceptional.Pages;
@@ -22,13 +23,10 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Creates a new instance of <see cref="ExceptionalMiddleware"/>
         /// </summary>
-        public ExceptionalMiddleware(RequestDelegate next, Settings settings)
+        public ExceptionalMiddleware(RequestDelegate next, IOptions<Settings> settings)
         {
             _next = next;
-            if (settings != null)
-            {
-                Settings.Current = settings;
-            }
+            Settings.Current = settings.Value;
         }
 
         /// <summary>
@@ -73,6 +71,7 @@ namespace StackExchange.Exceptional
                 context.Response.Headers["Max-Age"] = "86400";
                 return Content(cache.Content, cache.MimeType);
             }
+            string TrimEnd(string s, string value) => s.EndsWith(value) ? s.Remove(s.LastIndexOf(value, StringComparison.Ordinal)) : s;
 
             // In MVC requests, PathInfo isn't set - determine via Path..
             // e.g. "/errors/info" or "/errors/"
@@ -83,10 +82,12 @@ namespace StackExchange.Exceptional
             {
                 try
                 {
-                    return context.Request.Form["ids"].ToString()?.Split(',').Select(Guid.Parse) ?? Enumerable.Empty<Guid>();
+                    return context.Request.Form["ids"].Select(Guid.Parse) ?? Enumerable.Empty<Guid>();
                 }
-                catch { /* fall through */ }
-                return Enumerable.Empty<Guid>();
+                catch
+                {
+                    return Enumerable.Empty<Guid>();
+                }
             };
 
             var store = Settings.Current.DefaultStore;
@@ -157,8 +158,5 @@ namespace StackExchange.Exceptional
                     return;
             }
         }
-
-        private static string TrimEnd(string s, string value) =>
-            s.EndsWith(value) ? s.Remove(s.LastIndexOf(value, StringComparison.Ordinal)) : s;
     }
 }

@@ -32,9 +32,9 @@ namespace Samples.AspNetCore
             {
                 //app.UseExceptionHandler("/Home/Error");
             }
-            app.UseExceptional(new StackExchange.Exceptional.Settings
+            app.UseExceptional(settings => 
             {
-                ApplicationName = "Samples.AspNetCore"
+                settings.ApplicationName = "Samples.AspNetCore";
             });
 
             app.UseStaticFiles();
