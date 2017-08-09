@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using StackExchange.Exceptional;
 using System;
 
@@ -15,10 +16,23 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="builder">The <see cref="IApplicationBuilder"/> instance this method extends.</param>
         /// <param name="configureSettings">The action configuring Exceptional settings.</param>
         /// <exception cref="ArgumentNullException"><paramref name="builder"/> or <paramref name="configureSettings"/> is <c>null</c>.</exception>
-        public static IApplicationBuilder UseExceptional(this IApplicationBuilder builder, Action<Settings> configureSettings)
+        public static IApplicationBuilder UseExceptional(this IApplicationBuilder builder, IConfiguration configuration, Action<Settings> configureSettings)
         {
             _ = builder ?? throw new ArgumentNullException(nameof(builder));
             _ = configureSettings ?? throw new ArgumentNullException(nameof(configureSettings));
+
+            var reload = configuration.GetReloadToken();
+            reload.RegisterChangeCallback(change =>
+            {
+                var cS = new ConfigSettings();
+                configuration.GetSection("Exceptional").Bind(cS);
+                ConfigSettings.InitializeSettings(Settings.Current, cS);
+            }, null);
+
+
+            var configSettings = new ConfigSettings();
+            configuration.GetSection("Exceptional").Bind(configSettings);
+            ConfigSettings.InitializeSettings(Settings.Current, configSettings);
 
             var settings = Settings.Current;
             configureSettings(settings);
@@ -32,11 +46,10 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="builder">The <see cref="IApplicationBuilder"/> instance this method extends.</param>
         /// <param name="applicationName">Application name for this error log.</param>
         /// <exception cref="ArgumentNullException"><paramref name="builder"/> or <paramref name="applicationName"/> is <c>null</c>.</exception>
-        public static IApplicationBuilder UseExceptional(this IApplicationBuilder builder, string applicationName)
+        public static IApplicationBuilder UseExceptional(this IApplicationBuilder builder, IConfiguration configuration, string applicationName)
         {
             _ = builder ?? throw new ArgumentNullException(nameof(builder));
-
-            return builder.UseExceptional(settings =>
+            return builder.UseExceptional(configuration, settings =>
             {
                 settings.ApplicationName = applicationName ?? throw new ArgumentNullException(nameof(applicationName));
             });
