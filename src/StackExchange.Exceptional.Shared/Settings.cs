@@ -75,6 +75,12 @@ namespace StackExchange.Exceptional
         public Action<Exception, Dictionary<string, string>> GetCustomData { get; set; }
 
         /// <summary>
+        /// ASP.NET Core Only!
+        /// Whether to show the Exceptional page on throw, instead of the built-in .UseDeveloperExceptionPage()
+        /// </summary>
+        public bool UseExceptionalPageOnThrow { get; set; }
+
+        /// <summary>
         /// Settings for the rendering of pages.
         /// </summary>
         public RenderSettings Render { get; } = new RenderSettings();

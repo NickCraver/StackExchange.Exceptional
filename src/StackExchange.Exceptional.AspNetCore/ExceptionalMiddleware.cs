@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using StackExchange.Exceptional.Internal;
@@ -18,15 +21,29 @@ namespace StackExchange.Exceptional
     public class ExceptionalMiddleware
     {
         private RequestDelegate _next;
+        private readonly ILogger _logger;
+        private readonly IHostingEnvironment _env;
         private static readonly JsonSerializer _serializer = new JsonSerializer();
 
         /// <summary>
         /// Creates a new instance of <see cref="ExceptionalMiddleware"/>
         /// </summary>
-        public ExceptionalMiddleware(RequestDelegate next, IOptions<Settings> settings)
+        public ExceptionalMiddleware(
+            RequestDelegate next, 
+            IOptions<Settings> settings, 
+            IHostingEnvironment hostingEnvironment,
+            ILoggerFactory loggerFactory)
         {
             _next = next;
+            _env = hostingEnvironment;
+            _logger = loggerFactory.CreateLogger<ExceptionalMiddleware>();
             Settings.Current = settings.Value;
+
+            // If an ApplicationName isn't provided, default to IHostingEnvironment.ApplicationName
+            if (!Settings.Current.ApplicationName.HasValue())
+            {
+                Settings.Current.ApplicationName = _env.ApplicationName;
+            }
         }
 
         /// <summary>
@@ -40,7 +57,47 @@ namespace StackExchange.Exceptional
             }
             catch (Exception ex)
             {
-                await ex.LogAsync(context);
+                _logger.LogError(0, ex, "An unhandled exception has occurred, logging to Exceptional");
+                var error = await ex.LogAsync(context);
+                
+                // If options say to do so, show the exception page to the user
+                if (Settings.Current.UseExceptionalPageOnThrow && error != null)
+                {
+                    var response = context.Response;
+                    if (context.Response.HasStarted)
+                    {
+                        _logger.LogWarning("The response has already started, the Exceptional error page will not be displayed.");
+                        throw;
+                    }
+
+                    try
+                    {
+                        response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = null;
+                        response.Headers.Clear();
+                        if (response.Body.CanSeek)
+                        {
+                            response.Body.SetLength(0);
+                        }
+                        response.StatusCode = 500;
+
+                        var page = new ErrorDetailPage(error, Settings.Current.DefaultStore, "", error.GUID)
+                        {
+                            HeaderTitle = "An error was thrown during this request.",
+                            PageTitle = "An error was thrown during this request.",
+                            InlineCSS = true,
+                            IncludeJS = false,
+                            ShowActionLinks = false
+                        };
+                        response.ContentType = "text/html";
+                        await response.WriteAsync(page.Render());
+
+                        return;
+                    }
+                    catch (Exception pex)
+                    {
+                        _logger.LogError(0, pex, "An exception was thrown attempting to display the Exceptional page.");
+                    }
+                }
                 throw;
             }
         }

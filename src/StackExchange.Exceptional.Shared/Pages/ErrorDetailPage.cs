@@ -15,12 +15,17 @@ namespace StackExchange.Exceptional.Pages
         private readonly Guid _guid;
 
         /// <summary>
+        /// Whether to show the action links for this exception.
+        /// </summary>
+        public bool ShowActionLinks { get; set; }
+
+        /// <summary>
         /// Creates an <see cref="ErrorDetailPage"/>.
         /// </summary>
         /// <param name="error">The error we're rendering details.</param>
         /// <param name="store">The store this error is from.</param>
         /// <param name="baseURL">The base URL for the current request.</param>
-        /// <param name="guid">The id for the error (populate even if the error is null)</param>
+        /// <param name="guid">The id for the error (populate even if the error is null).</param>
         public ErrorDetailPage(Error error, ErrorStore store, string baseURL, Guid guid)
             : base(error, store, baseURL, "Error - " + (error?.Message ?? "Not Found"))
         {
@@ -129,7 +134,12 @@ namespace StackExchange.Exceptional.Pages
                   .Append("\">")
                   .Append(Error.CreationDate.ToRelativeTime())
                   .Append("</b> on ")
-                  .Append(" <span>(<a href=\"delete?guid=").Append(Error.GUID.ToString()).AppendLine("\">delete</a>)</span></p>");
+                  .AppendHtmlEncode(Error.MachineName);
+                if (ShowActionLinks)
+                {
+                    sb.Append(" <span>(<a href=\"delete?guid=").Append(Error.GUID.ToString()).AppendLine("\">delete</a>)</span>");
+                }
+                sb.Append("</p>");
                 if (Error.Commands != null)
                 {
                     foreach (var cmd in Error.Commands)
