@@ -10,7 +10,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// The Ignore section of the configuration, optional and no errors will be blocked from logging if not specified.
         /// </summary>
-        public LogFilterSettings LogFilters { get; set; }
+        public LogFilterSettings LogFilters { get; set; } = new LogFilterSettings();
 
         /// <summary>
         /// Ignore element for deserialization from a configuration, e.g. web.config or app.config

@@ -11,7 +11,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// The Ignore section of the configuration, optional and no errors will be blocked from logging if not specified.
         /// </summary>
-        public IgnoreSettings IgnoreErrors { get; set; }
+        public IgnoreSettings IgnoreErrors { get; set; } = new IgnoreSettings();
 
         /// <summary>
         /// Ignore element for deserialization from a configuration, e.g. web.config or app.config

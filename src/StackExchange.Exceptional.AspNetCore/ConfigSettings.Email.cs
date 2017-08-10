@@ -12,7 +12,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// The ErrorStore section of the configuration, optional and will send no email if not present.
         /// </summary>
-        public EmailSettingsConfig Email { get; set; }
+        public EmailSettingsConfig Email { get; set; } = new EmailSettingsConfig();
 
         /// <summary>
         /// A settings object describing email properties

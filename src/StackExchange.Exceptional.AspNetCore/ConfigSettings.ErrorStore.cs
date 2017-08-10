@@ -11,7 +11,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// The ErrorStore section of the configuration, optional and will default to a <see cref="Stores.MemoryErrorStore"/> if not specified.
         /// </summary>
-        public ErrorStoreSettings ErrorStore { get; set; }
+        public ErrorStoreSettings ErrorStore { get; set; } = new ErrorStoreSettings();
 
         /// <summary>
         /// A settings object describing an error store.
