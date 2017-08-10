@@ -15,9 +15,13 @@ namespace StackExchange.Exceptional.Pages
         /// </summary>
         public Error Error { get; }
         /// <summary>
-        /// The title of the page.
+        /// The &gt;title&lt; of the page.
         /// </summary>
-        public string PageTitle { get; }
+        public string PageTitle { get; set; }
+        /// <summary>
+        /// The header title, visible in the page itself.
+        /// </summary>
+        public string HeaderTitle { get; set; }
         /// <summary>
         /// The store we're rendering with this page.
         /// </summary>
@@ -32,6 +36,15 @@ namespace StackExchange.Exceptional.Pages
         public Settings Settings => Settings.Current;
 
         /// <summary>
+        /// Whether to inline CSS styles in the page.
+        /// </summary>
+        public bool InlineCSS { get; set; } = false;
+        /// <summary>
+        /// Whether to include the JS as a linked resource.
+        /// </summary>
+        public bool IncludeJS { get; set; } = true;
+
+        /// <summary>
         /// Creates a new <see cref="WebPage"/> for rendering.
         /// </summary>
         /// <param name="error">The current error (null if not on an error-specific page).</param>
@@ -44,6 +57,7 @@ namespace StackExchange.Exceptional.Pages
             Store = store;
             BaseUrl = baseURL.EndsWith("/") ? baseURL : baseURL + "/";
             PageTitle = pageTitle;
+            HeaderTitle = "Exceptions Log: " + Settings.ApplicationName.HtmlEncode();
         }
 
         /// <summary>
@@ -67,8 +81,15 @@ namespace StackExchange.Exceptional.Pages
             sb.AppendLine("<!DOCTYPE html>")
               .AppendLine("<html>")
               .AppendLine("  <head>")
-              .AppendFormat("    <title>{0}</title>", PageTitle.HtmlEncode()).AppendLine()
-              .AppendFormat("    <link rel=\"stylesheet\" type=\"text/css\" href=\"{0}?v={1}\" integrity=\"sha512-{1}\" crossorigin=\"anonymous\"/>", Url(KnownRoutes.Css), Resources.BundleCss.Sha512).AppendLine();
+              .AppendFormat("    <title>{0}</title>", PageTitle.HtmlEncode()).AppendLine();
+            if (InlineCSS)
+            {
+                sb.Append("    <style>").Append(Resources.BundleCss.Content).AppendLine("</style>");
+            }
+            else
+            {
+                sb.AppendFormat("    <link rel=\"stylesheet\" type=\"text/css\" href=\"{0}?v={1}\" integrity=\"sha512-{1}\" crossorigin=\"anonymous\"/>", Url(KnownRoutes.Css), Resources.BundleCss.Sha512).AppendLine();
+            }
 
             foreach (var css in Settings.Render.CSSIncludes)
             {
@@ -83,7 +104,10 @@ namespace StackExchange.Exceptional.Pages
                 sb.AppendLine(";</script>");
             }
 
-            sb.AppendFormat("    <script src=\"{0}?v={1}\" integrity=\"sha512-{1}\" crossorigin=\"anonymous\"></script>", Url(KnownRoutes.Js), Resources.BundleJs.Sha512).AppendLine();
+            if (IncludeJS)
+            {
+                sb.AppendFormat("    <script src=\"{0}?v={1}\" integrity=\"sha512-{1}\" crossorigin=\"anonymous\"></script>", Url(KnownRoutes.Js), Resources.BundleJs.Sha512).AppendLine();
+            }
             foreach (var js in Settings.Render.JSIncludes)
             {
                 sb.AppendFormat("    <script src=\"{0}\"></script>", js).AppendLine();
@@ -91,7 +115,7 @@ namespace StackExchange.Exceptional.Pages
             sb.AppendLine("  </head>")
               .AppendLine("  <body>")
               .AppendLine("    <div class=\"wrapper\">")
-              .AppendFormat("      <header{0}>Exceptions Log: {1}</header>", Store.InFailureMode ? " class=\"failure\"" : "", Settings.ApplicationName.HtmlEncode()).AppendLine()
+              .AppendFormat("      <header{0}>{1}</header>", Store.InFailureMode ? " class=\"failure\"" : "", HeaderTitle).AppendLine()
               .AppendLine("      <main>");
 
             // Render the page inheriting from us
