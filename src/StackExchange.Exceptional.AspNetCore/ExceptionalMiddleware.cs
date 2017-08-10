@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,16 +22,28 @@ namespace StackExchange.Exceptional
     {
         private RequestDelegate _next;
         private readonly ILogger _logger;
+        private readonly IHostingEnvironment _env;
         private static readonly JsonSerializer _serializer = new JsonSerializer();
 
         /// <summary>
         /// Creates a new instance of <see cref="ExceptionalMiddleware"/>
         /// </summary>
-        public ExceptionalMiddleware(RequestDelegate next, IOptions<Settings> settings, ILoggerFactory loggerFactory)
+        public ExceptionalMiddleware(
+            RequestDelegate next, 
+            IOptions<Settings> settings, 
+            IHostingEnvironment hostingEnvironment,
+            ILoggerFactory loggerFactory)
         {
             _next = next;
+            _env = hostingEnvironment;
             _logger = loggerFactory.CreateLogger<ExceptionalMiddleware>();
             Settings.Current = settings.Value;
+
+            // If an ApplicationName isn't provided, default to IHostingEnvironment.ApplicationName
+            if (!Settings.Current.ApplicationName.HasValue())
+            {
+                Settings.Current.ApplicationName = _env.ApplicationName;
+            }
         }
 
         /// <summary>
