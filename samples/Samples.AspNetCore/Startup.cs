@@ -23,8 +23,6 @@ namespace Samples.AspNetCore
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            //TODO: We really need to check if the settings are correct.
-             
             // Boilerplate we're no longer using with Exceptional
             //if (env.IsDevelopment())
             //{
