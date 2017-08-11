@@ -65,6 +65,25 @@ namespace StackExchange.Exceptional
             /// Flags whether or not emails are sent for duplicate errors.
             /// </summary>
             public bool PreventDuplicates { get; set; }
+
+            public void Initialize(Settings settings)
+            {
+                var emailSettings = settings.Email;
+                emailSettings.ToAddress = ToAddress;
+                emailSettings.FromAddress = FromAddress;
+                emailSettings.FromDisplayName = FromDisplayName;
+                emailSettings.SMTPHost = SMTPHost;
+                emailSettings.SMTPPort = SMTPPort;
+                emailSettings.SMTPUserName = SMTPUserName;
+                emailSettings.SMTPPassword = SMTPPassword;
+                emailSettings.SMTPEnableSSL = SMTPEnableSSL;
+                emailSettings.PreventDuplicates = PreventDuplicates;
+
+                if (emailSettings.ToAddress.HasValue())
+                {
+                    EmailNotifier.Setup(emailSettings);
+                }
+            }
         }
     }
 }

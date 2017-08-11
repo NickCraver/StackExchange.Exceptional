@@ -26,6 +26,19 @@ namespace StackExchange.Exceptional
             /// Cookie values to replace on save - this prevents logging authentication tokens, etc.
             /// </summary>
             public List<LogFilter> Cookies { get; set; } = new List<LogFilter>();
+
+            public void Initialize(Settings settings)
+            {
+                var s = settings.LogFilters;
+                foreach (LogFilter f in Form)
+                {
+                    s.Form[f.Name] = f.ReplaceWith;
+                }
+                foreach (LogFilter c in Cookies)
+                {
+                    s.Cookie[c.Name] = c.ReplaceWith;
+                }
+            }
         }
 
         /// <summary>

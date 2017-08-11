@@ -28,6 +28,19 @@ namespace StackExchange.Exceptional
             /// Types collection for errors to ignore.  Any errors with a Type matching any name here will not be logged
             /// </summary>
             public List<IgnoreType> Types { get; set; } = new List<IgnoreType>();
+
+            public void Initialize(Settings settings)
+            {
+                var ignoreSettings = settings.Ignore;
+                foreach (IgnoreRegex r in Regexes)
+                {
+                    ignoreSettings.Regexes.Add(r.PatternRegex);
+                }
+                foreach (IgnoreType t in Types)
+                {
+                    ignoreSettings.Types.Add(t.Type);
+                }
+            }
         }
 
         /// <summary>

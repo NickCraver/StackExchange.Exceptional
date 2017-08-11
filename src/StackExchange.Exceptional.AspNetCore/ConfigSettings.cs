@@ -18,15 +18,18 @@ namespace StackExchange.Exceptional
     public partial class ConfigSettings
     {
         const string CONFIGSECTION_KEY = "Exceptional";
+        private IConfigurationSection _exceptionalConfiguration;
 
         //TODO: We really need to add a settings validation
-        public static Settings LoadSettings(IConfiguration configuration)
+        public static void ConfigureSettings(IConfiguration configuration, Settings settings)
         {
             var configSettings = new ConfigSettings();
-            var settings = new Settings();
-            configuration.GetSection(CONFIGSECTION_KEY).Bind(configSettings);            
-            configSettings.InitializeSettings(settings);
-            return settings;
+            configSettings._exceptionalConfiguration = configuration.GetSection(CONFIGSECTION_KEY);
+            if (configSettings._exceptionalConfiguration.Value != null)
+            {
+                configSettings._exceptionalConfiguration.Bind(configSettings);
+                configSettings.Initialize(settings);
+            }
         }
 
         /// <summary>
@@ -40,8 +43,12 @@ namespace StackExchange.Exceptional
         /// </summary>
         public string DataIncludePattern { get; set; }
 
+        public bool ConfigSectionExists(string setting)
+        {
+            return _exceptionalConfiguration.GetChildren().Any(x => x.Key == setting);
+        }
 
-        public void InitializeSettings(Settings settings)
+        public void Initialize(Settings settings)
         {
             // Main settings
             settings.ApplicationName = ApplicationName;
@@ -50,53 +57,14 @@ namespace StackExchange.Exceptional
                 settings.DataIncludeRegex = new Regex(DataIncludePattern, RegexOptions.Singleline | RegexOptions.Compiled);
             }
 
-            var emailSettings = settings.Email;
-            emailSettings.ToAddress = Email.ToAddress;
-            emailSettings.FromAddress = Email.FromAddress;
-            emailSettings.FromDisplayName = Email.FromDisplayName;
-            emailSettings.SMTPHost = Email.SMTPHost;
-            emailSettings.SMTPPort = Email.SMTPPort;
-            emailSettings.SMTPUserName = Email.SMTPUserName;
-            emailSettings.SMTPPassword = Email.SMTPPassword;
-            emailSettings.SMTPEnableSSL = Email.SMTPEnableSSL;
-            emailSettings.PreventDuplicates = Email.PreventDuplicates;
-
-            if (emailSettings.ToAddress.HasValue())
-            {
-                EmailNotifier.Setup(emailSettings);
-            }
-
-
-            var storeSettings = settings.Store;
-            storeSettings.Type = ErrorStore.Type;
-            storeSettings.Path = ErrorStore.Path;
-            storeSettings.ConnectionString = ErrorStore.ConnectionString;
-#if !NETSTANDARD2_0
-            storeSettings.ConnectionStringName = ErrorStore.ConnectionStringName;
-#endif
-            storeSettings.Size = ErrorStore.Size;
-            storeSettings.RollupPeriod = TimeSpan.FromSeconds(ErrorStore.RollupSeconds);
-            storeSettings.BackupQueueSize = ErrorStore.BackupQueueSize;
-
-            var ignoreSettings = settings.Ignore;
-            foreach (IgnoreRegex r in IgnoreErrors.Regexes)
-            {
-                ignoreSettings.Regexes.Add(r.PatternRegex);
-            }
-            foreach (IgnoreType t in IgnoreErrors.Types)
-            {
-                ignoreSettings.Types.Add(t.Type);
-            }
-
-            var s = settings.LogFilters;
-            foreach (LogFilter f in LogFilters.Form)
-            {
-                s.Form[f.Name] = f.ReplaceWith;
-            }
-            foreach (LogFilter c in LogFilters.Cookies)
-            {
-                s.Cookie[c.Name] = c.ReplaceWith;
-            }
+            if (ConfigSectionExists(nameof(Email)))
+                Email.Initialize(settings);
+            if (ConfigSectionExists(nameof(ErrorStore)))
+                ErrorStore.Initialize(settings);
+            if (ConfigSectionExists(nameof(IgnoreErrors)))
+                IgnoreErrors.Initialize(settings);
+            if (ConfigSectionExists(nameof(LogFilters)))
+                LogFilters.Initialize(settings);
         }
     }
 }

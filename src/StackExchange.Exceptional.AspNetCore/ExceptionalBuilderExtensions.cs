@@ -20,8 +20,9 @@ namespace Microsoft.AspNetCore.Builder
         {
             _ = builder ?? throw new ArgumentNullException(nameof(builder));
             _ = configureSettings ?? throw new ArgumentNullException(nameof(configureSettings));
-     
-            var settings = ConfigSettings.LoadSettings(configuration);
+
+            var settings = Settings.Current;
+            ConfigSettings.ConfigureSettings(configuration, settings);
             configureSettings(settings);
             return builder.UseMiddleware<ExceptionalMiddleware>(Options.Create(settings));
         }

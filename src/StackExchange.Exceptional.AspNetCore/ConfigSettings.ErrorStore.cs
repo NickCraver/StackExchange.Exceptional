@@ -53,6 +53,20 @@ namespace StackExchange.Exceptional
             /// The size of the backup queue to use for the log, after roll-ups, it's how many entries in memory can be stored before culling the oldest.
             /// </summary>
             public int BackupQueueSize { get; set; } = 1000;
+
+            public void Initialize(Settings settings)
+            {
+                var storeSettings = settings.Store;
+                storeSettings.Type = Type;
+                storeSettings.Path = Path;
+                storeSettings.ConnectionString = ConnectionString;
+#if !NETSTANDARD2_0
+            storeSettings.ConnectionStringName = ErrorStore.ConnectionStringName;
+#endif
+                storeSettings.Size = Size;
+                storeSettings.RollupPeriod = TimeSpan.FromSeconds(RollupSeconds);
+                storeSettings.BackupQueueSize = BackupQueueSize;
+            }
         }
     }
 }
