@@ -20,21 +20,8 @@ namespace Microsoft.AspNetCore.Builder
         {
             _ = builder ?? throw new ArgumentNullException(nameof(builder));
             _ = configureSettings ?? throw new ArgumentNullException(nameof(configureSettings));
-
-            var reload = configuration.GetReloadToken();
-            reload.RegisterChangeCallback(change =>
-            {
-                var cS = new ConfigSettings();
-                configuration.GetSection("Exceptional").Bind(cS);
-                ConfigSettings.InitializeSettings(Settings.Current, cS);
-            }, null);
-
-
-            var configSettings = new ConfigSettings();
-            configuration.GetSection("Exceptional").Bind(configSettings);
-            ConfigSettings.InitializeSettings(Settings.Current, configSettings);
-
-            var settings = Settings.Current;
+     
+            var settings = ConfigSettings.LoadSettings(configuration);
             configureSettings(settings);
             return builder.UseMiddleware<ExceptionalMiddleware>(Options.Create(settings));
         }

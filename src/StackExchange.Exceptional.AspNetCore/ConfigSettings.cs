@@ -15,8 +15,20 @@ namespace StackExchange.Exceptional
     /// The Settings element for Exceptional's configuration.
     /// This is the legacy web.config settings, that only serve as an adapter to populate <see cref="Settings"/>.
     /// </summary>
-    public partial class ConfigSettings 
+    public partial class ConfigSettings
     {
+        const string CONFIGSECTION_KEY = "Exceptional";
+
+        //TODO: We really need to add a settings validation
+        public static Settings LoadSettings(IConfiguration configuration)
+        {
+            var configSettings = new ConfigSettings();
+            var settings = new Settings();
+            configuration.GetSection(CONFIGSECTION_KEY).Bind(configSettings);            
+            configSettings.InitializeSettings(settings);
+            return settings;
+        }
+
         /// <summary>
         /// Application name to log with.
         /// </summary>
@@ -29,25 +41,25 @@ namespace StackExchange.Exceptional
         public string DataIncludePattern { get; set; }
 
 
-        public static void InitializeSettings(Settings settings, ConfigSettings configSettings)
+        public void InitializeSettings(Settings settings)
         {
             // Main settings
-            settings.ApplicationName = configSettings.ApplicationName;
-            if (configSettings.DataIncludePattern.HasValue())
+            settings.ApplicationName = ApplicationName;
+            if (DataIncludePattern.HasValue())
             {
-                settings.DataIncludeRegex = new Regex(configSettings.DataIncludePattern, RegexOptions.Singleline | RegexOptions.Compiled);
+                settings.DataIncludeRegex = new Regex(DataIncludePattern, RegexOptions.Singleline | RegexOptions.Compiled);
             }
 
             var emailSettings = settings.Email;
-            emailSettings.ToAddress = configSettings.Email.ToAddress;
-            emailSettings.FromAddress = configSettings.Email.FromAddress;
-            emailSettings.FromDisplayName = configSettings.Email.FromDisplayName;
-            emailSettings.SMTPHost = configSettings.Email.SMTPHost;
-            emailSettings.SMTPPort = configSettings.Email.SMTPPort;
-            emailSettings.SMTPUserName = configSettings.Email.SMTPUserName;
-            emailSettings.SMTPPassword = configSettings.Email.SMTPPassword;
-            emailSettings.SMTPEnableSSL = configSettings.Email.SMTPEnableSSL;
-            emailSettings.PreventDuplicates = configSettings.Email.PreventDuplicates;
+            emailSettings.ToAddress = Email.ToAddress;
+            emailSettings.FromAddress = Email.FromAddress;
+            emailSettings.FromDisplayName = Email.FromDisplayName;
+            emailSettings.SMTPHost = Email.SMTPHost;
+            emailSettings.SMTPPort = Email.SMTPPort;
+            emailSettings.SMTPUserName = Email.SMTPUserName;
+            emailSettings.SMTPPassword = Email.SMTPPassword;
+            emailSettings.SMTPEnableSSL = Email.SMTPEnableSSL;
+            emailSettings.PreventDuplicates = Email.PreventDuplicates;
 
             if (emailSettings.ToAddress.HasValue())
             {
@@ -56,32 +68,32 @@ namespace StackExchange.Exceptional
 
 
             var storeSettings = settings.Store;
-            storeSettings.Type = configSettings.ErrorStore.Type;
-            storeSettings.Path = configSettings.ErrorStore.Path;
-            storeSettings.ConnectionString = configSettings.ErrorStore.ConnectionString;
+            storeSettings.Type = ErrorStore.Type;
+            storeSettings.Path = ErrorStore.Path;
+            storeSettings.ConnectionString = ErrorStore.ConnectionString;
 #if !NETSTANDARD2_0
-            storeSettings.ConnectionStringName = configSettings.ErrorStore.ConnectionStringName;
+            storeSettings.ConnectionStringName = ErrorStore.ConnectionStringName;
 #endif
-            storeSettings.Size = configSettings.ErrorStore.Size;
-            storeSettings.RollupPeriod = TimeSpan.FromSeconds(configSettings.ErrorStore.RollupSeconds);
-            storeSettings.BackupQueueSize = configSettings.ErrorStore.BackupQueueSize;
+            storeSettings.Size = ErrorStore.Size;
+            storeSettings.RollupPeriod = TimeSpan.FromSeconds(ErrorStore.RollupSeconds);
+            storeSettings.BackupQueueSize = ErrorStore.BackupQueueSize;
 
             var ignoreSettings = settings.Ignore;
-            foreach (IgnoreRegex r in configSettings.IgnoreErrors.Regexes)
+            foreach (IgnoreRegex r in IgnoreErrors.Regexes)
             {
                 ignoreSettings.Regexes.Add(r.PatternRegex);
             }
-            foreach (IgnoreType t in configSettings.IgnoreErrors.Types)
+            foreach (IgnoreType t in IgnoreErrors.Types)
             {
                 ignoreSettings.Types.Add(t.Type);
             }
 
             var s = settings.LogFilters;
-            foreach (LogFilter f in configSettings.LogFilters.Form)
+            foreach (LogFilter f in LogFilters.Form)
             {
                 s.Form[f.Name] = f.ReplaceWith;
             }
-            foreach (LogFilter c in configSettings.LogFilters.Cookies)
+            foreach (LogFilter c in LogFilters.Cookies)
             {
                 s.Cookie[c.Name] = c.ReplaceWith;
             }
