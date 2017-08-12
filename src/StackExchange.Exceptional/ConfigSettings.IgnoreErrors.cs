@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using StackExchange.Exceptional.Internal;
+using System.Configuration;
 using System.Text.RegularExpressions;
 
 namespace StackExchange.Exceptional
@@ -39,7 +40,10 @@ namespace StackExchange.Exceptional
                 var s = Settings.Current.Ignore;
                 foreach (IgnoreRegex r in Regexes)
                 {
-                    s.Regexes.Add(r.PatternRegex);
+                    if (r.Pattern.HasValue())
+                    {
+                        s.Regexes.Add(new Regex(r.Pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline));
+                    }
                 }
                 foreach (IgnoreType t in Types)
                 {
@@ -64,12 +68,6 @@ namespace StackExchange.Exceptional
             /// </summary>
             [ConfigurationProperty("pattern", IsRequired = true)]
             public string Pattern => this["pattern"] as string;
-
-            private Regex _patternRegEx;
-            /// <summary>
-            /// <see cref="Regex"/> object representing the pattern specified, compiled once for use against all future exceptions.
-            /// </summary>
-            public Regex PatternRegex => _patternRegEx ?? (_patternRegEx = new Regex(Pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline));
         }
 
         /// <summary>

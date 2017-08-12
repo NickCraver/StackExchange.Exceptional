@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using StackExchange.Exceptional.Internal;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Runtime.Serialization;
@@ -34,7 +35,10 @@ namespace StackExchange.Exceptional
                 var ignoreSettings = settings.Ignore;
                 foreach (IgnoreRegex r in Regexes)
                 {
-                    ignoreSettings.Regexes.Add(r.PatternRegex);
+                    if (r.Pattern.HasValue())
+                    {
+                        ignoreSettings.Regexes.Add(new Regex(r.Pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline));
+                    }
                 }
                 foreach (IgnoreType t in Types)
                 {
@@ -57,12 +61,6 @@ namespace StackExchange.Exceptional
             /// The Pattern to match on the exception message.
             /// </summary>
             public string Pattern { get; set; }
-
-            private Regex _patternRegEx;
-            /// <summary>
-            /// <see cref="Regex"/> object representing the pattern specified, compiled once for use against all future exceptions.
-            /// </summary>
-            public Regex PatternRegex => _patternRegEx ?? (_patternRegEx = new Regex(Pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline));
         }
 
         /// <summary>
