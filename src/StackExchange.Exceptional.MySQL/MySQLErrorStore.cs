@@ -298,6 +298,8 @@ Select *
             Error result = Error.FromJson(sqlError.FullJson);
             result.DuplicateCount = sqlError.DuplicateCount;
             result.DeletionDate = sqlError.DeletionDate;
+            result.IsProtected = sqlError.IsProtected;
+            result.LastLogDate = sqlError.LastLogDate;
             return result;
         }
 
