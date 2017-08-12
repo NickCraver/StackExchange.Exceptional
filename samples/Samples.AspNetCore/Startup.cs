@@ -33,12 +33,11 @@ namespace Samples.AspNetCore
             //{
             //    app.UseExceptionHandler("/Home/Error");
             //}
-            app.UseExceptional(Configuration, settings => 
+            app.UseExceptional(Configuration.GetSection("Exceptional"), settings => 
             {
                 settings.ApplicationName = "Samples.AspNetCore";
                 settings.UseExceptionalPageOnThrow = env.IsDevelopment();
             });
-
             app.UseStaticFiles();
 
             app.UseMvc(routes =>

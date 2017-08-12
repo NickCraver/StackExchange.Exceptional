@@ -49,7 +49,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Executes the Exceptional-wrapped middleware.
         /// </summary>
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context)            
         {
             try
             {

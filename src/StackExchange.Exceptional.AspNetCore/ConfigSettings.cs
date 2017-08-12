@@ -17,12 +17,9 @@ namespace StackExchange.Exceptional
     /// </summary>
     internal partial class ConfigSettings
     {
-        const string CONFIGSECTION_KEY = "Exceptional";
-        private IConfigurationSection _exceptionalConfiguration;
-
         public ConfigSettings(IConfiguration configuration)
         {
-            configuration.GetSection(CONFIGSECTION_KEY).Bind(this);
+            configuration.Bind(this);
         }
 
         /// <summary>
