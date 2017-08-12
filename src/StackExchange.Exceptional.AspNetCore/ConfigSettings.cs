@@ -20,12 +20,9 @@ namespace StackExchange.Exceptional
         const string CONFIGSECTION_KEY = "Exceptional";
         private IConfigurationSection _exceptionalConfiguration;
 
-        //TODO: We really need to add a settings validation
-        public static void ConfigureSettings(IConfiguration configuration, Settings settings)
+        public ConfigSettings(IConfiguration configuration)
         {
-            var configSettings = new ConfigSettings();
-            configuration.GetSection(CONFIGSECTION_KEY).Bind(configSettings);
-            configSettings.Populate(settings);
+            configuration.GetSection(CONFIGSECTION_KEY).Bind(this);
         }
 
         /// <summary>

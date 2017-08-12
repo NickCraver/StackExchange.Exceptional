@@ -22,7 +22,8 @@ namespace Microsoft.AspNetCore.Builder
             _ = configureSettings ?? throw new ArgumentNullException(nameof(configureSettings));
 
             var settings = Settings.Current;
-            ConfigSettings.ConfigureSettings(configuration, settings);
+            var configSettings = new ConfigSettings(configuration);
+            configSettings.Populate(settings);
             configureSettings(settings);
             return builder.UseMiddleware<ExceptionalMiddleware>(Options.Create(settings));
         }
