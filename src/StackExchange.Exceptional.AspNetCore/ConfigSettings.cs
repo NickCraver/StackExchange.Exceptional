@@ -43,7 +43,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         public string DataIncludePattern { get; set; }
 
-        public bool ConfigSectionExists(string setting)
+        public bool SectionExists(string setting)
         {
             return _exceptionalConfiguration.GetChildren().Any(x => x.Key == setting);
         }
@@ -57,13 +57,13 @@ namespace StackExchange.Exceptional
                 settings.DataIncludeRegex = new Regex(DataIncludePattern, RegexOptions.Singleline | RegexOptions.Compiled);
             }
 
-            if (ConfigSectionExists(nameof(Email)))
+            if (SectionExists(nameof(Email)))
                 Email.Initialize(settings);
-            if (ConfigSectionExists(nameof(ErrorStore)))
+            if (SectionExists(nameof(ErrorStore)))
                 ErrorStore.Initialize(settings);
-            if (ConfigSectionExists(nameof(IgnoreErrors)))
+            if (SectionExists(nameof(IgnoreErrors)))
                 IgnoreErrors.Initialize(settings);
-            if (ConfigSectionExists(nameof(LogFilters)))
+            if (SectionExists(nameof(LogFilters)))
                 LogFilters.Initialize(settings);
         }
     }
