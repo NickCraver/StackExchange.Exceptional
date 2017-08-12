@@ -24,12 +24,8 @@ namespace StackExchange.Exceptional
         public static void ConfigureSettings(IConfiguration configuration, Settings settings)
         {
             var configSettings = new ConfigSettings();
-            configSettings._exceptionalConfiguration = configuration.GetSection(CONFIGSECTION_KEY);
-            if (configSettings._exceptionalConfiguration.Value != null)
-            {
-                configSettings._exceptionalConfiguration.Bind(configSettings);
-                configSettings.Populate(settings);
-            }
+            configuration.GetSection(CONFIGSECTION_KEY).Bind(configSettings);
+            configSettings.Populate(settings);
         }
 
         /// <summary>
@@ -43,12 +39,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         public string DataIncludePattern { get; set; }
 
-        public bool SectionExists(string setting)
-        {
-            return _exceptionalConfiguration.GetChildren().Any(x => x.Key == setting);
-        }
-
-        public void Populate(Settings settings)
+        internal void Populate(Settings settings)
         {
             // Main settings
             settings.ApplicationName = ApplicationName;
@@ -57,14 +48,10 @@ namespace StackExchange.Exceptional
                 settings.DataIncludeRegex = new Regex(DataIncludePattern, RegexOptions.Singleline | RegexOptions.Compiled);
             }
 
-            if (SectionExists(nameof(Email)))
-                Email.Populate(settings);
-            if (SectionExists(nameof(ErrorStore)))
-                ErrorStore.Populate(settings);
-            if (SectionExists(nameof(IgnoreErrors)))
-                IgnoreErrors.Populate(settings);
-            if (SectionExists(nameof(LogFilters)))
-                LogFilters.Populate(settings);
+            Email?.Populate(settings);
+            ErrorStore?.Populate(settings);
+            IgnoreErrors?.Populate(settings);
+            LogFilters.Populate(settings);
         }
     }
 }

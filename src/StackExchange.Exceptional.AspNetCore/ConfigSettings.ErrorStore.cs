@@ -11,7 +11,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// The ErrorStore section of the configuration, optional and will default to a <see cref="Stores.MemoryErrorStore"/> if not specified.
         /// </summary>
-        public ErrorStoreSettings ErrorStore { get; set; } = new ErrorStoreSettings();
+        public ErrorStoreSettings ErrorStore { get; set; } 
 
         /// <summary>
         /// A settings object describing an error store.
@@ -54,7 +54,7 @@ namespace StackExchange.Exceptional
             /// </summary>
             public int BackupQueueSize { get; set; } = 1000;
 
-            public void Populate(Settings settings)
+            internal void Populate(Settings settings)
             {
                 var storeSettings = settings.Store;
                 storeSettings.Type = Type;

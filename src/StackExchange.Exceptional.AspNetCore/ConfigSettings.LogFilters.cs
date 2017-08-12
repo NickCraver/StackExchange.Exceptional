@@ -10,7 +10,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// The Ignore section of the configuration, optional and no errors will be blocked from logging if not specified.
         /// </summary>
-        public LogFilterSettings LogFilters { get; set; } = new LogFilterSettings();
+        public LogFilterSettings LogFilters { get; set; } 
 
         /// <summary>
         /// Ignore element for deserialization from a configuration, e.g. web.config or app.config
@@ -27,7 +27,7 @@ namespace StackExchange.Exceptional
             /// </summary>
             public List<LogFilter> Cookies { get; set; } = new List<LogFilter>();
 
-            public void Populate(Settings settings)
+            internal void Populate(Settings settings)
             {
                 var s = settings.LogFilters;
                 foreach (LogFilter f in Form)

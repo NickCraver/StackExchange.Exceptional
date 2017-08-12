@@ -12,7 +12,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// The Ignore section of the configuration, optional and no errors will be blocked from logging if not specified.
         /// </summary>
-        public IgnoreSettings IgnoreErrors { get; set; } = new IgnoreSettings();
+        public IgnoreSettings IgnoreErrors { get; set; } 
 
         /// <summary>
         /// Ignore element for deserialization from a configuration, e.g. web.config or app.config
@@ -30,7 +30,7 @@ namespace StackExchange.Exceptional
             /// </summary>
             public List<IgnoreType> Types { get; set; } = new List<IgnoreType>();
 
-            public void Populate(Settings settings)
+            internal void Populate(Settings settings)
             {
                 var ignoreSettings = settings.Ignore;
                 foreach (IgnoreRegex r in Regexes)

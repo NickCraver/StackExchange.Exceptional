@@ -12,7 +12,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// The ErrorStore section of the configuration, optional and will send no email if not present.
         /// </summary>
-        public EmailSettingsConfig Email { get; set; } = new EmailSettingsConfig();
+        public EmailSettingsConfig Email { get; set; }
 
         /// <summary>
         /// A settings object describing email properties
@@ -66,7 +66,7 @@ namespace StackExchange.Exceptional
             /// </summary>
             public bool PreventDuplicates { get; set; }
 
-            public void Populate(Settings settings)
+            internal void Populate(Settings settings)
             {
                 var emailSettings = settings.Email;
                 emailSettings.ToAddress = ToAddress;
