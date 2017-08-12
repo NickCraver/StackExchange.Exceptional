@@ -179,17 +179,16 @@ namespace StackExchange.Exceptional
             if (request.HasFormContentType)
             {
                 error.Form = TryGetCollection(r => r.Form);
-            }
-
-            // Filter form variables for sensitive information
-            var formFilters = Settings.Current.LogFilters.Form;
-            if (formFilters?.Count > 0)
-            {
-                foreach (var kv in formFilters)
+                // Filter form variables for sensitive information
+                var formFilters = Settings.Current.LogFilters.Form;
+                if (formFilters?.Count > 0)
                 {
-                    if (error.Form[kv.Key] != null)
+                    foreach (var kv in formFilters)
                     {
-                        error.Form[kv.Key] = kv.Value ?? "";
+                        if (error.Form[kv.Key] != null)
+                        {
+                            error.Form[kv.Key] = kv.Value ?? string.Empty;
+                        }
                     }
                 }
             }
