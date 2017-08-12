@@ -179,9 +179,9 @@ namespace StackExchange.Exceptional
             {
                 foreach (var kv in formFilters)
                 {
-                    if (kv.Value != null)
+                    if (error.Form[kv.Key] != null)
                     {
-                        error.Form[kv.Key] = kv.Value;
+                        error.Form[kv.Key] = kv.Value ?? "";
                     }
                 }
             }
