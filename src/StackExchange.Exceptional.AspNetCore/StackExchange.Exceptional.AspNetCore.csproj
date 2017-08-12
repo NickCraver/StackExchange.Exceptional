@@ -15,16 +15,7 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="1.1.2" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="ConfigSettings.Email.cs">
-      <DependentUpon>ConfigSettings.cs</DependentUpon>
-    </Compile>
-    <Compile Update="ConfigSettings.ErrorStore.cs">
-      <DependentUpon>ConfigSettings.cs</DependentUpon>
-    </Compile>
-    <Compile Update="ConfigSettings.IgnoreErrors.cs">
-      <DependentUpon>ConfigSettings.cs</DependentUpon>
-    </Compile>
-    <Compile Update="ConfigSettings.LogFilters.cs">
+    <Compile Update="ConfigSettings.*.cs">
       <DependentUpon>ConfigSettings.cs</DependentUpon>
     </Compile>
   </ItemGroup>
