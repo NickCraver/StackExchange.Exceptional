@@ -54,7 +54,7 @@ namespace StackExchange.Exceptional
             /// </summary>
             public int BackupQueueSize { get; set; } = 1000;
 
-            public void Initialize(Settings settings)
+            public void Populate(Settings settings)
             {
                 var storeSettings = settings.Store;
                 storeSettings.Type = Type;

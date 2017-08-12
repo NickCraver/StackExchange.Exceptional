@@ -30,7 +30,7 @@ namespace StackExchange.Exceptional
             /// </summary>
             public List<IgnoreType> Types { get; set; } = new List<IgnoreType>();
 
-            public void Initialize(Settings settings)
+            public void Populate(Settings settings)
             {
                 var ignoreSettings = settings.Ignore;
                 foreach (IgnoreRegex r in Regexes)

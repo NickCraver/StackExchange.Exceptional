@@ -27,7 +27,7 @@ namespace StackExchange.Exceptional
             /// </summary>
             public List<LogFilter> Cookies { get; set; } = new List<LogFilter>();
 
-            public void Initialize(Settings settings)
+            public void Populate(Settings settings)
             {
                 var s = settings.LogFilters;
                 foreach (LogFilter f in Form)

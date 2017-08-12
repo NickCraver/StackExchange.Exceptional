@@ -66,7 +66,7 @@ namespace StackExchange.Exceptional
             /// </summary>
             public bool PreventDuplicates { get; set; }
 
-            public void Initialize(Settings settings)
+            public void Populate(Settings settings)
             {
                 var emailSettings = settings.Email;
                 emailSettings.ToAddress = ToAddress;

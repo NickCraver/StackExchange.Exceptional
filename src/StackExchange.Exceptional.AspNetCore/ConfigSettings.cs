@@ -28,7 +28,7 @@ namespace StackExchange.Exceptional
             if (configSettings._exceptionalConfiguration.Value != null)
             {
                 configSettings._exceptionalConfiguration.Bind(configSettings);
-                configSettings.Initialize(settings);
+                configSettings.Populate(settings);
             }
         }
 
@@ -48,7 +48,7 @@ namespace StackExchange.Exceptional
             return _exceptionalConfiguration.GetChildren().Any(x => x.Key == setting);
         }
 
-        public void Initialize(Settings settings)
+        public void Populate(Settings settings)
         {
             // Main settings
             settings.ApplicationName = ApplicationName;
@@ -58,13 +58,13 @@ namespace StackExchange.Exceptional
             }
 
             if (SectionExists(nameof(Email)))
-                Email.Initialize(settings);
+                Email.Populate(settings);
             if (SectionExists(nameof(ErrorStore)))
-                ErrorStore.Initialize(settings);
+                ErrorStore.Populate(settings);
             if (SectionExists(nameof(IgnoreErrors)))
-                IgnoreErrors.Initialize(settings);
+                IgnoreErrors.Populate(settings);
             if (SectionExists(nameof(LogFilters)))
-                LogFilters.Initialize(settings);
+                LogFilters.Populate(settings);
         }
     }
 }
