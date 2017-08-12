@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 
 namespace StackExchange.Exceptional
 {
-    public partial class ConfigSettings
+    internal partial class ConfigSettings
     {
         /// <summary>
         /// The ErrorStore section of the configuration, optional and will send no email if not present.

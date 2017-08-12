@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace StackExchange.Exceptional
 {
-    public partial class ConfigSettings
+    internal partial class ConfigSettings
     {
         /// <summary>
         /// The Ignore section of the configuration, optional and no errors will be blocked from logging if not specified.

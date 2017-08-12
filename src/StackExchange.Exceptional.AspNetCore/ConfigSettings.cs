@@ -15,7 +15,7 @@ namespace StackExchange.Exceptional
     /// The Settings element for Exceptional's configuration.
     /// This is the legacy web.config settings, that only serve as an adapter to populate <see cref="Settings"/>.
     /// </summary>
-    public partial class ConfigSettings
+    internal partial class ConfigSettings
     {
         const string CONFIGSECTION_KEY = "Exceptional";
         private IConfigurationSection _exceptionalConfiguration;
