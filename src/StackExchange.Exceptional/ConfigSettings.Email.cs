@@ -1,95 +1,47 @@
 ﻿using StackExchange.Exceptional.Internal;
 using StackExchange.Exceptional.Notifiers;
-using System.ComponentModel;
 using System.Configuration;
 
 namespace StackExchange.Exceptional
 {
     internal partial class ConfigSettings
     {
-        /// <summary>
-        /// The ErrorStore section of the configuration, optional and will send no email if not present.
-        /// </summary>
         [ConfigurationProperty("Email")]
         public EmailSettingsConfig Email => this["Email"] as EmailSettingsConfig;
-
-        /// <summary>
-        /// A settings object describing email properties
-        /// </summary>
-        public class EmailSettingsConfig : ConfigurationElement
+        
+        public class EmailSettingsConfig : ExceptionalElement
         {
-            /// <summary>
-            /// The address to send email messages to.
-            /// </summary>
             [ConfigurationProperty("toAddress", IsRequired = true)]
-            public string ToAddress => this["toAddress"] as string;
-
-            /// <summary>
-            /// The address to send email messages from.
-            /// </summary>
+            public string ToAddress => Get("toAddress");
             [ConfigurationProperty("fromAddress")]
-            public string FromAddress => this["fromAddress"] as string;
-
-            /// <summary>
-            /// The display name to send email messages from.
-            /// </summary>
+            public string FromAddress => Get("fromAddress");
             [ConfigurationProperty("fromDisplayName")]
-            public string FromDisplayName => this["fromDisplayName"] as string;
-
-            /// <summary>
-            /// The SMTP server to send mail through.
-            /// </summary>
+            public string FromDisplayName => Get("fromDisplayName");
             [ConfigurationProperty("smtpHost")]
-            public string SMTPHost => this["smtpHost"] as string;
-
-            /// <summary>
-            /// The port to send mail on (if SMTP server is specified via <see cref="SMTPHost"/>).
-            /// Default is 25
-            /// </summary>
-            [ConfigurationProperty("smtpPort"), DefaultValue(typeof(int), "25")]
-            public int SMTPPort => (int)this["smtpPort"];
-
-            /// <summary>
-            /// The SMTP user name to use, if authentication is needed.
-            /// </summary>
+            public string SMTPHost => Get("smtpHost");
+            [ConfigurationProperty("smtpPort")]
+            public int? SMTPPort => GetInt("smtpPort");
             [ConfigurationProperty("smtpUserName")]
-            public string SMTPUserName => this["smtpUserName"] as string;
-
-            /// <summary>
-            /// The SMTP password to use, if authentication is needed.
-            /// </summary>
+            public string SMTPUserName => Get("smtpUserName");
             [ConfigurationProperty("smtpPassword")]
-            public string SMTPPassword => this["smtpPassword"] as string;
-
-            /// <summary>
-            /// Whether to use SSL when sending via SMTP.
-            /// </summary>
-            [ConfigurationProperty("smtpEnableSsl"), DefaultValue(typeof(bool), "false")]
-            public bool SMTPEnableSSL => (bool)this["smtpEnableSsl"];
-
-            /// <summary>
-            /// Flags whether or not emails are sent for duplicate errors.
-            /// </summary>
-            [ConfigurationProperty("preventDuplicates"), DefaultValue(typeof(bool), "false")]
-            public bool PreventDuplicates => (bool)this["preventDuplicates"];
-
-            /// <summary>
-            /// Runs after deserialization, to populate <see cref="Settings.Email"/>.
-            /// </summary>
-            protected override void PostDeserialize()
+            public string SMTPPassword => Get("smtpPassword");
+            [ConfigurationProperty("smtpEnableSsl")]
+            public bool? SMTPEnableSSL => GetBool("smtpEnableSsl");
+            [ConfigurationProperty("preventDuplicates")]
+            public bool? PreventDuplicates => GetBool("preventDuplicates");
+            
+            internal void Populate(Settings settings)
             {
-                base.PostDeserialize();
-
-                var s = Settings.Current.Email;
-                s.ToAddress = ToAddress;
-                s.FromAddress = FromAddress;
-                s.FromDisplayName = FromDisplayName;
-                s.SMTPHost = SMTPHost;
-                s.SMTPPort = SMTPPort;
-                s.SMTPUserName = SMTPUserName;
-                s.SMTPPassword = SMTPPassword;
-                s.SMTPEnableSSL = SMTPEnableSSL;
-                s.PreventDuplicates = PreventDuplicates;
+                var s = settings.Email;
+                if (ToAddress.HasValue()) s.ToAddress = ToAddress;
+                if (FromAddress.HasValue()) s.FromAddress = FromAddress;
+                if (FromDisplayName.HasValue()) s.FromDisplayName = FromDisplayName;
+                if (SMTPHost.HasValue()) s.SMTPHost = SMTPHost;
+                if (SMTPPort.HasValue) s.SMTPPort = SMTPPort;
+                if (SMTPUserName.HasValue()) s.SMTPUserName = SMTPUserName;
+                if (SMTPPassword.HasValue()) s.SMTPPassword = SMTPPassword;
+                if (SMTPEnableSSL.HasValue) s.SMTPEnableSSL = SMTPEnableSSL.Value;
+                if (PreventDuplicates.HasValue) s.PreventDuplicates = PreventDuplicates.Value;
 
                 if (s.ToAddress.HasValue())
                 {

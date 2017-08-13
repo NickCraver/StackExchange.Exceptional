@@ -1,8 +1,7 @@
 ﻿using StackExchange.Exceptional.Internal;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace StackExchange.Exceptional
 {
@@ -12,43 +11,36 @@ namespace StackExchange.Exceptional
     /// </summary>
     internal partial class ConfigSettings : ConfigurationSection
     {
-        private static ConfigSettings _current;
+        private static int _loaded;
         /// <summary>
         /// Trigger deserialization, which loads settings from the .config file.
         /// </summary>
         public static void LoadSettings()
         {
-            if (_current == null)
+            if (Interlocked.CompareExchange(ref _loaded, 1, 0) == 0)
             {
-                _current = ConfigurationManager.GetSection("Exceptional") as ConfigSettings;
+                var config = ConfigurationManager.GetSection("Exceptional") as ConfigSettings;
+                config.Populate(Settings.Current);
             }
         }
-
-        /// <summary>
-        /// Application name to log with.
-        /// </summary>
+        
         [ConfigurationProperty("applicationName", IsRequired = true)]
         public string ApplicationName => this["applicationName"] as string;
-
-        /// <summary>
-        /// The regular expression pattern of data keys to include. 
-        /// For example, "Redis.*" would include all keys that start with Redis.
-        /// </summary>
         [ConfigurationProperty("dataIncludePattern")]
         public string DataIncludePattern => this["dataIncludePattern"] as string;
 
-        /// <summary>
-        /// Runs after deserialization, to populate <see cref="Settings"/>.
-        /// </summary>
-        protected override void PostDeserialize()
+        internal void Populate(Settings settings)
         {
-            base.PostDeserialize();
-            // Main settings
-            Settings.Current.ApplicationName = ApplicationName;
+            settings.ApplicationName = ApplicationName;
             if (DataIncludePattern.HasValue())
             {
-                Settings.Current.DataIncludeRegex = new Regex(DataIncludePattern, RegexOptions.Singleline | RegexOptions.Compiled);
+                settings.DataIncludeRegex = new Regex(DataIncludePattern, RegexOptions.Singleline | RegexOptions.Compiled);
             }
+
+            Email?.Populate(settings);
+            ErrorStore?.Populate(settings);
+            Ignore?.Populate(settings);
+            LogFilters?.Populate(settings);
         }
 
         /// <summary>
@@ -79,26 +71,22 @@ namespace StackExchange.Exceptional
             /// </summary>
             /// <param name="element">The element to get a key for.</param>
             protected override object GetElementKey(ConfigurationElement element) => element.ToString();
-
-            /// <summary>
-            /// Returns all the elements in this collection, type-cased out.
-            /// </summary>
-            public List<T> All => this.Cast<T>().ToList();
         }
 
         /// <summary>
         /// An element in a settings collection that has a Name property, a generic base for SettingsCollection collections.
         /// </summary>
-        public abstract class SettingsCollectionElement : ConfigurationElement
+        internal abstract class SettingsCollectionElement : ExceptionalElement
         {
-            /// <summary>
-            /// String representation for this entry, the Name.
-            /// </summary>
             public override string ToString() => Name;
-            /// <summary>
-            /// A unique name for this entry.
-            /// </summary>
             public abstract string Name { get; }
+        }
+
+        internal class ExceptionalElement : ConfigurationElement
+        {
+            public string Get(string name) => this[name] as string;
+            public bool? GetBool(string name) => (bool?)this[name];
+            public int? GetInt(string name) => (int?)this[name];
         }
     }
 }
