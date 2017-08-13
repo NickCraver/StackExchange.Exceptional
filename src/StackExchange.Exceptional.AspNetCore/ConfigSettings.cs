@@ -30,7 +30,9 @@ namespace StackExchange.Exceptional
 
             public string ConnectionString { get; set; }
 
+#if !NETSTANDARD2_0
             public string ConnectionStringName { get; set; }
+#endif
 
             public int? Size { get; set; }
 
