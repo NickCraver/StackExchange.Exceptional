@@ -11,10 +11,6 @@ using System.Text.RegularExpressions;
 
 namespace StackExchange.Exceptional
 {
-    /// <summary>
-    /// The Settings element for Exceptional's configuration.
-    /// This is the legacy web.config settings, that only serve as an adapter to populate <see cref="Settings"/>.
-    /// </summary>
     internal partial class ConfigSettings
     {
         public ConfigSettings(IConfiguration configuration)
@@ -22,20 +18,11 @@ namespace StackExchange.Exceptional
             configuration.Bind(this);
         }
 
-        /// <summary>
-        /// Application name to log with.
-        /// </summary>
         public string ApplicationName { get; set; }
-
-        /// <summary>
-        /// The regular expression pattern of data keys to include. 
-        /// For example, "Redis.*" would include all keys that start with Redis.
-        /// </summary>
         public string DataIncludePattern { get; set; }
 
         internal void Populate(Settings settings)
         {
-            // Main settings
             settings.ApplicationName = ApplicationName;
             if (DataIncludePattern.HasValue())
             {

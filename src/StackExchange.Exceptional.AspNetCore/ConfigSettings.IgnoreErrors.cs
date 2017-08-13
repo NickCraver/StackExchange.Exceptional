@@ -9,25 +9,12 @@ namespace StackExchange.Exceptional
 {
     internal partial class ConfigSettings
     {
-        /// <summary>
-        /// The Ignore section of the configuration, optional and no errors will be blocked from logging if not specified.
-        /// </summary>
         public IgnoreSettings IgnoreErrors { get; set; } 
 
-        /// <summary>
-        /// Ignore element for deserialization from a configuration, e.g. web.config or app.config
-        /// </summary>
         public class IgnoreSettings
         {
-            /// <summary>
-            /// Regular expressions collection for errors to ignore.  
-            /// Any errors with a .ToString() matching any regular expression here will not be logged.
-            /// </summary>
             public List<IgnoreRegex> Regexes { get; set; } = new List<IgnoreRegex>();
 
-            /// <summary>
-            /// Types collection for errors to ignore.  Any errors with a Type matching any name here will not be logged
-            /// </summary>
             public List<IgnoreType> Types { get; set; } = new List<IgnoreType>();
 
             internal void Populate(Settings settings)
