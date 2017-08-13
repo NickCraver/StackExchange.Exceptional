@@ -41,16 +41,15 @@ namespace StackExchange.Exceptional
             internal void Populate(Settings settings)
             {
                 var storeSettings = settings.Store;
-                storeSettings.Type = Type ?? storeSettings.Type;
-                storeSettings.Path = Path ?? storeSettings.Path;
-                storeSettings.ConnectionString = ConnectionString ?? storeSettings.ConnectionString;
+                if (Type.HasValue()) storeSettings.Type = Type;
+                if (Path.HasValue()) storeSettings.Path = Path;
+                if (ConnectionString.HasValue()) storeSettings.ConnectionString = ConnectionString;
 #if !NETSTANDARD2_0
-            storeSettings.ConnectionStringName = ConnectionStringName ?? storeSettings.ConnectionStringName;
+            if (ConnectionStringName.HasValue()) storeSettings.ConnectionStringName = ConnectionStringName;
 #endif
-                storeSettings.Size = Size ?? storeSettings.Size;
-                if (RollupSeconds != null)
-                    storeSettings.RollupPeriod = TimeSpan.FromSeconds(RollupSeconds.Value);
-                storeSettings.BackupQueueSize = BackupQueueSize ?? storeSettings.BackupQueueSize;
+                if (Size.HasValue) storeSettings.Size = Size.Value;
+                if (RollupSeconds.HasValue) storeSettings.RollupPeriod = TimeSpan.FromSeconds(RollupSeconds.Value);
+                if (BackupQueueSize.HasValue) storeSettings.BackupQueueSize = BackupQueueSize.Value;
             }
         }
 
@@ -138,15 +137,15 @@ namespace StackExchange.Exceptional
             internal void Populate(Settings settings)
             {
                 var emailSettings = settings.Email;
-                emailSettings.ToAddress = ToAddress ?? emailSettings.ToAddress;
-                emailSettings.FromAddress = FromAddress ?? emailSettings.FromAddress;
-                emailSettings.FromDisplayName = FromDisplayName ?? emailSettings.FromDisplayName;
-                emailSettings.SMTPHost = SMTPHost ?? emailSettings.SMTPHost;
-                emailSettings.SMTPPort = SMTPPort ?? emailSettings.SMTPPort;
-                emailSettings.SMTPUserName = SMTPUserName ?? emailSettings.SMTPUserName;
-                emailSettings.SMTPPassword = SMTPPassword ?? emailSettings.SMTPPassword;
-                emailSettings.SMTPEnableSSL = SMTPEnableSSL ?? emailSettings.SMTPEnableSSL;
-                emailSettings.PreventDuplicates = PreventDuplicates ?? emailSettings.PreventDuplicates;
+                if(ToAddress.HasValue()) emailSettings.ToAddress = ToAddress;
+                if (FromAddress.HasValue()) emailSettings.FromAddress = FromAddress;
+                if (FromDisplayName.HasValue()) emailSettings.FromDisplayName = FromDisplayName;
+                if (SMTPHost.HasValue()) emailSettings.SMTPHost = SMTPHost;
+                if (SMTPPort.HasValue) emailSettings.SMTPPort = SMTPPort;
+                if (SMTPUserName.HasValue()) emailSettings.SMTPUserName = SMTPUserName;
+                if (SMTPPassword.HasValue()) emailSettings.SMTPPassword = SMTPPassword;
+                if (SMTPEnableSSL.HasValue) emailSettings.SMTPEnableSSL = SMTPEnableSSL.Value;
+                if (PreventDuplicates.HasValue) emailSettings.PreventDuplicates = PreventDuplicates.Value;
 
                 if (emailSettings.ToAddress.HasValue())
                 {
