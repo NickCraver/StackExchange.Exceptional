@@ -22,7 +22,7 @@ namespace StackExchange.Exceptional
 
             public string SMTPHost { get; set; }
 
-            public int SMTPPort { get; set; } = 25;
+            public int SMTPPort { get; set; }
 
             public string SMTPUserName { get; set; }
 

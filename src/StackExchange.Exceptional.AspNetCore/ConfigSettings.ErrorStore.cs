@@ -21,11 +21,11 @@ namespace StackExchange.Exceptional
 
             public string ConnectionStringName { get; set; }
 
-            public int Size { get; set; } = 200;
+            public int Size { get; set; } 
 
-            public int RollupSeconds { get; set; } = 600;
+            public int RollupSeconds { get; set; } 
 
-            public int BackupQueueSize { get; set; } = 1000;
+            public int BackupQueueSize { get; set; } 
 
             internal void Populate(Settings settings)
             {
