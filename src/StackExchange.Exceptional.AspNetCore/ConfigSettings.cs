@@ -90,28 +90,27 @@ namespace StackExchange.Exceptional
         public LogFilterSettings LogFilters { get; set; }
         public class LogFilterSettings
         {
-            public List<LogFilter> Form { get; set; } = new List<LogFilter>();
+            public Dictionary<string, string> Form { get; set; } 
 
-            public List<LogFilter> Cookies { get; set; } = new List<LogFilter>();
+            public Dictionary<string, string> Cookies { get; set; }
 
             internal void Populate(Settings settings)
             {
                 var s = settings.LogFilters;
-                foreach (LogFilter f in Form)
+                if (Form != null)
                 {
-                    s.Form[f.Name] = f.ReplaceWith;
+                    foreach (var f in Form)
+                    {
+                        s.Form[f.Key] = f.Value;
+                    }
                 }
-                foreach (LogFilter c in Cookies)
+                if (Cookies != null)
                 {
-                    s.Cookie[c.Name] = c.ReplaceWith;
+                    foreach (var c in Cookies)
+                    {
+                        s.Cookie[c.Key] = c.Value;
+                    }
                 }
-            }
-
-            public class LogFilter
-            {
-                public string Name { get; set; }
-
-                public string ReplaceWith { get; set; }
             }
         }
 
