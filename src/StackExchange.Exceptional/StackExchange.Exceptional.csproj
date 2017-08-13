@@ -18,7 +18,4 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Update="ConfigSettings.*.cs" DependentUpon="ConfigSettings.cs" />
-  </ItemGroup>
 </Project>
