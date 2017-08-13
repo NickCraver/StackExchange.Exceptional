@@ -14,9 +14,4 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="1.1.2" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Update="ConfigSettings.*.cs">
-      <DependentUpon>ConfigSettings.cs</DependentUpon>
-    </Compile>
-  </ItemGroup>
 </Project>
