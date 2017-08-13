@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>StackExchange.Exceptional.AspNetCore</AssemblyName>
     <RootNamespace>StackExchange.Exceptional</RootNamespace>
-    <Description>.NET Error handler used internally at Stack Overflow. Primarily for logging all unhandled exceptions to SQL, but also supporting JSON and Memory based logging.</Description>
+    <Description>.NET Error handler/logger used internally at Stack Overflow. Primarily for logging all unhandled exceptions to SQL, but also supporting JSON and Memory based logging.</Description>
     <PackageTags>SQL JSON Exception Handler Errors Stack Exchange Exceptional</PackageTags>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
