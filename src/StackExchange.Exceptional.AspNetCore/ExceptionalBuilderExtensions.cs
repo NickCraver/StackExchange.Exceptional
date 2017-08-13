@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using StackExchange.Exceptional;
 using System;
 
@@ -15,12 +17,14 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="builder">The <see cref="IApplicationBuilder"/> instance this method extends.</param>
         /// <param name="configureSettings">The action configuring Exceptional settings.</param>
         /// <exception cref="ArgumentNullException"><paramref name="builder"/> or <paramref name="configureSettings"/> is <c>null</c>.</exception>
-        public static IApplicationBuilder UseExceptional(this IApplicationBuilder builder, Action<Settings> configureSettings)
+        public static IApplicationBuilder UseExceptional(this IApplicationBuilder builder, IConfiguration exceptionalConfig, Action<Settings> configureSettings)
         {
             _ = builder ?? throw new ArgumentNullException(nameof(builder));
             _ = configureSettings ?? throw new ArgumentNullException(nameof(configureSettings));
 
             var settings = Settings.Current;
+            var configSettings = new ConfigSettings(exceptionalConfig);
+            configSettings.Populate(settings);
             configureSettings(settings);
             return builder.UseMiddleware<ExceptionalMiddleware>(Options.Create(settings));
         }
@@ -32,11 +36,10 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="builder">The <see cref="IApplicationBuilder"/> instance this method extends.</param>
         /// <param name="applicationName">Application name for this error log.</param>
         /// <exception cref="ArgumentNullException"><paramref name="builder"/> or <paramref name="applicationName"/> is <c>null</c>.</exception>
-        public static IApplicationBuilder UseExceptional(this IApplicationBuilder builder, string applicationName)
+        public static IApplicationBuilder UseExceptional(this IApplicationBuilder builder, IConfiguration exceptionalConfig, string applicationName)
         {
             _ = builder ?? throw new ArgumentNullException(nameof(builder));
-
-            return builder.UseExceptional(settings =>
+            return builder.UseExceptional(exceptionalConfig, settings =>
             {
                 settings.ApplicationName = applicationName ?? throw new ArgumentNullException(nameof(applicationName));
             });
