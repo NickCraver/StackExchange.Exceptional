@@ -13,57 +13,33 @@ namespace StackExchange.Exceptional
 
         public class IgnoreSettings
         {
-            public List<IgnoreRegex> Regexes { get; set; } = new List<IgnoreRegex>();
+            public List<string> Regexes { get; set; } 
 
-            public List<IgnoreType> Types { get; set; } = new List<IgnoreType>();
+            public List<string> Types { get; set; } 
 
             internal void Populate(Settings settings)
             {
                 var ignoreSettings = settings.Ignore;
-                foreach (IgnoreRegex r in Regexes)
+
+                if (Regexes != null)
                 {
-                    if (r.Pattern.HasValue())
+                    foreach (var regex in Regexes)
                     {
-                        ignoreSettings.Regexes.Add(new Regex(r.Pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline));
+                        if (regex.HasValue())
+                        {
+                            ignoreSettings.Regexes.Add(new Regex(regex, RegexOptions.IgnoreCase | RegexOptions.Singleline));
+                        }
                     }
                 }
-                foreach (IgnoreType t in Types)
+
+                if (Types != null)
                 {
-                    ignoreSettings.Types.Add(t.Type);
+                    foreach (var type in Types)
+                    {
+                        ignoreSettings.Types.Add(type);
+                    }
                 }
             }
-        }
-
-        /// <summary>
-        /// A regular expression entry, to match against error messages to see if we should ignore them.
-        /// </summary>
-        public class IgnoreRegex
-        {
-            /// <summary>
-            /// The name that describes this regular expression.
-            /// </summary>
-            public string Name { get; set; }
-
-            /// <summary>
-            /// The Pattern to match on the exception message.
-            /// </summary>
-            public string Pattern { get; set; }
-        }
-
-        /// <summary>
-        /// A type entry, to match against error messages types to see if we should ignore them.
-        /// </summary>
-        public class IgnoreType
-        {
-            /// <summary>
-            /// The name that describes this ignored type.
-            /// </summary>
-            public string Name { get; set; }
-
-            /// <summary>
-            /// The Pattern to match on the exception message.
-            /// </summary>
-            public string Type { get; set; }
         }
     }
 }
