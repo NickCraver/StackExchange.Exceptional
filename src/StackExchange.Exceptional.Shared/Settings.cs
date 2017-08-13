@@ -133,7 +133,7 @@ namespace StackExchange.Exceptional
             /// Regular expressions collection for errors to ignore.  
             /// Any errors with a .ToString() matching any <see cref="Regex"/> here will not be logged.
             /// </summary>
-            public List<Regex> Regexes { get; set; } = new List<Regex>();
+            public HashSet<Regex> Regexes { get; set; } = new HashSet<Regex>();
 
             /// <summary>
             /// Types collection for errors to ignore.  
