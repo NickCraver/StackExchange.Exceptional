@@ -1,16 +1,15 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using StackExchange.Exceptional.Internal;
 using StackExchange.Exceptional.Notifiers;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
-namespace StackExchange.Exceptional
+namespace StackExchange.Exceptional.Internal
 {
+    /// <summary>
+    /// Only used for deserialiazation of settins from IConfiguration, so internal here.
+    /// Settings (in shared) is what a user would interface with in their code directly.
+    /// </summary>
     internal partial class ConfigSettings
     {
         public ConfigSettings(IConfiguration configuration)
@@ -64,24 +63,22 @@ namespace StackExchange.Exceptional
 
             internal void Populate(Settings settings)
             {
-                var ignoreSettings = settings.Ignore;
-
+                var s = settings.Ignore;
                 if (Regexes != null)
                 {
                     foreach (var regex in Regexes)
                     {
                         if (regex.HasValue())
                         {
-                            ignoreSettings.Regexes.Add(new Regex(regex, RegexOptions.IgnoreCase | RegexOptions.Singleline));
+                            s.Regexes.Add(new Regex(regex, RegexOptions.IgnoreCase | RegexOptions.Singleline));
                         }
                     }
                 }
-
                 if (Types != null)
                 {
                     foreach (var type in Types)
                     {
-                        ignoreSettings.Types.Add(type);
+                        s.Types.Add(type);
                     }
                 }
             }
@@ -90,8 +87,7 @@ namespace StackExchange.Exceptional
         public LogFilterSettings LogFilters { get; set; }
         public class LogFilterSettings
         {
-            public Dictionary<string, string> Form { get; set; } 
-
+            public Dictionary<string, string> Form { get; set; }
             public Dictionary<string, string> Cookies { get; set; }
 
             internal void Populate(Settings settings)
@@ -118,39 +114,31 @@ namespace StackExchange.Exceptional
         public class EmailSettingsConfig
         {
             public string ToAddress { get; set; }
-
             public string FromAddress { get; set; }
-
             public string FromDisplayName { get; set; }
-
             public string SMTPHost { get; set; }
-
             public int? SMTPPort { get; set; }
-
             public string SMTPUserName { get; set; }
-
             public string SMTPPassword { get; set; }
-
             public bool? SMTPEnableSSL { get; set; }
-
             public bool? PreventDuplicates { get; set; }
 
             internal void Populate(Settings settings)
             {
-                var emailSettings = settings.Email;
-                if(ToAddress.HasValue()) emailSettings.ToAddress = ToAddress;
-                if (FromAddress.HasValue()) emailSettings.FromAddress = FromAddress;
-                if (FromDisplayName.HasValue()) emailSettings.FromDisplayName = FromDisplayName;
-                if (SMTPHost.HasValue()) emailSettings.SMTPHost = SMTPHost;
-                if (SMTPPort.HasValue) emailSettings.SMTPPort = SMTPPort;
-                if (SMTPUserName.HasValue()) emailSettings.SMTPUserName = SMTPUserName;
-                if (SMTPPassword.HasValue()) emailSettings.SMTPPassword = SMTPPassword;
-                if (SMTPEnableSSL.HasValue) emailSettings.SMTPEnableSSL = SMTPEnableSSL.Value;
-                if (PreventDuplicates.HasValue) emailSettings.PreventDuplicates = PreventDuplicates.Value;
+                var s = settings.Email;
+                if (ToAddress.HasValue()) s.ToAddress = ToAddress;
+                if (FromAddress.HasValue()) s.FromAddress = FromAddress;
+                if (FromDisplayName.HasValue()) s.FromDisplayName = FromDisplayName;
+                if (SMTPHost.HasValue()) s.SMTPHost = SMTPHost;
+                if (SMTPPort.HasValue) s.SMTPPort = SMTPPort;
+                if (SMTPUserName.HasValue()) s.SMTPUserName = SMTPUserName;
+                if (SMTPPassword.HasValue()) s.SMTPPassword = SMTPPassword;
+                if (SMTPEnableSSL.HasValue) s.SMTPEnableSSL = SMTPEnableSSL.Value;
+                if (PreventDuplicates.HasValue) s.PreventDuplicates = PreventDuplicates.Value;
 
-                if (emailSettings.ToAddress.HasValue())
+                if (s.ToAddress.HasValue())
                 {
-                    EmailNotifier.Setup(emailSettings);
+                    EmailNotifier.Setup(s);
                 }
             }
         }
@@ -163,10 +151,10 @@ namespace StackExchange.Exceptional
                 settings.DataIncludeRegex = new Regex(DataIncludePattern, RegexOptions.Singleline | RegexOptions.Compiled);
             }
 
-            Email?.Populate(settings);
             ErrorStore?.Populate(settings);
             IgnoreErrors?.Populate(settings);
             LogFilters?.Populate(settings);
+            Email?.Populate(settings);
         }
     }
 }

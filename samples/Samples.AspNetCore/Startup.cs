@@ -35,7 +35,7 @@ namespace Samples.AspNetCore
             //}
             app.UseExceptional(Configuration.GetSection("Exceptional"), settings => 
             {
-                settings.ApplicationName = "Samples.AspNetCore";
+                //settings.ApplicationName = "Samples.AspNetCore";
                 settings.UseExceptionalPageOnThrow = env.IsDevelopment();
             });
             app.UseStaticFiles();
