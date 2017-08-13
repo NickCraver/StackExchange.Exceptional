@@ -166,7 +166,7 @@ namespace StackExchange.Exceptional
             Email?.Populate(settings);
             ErrorStore?.Populate(settings);
             IgnoreErrors?.Populate(settings);
-            LogFilters.Populate(settings);
+            LogFilters?.Populate(settings);
         }
     }
 }
