@@ -23,7 +23,7 @@ namespace StackExchange.Exceptional
 
         internal void Populate(Settings settings)
         {
-            settings.ApplicationName = ApplicationName;
+            settings.ApplicationName = ApplicationName ?? settings.ApplicationName;
             if (DataIncludePattern.HasValue())
             {
                 settings.DataIncludeRegex = new Regex(DataIncludePattern, RegexOptions.Singleline | RegexOptions.Compiled);

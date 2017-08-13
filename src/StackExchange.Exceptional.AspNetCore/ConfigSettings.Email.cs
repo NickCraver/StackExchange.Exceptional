@@ -13,7 +13,6 @@ namespace StackExchange.Exceptional
 
         public class EmailSettingsConfig
         {
-            [JsonProperty(Required = Required.Always)]
             public string ToAddress { get; set; }
 
             public string FromAddress { get; set; }
@@ -22,28 +21,28 @@ namespace StackExchange.Exceptional
 
             public string SMTPHost { get; set; }
 
-            public int SMTPPort { get; set; }
+            public int? SMTPPort { get; set; }
 
             public string SMTPUserName { get; set; }
 
             public string SMTPPassword { get; set; }
 
-            public bool SMTPEnableSSL { get; set; }
+            public bool? SMTPEnableSSL { get; set; }
 
-            public bool PreventDuplicates { get; set; }
+            public bool? PreventDuplicates { get; set; }
 
             internal void Populate(Settings settings)
             {
                 var emailSettings = settings.Email;
-                emailSettings.ToAddress = ToAddress;
-                emailSettings.FromAddress = FromAddress;
-                emailSettings.FromDisplayName = FromDisplayName;
-                emailSettings.SMTPHost = SMTPHost;
-                emailSettings.SMTPPort = SMTPPort;
-                emailSettings.SMTPUserName = SMTPUserName;
-                emailSettings.SMTPPassword = SMTPPassword;
-                emailSettings.SMTPEnableSSL = SMTPEnableSSL;
-                emailSettings.PreventDuplicates = PreventDuplicates;
+                emailSettings.ToAddress = ToAddress ?? emailSettings.ToAddress;
+                emailSettings.FromAddress = FromAddress ?? emailSettings.FromAddress;
+                emailSettings.FromDisplayName = FromDisplayName ?? emailSettings.FromDisplayName;
+                emailSettings.SMTPHost = SMTPHost ?? emailSettings.SMTPHost;
+                emailSettings.SMTPPort = SMTPPort ?? emailSettings.SMTPPort;
+                emailSettings.SMTPUserName = SMTPUserName ?? emailSettings.SMTPUserName;
+                emailSettings.SMTPPassword = SMTPPassword ?? emailSettings.SMTPPassword;
+                emailSettings.SMTPEnableSSL = SMTPEnableSSL ?? emailSettings.SMTPEnableSSL;
+                emailSettings.PreventDuplicates = PreventDuplicates ?? emailSettings.PreventDuplicates;
 
                 if (emailSettings.ToAddress.HasValue())
                 {
