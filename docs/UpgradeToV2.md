@@ -19,7 +19,7 @@ catch (SqlException e)
 ```
 Note: `.Log()` is defined separately for ASP.NET (in the `StackExchange.Exception` library) and ASP.NET Core (in the `StackExchange.Exceptional.AspNetCore`), due to the `HttpContext` we extract data from being different.
 
-**Category** is a new sting field on `Error` (and an optional parameter on `.Log()`) for further subclassifying errors in an application. This could also be set in a handler for example.
+**Category** is a new string field on `Error` (and an optional parameter on `.Log()`) for further subclassifying errors in an application. This could also be set in a handler for example.
 
 #### Settings
 All settings are now on `Settings`, in the `StackExchange.Exeptional` namespace. The `StackExchange.Exceptional` package tries to ensure backwards compatability with existing `Web.config` layouts, but there is one change:
