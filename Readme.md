@@ -1,28 +1,23 @@
-## About
-StackExchange.Exceptional is the error handler used internally by [Stack Exchange](http://stackexchange.com) and [Stack Overflow](http://stackoverflow.com) for logging to SQL (SQL Server and MySQL are both supported).
+## StackExchange.Exceptional
 
-It also supports JSON and memory error stores, filtering of exceptions before logging, and fail/retry mechanisms for storing errors if there's an interruption in connecting to the error store.
+StackExchange.Exceptional is the error handler/logger used internally by [Stack Overflow](https://stackoverflow.com) ([Stack Exchange](https://stackexchange.com)) for logging to SQL Server, but many backends (including custom) are supported.
+It also supports adding custom data to exceptions as they're logged, filtering of what's logged, ignoring errors, and much more.
+[Check out the docs to get started][Docs].
 
-## Configuration
-[See the docs for how to get configured and logging in just a few minutes](https://nickcraver.com/StackExchange.Exceptional).
+![Build Status](https://ci.appveyor.com/api/projects/status/650qft3qrt2r0gre/branch/master?svg=true)
 
-## Details
-While having some features centered around logging/showing exceptions from web applications, **it can be used with either web or console applications**. `HttpContext` is optional when logging exceptions. 
-An example use of this at Stack Exchange is windows services logging to SQL and viewed elsewhere in a central dashboard called [Opserver](https://github.com/opserver/Opserver).
+CI Package feeds (created on every push/build):
+- Only StackExchange.Exceptional packages: https://www.myget.org/gallery/exceptional 
+- All Stack Overflow packages: https://www.myget.org/gallery/stackoverflow
 
-This project was inspired by [ELMAH](https://code.google.com/p/elmah/), but it didn't suit our particular needs for very, very high volume error logging when a network-level event occurs.
+### Documentation
+[See the docs for how to get configured and logging in just a few minutes][Docs].
 
-Stack Exchange needed a handful things in an error handler/logger:
 
- - High speed/capacity logging (on the order of 100,000/min)
- - Handling the connection to a central error store being interrupted (without losing the errors)
- - Add custom data to exceptions
- - Rolling up of duplicate errors
-
-Given the above needs, StackExchange.Exceptional was created.  It's as lightweight as possible to suit the needs of the network, but if there are compelling features I'll definitely look at adding them to the main repo here and NuGet soon.
-
-## License
+### License
 
 Dual-licensed under:
  * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or https://www.apache.org/licenses/LICENSE-2.0)
  * MIT license ([LICENSE-MIT](LICENSE-MIT) or https://opensource.org/licenses/MIT)
+
+[Docs]: https://nickcraver.com/StackExchange.Exceptional
