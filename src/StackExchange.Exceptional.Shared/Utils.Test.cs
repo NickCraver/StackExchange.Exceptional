@@ -70,7 +70,7 @@ namespace StackExchange.Exceptional
                 /// This will be called whenever the exception is logged, adding a command and keys
                 /// to the exception.
                 /// </summary>
-                private static Action<Error> _handler = e =>
+                private static readonly Action<Error> _handler = e =>
                 {
                     var cmd = e.AddCommand(new Command("Redis"));
                     foreach (string k in e.Exception.Data.Keys)
