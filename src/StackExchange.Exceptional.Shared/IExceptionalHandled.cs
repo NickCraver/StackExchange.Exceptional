@@ -12,9 +12,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// The handler or "what to do" when Exceptional logs an exception of this type
         /// Access (arg).Exception to get the instance of the exception thrown here.
-        /// The actual action returned (for optimization) should be a single instance, e.g. not a new
-        /// Action{T} returned on every get call.
         /// </summary>
-        Action<Error> ExceptionalHandler { get; }
+        void ExceptionalHandler(Error e);
     }
 }

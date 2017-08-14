@@ -70,21 +70,16 @@ namespace StackExchange.Exceptional
                 /// This will be called whenever the exception is logged, adding a command and keys
                 /// to the exception.
                 /// </summary>
-                private static readonly Action<Error> _handler = e =>
+                public void ExceptionalHandler(Error e)
                 {
                     var cmd = e.AddCommand(new Command("Redis"));
-                    foreach (string k in e.Exception.Data.Keys)
+                    foreach (string k in e.Exception.Data.Keys) // can also use `this`
                     {
                         var val = e.Exception.Data[k] as string;
                         if (k == "redis-command") cmd.CommandString = val;
                         if (k.StartsWith("Redis-")) cmd.AddData(k.Substring("Redis-".Length), val);
                     }
-                };
-
-                /// <summary>
-                /// Handler for Exceptional logging
-                /// </summary>
-                public Action<Error> ExceptionalHandler => _handler;
+                }
             }
 #pragma warning restore RCS1194 // Implement exception constructors.
         }
