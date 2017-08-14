@@ -1,22 +1,23 @@
 ---
 layout: default
-title: 'ASP.NET Setup'
+title: 'ASP.NET (non-Core)'
 ---
+## ASP.NET (non-Core)
 
-Install the nuget package via:
+Install [the `StackExchange.Exceptional` nuget package](https://www.nuget.org/packages/StackExchange.Exceptional) via:
 
-```ps
+```powershell
 Install-Package StackExchange.Exceptional
 ```
 
-**If setting up a web application, I encourage you to [check out the MVC sample project](https://github.com/NickCraver/StackExchange.Exceptional/tree/master/samples/Samples.MVC5), it has all of the below in a proper context.**
+**If setting up a web application, I encourage you to [check out the ASP.NET MVC 5 sample project](https://github.com/NickCraver/StackExchange.Exceptional/tree/master/samples/Samples.MVC5), it has all of the below in a proper context.**
 
 Web.Config example pieces for an IIS 7.5 deployment:
 
 ```xml
 <configuration>
   <configSections>
-    <section name="Exceptional" type="StackExchange.Exceptional.Settings, StackExchange.Exceptional"/>
+    <section name="Exceptional" type="StackExchange.Exceptional.ConfigSettings, StackExchange.Exceptional"/>
   </configSections>
   <Exceptional applicationName="Core">
     <IgnoreErrors>
@@ -51,44 +52,35 @@ StackExchange.Exceptional.ErrorStore.Setup("My Application", new SQLErrorStore(_
 ...then to log exceptions (context would be null for non-web applications):
 
 ```c#
-ErrorStore.LogException(exception, _context);
+exception.Log(_context);
 ```
+
+#### Optional Configuration
 
 Now for the optional pieces, Stack Overflow exposes the error handler through an MVC route, this allows you to lock it down using whatever security you already have in place:
 
 ```c#
 [Route("admin/errors/{resource?}/{subResource?}")]
-public ActionResult InvokeErrorHandler(string resource, string subResource)
-{
-    var context = System.Web.HttpContext.Current;
-    var factory = new StackExchange.Exceptional.HandlerFactory();
-
-    var page = factory.GetHandler(context, Request.RequestType, Request.Url.ToString(), Request.PathInfo);
-    page.ProcessRequest(context);
-
-    return null;
-}
+public Task Exceptions() => ExceptionalModule.HandleRequestAsync(System.Web.HttpContext.Current);
 ```
 
 If you want to customize the views (adding links, etc.) you can add JavaScript files which will be included on both the exception list and exception detail views.  In the exception detail view parsing is not necessary since all of the detail is available via `window.Exception` as well:
 
 ```c#
-ErrorStore.AddJSInclude("~/content/js/errors.js");
+Settings.Current.Render.JSIncludes.Add("/Content/errors.js");
 ```
 
 If you want to store some custom key/value style data with an exception, you can set up `ErrorStore.GetCustomData`, for example:
 
 ```c#
-ErrorStore.GetCustomData = GetCustomErrorData;
+Settings.Current.GetCustomData = (exception, data) =>
+    {
+        // exception is the exception thrown
+        // context is the HttpContext of the request (could be null, e.g. background thread exception)
+        // data is a Dictionary<string, string> to add custom data too
+        data.Add("Example string", DateTime.UtcNow.ToString());
+        data.Add("User Id", "You could fetch a user/account Id here, etc.");
+        data.Add("Links get linkified", "https://www.google.com");
+    };
 ```
-
-Defined as:
-
-```c#
-private static void GetCustomErrorData(Exception ex, HttpContext context, Dictionary<string, string> data)
-{
-    data.Add("Key","Value");
-}
-```
-
-...these pairs will appear on the error detail screen in a "Custom" section.
+...and these pairs will appear on the error detail screen in a "Custom" section.

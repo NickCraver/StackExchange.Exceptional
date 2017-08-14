@@ -83,5 +83,6 @@ Desktop.ini
 .DS_Store
 
 docs/Gemfile.lock
-docs/_site/
 docs/.sass-cache/
+docs/_site/
+_site/
