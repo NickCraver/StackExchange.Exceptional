@@ -26,6 +26,14 @@ Stack Exchange needed a handful things in an error handler/logger:
 
 Given the above needs, StackExchange.Exceptional was created.  It's as lightweight as possible to suit the needs of the network, but if there are compelling features I'll definitely look at adding them to the main repo here and NuGet soon.
 
+Here are some examples of what Exceptional looks like.
+
+Error listng:
+![Error list]({{ site.baseurl }}/images/ErrorList.png)
+Error Detail:
+![Error list]({{ site.baseurl }}/images/ErrorDetail.png)
+
+
 #### License
 
 Dual-licensed under:
