@@ -27,9 +27,10 @@
         /// </summary>
         /// <typeparam name="T">The notifier type to register (this should be inferred generics).</typeparam>
         /// <param name="notifier">The notifier to register.</param>
-        public static T Register<T>(this T notifier) where T : IErrorNotifier
+        /// <param name="settings">The settings object to register with, <see cref="Settings.Current"/> is used otherwise.</param>
+        public static T Register<T>(this T notifier, Settings settings = null) where T : IErrorNotifier
         {
-            var notifiers = Settings.Current.Notifiers;
+            var notifiers = (settings ?? Settings.Current).Notifiers;
             if (!notifiers.Contains(notifier))
             {
                 notifiers.Add(notifier);
