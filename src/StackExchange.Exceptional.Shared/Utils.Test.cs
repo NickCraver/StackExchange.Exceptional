@@ -57,13 +57,34 @@ namespace StackExchange.Exceptional
             /// <summary>
             /// A mock RedisException, like StackExchange.Redis contains
             /// </summary>
-            public class RedisException : Exception
+            public class RedisException : Exception, IExceptionalHandled
             {
                 /// <summary>
                 /// Creates a redis exception with a message.
                 /// </summary>
                 /// <param name="message">The message to use for this exception.</param>
                 public RedisException(string message) : base(message) { }
+
+                /// <summary>
+                /// An example of a handler that adds data to the exception when logged.
+                /// This will be called whenever the exception is logged, adding a command and keys
+                /// to the exception.
+                /// </summary>
+                private static Action<Error> _handler = e =>
+                {
+                    var cmd = e.AddCommand(new Command("Redis"));
+                    foreach (string k in e.Exception.Data.Keys)
+                    {
+                        var val = e.Exception.Data[k] as string;
+                        if (k == "redis-command") cmd.CommandString = val;
+                        if (k.StartsWith("Redis-")) cmd.AddData(k.Substring("Redis-".Length), val);
+                    }
+                };
+
+                /// <summary>
+                /// Handler for Exceptional logging
+                /// </summary>
+                public Action<Error> ExceptionalHandler => _handler;
             }
 #pragma warning restore RCS1194 // Implement exception constructors.
         }

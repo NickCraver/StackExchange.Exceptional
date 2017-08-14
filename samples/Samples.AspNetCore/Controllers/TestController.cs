@@ -19,5 +19,7 @@ namespace Samples.AspNetCore.Controllers
             ex.AddLogData("Via Extension", "Some logged data via the .AddLoggedData() method!");
             throw ex;
         }
+
+        public ActionResult ThrowRedis() => throw Utils.Test.GetRedisException();
     }
 }

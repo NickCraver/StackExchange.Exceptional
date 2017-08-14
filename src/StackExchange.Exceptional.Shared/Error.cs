@@ -134,6 +134,20 @@ namespace StackExchange.Exceptional
             {
                 handler(this);
             }
+
+            // Run handlers for any exception implementing IExceptionalHandled
+            if (exception is IExceptionalHandled eh)
+            {
+                try
+                {
+                    eh.ExceptionalHandler(this);
+                }
+                catch (Exception ehe)
+                {
+                    Trace.WriteLine(ehe);
+                }
+            }
+
             // Historical special case
             if (exception.Data?.Contains("SQL") == true)
             {
