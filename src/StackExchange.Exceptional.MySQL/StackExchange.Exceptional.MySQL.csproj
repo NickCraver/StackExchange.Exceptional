@@ -3,12 +3,14 @@
     <AssemblyName>StackExchange.Exceptional.MySQL</AssemblyName>
     <Description>MySQL storage provider for StackExchange.Exceptional</Description>
     <PackageTags>SQL MySQL Exception Handler Errors Stack Exchange Exceptional</PackageTags>
-    <TargetFrameworks>net451</TargetFrameworks>
+    <TargetFrameworks>net451;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\StackExchange.Exceptional.Shared\StackExchange.Exceptional.Shared.csproj" />
     <PackageReference Include="Dapper" Version="1.50.2" />
-    <PackageReference Include="MySql.Data" Version="6.9.9" />
+    <PackageReference Include="MySqlConnector" Version="0.25.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net451'">
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
