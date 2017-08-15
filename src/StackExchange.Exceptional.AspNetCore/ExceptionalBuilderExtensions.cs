@@ -37,7 +37,6 @@ namespace Microsoft.AspNetCore.Builder
         public static IApplicationBuilder UseExceptional(this IApplicationBuilder builder, IConfiguration config, Action<Settings> configureSettings = null)
         {
             _ = builder ?? throw new ArgumentNullException(nameof(builder));
-            _ = configureSettings ?? throw new ArgumentNullException(nameof(configureSettings));
 
             var settings = Settings.Current;
             var configSettings = new ConfigSettings(config);

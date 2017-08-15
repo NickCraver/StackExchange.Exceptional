@@ -19,6 +19,7 @@ namespace StackExchange.Exceptional.Internal
 
         public string ApplicationName { get; set; }
         public string DataIncludePattern { get; set; }
+        public bool? UseExceptionalPageOnThrow { get; set; }
 
         public ErrorStoreSettings ErrorStore { get; set; }
         public class ErrorStoreSettings
@@ -149,6 +150,10 @@ namespace StackExchange.Exceptional.Internal
             if (DataIncludePattern.HasValue())
             {
                 settings.DataIncludeRegex = new Regex(DataIncludePattern, RegexOptions.Singleline | RegexOptions.Compiled);
+            }
+            if (UseExceptionalPageOnThrow.HasValue)
+            {
+                settings.UseExceptionalPageOnThrow = UseExceptionalPageOnThrow.Value;
             }
 
             ErrorStore?.Populate(settings);
