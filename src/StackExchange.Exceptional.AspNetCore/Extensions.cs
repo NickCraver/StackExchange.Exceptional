@@ -174,6 +174,7 @@ namespace StackExchange.Exceptional
                 { "Request Method", request.Method },
                 { "Scheme", request.Scheme },
                 { "Url", error.Url },
+                { "REMOTE_ADDR", context.Connection.RemoteIpAddress.ToString() }
             };
             error.QueryString = TryGetCollection(r => r.Query);
             if (request.HasFormContentType)

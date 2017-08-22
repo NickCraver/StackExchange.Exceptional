@@ -205,6 +205,10 @@ namespace StackExchange.Exceptional
                     CustomData.Add(Constants.CustomDataErrorKey, "Fetching IP Address: " + gipe);
                 }
             }
+            else
+            {
+                IPAddress = ServerVariables?.GetRemoteIP();
+            }
         }
 
         /// <summary>
@@ -449,15 +453,10 @@ namespace StackExchange.Exceptional
             set => _httpMethod = value;
         }
 
-        private string _ipAddress;
         /// <summary>
         /// The IPAddress of the request causing this error.
         /// </summary>
-        public string IPAddress
-        {
-            get => _ipAddress ?? (_ipAddress = ServerVariables?.GetRemoteIP() ?? "");
-            set => _ipAddress = value;
-        }
+        public string IPAddress { get; set; }
 
         /// <summary>
         /// JSON populated from database stored, deserialized after if needed.
