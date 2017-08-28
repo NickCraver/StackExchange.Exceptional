@@ -153,7 +153,7 @@ namespace StackExchange.Exceptional
             switch (context.Request.Method)
             {
                 case "POST":
-                    errorGuid = context.Request.Form["guid"].ToString() ?? string.Empty;
+                    errorGuid = context.Request.HasFormContentType ? context.Request.Form["guid"].ToString() : string.Empty;
                     switch (resource)
                     {
                         case KnownRoutes.Delete:
