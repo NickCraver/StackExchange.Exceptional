@@ -182,7 +182,7 @@ namespace StackExchange.Exceptional
                         case KnownRoutes.Info:
                             var guid = errorGuid.ToGuid();
                             var error = errorGuid.HasValue() ? await store.GetAsync(guid).ConfigureAwait(false) : null;
-                            await Page(new ErrorDetailPage(error, store, TrimEnd(context.Request.Path, "/info"), guid));
+                            await Page(new ErrorDetailPage(error, store, TrimEnd($"{context.Request.PathBase}{context.Request.Path}", "/info"), guid));
                             return;
                         case KnownRoutes.Json:
                             context.Response.ContentType = "application/json";
@@ -207,7 +207,7 @@ namespace StackExchange.Exceptional
                             throw new Exception("This is a test. Please disregard. If this were a real emergency, it'd have a different message.");
                         default:
                             context.Response.Headers["Cache-Control"] = "no-cache, no-store";
-                            await Page(new ErrorListPage(store, context.Request.Path, await store.GetAllAsync().ConfigureAwait(false)));
+                            await Page(new ErrorListPage(store, $"{context.Request.PathBase}{context.Request.Path}", await store.GetAllAsync().ConfigureAwait(false)));
                             return;
                     }
                 default:
