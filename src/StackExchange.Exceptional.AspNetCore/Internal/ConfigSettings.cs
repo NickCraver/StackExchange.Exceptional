@@ -34,6 +34,8 @@ namespace StackExchange.Exceptional.Internal
             public string ConnectionStringName { get; set; }
 #endif
 
+            public string Schema { get; set; }
+
             public int? Size { get; set; }
 
             public int? RollupSeconds { get; set; }
@@ -47,8 +49,9 @@ namespace StackExchange.Exceptional.Internal
                 if (Path.HasValue()) storeSettings.Path = Path;
                 if (ConnectionString.HasValue()) storeSettings.ConnectionString = ConnectionString;
 #if !NETSTANDARD2_0
-            if (ConnectionStringName.HasValue()) storeSettings.ConnectionStringName = ConnectionStringName;
+                if (ConnectionStringName.HasValue()) storeSettings.ConnectionStringName = ConnectionStringName;
 #endif
+                if (Schema.HasValue()) storeSettings.Schema = Schema;
                 if (Size.HasValue) storeSettings.Size = Size.Value;
                 if (RollupSeconds.HasValue) storeSettings.RollupPeriod = TimeSpan.FromSeconds(RollupSeconds.Value);
                 if (BackupQueueSize.HasValue) storeSettings.BackupQueueSize = BackupQueueSize.Value;

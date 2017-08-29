@@ -43,6 +43,8 @@ namespace StackExchange.Exceptional
             public string ConnectionString => Get("connectionString");
             [ConfigurationProperty("connectionStringName")]
             public string ConnectionStringName => Get("connectionStringName");
+            [ConfigurationProperty("schema")]
+            public string Schema => Get("schema");
             [ConfigurationProperty("size")]
             public int? Size => GetInt("size");
             [ConfigurationProperty("rollupSeconds")]
@@ -56,6 +58,7 @@ namespace StackExchange.Exceptional
                 s.Type = Type;
                 if (Path.HasValue()) s.Path = Path;
                 if (ConnectionString.HasValue()) s.ConnectionString = ConnectionString;
+                if (Schema.HasValue()) s.Schema = Schema;
                 if (ConnectionStringName.HasValue()) s.ConnectionStringName = ConnectionStringName;
                 if (Size.HasValue) s.Size = Size.Value;
                 if (RollupSeconds.HasValue) s.RollupPeriod = TimeSpan.FromSeconds(RollupSeconds.Value);

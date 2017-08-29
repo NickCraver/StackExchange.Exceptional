@@ -248,6 +248,13 @@ namespace StackExchange.Exceptional
 #endif
 
         /// <summary>
+        /// For database-based error stores.
+        /// The table schema to use.
+        /// Defaults to "dbo".
+        /// </summary>
+        public string Schema { get; set; } = "dbo";
+
+        /// <summary>
         /// The size of this error log, either how many to keep or how many to display depending on type.
         /// Defaults to 200.
         /// </summary>
