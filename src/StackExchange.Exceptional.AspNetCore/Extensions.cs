@@ -160,7 +160,7 @@ namespace StackExchange.Exceptional
                 }
             }
 
-            error.Url = $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
+            error.Url = $"{request.Scheme}://{request.Host}{request.PathBase}{request.Path}{request.QueryString}";
             error.ServerVariables = new NameValueCollection
             {
                 { "ContentLength", request.ContentLength?.ToString() },
