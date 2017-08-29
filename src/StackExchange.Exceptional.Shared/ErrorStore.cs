@@ -35,7 +35,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Base constructor of the error store to set common properties.
         /// </summary>
-        /// <param name="settings">The <see cref="ErrorStoreSettings"/> for this store.</param>     
+        /// <param name="settings">The <see cref="ErrorStoreSettings"/> for this store.</param>
         protected ErrorStore(ErrorStoreSettings settings)
         {
             Settings = settings;
@@ -172,6 +172,7 @@ namespace StackExchange.Exceptional
         public static void Setup(string applicationName, ErrorStore store)
         {
             Exceptional.Settings.Current.DefaultStore = store;
+            Exceptional.Settings.Current.ApplicationName = applicationName;
             _applicationName = applicationName;
         }
 
