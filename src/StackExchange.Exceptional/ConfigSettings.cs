@@ -22,15 +22,15 @@ namespace StackExchange.Exceptional
             if (Interlocked.CompareExchange(ref _loaded, 1, 0) == 0)
             {
                 var config = ConfigurationManager.GetSection("Exceptional") as ConfigSettings;
-                config.Populate(Settings.Current);
+                config?.Populate(Settings.Current);
             }
         }
-        
+
         [ConfigurationProperty("applicationName", IsRequired = true)]
         public string ApplicationName => this["applicationName"] as string;
         [ConfigurationProperty("dataIncludePattern")]
         public string DataIncludePattern => this["dataIncludePattern"] as string;
-        
+
         [ConfigurationProperty("ErrorStore")]
         public ErrorStoreSettings ErrorStore => this["ErrorStore"] as ErrorStoreSettings;
         public class ErrorStoreSettings : ExceptionalElement
