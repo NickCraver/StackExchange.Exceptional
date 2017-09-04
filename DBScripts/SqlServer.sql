@@ -2,6 +2,14 @@
     SQL Server setup script for Exceptional
     Run this script for creating the exceptions table
     It will also upgrade a V1 schema to V2, just run the full script.
+
+	Run this block for creating a new table schema
+	If Not Exists (Select 1
+					 From INFORMATION_SCHEMA.SCHEMATA 
+					Where [SCHEMA_NAME] = '??')
+	Begin
+		Exec sp_executesql N'Create Schema ??'
+	End
 */
 If Not Exists (Select 1 
                  From INFORMATION_SCHEMA.TABLES 

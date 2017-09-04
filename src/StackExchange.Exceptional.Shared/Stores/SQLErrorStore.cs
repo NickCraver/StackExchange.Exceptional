@@ -20,6 +20,7 @@ namespace StackExchange.Exceptional.Stores
 
         private readonly int _displayCount = DefaultDisplayCount;
         private readonly string _connectionString;
+        private readonly string _schema;
 
         /// <summary>
         /// The maximum count of errors to show.
@@ -35,11 +36,13 @@ namespace StackExchange.Exceptional.Stores
         /// Creates a new instance of <see cref="SQLErrorStore"/> with the specified connection string.
         /// </summary>
         /// <param name="connectionString">The database connection string to use.</param>
+        /// <param name="schema">The database schema to use.</param>
         /// <param name="displayCount">How many errors to display in the log (for display ONLY, the log is not truncated to this value).</param>
-        public SQLErrorStore(string connectionString, int displayCount = DefaultDisplayCount)
+        public SQLErrorStore(string connectionString, string schema, int displayCount = DefaultDisplayCount)
             : this(new ErrorStoreSettings()
             {
                 ConnectionString = connectionString,
+                Schema = schema,
                 Size = displayCount
             })
         { }
@@ -51,6 +54,7 @@ namespace StackExchange.Exceptional.Stores
         public SQLErrorStore(ErrorStoreSettings settings) : base(settings)
         {
             _displayCount = Math.Min(settings.Size, MaximumDisplayCount);
+            _schema = settings.Schema;
 
 #if NETSTANDARD2_0
             _connectionString = settings.ConnectionString;
@@ -62,6 +66,9 @@ namespace StackExchange.Exceptional.Stores
 
             if (_connectionString.IsNullOrEmpty())
                 throw new ArgumentOutOfRangeException(nameof(settings), "A connection string or connection string name must be specified when using a SQL error store");
+
+            if (_schema.IsNullOrEmpty())
+                throw new ArgumentOutOfRangeException(nameof(settings), "A table schema must be specified when using a SQL error store");
         }
 
         /// <summary>
@@ -73,8 +80,8 @@ namespace StackExchange.Exceptional.Stores
         {
             using (var c = GetConnection())
             {
-                return await c.ExecuteAsync(@"
-Update Exceptions 
+                return await c.ExecuteAsync($@"
+Update {GetSchema()}.Exceptions 
    Set IsProtected = 1, DeletionDate = Null
  Where GUID = @guid", new { guid }).ConfigureAwait(false) > 0;
             }
@@ -89,8 +96,8 @@ Update Exceptions
         {
             using (var c = GetConnection())
             {
-                return await c.ExecuteAsync(@"
-Update Exceptions 
+                return await c.ExecuteAsync($@"
+Update {GetSchema()}.Exceptions 
    Set IsProtected = 1, DeletionDate = Null
  Where GUID In @guids", new { guids }).ConfigureAwait(false) > 0;
             }
@@ -105,8 +112,8 @@ Update Exceptions
         {
             using (var c = GetConnection())
             {
-                return await c.ExecuteAsync(@"
-Update Exceptions 
+                return await c.ExecuteAsync($@"
+Update {GetSchema()}.Exceptions 
    Set DeletionDate = GETUTCDATE() 
  Where GUID = @guid 
    And DeletionDate Is Null", new { guid, ApplicationName }).ConfigureAwait(false) > 0;
@@ -122,8 +129,8 @@ Update Exceptions
         {
             using (var c = GetConnection())
             {
-                return await c.ExecuteAsync(@"
-Update Exceptions 
+                return await c.ExecuteAsync($@"
+Update {GetSchema()}.Exceptions 
    Set DeletionDate = GETUTCDATE() 
  Where GUID In @guids
    And DeletionDate Is Null", new { guids }).ConfigureAwait(false) > 0;
@@ -140,8 +147,8 @@ Update Exceptions
         {
             using (var c = GetConnection())
             {
-                return await c.ExecuteAsync(@"
-Delete From Exceptions 
+                return await c.ExecuteAsync($@"
+Delete From {GetSchema()}.Exceptions 
  Where GUID = @guid
    And ApplicationName = @ApplicationName", new { guid, ApplicationName }).ConfigureAwait(false) > 0;
             }
@@ -156,8 +163,8 @@ Delete From Exceptions
         {
             using (var c = GetConnection())
             {
-                return await c.ExecuteAsync(@"
-Update Exceptions 
+                return await c.ExecuteAsync($@"
+Update {GetSchema()}.Exceptions 
    Set DeletionDate = GETUTCDATE() 
  Where DeletionDate Is Null 
    And IsProtected = 0 
@@ -166,19 +173,19 @@ Update Exceptions
         }
 
         private const string _sqlLogUpdate = @"
-Update Exceptions 
+Update {0}.Exceptions 
    Set DuplicateCount = DuplicateCount + @DuplicateCount,
        LastLogDate = (Case When LastLogDate Is Null Or @CreationDate > LastLogDate Then @CreationDate Else LastLogDate End),
        @newGUID = GUID
  Where Id In (Select Top 1 Id
-                From Exceptions 
+                From {0}.Exceptions 
                Where ErrorHash = @ErrorHash
                  And ApplicationName = @ApplicationName
                  And DeletionDate Is Null
                  And CreationDate >= @minDate)";
 
         private const string _sqlLogInsert = @"
-Insert Into Exceptions (GUID, ApplicationName, Category, MachineName, CreationDate, Type, IsProtected, Host, Url, HTTPMethod, IPAddress, Source, Message, Detail, StatusCode, FullJson, ErrorHash, DuplicateCount, LastLogDate)
+Insert Into {0}.Exceptions (GUID, ApplicationName, Category, MachineName, CreationDate, Type, IsProtected, Host, Url, HTTPMethod, IPAddress, Source, Message, Detail, StatusCode, FullJson, ErrorHash, DuplicateCount, LastLogDate)
 Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, @IsProtected, @Host, @Url, @HTTPMethod, @IPAddress, @Source, @Message, @Detail, @StatusCode, @FullJson, @ErrorHash, @DuplicateCount, @LastLogDate)";
 
         private DynamicParameters GetUpdateParams(Error error)
@@ -231,8 +238,9 @@ Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, 
                 if (Settings.RollupPeriod.HasValue && error.ErrorHash.HasValue)
                 {
                     var queryParams = GetUpdateParams(error);
+                    var sqlLogUpdate = string.Format(_sqlLogUpdate, GetSchema());
                     // if we found an error that's a duplicate, jump out
-                    if (c.Execute(_sqlLogUpdate, queryParams) > 0)
+                    if (c.Execute(sqlLogUpdate, queryParams) > 0)
                     {
                         error.GUID = queryParams.Get<Guid>("@newGUID");
                         return;
@@ -240,7 +248,8 @@ Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, 
                 }
 
                 error.FullJson = error.ToJson();
-                c.Execute(_sqlLogInsert, GetInsertParams(error));
+                var sqlLogInsert = string.Format(_sqlLogInsert, GetSchema());
+                c.Execute(sqlLogInsert, GetInsertParams(error));
             }
         }
 
@@ -257,8 +266,9 @@ Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, 
                 if (Settings.RollupPeriod.HasValue && error.ErrorHash.HasValue)
                 {
                     var queryParams = GetUpdateParams(error);
+                    var sqlLogUpdate = string.Format(_sqlLogUpdate, GetSchema());
                     // if we found an error that's a duplicate, jump out
-                    if (await c.ExecuteAsync(_sqlLogUpdate, queryParams).ConfigureAwait(false) > 0)
+                    if (await c.ExecuteAsync(sqlLogUpdate, queryParams).ConfigureAwait(false) > 0)
                     {
                         error.GUID = queryParams.Get<Guid>("@newGUID");
                         return;
@@ -266,7 +276,8 @@ Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, 
                 }
 
                 error.FullJson = error.ToJson();
-                await c.ExecuteAsync(_sqlLogInsert, GetInsertParams(error)).ConfigureAwait(false);
+                var sqlLogInsert = string.Format(_sqlLogInsert, GetSchema());
+                await c.ExecuteAsync(sqlLogInsert, GetInsertParams(error)).ConfigureAwait(false);
             }
         }
 
@@ -281,9 +292,9 @@ Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, 
             Error sqlError;
             using (var c = GetConnection())
             {
-                sqlError = await c.QueryFirstOrDefaultAsync<Error>(@"
+                sqlError = await c.QueryFirstOrDefaultAsync<Error>($@"
 Select * 
-  From Exceptions 
+  From {GetSchema()}.Exceptions 
  Where GUID = @guid", new { guid }).ConfigureAwait(false);
             }
             if (sqlError == null) return null;
@@ -306,9 +317,9 @@ Select *
         {
             using (var c = GetConnection())
             {
-                return (await c.QueryAsync<Error>(@"
+                return (await c.QueryAsync<Error>($@"
 Select Top (@max) * 
-  From Exceptions 
+  From {GetSchema()}.Exceptions 
  Where DeletionDate Is Null
    And ApplicationName = @ApplicationName
 Order By CreationDate Desc", new { max = _displayCount, ApplicationName = applicationName ?? ApplicationName }).ConfigureAwait(false)).AsList();
@@ -324,9 +335,9 @@ Order By CreationDate Desc", new { max = _displayCount, ApplicationName = applic
         {
             using (var c = GetConnection())
             {
-                return await c.QueryFirstOrDefaultAsync<int>(@"
+                return await c.QueryFirstOrDefaultAsync<int>($@"
 Select Count(*) 
-  From Exceptions 
+  From {GetSchema()}.Exceptions 
  Where DeletionDate Is Null
    And ApplicationName = @ApplicationName" + (since.HasValue ? " And CreationDate > @since" : ""),
                     new { since, ApplicationName = applicationName ?? ApplicationName }).ConfigureAwait(false);
@@ -334,5 +345,7 @@ Select Count(*)
         }
 
         private SqlConnection GetConnection() => new SqlConnection(_connectionString);
+
+        private string GetSchema() => _schema;
     }
 }
