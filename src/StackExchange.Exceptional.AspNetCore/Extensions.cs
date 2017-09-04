@@ -160,6 +160,11 @@ namespace StackExchange.Exceptional
                 }
             }
 
+            if (error.IPAddress.IsNullOrEmpty())
+            {
+                error.IPAddress = context.Connection.RemoteIpAddress.ToString();
+            }
+
             error.Url = $"{request.Scheme}://{request.Host}{request.PathBase}{request.Path}{request.QueryString}";
             error.ServerVariables = new NameValueCollection
             {
