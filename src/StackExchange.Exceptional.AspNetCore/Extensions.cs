@@ -175,17 +175,17 @@ namespace StackExchange.Exceptional
             error.Url = $"{request.Scheme}://{request.Host}{request.PathBase}{request.Path}{request.QueryString}";
             error.ServerVariables = new NameValueCollection
             {
-                { "ContentLength", request.ContentLength?.ToString() },
-                { "ContentType", request.ContentType },
-                { "Host", request.Host.Host },
-                { "Path", request.Path },
-                { "PathBase", request.PathBase },
-                { "Port", request.Host.Port?.ToString() },
-                { "Protocol", request.Protocol },
-                { "QueryString", request.QueryString.Value },
-                { "Request Method", request.Method },
-                { "Scheme", request.Scheme },
-                { "Url", error.Url },
+                ["ContentLength"] = request.ContentLength?.ToString(),
+                ["ContentType"] = request.ContentType,
+                ["Host"] = request.Host.Host,
+                ["Path"] = request.Path,
+                ["PathBase"] = request.PathBase,
+                ["Port"] = request.Host.Port?.ToString(),
+                ["Protocol"] = request.Protocol,
+                ["QueryString"] = request.QueryString.Value,
+                ["Request Method"] = request.Method,
+                ["Scheme"] = request.Scheme,
+                ["Url"] = error.Url,
             };
             error.QueryString = TryGetCollection(r => r.Query);
             if (request.HasFormContentType)

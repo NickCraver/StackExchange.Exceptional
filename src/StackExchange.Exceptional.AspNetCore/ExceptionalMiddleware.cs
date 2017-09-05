@@ -21,7 +21,7 @@ namespace StackExchange.Exceptional
     /// </summary>
     public class ExceptionalMiddleware
     {
-        private RequestDelegate _next;
+        private readonly RequestDelegate _next;
         private readonly ILogger _logger;
         private readonly IHostingEnvironment _env;
         private readonly IOptions<ExceptionalSettings> _settings;
@@ -30,9 +30,13 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Creates a new instance of <see cref="ExceptionalMiddleware"/>
         /// </summary>
+        /// <param name="next">The next delegate in the chain to execute.</param>
+        /// <param name="settings">The <see cref="ExceptionalSettings"/> wrapper that contains current settings.</param>
+        /// <param name="hostingEnvironment">The <see cref="IHostingEnvironment"/> to get pathing data from.</param>
+        /// <param name="loggerFactory">The logger factor to record exceptions to.</param>
         public ExceptionalMiddleware(
-            RequestDelegate next, 
-            IOptions<ExceptionalSettings> settings, 
+            RequestDelegate next,
+            IOptions<ExceptionalSettings> settings,
             IHostingEnvironment hostingEnvironment,
             ILoggerFactory loggerFactory)
         {
@@ -51,6 +55,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Executes the Exceptional-wrapped middleware.
         /// </summary>
+        /// <param name="context">The current <see cref="HttpContext"/>.</param>
         public async Task Invoke(HttpContext context)
         {
             try
@@ -60,8 +65,8 @@ namespace StackExchange.Exceptional
             catch (Exception ex)
             {
                 _logger.LogError(0, ex, "An unhandled exception has occurred, logging to Exceptional");
-                var error = await ex.LogAsync(context);
-                
+                var error = await ex.LogAsync(context).ConfigureAwait(false);
+
                 // If options say to do so, show the exception page to the user
                 if (_settings.Value.UseExceptionalPageOnThrow && error != null)
                 {
@@ -91,7 +96,7 @@ namespace StackExchange.Exceptional
                             ShowActionLinks = false
                         };
                         response.ContentType = "text/html";
-                        await response.WriteAsync(page.Render());
+                        await response.WriteAsync(page.Render()).ConfigureAwait(false);
 
                         return;
                     }
@@ -120,7 +125,7 @@ namespace StackExchange.Exceptional
             async Task Content(string content, string mime = "text/html")
             {
                 context.Response.ContentType = mime;
-                await context.Response.WriteAsync(content);
+                await context.Response.WriteAsync(content).ConfigureAwait(false);
             }
             Task JsonResult(bool result) => Content(@"{""result"":" + (result ? "true" : "false") + "}", "text/javascript");
             Task Page(WebPage page) => Content(page.Render());
@@ -160,22 +165,22 @@ namespace StackExchange.Exceptional
                     switch (resource)
                     {
                         case KnownRoutes.Delete:
-                            await JsonResult(await store.DeleteAsync(errorGuid.ToGuid()).ConfigureAwait(false));
+                            await JsonResult(await store.DeleteAsync(errorGuid.ToGuid()).ConfigureAwait(false)).ConfigureAwait(false);
                             return;
                         case KnownRoutes.DeleteAll:
-                            await JsonResult(await store.DeleteAllAsync().ConfigureAwait(false));
+                            await JsonResult(await store.DeleteAllAsync().ConfigureAwait(false)).ConfigureAwait(false);
                             return;
                         case KnownRoutes.DeleteList:
-                            await JsonResult(await store.DeleteAsync(getFormGuids()).ConfigureAwait(false));
+                            await JsonResult(await store.DeleteAsync(getFormGuids()).ConfigureAwait(false)).ConfigureAwait(false);
                             return;
                         case KnownRoutes.Protect:
-                            await JsonResult(await store.ProtectAsync(errorGuid.ToGuid()).ConfigureAwait(false));
+                            await JsonResult(await store.ProtectAsync(errorGuid.ToGuid()).ConfigureAwait(false)).ConfigureAwait(false);
                             return;
                         case KnownRoutes.ProtectList:
-                            await JsonResult(await store.ProtectAsync(getFormGuids()).ConfigureAwait(false));
+                            await JsonResult(await store.ProtectAsync(getFormGuids()).ConfigureAwait(false)).ConfigureAwait(false);
                             return;
                         default:
-                            await Content("Invalid POST Request");
+                            await Content("Invalid POST Request").ConfigureAwait(false);
                             return;
                     }
                 case "GET":
@@ -185,7 +190,7 @@ namespace StackExchange.Exceptional
                         case KnownRoutes.Info:
                             var guid = errorGuid.ToGuid();
                             var error = errorGuid.HasValue() ? await store.GetAsync(guid).ConfigureAwait(false) : null;
-                            await Page(new ErrorDetailPage(error, settings, store, TrimEnd($"{context.Request.PathBase}{context.Request.Path}", "/info"), guid));
+                            await Page(new ErrorDetailPage(error, settings, store, TrimEnd($"{context.Request.PathBase}{context.Request.Path}", "/info"), guid)).ConfigureAwait(false);
                             return;
                         case KnownRoutes.Json:
                             context.Response.ContentType = "application/json";
@@ -198,23 +203,23 @@ namespace StackExchange.Exceptional
                             {
                                 errors = errors.Where(e => e.CreationDate >= since).ToList();
                             }
-                            await context.Response.WriteAsync(JsonConvert.SerializeObject(errors));
+                            await context.Response.WriteAsync(JsonConvert.SerializeObject(errors)).ConfigureAwait(false);
                             return;
                         case KnownRoutes.Css:
-                            await Resource(Resources.BundleCss);
+                            await Resource(Resources.BundleCss).ConfigureAwait(false);
                             return;
                         case KnownRoutes.Js:
-                            await Resource(Resources.BundleJs);
+                            await Resource(Resources.BundleJs).ConfigureAwait(false);
                             return;
                         case KnownRoutes.Test:
                             throw new Exception("This is a test. Please disregard. If this were a real emergency, it'd have a different message.");
                         default:
                             context.Response.Headers["Cache-Control"] = "no-cache, no-store";
-                            await Page(new ErrorListPage(store, settings, $"{context.Request.PathBase}{context.Request.Path}", await store.GetAllAsync().ConfigureAwait(false)));
+                            await Page(new ErrorListPage(store, settings, $"{context.Request.PathBase}{context.Request.Path}", await store.GetAllAsync().ConfigureAwait(false))).ConfigureAwait(false);
                             return;
                     }
                 default:
-                    await Content("Unsupported request method: " + context.Request.Method);
+                    await Content("Unsupported request method: " + context.Request.Method).ConfigureAwait(false);
                     return;
             }
         }
