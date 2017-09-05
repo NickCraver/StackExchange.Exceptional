@@ -16,10 +16,11 @@ namespace StackExchange.Exceptional.Pages
         /// Creates an error listing page for rendering.
         /// </summary>
         /// <param name="store">The error store to use.</param>
+        /// <param name="settings">Current Exceptional settings.</param>
         /// <param name="baseURL">The base URL for all links and items in the page.</param>
         /// <param name="errors">The list of errors to display on this page.</param>
-        public ErrorListPage(ErrorStore store, string baseURL, List<Error> errors)
-            : base(null, store, baseURL, "Error Log")
+        public ErrorListPage(ErrorStore store, SettingsBase settings, string baseURL, List<Error> errors)
+            : base(null, settings, store, baseURL, "Error Log")
         {
             Errors = errors.OrderByDescending(e => e.LastLogDate ?? e.CreationDate).ToList();
         }
@@ -49,7 +50,7 @@ namespace StackExchange.Exceptional.Pages
                 {
                     sb.Append("<div>Last Logging Exception: ").AppendHtmlEncode(le.Message).AppendLine(" (<a href=\"#\" class=\"js-show-details\">view details</a>)</div>")
                       .Append("<pre class=\"stack dark details\"><code>")
-                      .Append(Utils.StackTrace.HtmlPrettify(le.Message + "\n" + le.StackTrace))
+                      .Append(Utils.StackTrace.HtmlPrettify(le.Message + "\n" + le.StackTrace, Settings.StackTrace))
                       .AppendLine("</code></pre>");
                 }
                 sb.AppendLine("</div>");

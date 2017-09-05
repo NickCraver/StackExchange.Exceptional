@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using StackExchange.Exceptional.Internal;
 using System;
@@ -22,7 +24,7 @@ namespace StackExchange.Exceptional
         /// <param name="category">The category to associate with this exception.</param>
         /// <param name="rollupPerServer">Whether to log up per-server, e.g. errors are only duplicates if they have same stack on the same machine.</param>
         /// <param name="customData">Any custom data to store with the exception like UserId, etc...this will be rendered as JSON in the error view for script use.</param>
-        /// <param name="applicationName">If specified, the application name to log with, if not specified the name in <see cref="Settings.ApplicationName"/> is used.</param>
+        /// <param name="applicationName">If specified, the application name to log with, if not specified the name in <see cref="ErrorStoreSettings.ApplicationName"/> is used.</param>
         /// <returns>The Error created, if one was created and logged, null if nothing was logged.</returns>
         /// <remarks>
         /// When dealing with a non web requests, pass <see langword="null" /> in for context.  
@@ -36,15 +38,16 @@ namespace StackExchange.Exceptional
             Dictionary<string, string> customData = null,
             string applicationName = null)
         {
-            if (Settings.IsLoggingEnabled)
+            if (SettingsBase.IsLoggingEnabled)
             {
                 try
                 {
+                    var settings = context.RequestServices.GetRequiredService<IOptions<ExceptionalSettings>>().Value;
                     // If we should be ignoring this exception, skip it entirely.
-                    if (!ex.ShouldBeIgnored(Settings.Current))
+                    if (!ex.ShouldBeIgnored(settings))
                     {
                         // Create the error itself, populating CustomData with what was passed-in.
-                        var error = new Error(ex, category, applicationName, rollupPerServer, customData);
+                        var error = new Error(ex, settings, category, applicationName, rollupPerServer, customData);
                         // Get everything from the HttpContext
                         error.SetProperties(context);
 
@@ -70,7 +73,7 @@ namespace StackExchange.Exceptional
         /// <param name="category">The category to associate with this exception.</param>
         /// <param name="rollupPerServer">Whether to log up per-server, e.g. errors are only duplicates if they have same stack on the same machine.</param>
         /// <param name="customData">Any custom data to store with the exception like UserId, etc...this will be rendered as JSON in the error view for script use.</param>
-        /// <param name="applicationName">If specified, the application name to log with, if not specified the name in <see cref="Settings.ApplicationName"/> is used.</param>
+        /// <param name="applicationName">If specified, the application name to log with, if not specified the name in <see cref="ErrorStoreSettings.ApplicationName"/> is used.</param>
         /// <returns>The Error created, if one was created and logged, null if nothing was logged.</returns>
         /// <remarks>
         /// When dealing with a non web requests, pass <see langword="null" /> in for context.  
@@ -84,15 +87,16 @@ namespace StackExchange.Exceptional
             Dictionary<string, string> customData = null,
             string applicationName = null)
         {
-            if (Settings.IsLoggingEnabled)
+            if (SettingsBase.IsLoggingEnabled)
             {
                 try
                 {
+                    var settings = context.RequestServices.GetRequiredService<IOptions<ExceptionalSettings>>().Value;
                     // If we should be ignoring this exception, skip it entirely.
-                    if (!ex.ShouldBeIgnored(Settings.Current))
+                    if (!ex.ShouldBeIgnored(settings))
                     {
                         // Create the error itself, populating CustomData with what was passed-in.
-                        var error = new Error(ex, category, applicationName, rollupPerServer, customData);
+                        var error = new Error(ex, settings, category, applicationName, rollupPerServer, customData);
                         // Get everything from the HttpContext
                         error.SetProperties(context);
 
@@ -116,16 +120,11 @@ namespace StackExchange.Exceptional
         /// <param name="error">The error to set properties on.</param>
         /// <param name="context">The <see cref="HttpContext"/> related to the request.</param>
         /// <returns>The passed-in <see cref="Error"/> for chaining.</returns>
-        private static Error SetProperties(this Error error, HttpContext context)
+        private static void SetProperties(this Error error, HttpContext context)
         {
-            if (error == null)
+            if (error == null || context == null)
             {
-                return null;
-            }
-            
-            if (context == null)
-            {
-                return error;
+                return;
             }
 
             var request = context.Request;
@@ -160,9 +159,17 @@ namespace StackExchange.Exceptional
                 }
             }
 
-            if (error.IPAddress.IsNullOrEmpty())
+            var exs = error.Settings as ExceptionalSettings;
+            if (exs?.GetIPAddress != null)
             {
-                error.IPAddress = context.Connection.RemoteIpAddress.ToString();
+                try
+                {
+                    error.IPAddress = exs.GetIPAddress(context);
+                }
+                catch (Exception gipe)
+                {
+                    Trace.WriteLine("Error in GetIPAddress: " + gipe.Message);
+                }
             }
 
             error.Url = $"{request.Scheme}://{request.Host}{request.PathBase}{request.Path}{request.QueryString}";
@@ -185,7 +192,7 @@ namespace StackExchange.Exceptional
             {
                 error.Form = TryGetCollection(r => r.Form);
                 // Filter form variables for sensitive information
-                var formFilters = Settings.Current.LogFilters.Form;
+                var formFilters = error.Settings?.LogFilters.Form;
                 if (formFilters?.Count > 0)
                 {
                     foreach (var kv in formFilters)
@@ -202,7 +209,7 @@ namespace StackExchange.Exceptional
             foreach (var cookie in request.Cookies)
             {
                 string val = null;
-                Settings.Current.LogFilters.Cookie?.TryGetValue(cookie.Key, out val);
+                error.Settings?.LogFilters.Cookie?.TryGetValue(cookie.Key, out val);
                 error.Cookies.Add(cookie.Key, val ?? cookie.Value);
             }
 
@@ -218,8 +225,6 @@ namespace StackExchange.Exceptional
                     error.RequestHeaders.Add(header.Key, v);
                 }
             }
-
-            return error;
         }
     }
 }

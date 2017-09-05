@@ -152,30 +152,12 @@ namespace StackExchange.Exceptional
         /// Get the name of this error log store implementation.
         /// </summary>
         public virtual string Name => GetType().Name;
-
-        private static string _applicationName { get; set; }
+        
         /// <summary>
         /// Gets the name of the application to which the log is scoped.
         /// </summary>
-        public static string ApplicationName => _applicationName ?? (_applicationName = Exceptional.Settings.Current.ApplicationName);
-
-        /// <summary>
-        /// Gets the name of the machine logging these errors.
-        /// </summary>
-        public virtual string MachineName => Environment.MachineName;
-
-        /// <summary>
-        /// Sets the default error store to use for logging
-        /// </summary>
-        /// <param name="applicationName">The application name to use when logging errors</param>
-        /// <param name="store">The error store used to store, e.g. <code>new SQLErrorStore(myConnectionString)</code></param>
-        public static void Setup(string applicationName, ErrorStore store)
-        {
-            Exceptional.Settings.Current.DefaultStore = store;
-            Exceptional.Settings.Current.ApplicationName = applicationName;
-            _applicationName = applicationName;
-        }
-
+        public string ApplicationName => Settings.ApplicationName;
+        
         /// <summary>
         /// Gets the write queue for errors, which is populated in the case of a write failure.
         /// </summary>
@@ -205,11 +187,10 @@ namespace StackExchange.Exceptional
         private void ProcessNotifications(Error error, Guid originalGuid)
         {
             if (originalGuid != error.GUID) error.IsDuplicate = true;
-
-            var settings = Exceptional.Settings.Current;
-            if (settings.Notifiers.Count > 0)
+            
+            if (error.Settings.Notifiers.Count > 0)
             {
-                foreach (var n in settings.Notifiers)
+                foreach (var n in error.Settings.Notifiers)
                 {
                     try
                     {
@@ -529,7 +510,7 @@ namespace StackExchange.Exceptional
         {
             try
             {
-                var error = new Error(new Exception("Test Exception"));
+                var error = new Error(new Exception("Test Exception"), Exceptional.Settings);
                 LogError(error);
                 await HardDeleteErrorAsync(error.GUID).ConfigureAwait(false);
                 return true;
@@ -539,11 +520,6 @@ namespace StackExchange.Exceptional
                 Trace.WriteLine(e);
                 return false;
             }
-        }
-
-        private static ErrorStore GetErrorStoreFromConfig()
-        {
-            return Get(Exceptional.Settings.Current.Store) ?? new MemoryErrorStore();
         }
 
         internal static ErrorStore Get(ErrorStoreSettings settings)

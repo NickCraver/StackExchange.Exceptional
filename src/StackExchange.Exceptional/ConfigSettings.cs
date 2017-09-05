@@ -9,7 +9,7 @@ namespace StackExchange.Exceptional
 {
     /// <summary>
     /// The Settings element for Exceptional's configuration.
-    /// This is the legacy web.config settings, that only serve as an adapter to populate <see cref="Settings"/>.
+    /// This is the legacy web.config settings, that only serve as an adapter to populate <see cref="ExceptionalSettings"/>.
     /// </summary>
     internal partial class ConfigSettings : ConfigurationSection
     {
@@ -21,8 +21,10 @@ namespace StackExchange.Exceptional
         {
             if (Interlocked.CompareExchange(ref _loaded, 1, 0) == 0)
             {
+                var settings = new ExceptionalSettings();
                 var config = ConfigurationManager.GetSection("Exceptional") as ConfigSettings;
-                config?.Populate(Settings.Current);
+                config?.Populate(settings);
+                Exceptional.Configure(settings);
             }
         }
 
@@ -50,7 +52,7 @@ namespace StackExchange.Exceptional
             [ConfigurationProperty("backupQueueSize")]
             public int? BackupQueueSize => GetInt("backupQueueSize");
 
-            internal void Populate(Settings settings)
+            internal void Populate(ExceptionalSettings settings)
             {
                 var s = settings.Store;
                 s.Type = Type;
@@ -73,9 +75,9 @@ namespace StackExchange.Exceptional
             public SettingsCollection<IgnoreType> Types => this["Types"] as SettingsCollection<IgnoreType>;
 
             /// <summary>
-            /// Runs after deserialization, to populate <see cref="Settings.Ignore"/>.
+            /// Runs after deserialization, to populate <see cref="SettingsBase.Ignore"/>.
             /// </summary>
-            internal void Populate(Settings settings)
+            internal void Populate(ExceptionalSettings settings)
             {
                 var s = settings.Ignore;
                 foreach (IgnoreRegex r in Regexes)
@@ -116,7 +118,7 @@ namespace StackExchange.Exceptional
             [ConfigurationProperty("Cookies")]
             public SettingsCollection<LogFilter> CookieFilters => this["Cookies"] as SettingsCollection<LogFilter>;
 
-            internal void Populate(Settings settings)
+            internal void Populate(ExceptionalSettings settings)
             {
                 var s = settings.LogFilters;
                 foreach (LogFilter f in FormFilters)
@@ -160,7 +162,7 @@ namespace StackExchange.Exceptional
             [ConfigurationProperty("preventDuplicates")]
             public bool? PreventDuplicates => GetBool("preventDuplicates");
 
-            internal void Populate(Settings settings)
+            internal void Populate(ExceptionalSettings settings)
             {
                 var s = settings.Email;
                 if (ToAddress.HasValue()) s.ToAddress = ToAddress;
@@ -175,14 +177,13 @@ namespace StackExchange.Exceptional
 
                 if (s.ToAddress.HasValue())
                 {
-                    EmailNotifier.Setup(s);
+                    settings.Register(new EmailNotifier(s));
                 }
             }
         }
 
-        internal void Populate(Settings settings)
+        internal void Populate(ExceptionalSettings settings)
         {
-            settings.ApplicationName = ApplicationName;
             if (DataIncludePattern.HasValue())
             {
                 settings.DataIncludeRegex = new Regex(DataIncludePattern, RegexOptions.Singleline | RegexOptions.Compiled);
@@ -192,6 +193,8 @@ namespace StackExchange.Exceptional
             Ignore?.Populate(settings);
             LogFilters?.Populate(settings);
             Email?.Populate(settings);
+
+            settings.Store.ApplicationName = ApplicationName;
         }
 
         /// <summary>

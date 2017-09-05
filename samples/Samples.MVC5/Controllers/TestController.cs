@@ -9,11 +9,6 @@ namespace Samples.MVC5.Controllers
 {
     public class TestController : Controller
     {
-        public ActionResult Settings()
-        {
-            return Json(StackExchange.Exceptional.Settings.Current, JsonRequestBehavior.AllowGet);
-        }
-
         public ActionResult Form()
         {
             Response.SetCookie(new System.Web.HttpCookie("authToken", "test value"));

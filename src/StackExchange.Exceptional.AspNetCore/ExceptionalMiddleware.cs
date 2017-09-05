@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -23,6 +24,7 @@ namespace StackExchange.Exceptional
         private RequestDelegate _next;
         private readonly ILogger _logger;
         private readonly IHostingEnvironment _env;
+        private readonly IOptions<ExceptionalSettings> _settings;
         private static readonly JsonSerializer _serializer = new JsonSerializer();
 
         /// <summary>
@@ -30,19 +32,19 @@ namespace StackExchange.Exceptional
         /// </summary>
         public ExceptionalMiddleware(
             RequestDelegate next, 
-            IOptions<Settings> settings, 
+            IOptions<ExceptionalSettings> settings, 
             IHostingEnvironment hostingEnvironment,
             ILoggerFactory loggerFactory)
         {
             _next = next;
             _env = hostingEnvironment;
             _logger = loggerFactory.CreateLogger<ExceptionalMiddleware>();
-            Settings.Current = settings.Value;
+            _settings = settings;
 
             // If an ApplicationName isn't provided, default to IHostingEnvironment.ApplicationName
-            if (!Settings.Current.ApplicationName.HasValue())
+            if (!_settings.Value.Store.ApplicationName.HasValue())
             {
-                Settings.Current.ApplicationName = _env.ApplicationName;
+                _settings.Value.Store.ApplicationName = _env.ApplicationName;
             }
         }
 
@@ -61,7 +63,7 @@ namespace StackExchange.Exceptional
                 var error = await ex.LogAsync(context);
                 
                 // If options say to do so, show the exception page to the user
-                if (Settings.Current.UseExceptionalPageOnThrow && error != null)
+                if (_settings.Value.UseExceptionalPageOnThrow && error != null)
                 {
                     var response = context.Response;
                     if (context.Response.HasStarted)
@@ -80,7 +82,7 @@ namespace StackExchange.Exceptional
                         }
                         response.StatusCode = 500;
 
-                        var page = new ErrorDetailPage(error, Settings.Current.DefaultStore, "", error.GUID)
+                        var page = new ErrorDetailPage(error, _settings.Value, _settings.Value.DefaultStore, "", error.GUID)
                         {
                             HeaderTitle = "An error was thrown during this request.",
                             PageTitle = "An error was thrown during this request.",
@@ -147,7 +149,8 @@ namespace StackExchange.Exceptional
                 }
             };
 
-            var store = Settings.Current.DefaultStore;
+            var settings = context.RequestServices.GetRequiredService<IOptions<ExceptionalSettings>>().Value;
+            var store = settings.DefaultStore;
             string errorGuid;
 
             switch (context.Request.Method)
@@ -182,7 +185,7 @@ namespace StackExchange.Exceptional
                         case KnownRoutes.Info:
                             var guid = errorGuid.ToGuid();
                             var error = errorGuid.HasValue() ? await store.GetAsync(guid).ConfigureAwait(false) : null;
-                            await Page(new ErrorDetailPage(error, store, TrimEnd($"{context.Request.PathBase}{context.Request.Path}", "/info"), guid));
+                            await Page(new ErrorDetailPage(error, settings, store, TrimEnd($"{context.Request.PathBase}{context.Request.Path}", "/info"), guid));
                             return;
                         case KnownRoutes.Json:
                             context.Response.ContentType = "application/json";
@@ -207,7 +210,7 @@ namespace StackExchange.Exceptional
                             throw new Exception("This is a test. Please disregard. If this were a real emergency, it'd have a different message.");
                         default:
                             context.Response.Headers["Cache-Control"] = "no-cache, no-store";
-                            await Page(new ErrorListPage(store, $"{context.Request.PathBase}{context.Request.Path}", await store.GetAllAsync().ConfigureAwait(false)));
+                            await Page(new ErrorListPage(store, settings, $"{context.Request.PathBase}{context.Request.Path}", await store.GetAllAsync().ConfigureAwait(false)));
                             return;
                     }
                 default:

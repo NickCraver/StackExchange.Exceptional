@@ -12,23 +12,24 @@ namespace Samples.Console
         private static void Main()
         {
             // Example of code-only setup, alternatively this can be in the App.config
-            // rollupSeconds is 0 so a new file is always generated, for demonstration purposes
-            ErrorStore.Setup("Samples.Console", new JSONErrorStore(new ErrorStoreSettings
+            // RollupPeriod is null so a new file is always generated, for demonstration purposes
+            Exceptional.Configure(new JSONErrorStore(new ErrorStoreSettings
             {
+                ApplicationName = "Samples.Console",
                 Path = "Errors",
                 RollupPeriod = null
             }));
-            // How to do it with no roll-up
-            //ErrorStore.Setup("Samples.Console", new JSONErrorStore(path: "Errors"));
+            // How to do it with normal roll-up
+            //Exceptional.Configure(new JSONErrorStore(path: "~/Errors"));
 
             // Example of a code-only email setup, alternatively this can be in the App.config
-            EmailNotifier.Setup(new EmailSettings
+            Exceptional.Settings.Register(new EmailNotifier(new EmailSettings
             {
                 SMTPHost = "localhost", // Use Papercut here for testing: https://github.com/ChangemakerStudios/Papercut
                 FromAddress = "exceptions@site.com",
                 FromDisplayName = "Bob the Builder",
                 ToAddress = "dont.use@thisadress.com"
-            });
+            }));
 
             // Optional: for logging all unhandled exceptions
             AppDomain.CurrentDomain.UnhandledException += ExceptionalHandler;
@@ -67,11 +68,12 @@ namespace Samples.Console
 
         private static async Task DisplayExceptionStats()
         {
-            WriteLine(Settings.Current.DefaultStore.Name + " for " + Settings.Current.DefaultStore.Name);
-            var count = await Settings.Current.DefaultStore.GetCountAsync().ConfigureAwait(false);
+            var settings = Exceptional.Settings;
+            WriteLine(settings.DefaultStore.Name + " for " + settings.DefaultStore.Name);
+            var count = await settings.DefaultStore.GetCountAsync().ConfigureAwait(false);
             WriteLine("Exceptions in the log: " + count.ToString());
 
-            var errors = await Settings.Current.DefaultStore.GetAllAsync().ConfigureAwait(false);
+            var errors = await settings.DefaultStore.GetAllAsync().ConfigureAwait(false);
 
             if (errors.Count == 0) return;
 

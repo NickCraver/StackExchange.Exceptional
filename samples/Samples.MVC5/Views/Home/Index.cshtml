@@ -44,7 +44,7 @@
             <ul>
                 <li>Code Setup (instead of web.config, see Globl.asax.cs for more detail):
                     <pre class="prettyprint">
-ErrorStore.Setup("My Error Log Name", new MemoryErrorStore());
+Exceptional.Configure(new MemoryErrorStore());
 </pre>
                 </li>
                 <li>Custom Data Setup (optional, if you want to log any request info like UserId, etc.):

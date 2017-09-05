@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 namespace StackExchange.Exceptional.Internal
 {
     /// <summary>
-    /// Only used for deserialiazation of settins from IConfiguration, so internal here.
+    /// Only used for deserialization of settings from IConfiguration, so internal here.
     /// Settings (in shared) is what a user would interface with in their code directly.
     /// </summary>
     internal partial class ConfigSettings
@@ -17,32 +17,27 @@ namespace StackExchange.Exceptional.Internal
             configuration.Bind(this);
         }
 
-        public string ApplicationName { get; set; }
         public string DataIncludePattern { get; set; }
         public bool? UseExceptionalPageOnThrow { get; set; }
 
         public ErrorStoreSettings ErrorStore { get; set; }
         public class ErrorStoreSettings
         {
+            public string ApplicationName { get; set; }
             public string Type { get; set; }
-
             public string Path { get; set; }
-
             public string ConnectionString { get; set; }
-
 #if !NETSTANDARD2_0
             public string ConnectionStringName { get; set; }
 #endif
-
             public int? Size { get; set; }
-
             public int? RollupSeconds { get; set; }
-
             public int? BackupQueueSize { get; set; }
 
-            internal void Populate(Settings settings)
+            internal void Populate(ExceptionalSettings settings)
             {
                 var storeSettings = settings.Store;
+                if (ApplicationName.HasValue()) storeSettings.ApplicationName = ApplicationName;
                 if (Type.HasValue()) storeSettings.Type = Type;
                 if (Path.HasValue()) storeSettings.Path = Path;
                 if (ConnectionString.HasValue()) storeSettings.ConnectionString = ConnectionString;
@@ -59,10 +54,9 @@ namespace StackExchange.Exceptional.Internal
         public class IgnoreSettings
         {
             public List<string> Regexes { get; set; }
-
             public List<string> Types { get; set; }
 
-            internal void Populate(Settings settings)
+            internal void Populate(ExceptionalSettings settings)
             {
                 var s = settings.Ignore;
                 if (Regexes != null)
@@ -91,7 +85,7 @@ namespace StackExchange.Exceptional.Internal
             public Dictionary<string, string> Form { get; set; }
             public Dictionary<string, string> Cookies { get; set; }
 
-            internal void Populate(Settings settings)
+            internal void Populate(ExceptionalSettings settings)
             {
                 var s = settings.LogFilters;
                 if (Form != null)
@@ -124,7 +118,7 @@ namespace StackExchange.Exceptional.Internal
             public bool? SMTPEnableSSL { get; set; }
             public bool? PreventDuplicates { get; set; }
 
-            internal void Populate(Settings settings)
+            internal void Populate(ExceptionalSettings settings)
             {
                 var s = settings.Email;
                 if (ToAddress.HasValue()) s.ToAddress = ToAddress;
@@ -139,14 +133,13 @@ namespace StackExchange.Exceptional.Internal
 
                 if (s.ToAddress.HasValue())
                 {
-                    EmailNotifier.Setup(s);
+                    settings.Register(new EmailNotifier(s));
                 }
             }
         }
 
-        internal void Populate(Settings settings)
+        internal void Populate(ExceptionalSettings settings)
         {
-            settings.ApplicationName = ApplicationName ?? settings.ApplicationName;
             if (DataIncludePattern.HasValue())
             {
                 settings.DataIncludeRegex = new Regex(DataIncludePattern, RegexOptions.Singleline | RegexOptions.Compiled);

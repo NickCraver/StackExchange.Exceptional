@@ -2,6 +2,7 @@
 using StackExchange.Exceptional.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
@@ -11,12 +12,50 @@ namespace StackExchange.Exceptional
     /// <summary>
     /// Settings for Exceptional error logging.
     /// </summary>
-    public class Settings
+    public abstract class SettingsBase
     {
         /// <summary>
-        /// Current instance of the settings element.
+        /// Event handler to run before an exception is logged to the store.
         /// </summary>
-        public static Settings Current { get; set; } = new Settings();
+        public event EventHandler<ErrorBeforeLogEventArgs> OnBeforeLog;
+
+        /// <summary>
+        /// Event handler to run after an exception has been logged to the store.
+        /// </summary>
+        public event EventHandler<ErrorAfterLogEventArgs> OnAfterLog;
+        
+        internal bool BeforeLog(Error error, ErrorStore store)
+        {
+            if (OnBeforeLog != null)
+            {
+                try
+                {
+                    var args = new ErrorBeforeLogEventArgs(error);
+                    OnBeforeLog(store, args);
+                    if (args.Abort) return true;
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(e);
+                }
+            }
+            return false;
+        }
+
+        internal void AfterLog(Error error, ErrorStore store)
+        {
+            if (OnAfterLog != null)
+            {
+                try
+                {
+                    OnAfterLog(store, new ErrorAfterLogEventArgs(error));
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(e);
+                }
+            }
+        }
 
         /// <summary>
         /// Notifiers to run just after an error is logged, like emailing it to a user.
@@ -24,16 +63,23 @@ namespace StackExchange.Exceptional
         public List<IErrorNotifier> Notifiers { get; } = new List<IErrorNotifier>();
 
         /// <summary>
+        /// Registers a notifier if it's not already registered.
+        /// </summary>
+        /// <param name="notifier">The <see cref="IErrorNotifier"/> to register.</param>
+        public void Register(IErrorNotifier notifier)
+        {
+            if (!Notifiers.Contains(notifier))
+            {
+                Notifiers.Add(notifier);
+            }
+        }
+
+        /// <summary>
         /// Data handlers, for adding any data desirable to an exception before logging, like Commands.
         /// The key here is the full type name, e.g. "System.Data.SqlClient.SqlException"
         /// </summary>
         public Dictionary<string, Action<Error>> ExceptionActions { get; } = new Dictionary<string, Action<Error>>().AddDefault();
-
-        /// <summary>
-        /// Application name to log with.
-        /// </summary>
-        public string ApplicationName { get; set; }
-
+        
         /// <summary>
         /// The <see cref="Regex"/> of data keys to include. For example, "Redis.*" would include all keys that start with Redis.
         /// For options, <see cref="RegexOptions.IgnoreCase"/> and <see cref="RegexOptions.Singleline"/> are recommended.
@@ -59,12 +105,6 @@ namespace StackExchange.Exceptional
         public static void DisableLogging() => IsLoggingEnabled = false;
 
         /// <summary>
-        /// Method of getting the IP address for the error, defaults to retrieving it from server variables.
-        /// but may need to be replaced in special multi-proxy situations.
-        /// </summary>
-        public Func<string> GetIPAddress { get; set; }
-
-        /// <summary>
         /// Whether to append full stack traces to exceptions. Defaults to true.
         /// </summary>
         public bool AppendFullStackTraces { get; set; } = true;
@@ -73,12 +113,6 @@ namespace StackExchange.Exceptional
         /// Method to get custom data for an error; will be called when custom data isn't already present.
         /// </summary>
         public Action<Exception, Dictionary<string, string>> GetCustomData { get; set; }
-
-        /// <summary>
-        /// ASP.NET Core Only!
-        /// Whether to show the Exceptional page on throw, instead of the built-in .UseDeveloperExceptionPage()
-        /// </summary>
-        public bool UseExceptionalPageOnThrow { get; set; }
 
         /// <summary>
         /// Settings for the rendering of pages.
@@ -174,47 +208,6 @@ namespace StackExchange.Exceptional
         /// Settings for prettifying a StackTrace
         /// </summary>
         public StackTraceSettings StackTrace { get; } = new StackTraceSettings();
-
-        /// <summary>
-        /// Settings for prettifying a StackTrace
-        /// </summary>
-        public class StackTraceSettings
-        {
-            /// <summary>
-            /// Replaces generic names like Dictionary`2 with Dictionary&lt;TKey,TValue&gt;.
-            /// Specific formatting is based on the <see cref="Language"/> setting.
-            /// </summary>
-            public bool EnablePrettyGenerics { get; set; } = true;
-            /// <summary>
-            /// The language to use when prettifying StackTrace generics.
-            /// Defaults to C#.
-            /// </summary>
-            public CodeLanguage Language { get; set; }
-            /// <summary>
-            /// Whether to print generic type names like &lt;T1, T2&gt; etc. or just use commas, e.g. &lt;,,&gt; if <see cref="Language"/> is C#.
-            /// Defaults to true.
-            /// </summary>
-            public bool IncludeGenericTypeNames { get; set; } = true;
-        }
-
-        /// <summary>
-        /// The language to use when operating on errors and stack traces.
-        /// </summary>
-        public enum CodeLanguage
-        {
-            /// <summary>
-            /// C#
-            /// </summary>
-            CSharp,
-            /// <summary>
-            /// F#
-            /// </summary>
-            FSharp,
-            /// <summary>
-            /// Visual Basic
-            /// </summary>
-            VB
-        }
     }
 
     /// <summary>
@@ -222,6 +215,11 @@ namespace StackExchange.Exceptional
     /// </summary>
     public class ErrorStoreSettings
     {
+        /// <summary>
+        /// Application name to log with.
+        /// </summary>
+        public string ApplicationName { get; set; } = "My Application";
+
         /// <summary>
         /// The type of error store to use, File, SQL, Memory, etc.
         /// </summary>
@@ -370,5 +368,46 @@ namespace StackExchange.Exceptional
         /// Flags whether or not emails are sent for duplicate errors.
         /// </summary>
         public bool PreventDuplicates { get; set; }
+    }
+
+    /// <summary>
+    /// Settings for prettifying a StackTrace
+    /// </summary>
+    public class StackTraceSettings
+    {
+        /// <summary>
+        /// Replaces generic names like Dictionary`2 with Dictionary&lt;TKey,TValue&gt;.
+        /// Specific formatting is based on the <see cref="Language"/> setting.
+        /// </summary>
+        public bool EnablePrettyGenerics { get; set; } = true;
+        /// <summary>
+        /// The language to use when prettifying StackTrace generics.
+        /// Defaults to C#.
+        /// </summary>
+        public CodeLanguage Language { get; set; }
+        /// <summary>
+        /// Whether to print generic type names like &lt;T1, T2&gt; etc. or just use commas, e.g. &lt;,,&gt; if <see cref="Language"/> is C#.
+        /// Defaults to true.
+        /// </summary>
+        public bool IncludeGenericTypeNames { get; set; } = true;
+
+        /// <summary>
+        /// The language to use when operating on errors and stack traces.
+        /// </summary>
+        public enum CodeLanguage
+        {
+            /// <summary>
+            /// C#
+            /// </summary>
+            CSharp,
+            /// <summary>
+            /// F#
+            /// </summary>
+            FSharp,
+            /// <summary>
+            /// Visual Basic
+            /// </summary>
+            VB
+        }
     }
 }

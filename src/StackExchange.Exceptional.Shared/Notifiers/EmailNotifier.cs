@@ -26,25 +26,12 @@ namespace StackExchange.Exceptional.Notifiers
         /// Configures a new email notifier. Note that if configuration isn't valid this will silently fail.
         /// </summary>
         /// <param name="settings">Settings to use to configure error emailing.</param>
-        public EmailNotifier(EmailSettings settings = null)
+        public EmailNotifier(EmailSettings settings)
         {
-            Settings = settings ?? Exceptional.Settings.Current.Email;
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             Trace.WriteLine(Settings.ToAddress.HasValue()
                             ? "Email configured, sending to: " + Settings.ToAddress
                             : "Configuration invalid: " + nameof(Settings.ToAddress) + " must have a value");
-        }
-
-        /// <summary>
-        /// Convenience method for quickly setting up email with a settings object and adding it to the notifier list.
-        /// TL;DR: Call this and get email when an error occurs.
-        /// If this is called multiple times, a new email notifier is configured each time.
-        /// </summary>
-        /// <param name="settings">Settings to use to configure error emailing.</param>
-        /// <returns>The configured email notifier, in case.</returns>
-        public static EmailNotifier Setup(EmailSettings settings)
-        {
-            settings = settings ?? throw new ArgumentNullException(nameof(settings), "Settings are required to configure email.");
-            return new EmailNotifier(settings).Register();
         }
 
         /// <summary>
@@ -62,7 +49,7 @@ namespace StackExchange.Exceptional.Notifiers
                     message.To.Add(Settings.ToAddress);
                     if (Settings.FromMailAddress != null) message.From = Settings.FromMailAddress;
 
-                    message.Subject = ErrorStore.ApplicationName + " error: " + error.Message.Replace(Environment.NewLine, " ");
+                    message.Subject = error.ApplicationName + " error: " + error.Message.Replace(Environment.NewLine, " ");
                     message.Body = new ErrorEmail(error).Render();
                     message.IsBodyHtml = true;
 

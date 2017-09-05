@@ -1,12 +1,12 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using StackExchange.Exceptional;
 using System;
+using System.Threading.Tasks;
 
 namespace Samples.AspNetCore.Controllers
 {
     public class TestController : Controller
-    {   
+    {
         public async Task<ActionResult> Throw()
         {
             await Utils.Test.GetRedisException().LogAsync(ControllerContext.HttpContext);

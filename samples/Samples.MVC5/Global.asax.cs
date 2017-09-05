@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using StackExchange.Exceptional;
+using StackExchange.Exceptional.Stores;
 
 namespace Samples.MVC5
 {
@@ -17,15 +18,17 @@ namespace Samples.MVC5
         {
             // Instead of any web.config entries, you can perform setup entirely through code
             // Setup Exceptional:
-            // Memory example:
-            //ErrorStore.Setup("My Error Log Name", new MemoryErrorStore());
-            // JSON example
-            //ErrorStore.Setup("My Error Log Name", new JSONErrorStore(path: "~/Errors"));
-            // SQL Example
-            //ErrorStore.Setup("My Error Log Name", new SQLErrorStore(connectionString: "Data Source=.;Initial Catalog=Exceptions;Integrated Security=SSPI;"));
 
+            // Memory example:
+            //Exceptional.Configure(new MemoryErrorStore());
+            // JSON example
+            //Exceptional.Configure(new JSONErrorStore(path: "~/Errors"));
+            // SQL Example
+            //Exceptional.Configure(new SQLErrorStore(applicationName: "My Error Log Name", connectionString: "Data Source=.;Initial Catalog=Exceptions;Integrated Security=SSPI;"));
+
+            var settings = Exceptional.Settings;
             // Optionally add custom data to any logged exception (visible on the exception detail page):
-            Settings.Current.GetCustomData = (exception, data) =>
+            settings.GetCustomData = (exception, data) =>
                 {
                     // exception is the exception thrown
                     // context is the HttpContext of the request (could be null, e.g. background thread exception)
@@ -36,7 +39,7 @@ namespace Samples.MVC5
                 };
             // Example of how to log command data for anything you want
             // These display the command and the data key/value pairs in the log
-            Settings.Current.ExceptionActions.AddHandler<Utils.Test.RedisException>((e, ex) =>
+            settings.ExceptionActions.AddHandler<Utils.Test.RedisException>((e, ex) =>
             {
                 var cmd = e.AddCommand(new Command("Redis"));
                 foreach (string k in ex.Data.Keys)
@@ -47,13 +50,13 @@ namespace Samples.MVC5
                 }
             });
 
-            Settings.Current.Render.JSIncludes.Add("/Content/errors.js");
-            StackExchange.Exceptional.Error.OnBeforeLog += (sender, args) =>
+            settings.Render.JSIncludes.Add("/Content/errors.js");
+            settings.OnBeforeLog += (sender, args) =>
                 {
                     args.Error.Message += " (suffix from OnBeforeLog handler)";
                     //args.Abort = true; - you could stop the exception from being logged here
                 };
-            StackExchange.Exceptional.Error.OnAfterLog += (sender, args) =>
+            settings.OnAfterLog += (sender, args) =>
                 {
                     Trace.WriteLine("The logged exception GUID was: " + args.Error.GUID.ToString());
                     // optionally var e = args.GetError() to fetch the actual error from the store
