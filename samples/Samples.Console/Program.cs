@@ -32,7 +32,7 @@ namespace Samples.Console
             }));
 
             // Optional: for logging all unhandled exceptions
-            AppDomain.CurrentDomain.UnhandledException += ExceptionalHandler;
+            Exceptional.ObserveAppDomainUnhandledExceptions();
 
             // Normally we wouldn't want to .GetAwaiter().GetResult(), but async Main is only on a the latest platforms at the moment
             DisplayExceptionStats().GetAwaiter().GetResult();
@@ -56,14 +56,6 @@ namespace Samples.Console
 
             // one not explicitly caught, will be logged by ExceptionHandler
             throw new Exception("I am an exception thrown on exit");
-        }
-
-        // Optional, for logging all unhandled exceptions on the way out
-        private static void ExceptionalHandler(object sender, UnhandledExceptionEventArgs e)
-        {
-            // e.ExceptionObject may not be an exception, refer to http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf
-            // section 10.5, CLS Rule 40 if you're curious on why this check needs to happen
-            (e.ExceptionObject as Exception)?.LogNoContext();
         }
 
         private static async Task DisplayExceptionStats()
