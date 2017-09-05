@@ -77,6 +77,7 @@ namespace StackExchange.Exceptional
             /// <summary>
             /// Runs after deserialization, to populate <see cref="SettingsBase.Ignore"/>.
             /// </summary>
+            /// <param name="settings">The <see cref="ExceptionalSettings"/> to populate.</param>
             internal void Populate(ExceptionalSettings settings)
             {
                 var s = settings.Ignore;
@@ -100,6 +101,7 @@ namespace StackExchange.Exceptional
                 [ConfigurationProperty("pattern", IsRequired = true)]
                 public string Pattern => Get("pattern");
             }
+
             internal class IgnoreType : SettingsCollectionElement
             {
                 [ConfigurationProperty("name")]
@@ -130,6 +132,7 @@ namespace StackExchange.Exceptional
                     s.Cookie[c.Name] = c.ReplaceWith;
                 }
             }
+
             internal class LogFilter : SettingsCollectionElement
             {
                 [ConfigurationProperty("name", IsRequired = true)]

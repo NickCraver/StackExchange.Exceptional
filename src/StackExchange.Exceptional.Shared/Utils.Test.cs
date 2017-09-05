@@ -70,6 +70,7 @@ namespace StackExchange.Exceptional
                 /// This will be called whenever the exception is logged, adding a command and keys
                 /// to the exception.
                 /// </summary>
+                /// <param name="e">The <see cref="Error"/> wrapper of the exception to handle.</param>
                 public void ExceptionalHandler(Error e)
                 {
                     var cmd = e.AddCommand(new Command("Redis"));

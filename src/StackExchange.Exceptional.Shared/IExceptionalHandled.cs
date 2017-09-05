@@ -11,8 +11,9 @@ namespace StackExchange.Exceptional
     {
         /// <summary>
         /// The handler or "what to do" when Exceptional logs an exception of this type
-        /// Access (arg).Exception to get the instance of the exception thrown here.
+        /// Access <paramref name="e"/>.Exception to get the instance of the exception thrown here.
         /// </summary>
+        /// <param name="e">The error wrapper of the exception to handle.</param>
         void ExceptionalHandler(Error e);
     }
 }

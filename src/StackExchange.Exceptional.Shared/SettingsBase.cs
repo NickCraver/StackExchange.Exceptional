@@ -23,7 +23,7 @@ namespace StackExchange.Exceptional
         /// Event handler to run after an exception has been logged to the store.
         /// </summary>
         public event EventHandler<ErrorAfterLogEventArgs> OnAfterLog;
-        
+
         internal bool BeforeLog(Error error, ErrorStore store)
         {
             if (OnBeforeLog != null)
@@ -79,7 +79,7 @@ namespace StackExchange.Exceptional
         /// The key here is the full type name, e.g. "System.Data.SqlClient.SqlException"
         /// </summary>
         public Dictionary<string, Action<Error>> ExceptionActions { get; } = new Dictionary<string, Action<Error>>().AddDefault();
-        
+
         /// <summary>
         /// The <see cref="Regex"/> of data keys to include. For example, "Redis.*" would include all keys that start with Redis.
         /// For options, <see cref="RegexOptions.IgnoreCase"/> and <see cref="RegexOptions.Singleline"/> are recommended.
