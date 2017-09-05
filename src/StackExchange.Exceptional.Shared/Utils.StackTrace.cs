@@ -73,8 +73,9 @@ namespace StackExchange.Exceptional
             /// Converts a stack trace to formatted HTML with styling and linkifiation.
             /// </summary>
             /// <param name="stackTrace">The stack trace to HTMLify.</param>
+            /// <param name="settings">The settings to use when prettifying this stack trace.</param>
             /// <returns>An HTML-pretty version of the stack trace.</returns>
-            public static string HtmlPrettify(string stackTrace)
+            public static string HtmlPrettify(string stackTrace, StackTraceSettings settings)
             {
                 string GetBetween(Capture prev, Capture next) =>
                     stackTrace.Substring(prev.Index + prev.Length, next.Index - (prev.Index + prev.Length));
@@ -115,19 +116,19 @@ namespace StackExchange.Exceptional
                     if (asyncMethod.Success)
                     {
                         sb.Append("<span class=\"stack type\">")
-                          .AppendGenerics(GetBetween(leadIn, asyncMethod))
+                          .AppendGenerics(GetBetween(leadIn, asyncMethod), settings)
                           .Append("</span>")
                           .Append("<span class=\"stack method\">")
                           .AppendHtmlEncode(asyncMethod.Value)
                           .Append("</span>")
                           .Append("<span class=\"stack type\">")
-                          .AppendGenerics(GetBetween(asyncMethod, method));
+                          .AppendGenerics(GetBetween(asyncMethod, method), settings);
                         sb.Append("</span>");
                     }
                     else
                     {
                         sb.Append("<span class=\"stack type\">")
-                          .AppendGenerics(type.Value)
+                          .AppendGenerics(type.Value, settings)
                           .Append("<span class=\"stack dot\">")
                           .AppendHtmlEncode(GetBetween(type, method)) // "."
                           .Append("</span>")
@@ -152,7 +153,7 @@ namespace StackExchange.Exceptional
                                   .Append("</span>");
                             }
                             sb.Append("<span class=\"stack paramType\">")
-                              .AppendGenerics(paramTypes[i].Value)
+                              .AppendGenerics(paramTypes[i].Value, settings)
                               .Append("</span>")
                               .AppendHtmlEncode(GetBetween(paramTypes[i], paramNames[i])) // " "
                               .Append("<span class=\"stack paramName\">")
@@ -296,10 +297,9 @@ namespace StackExchange.Exceptional
             ["System.Xaml.Schema.XamlValueConverter`1"] = new[] { "TConverterBase" },
         };
 
-        public static StringBuilder AppendGenerics(this StringBuilder sb, string typeOrMethod)
+        public static StringBuilder AppendGenerics(this StringBuilder sb, string typeOrMethod, StackTraceSettings settings)
         {
             const string _dotSpan = "<span class=\"stack dot\">.</span>";
-            var settings = Settings.Current.StackTrace;
             if (!settings.EnablePrettyGenerics)
             {
                 return sb.AppendHtmlEncode(typeOrMethod);
@@ -351,11 +351,11 @@ namespace StackExchange.Exceptional
             {
                 switch (settings.Language)
                 {
-                    case Settings.CodeLanguage.VB:
+                    case StackTraceSettings.CodeLanguage.VB:
                         sb.Append("(Of ");
                         break;
-                    case Settings.CodeLanguage.CSharp:
-                    case Settings.CodeLanguage.FSharp:
+                    case StackTraceSettings.CodeLanguage.CSharp:
+                    case StackTraceSettings.CodeLanguage.FSharp:
                         sb.Append("&lt;");
                         break;
                 }
@@ -381,7 +381,7 @@ namespace StackExchange.Exceptional
                         if (settings.IncludeGenericTypeNames)
                         {
                             sb.Append("<span class=\"stack generic-type\">");
-                            if (settings.Language == Settings.CodeLanguage.FSharp)
+                            if (settings.Language == StackTraceSettings.CodeLanguage.FSharp)
                             {
                                 sb.Append("'");
                             }
@@ -393,11 +393,11 @@ namespace StackExchange.Exceptional
 
                 switch (settings.Language)
                 {
-                    case Settings.CodeLanguage.VB:
+                    case StackTraceSettings.CodeLanguage.VB:
                         sb.Append(")");
                         break;
-                    case Settings.CodeLanguage.CSharp:
-                    case Settings.CodeLanguage.FSharp:
+                    case StackTraceSettings.CodeLanguage.CSharp:
+                    case StackTraceSettings.CodeLanguage.FSharp:
                         sb.Append("&gt;");
                         break;
                 }

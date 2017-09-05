@@ -23,11 +23,12 @@ namespace StackExchange.Exceptional.Pages
         /// Creates an <see cref="ErrorDetailPage"/>.
         /// </summary>
         /// <param name="error">The error we're rendering details.</param>
+        /// <param name="settings">Current Exceptional settings.</param>
         /// <param name="store">The store this error is from.</param>
         /// <param name="baseURL">The base URL for the current request.</param>
         /// <param name="guid">The id for the error (populate even if the error is null).</param>
-        public ErrorDetailPage(Error error, ErrorStore store, string baseURL, Guid guid)
-            : base(error, store, baseURL, "Error - " + (error?.Message ?? "Not Found"))
+        public ErrorDetailPage(Error error, SettingsBase settings, ErrorStore store, string baseURL, Guid guid)
+            : base(error, settings, store, baseURL, "Error - " + (error?.Message ?? "Not Found"))
         {
             _guid = guid;
         }
@@ -125,7 +126,7 @@ namespace StackExchange.Exceptional.Pages
                     sb.Append(" <span class=\"duplicate-count\">(thrown ").Append(Error.DuplicateCount.Value).AppendLine(" times)</span>");
                 }
                 sb.AppendLine("</div>")
-                  .Append("  <pre class=\"stack dark\"><code class=\"nohighlight\">").Append(Utils.StackTrace.HtmlPrettify(Error.Detail)).AppendLine().AppendLine("</code></pre>")
+                  .Append("  <pre class=\"stack dark\"><code class=\"nohighlight\">").Append(Utils.StackTrace.HtmlPrettify(Error.Detail, Settings.StackTrace)).AppendLine().AppendLine("</code></pre>")
                   // TODO: Controls for show/hide of async .stack.row.async in the block above
                   // TODO: Remove - temporarily showing the raw while the user-friendlier display above gets tuned
                   //.Append("  <pre class=\"stack\"><code>").AppendHtmlEncode(Error.Detail).AppendLine().AppendLine("</code></pre>")

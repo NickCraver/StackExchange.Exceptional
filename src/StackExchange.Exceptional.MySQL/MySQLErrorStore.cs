@@ -32,13 +32,15 @@ namespace StackExchange.Exceptional.MySQL
         private readonly int _displayCount = DefaultDisplayCount;
 
         /// <summary>
-        /// Creates a new instance of <see cref="SQLErrorStore" /> with the specified connection string.
+        /// Creates a new instance of <see cref="MySQLErrorStore" /> with the specified connection string.
         /// </summary>
         /// <param name="connectionString">The database connection string to use.</param>
+        /// <param name="applicationName">The application name to use when logging.</param>
         /// <param name="displayCount">How many errors to display in the log (for display ONLY, the log is not truncated to this value).</param>
-        public MySQLErrorStore(string connectionString, int displayCount = DefaultDisplayCount)
+        public MySQLErrorStore(string connectionString, string applicationName, int displayCount = DefaultDisplayCount)
             : this(new ErrorStoreSettings()
             {
+                ApplicationName = applicationName,
                 ConnectionString = connectionString,
                 Size = displayCount
             }) { }

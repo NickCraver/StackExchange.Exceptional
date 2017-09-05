@@ -33,7 +33,7 @@ namespace StackExchange.Exceptional.Pages
         /// <summary>
         /// The current settings.
         /// </summary>
-        public Settings Settings => Settings.Current;
+        public SettingsBase Settings { get; }
 
         /// <summary>
         /// Whether to inline CSS styles in the page.
@@ -48,16 +48,18 @@ namespace StackExchange.Exceptional.Pages
         /// Creates a new <see cref="WebPage"/> for rendering.
         /// </summary>
         /// <param name="error">The current error (null if not on an error-specific page).</param>
+        /// <param name="settings">Current Exceptional settings.</param>
         /// <param name="store">The store to render.</param>
         /// <param name="baseURL">The base URL for the current request.</param>
         /// <param name="pageTitle">The title of the page.</param>
-        protected WebPage(Error error, ErrorStore store, string baseURL, string pageTitle)
+        protected WebPage(Error error, SettingsBase settings, ErrorStore store, string baseURL, string pageTitle)
         {
             Error = error;
+            Settings = settings;
             Store = store;
             BaseUrl = baseURL.EndsWith("/") ? baseURL : baseURL + "/";
             PageTitle = pageTitle;
-            HeaderTitle = "Exceptions Log: " + Settings.ApplicationName.HtmlEncode();
+            HeaderTitle = "Exceptions Log: " + settings.Store.ApplicationName.HtmlEncode();
         }
 
         /// <summary>

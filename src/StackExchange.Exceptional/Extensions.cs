@@ -21,7 +21,7 @@ namespace StackExchange.Exceptional
         /// <param name="category">The category to associate with this exception.</param>
         /// <param name="rollupPerServer">Whether to log up per-server, e.g. errors are only duplicates if they have same stack on the same machine.</param>
         /// <param name="customData">Any custom data to store with the exception like UserId, etc...this will be rendered as JSON in the error view for script use.</param>
-        /// <param name="applicationName">If specified, the application name to log with, if not specified the name in <see cref="Settings.ApplicationName"/> is used.</param>
+        /// <param name="applicationName">If specified, the application name to log with, if not specified the name in <see cref="ErrorStoreSettings.ApplicationName"/> is used.</param>
         /// <returns>The Error created, if one was created and logged, null if nothing was logged.</returns>
         /// <remarks>
         /// When dealing with a non web requests, pass <see langword="null" /> in for context.  
@@ -35,18 +35,16 @@ namespace StackExchange.Exceptional
             Dictionary<string, string> customData = null,
             string applicationName = null)
         {
-            if (Settings.IsLoggingEnabled)
+            if (SettingsBase.IsLoggingEnabled)
             {
                 try
                 {
-                    // Legacy settings load (deserializes Web.config if needed)
-                    ConfigSettings.LoadSettings();
-
+                    var settings = Exceptional.Settings;
                     // If we should be ignoring this exception, skip it entirely.
-                    if (!ex.ShouldBeIgnored(Settings.Current))
+                    if (!ex.ShouldBeIgnored(settings))
                     {
                         // Create the error itself, populating CustomData with what was passed-in.
-                        var error = new Error(ex, category, applicationName, rollupPerServer, customData);
+                        var error = new Error(ex, settings, category, applicationName, rollupPerServer, customData);
                         // Get everything from the HttpContext
                         error.SetProperties(context);
 
@@ -72,7 +70,7 @@ namespace StackExchange.Exceptional
         /// <param name="category">The category to associate with this exception.</param>
         /// <param name="rollupPerServer">Whether to log up per-server, e.g. errors are only duplicates if they have same stack on the same machine.</param>
         /// <param name="customData">Any custom data to store with the exception like UserId, etc...this will be rendered as JSON in the error view for script use.</param>
-        /// <param name="applicationName">If specified, the application name to log with, if not specified the name in <see cref="Settings.ApplicationName"/> is used.</param>
+        /// <param name="applicationName">If specified, the application name to log with, if not specified the name in <see cref="ErrorStoreSettings.ApplicationName"/> is used.</param>
         /// <returns>The Error created, if one was created and logged, null if nothing was logged.</returns>
         /// <remarks>
         /// When dealing with a non web requests, pass <see langword="null" /> in for context.  
@@ -86,18 +84,16 @@ namespace StackExchange.Exceptional
             Dictionary<string, string> customData = null,
             string applicationName = null)
         {
-            if (Settings.IsLoggingEnabled)
+            if (SettingsBase.IsLoggingEnabled)
             {
                 try
                 {
-                    // Legacy settings load (deserializes Web.config if needed)
-                    ConfigSettings.LoadSettings();
-
+                    var settings = Exceptional.Settings;
                     // If we should be ignoring this exception, skip it entirely.
-                    if (!ex.ShouldBeIgnored(Settings.Current))
+                    if (!ex.ShouldBeIgnored(settings))
                     {
                         // Create the error itself, populating CustomData with what was passed-in.
-                        var error = new Error(ex, category, applicationName, rollupPerServer, customData);
+                        var error = new Error(ex, settings, category, applicationName, rollupPerServer, customData);
                         // Get everything from the HttpContext
                         error.SetProperties(context);
 
@@ -169,12 +165,25 @@ namespace StackExchange.Exceptional
                 }
             }
 
+            var exs = error.Settings as ExceptionalSettings;
+            if (exs?.GetIPAddress != null)
+            {
+                try
+                {
+                    error.IPAddress = exs.GetIPAddress(context);
+                }
+                catch (Exception gipe)
+                {
+                    Trace.WriteLine("Error in GetIPAddress: " + gipe.Message);
+                }
+            }
+
             error.ServerVariables = TryGetCollection(r => r.ServerVariables);
             error.QueryString = TryGetCollection(r => r.QueryString);
             error.Form = TryGetCollection(r => r.Form);
 
             // Filter form variables for sensitive information
-            var formFilters = Settings.Current.LogFilters.Form;
+            var formFilters = error.Settings.LogFilters.Form;
             if (formFilters?.Count > 0)
             {
                 foreach (var kv in formFilters)
@@ -193,7 +202,7 @@ namespace StackExchange.Exceptional
                 {
                     var name = request.Cookies[i].Name;
                     string val = null;
-                    Settings.Current.LogFilters.Cookie?.TryGetValue(name, out val);
+                    error.Settings.LogFilters.Cookie?.TryGetValue(name, out val);
                     error.Cookies.Add(name, val ?? request.Cookies[i].Value);
                 }
             }

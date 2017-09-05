@@ -18,7 +18,11 @@ namespace StackExchange.Exceptional
     {
         private static readonly JsonSerializer serializer = new JsonSerializer();
         private string Url { get; }
-        public ExceptionalAsyncHandler(string url) => Url = url;
+
+        public ExceptionalAsyncHandler(string url)
+        {
+            Url = url;
+        }
 
         public override async Task ProcessRequestAsync(HttpContext context)
         {
@@ -52,7 +56,8 @@ namespace StackExchange.Exceptional
                 return Enumerable.Empty<Guid>();
             };
 
-            var store = Settings.Current.DefaultStore;
+            var settings = Exceptional.Settings;
+            var store = settings.DefaultStore;
             string errorGuid;
 
             switch (context.Request.HttpMethod)
@@ -87,7 +92,7 @@ namespace StackExchange.Exceptional
                         case KnownRoutes.Info:
                             var guid = errorGuid.ToGuid();
                             var error = errorGuid.HasValue() ? await store.GetAsync(guid).ConfigureAwait(false) : null;
-                            Page(new ErrorDetailPage(error, store, TrimEnd(context.Request.Path, "/info"), guid));
+                            Page(new ErrorDetailPage(error, settings, store, TrimEnd(context.Request.Path, "/info"), guid));
                             return;
                         case KnownRoutes.Json:
                             context.Response.ContentType = "application/json";
@@ -113,7 +118,7 @@ namespace StackExchange.Exceptional
                         default:
                             context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
                             context.Response.Cache.SetNoStore();
-                            Page(new ErrorListPage(store, Url, await store.GetAllAsync().ConfigureAwait(false)));
+                            Page(new ErrorListPage(store, settings, Url, await store.GetAllAsync().ConfigureAwait(false)));
                             return;
                     }
                 default:
