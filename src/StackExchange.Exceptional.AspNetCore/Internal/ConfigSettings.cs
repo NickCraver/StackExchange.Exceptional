@@ -10,7 +10,7 @@ namespace StackExchange.Exceptional.Internal
     /// Only used for deserialization of settings from IConfiguration, so internal here.
     /// Settings (in shared) is what a user would interface with in their code directly.
     /// </summary>
-    internal partial class ConfigSettings
+    internal class ConfigSettings
     {
         public ConfigSettings(IConfiguration configuration)
         {

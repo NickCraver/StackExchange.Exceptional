@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using StackExchange.Exceptional.Internal;
 using System;
 
 namespace StackExchange.Exceptional
@@ -6,7 +7,7 @@ namespace StackExchange.Exceptional
     /// <summary>
     /// ASP.NET Core settings for Exceptional error logging.
     /// </summary>
-    public class ExceptionalSettings : SettingsBase
+    public class ExceptionalSettings : ExceptionalSettingsBase
     {
         /// <summary>
         /// Whether to show the Exceptional page on throw, instead of the built-in .UseDeveloperExceptionPage()

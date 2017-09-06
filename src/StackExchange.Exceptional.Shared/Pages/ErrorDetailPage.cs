@@ -27,7 +27,7 @@ namespace StackExchange.Exceptional.Pages
         /// <param name="store">The store this error is from.</param>
         /// <param name="baseURL">The base URL for the current request.</param>
         /// <param name="guid">The id for the error (populate even if the error is null).</param>
-        public ErrorDetailPage(Error error, SettingsBase settings, ErrorStore store, string baseURL, Guid guid)
+        public ErrorDetailPage(Error error, ExceptionalSettingsBase settings, ErrorStore store, string baseURL, Guid guid)
             : base(error, settings, store, baseURL, "Error - " + (error?.Message ?? "Not Found"))
         {
             _guid = guid;

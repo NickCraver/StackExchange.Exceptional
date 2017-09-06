@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StackExchange.Exceptional.Internal;
+using System;
 using System.Threading.Tasks;
 
 namespace StackExchange.Exceptional
@@ -15,17 +16,18 @@ namespace StackExchange.Exceptional
         /// In ASP.NET (non-Core) this is populated by the ConfigSettings load.
         /// In ASP.NET Core this is populated by .Configure() in the DI pipeline.
         /// </remarks>
-        public static SettingsBase Settings { get; private set; }
+        public static ExceptionalSettingsBase Settings { get; private set; }
 
         /// <summary>
-        /// Initializes this settings store.
+        /// Saves the given <paramref name="settings"/> as the global <see cref="Settings"/> available for use globally.
+        /// These are intended to be used by global/background handlers where normal context access isn't available.
         /// </summary>
-        /// <param name="settings"></param>
-        public static void Configure(SettingsBase settings) =>
+        /// <param name="settings">The settings object to set for background settings.</param>
+        public static void Configure(ExceptionalSettingsBase settings) =>
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
         /// <summary>
-        /// Sets the default error store to use for logging
+        /// Sets the default error store to use for logging.
         /// </summary>
         /// <param name="store">The error store used to store, e.g. <code>new SQLErrorStore(myConnectionString)</code></param>
         public static void Configure(ErrorStore store) =>

@@ -33,7 +33,7 @@ namespace StackExchange.Exceptional.Pages
         /// <summary>
         /// The current settings.
         /// </summary>
-        public SettingsBase Settings { get; }
+        public ExceptionalSettingsBase Settings { get; }
 
         /// <summary>
         /// Whether to inline CSS styles in the page.
@@ -52,7 +52,7 @@ namespace StackExchange.Exceptional.Pages
         /// <param name="store">The store to render.</param>
         /// <param name="baseURL">The base URL for the current request.</param>
         /// <param name="pageTitle">The title of the page.</param>
-        protected WebPage(Error error, SettingsBase settings, ErrorStore store, string baseURL, string pageTitle)
+        protected WebPage(Error error, ExceptionalSettingsBase settings, ErrorStore store, string baseURL, string pageTitle)
         {
             Error = error;
             Settings = settings;
