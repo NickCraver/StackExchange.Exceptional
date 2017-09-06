@@ -8,7 +8,7 @@ namespace StackExchange.Exceptional
     /// <summary>
     /// ASP.NET Core settings for Exceptional error logging.
     /// </summary>
-    public class ExceptionalSettings : SettingsBase
+    public class ExceptionalSettings : ExceptionalSettingsBase
     {
         /// <summary>
         /// Method of getting the IP address for the error, defaults to retrieving it from server variables.

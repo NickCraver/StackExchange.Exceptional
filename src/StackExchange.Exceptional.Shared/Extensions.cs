@@ -26,7 +26,7 @@ namespace StackExchange.Exceptional
             Dictionary<string, string> customData = null,
             string applicationName = null)
         {
-            if (SettingsBase.IsLoggingEnabled)
+            if (ExceptionalSettingsBase.IsLoggingEnabled)
             {
                 try
                 {

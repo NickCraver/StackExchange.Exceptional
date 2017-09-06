@@ -19,7 +19,7 @@ namespace StackExchange.Exceptional.Pages
         /// <param name="settings">Current Exceptional settings.</param>
         /// <param name="baseURL">The base URL for all links and items in the page.</param>
         /// <param name="errors">The list of errors to display on this page.</param>
-        public ErrorListPage(ErrorStore store, SettingsBase settings, string baseURL, List<Error> errors)
+        public ErrorListPage(ErrorStore store, ExceptionalSettingsBase settings, string baseURL, List<Error> errors)
             : base(null, settings, store, baseURL, "Error Log")
         {
             Errors = errors.OrderByDescending(e => e.LastLogDate ?? e.CreationDate).ToList();

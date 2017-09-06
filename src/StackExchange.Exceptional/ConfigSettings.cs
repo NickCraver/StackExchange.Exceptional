@@ -11,7 +11,7 @@ namespace StackExchange.Exceptional
     /// The Settings element for Exceptional's configuration.
     /// This is the legacy web.config settings, that only serve as an adapter to populate <see cref="ExceptionalSettings"/>.
     /// </summary>
-    internal partial class ConfigSettings : ConfigurationSection
+    internal class ConfigSettings : ConfigurationSection
     {
         private static int _loaded;
         /// <summary>
@@ -23,7 +23,18 @@ namespace StackExchange.Exceptional
             {
                 var settings = new ExceptionalSettings();
                 var config = ConfigurationManager.GetSection("Exceptional") as ConfigSettings;
-                config?.Populate(settings);
+
+                if (config.DataIncludePattern.HasValue())
+                {
+                    settings.DataIncludeRegex = new Regex(config.DataIncludePattern, RegexOptions.Singleline | RegexOptions.Compiled);
+                }
+
+                config.ErrorStore?.Populate(settings);
+                config.Ignore?.Populate(settings);
+                config.LogFilters?.Populate(settings);
+                config.Email?.Populate(settings);
+                settings.Store.ApplicationName = config.ApplicationName;
+
                 Exceptional.Configure(settings);
             }
         }
@@ -75,7 +86,7 @@ namespace StackExchange.Exceptional
             public SettingsCollection<IgnoreType> Types => this["Types"] as SettingsCollection<IgnoreType>;
 
             /// <summary>
-            /// Runs after deserialization, to populate <see cref="SettingsBase.Ignore"/>.
+            /// Runs after deserialization, to populate <see cref="ExceptionalSettingsBase.Ignore"/>.
             /// </summary>
             /// <param name="settings">The <see cref="ExceptionalSettings"/> to populate.</param>
             internal void Populate(ExceptionalSettings settings)
@@ -183,21 +194,6 @@ namespace StackExchange.Exceptional
                     settings.Register(new EmailNotifier(s));
                 }
             }
-        }
-
-        internal void Populate(ExceptionalSettings settings)
-        {
-            if (DataIncludePattern.HasValue())
-            {
-                settings.DataIncludeRegex = new Regex(DataIncludePattern, RegexOptions.Singleline | RegexOptions.Compiled);
-            }
-
-            ErrorStore?.Populate(settings);
-            Ignore?.Populate(settings);
-            LogFilters?.Populate(settings);
-            Email?.Populate(settings);
-
-            settings.Store.ApplicationName = ApplicationName;
         }
 
         /// <summary>

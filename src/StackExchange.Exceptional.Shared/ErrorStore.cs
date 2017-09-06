@@ -1,4 +1,3 @@
-using StackExchange.Exceptional.Internal;
 using StackExchange.Exceptional.Stores;
 using System;
 using System.Collections.Concurrent;
@@ -11,6 +10,7 @@ using System.Threading;
 using System.Transactions;
 using System.Threading.Tasks;
 #if !NETSTANDARD2_0
+using StackExchange.Exceptional.Internal;
 using System.Configuration;
 #endif
 
@@ -152,12 +152,12 @@ namespace StackExchange.Exceptional
         /// Get the name of this error log store implementation.
         /// </summary>
         public virtual string Name => GetType().Name;
-        
+
         /// <summary>
         /// Gets the name of the application to which the log is scoped.
         /// </summary>
         public string ApplicationName => Settings.ApplicationName;
-        
+
         /// <summary>
         /// Gets the write queue for errors, which is populated in the case of a write failure.
         /// </summary>
@@ -187,7 +187,7 @@ namespace StackExchange.Exceptional
         private void ProcessNotifications(Error error, Guid originalGuid)
         {
             if (originalGuid != error.GUID) error.IsDuplicate = true;
-            
+
             if (error.Settings.Notifiers.Count > 0)
             {
                 foreach (var n in error.Settings.Notifiers)

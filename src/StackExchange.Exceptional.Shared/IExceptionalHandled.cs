@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace StackExchange.Exceptional
+﻿namespace StackExchange.Exceptional
 {
     /// <summary>
     /// Interface an Exception type can implement that handles adding log data to exceptional.

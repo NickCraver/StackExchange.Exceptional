@@ -13,12 +13,12 @@ namespace StackExchange.Exceptional.Internal
     public static class Extensions
     {
         /// <summary>
-        /// Returns if an exception should be ignored according to the passed-in <see cref="SettingsBase"/>.
+        /// Returns if an exception should be ignored according to the passed-in <see cref="ExceptionalSettingsBase"/>.
         /// </summary>
         /// <param name="ex">The exception to check.</param>
         /// <param name="settings">The settings to check <paramref name="ex"/> against.</param>
         /// <returns>Whether this exception should be ignored.</returns>
-        public static bool ShouldBeIgnored(this Exception ex, SettingsBase settings)
+        public static bool ShouldBeIgnored(this Exception ex, ExceptionalSettingsBase settings)
         {
             return settings.Ignore.Regexes?.Any(re => re.IsMatch(ex.ToString())) == true
                 || settings.Ignore.Types?.Any(type => ex.GetType().IsDescendentOf(type)) == true;
