@@ -1,26 +1,26 @@
 ﻿{
   "Exceptional": {
-    "DataIncludePattern": "MyPrefix.*",
+    "DataIncludeRegex": "MyPrefix.*",
     "Email": {
       "ToAddress": "tester@example.com",
       "FromAddress": "exceptions@test.com",
       "FromDisplayName": "Wendy",
       "SMTPHost": "localhost",
       "SMTPPort": 25,
-      "SMTPUsername": "dummy",
+      "SMTPUserName": "dummy",
       "SMTPPassword": "pwd",
       "SMTPEnableSSL": true,
       "PreventDuplicates": true
     },
     "LogFilters": {
-      "Cookies": {
+      "Cookie": {
         "authToken": "**no tokens saved! pheww**"
       },
       "Form": {
         "password": "*********"
       }
     },
-    "IgnoreErrors": {
+    "Ignore": {
       "Regexes": [
         "Request timed out\\.$",
         "Top SECRET DATA\\.$"
