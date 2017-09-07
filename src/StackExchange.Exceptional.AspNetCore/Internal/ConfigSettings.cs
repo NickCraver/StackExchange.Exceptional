@@ -12,15 +12,15 @@ namespace StackExchange.Exceptional.Internal
     /// </summary>
     internal class ConfigSettings
     {
+        public string DataIncludePattern { get; set; }
+        public bool? UseExceptionalPageOnThrow { get; set; }
+
         public ConfigSettings(IConfiguration configuration)
         {
             configuration.Bind(this);
         }
 
-        public string DataIncludePattern { get; set; }
-        public bool? UseExceptionalPageOnThrow { get; set; }
-
-        public ErrorStoreSettings ErrorStore { get; set; }
+        public ErrorStoreSettings Store { get; set; }
         public class ErrorStoreSettings
         {
             public string ApplicationName { get; set; }
@@ -31,7 +31,7 @@ namespace StackExchange.Exceptional.Internal
             public string ConnectionStringName { get; set; }
 #endif
             public int? Size { get; set; }
-            public int? RollupSeconds { get; set; }
+            public TimeSpan? RollupPeriod { get; set; }
             public int? BackupQueueSize { get; set; }
 
             internal void Populate(ExceptionalSettings settings)
@@ -45,7 +45,7 @@ namespace StackExchange.Exceptional.Internal
             if (ConnectionStringName.HasValue()) storeSettings.ConnectionStringName = ConnectionStringName;
 #endif
                 if (Size.HasValue) storeSettings.Size = Size.Value;
-                if (RollupSeconds.HasValue) storeSettings.RollupPeriod = TimeSpan.FromSeconds(RollupSeconds.Value);
+                if (RollupPeriod.HasValue) storeSettings.RollupPeriod = RollupPeriod.Value;
                 if (BackupQueueSize.HasValue) storeSettings.BackupQueueSize = BackupQueueSize.Value;
             }
         }
@@ -149,7 +149,7 @@ namespace StackExchange.Exceptional.Internal
                 settings.UseExceptionalPageOnThrow = UseExceptionalPageOnThrow.Value;
             }
 
-            ErrorStore?.Populate(settings);
+            Store?.Populate(settings);
             IgnoreErrors?.Populate(settings);
             LogFilters?.Populate(settings);
             Email?.Populate(settings);
