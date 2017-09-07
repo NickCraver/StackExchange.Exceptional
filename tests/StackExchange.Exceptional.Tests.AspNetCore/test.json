@@ -1,0 +1,59 @@
+﻿{
+  "Exceptional": {
+    "DataIncludePattern": "MyPrefix.*",
+    "Email": {
+      "ToAddress": "tester@example.com",
+      "FromAddress": "exceptions@test.com",
+      "FromDisplayName": "Wendy",
+      "SMTPHost": "localhost",
+      "SMTPPort": 25,
+      "SMTPUsername": "dummy",
+      "SMTPPassword": "pwd",
+      "SMTPEnableSSL": true,
+      "PreventDuplicates": true
+    },
+    "LogFilters": {
+      "Cookies": {
+        "authToken": "**no tokens saved! pheww**"
+      },
+      "Form": {
+        "password": "*********"
+      }
+    },
+    "IgnoreErrors": {
+      "Regexes": [
+        "Request timed out\\.$",
+        "Top SECRET DATA\\.$"
+      ],
+      "Types": [
+        "MyNameSpace.MyException",
+        "MyNameSpace.NoLogPleaseException"
+      ]
+    },
+    "Store": {
+      "ApplicationName": "Samples (ASP.NET Core)",
+      "Type": "Memory",
+      "RollupPreiod": "00:05:00",
+      "BackupQueueSize": 100
+    }
+
+    // "Store": {
+    //   "ApplicationName": "Samples (ASP.NET Core)",
+    //   "Type": "JSON",
+    //   "Path": "/errors", //For file-based error stores. The path to use on for file storage.
+    //   "Size": 200 //size defaults to 200, this is how many files are kept before the oldest error is removed
+    // }
+
+    // "Store": {
+    //   "ApplicationName": "Samples (ASP.NET Core)",
+    //   "Type": "SQL",
+    //   "ConnectionString": "Server=.;Database=Local.Exceptions;Trusted_Connection=True;"
+    // }
+
+    // "Store": {
+    //   "ApplicationName": "Samples (ASP.NET Core)",
+    //   "Type": "MySQL",
+    //   "ConnectionString": "Server=.;Database=Exceptions;Username=Exceptions;Pwd=myPassword!"
+    // }
+  }
+}
