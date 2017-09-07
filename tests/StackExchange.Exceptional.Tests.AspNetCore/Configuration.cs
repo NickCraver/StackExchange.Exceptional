@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.IO;
 using Xunit;
 using Xunit.Abstractions;
@@ -18,13 +19,19 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
                 .Build();
 
             Assert.NotNull(config);
-            var section = config.GetSection("Exceptional");
-            Assert.NotNull(section);
-            Assert.Equal("Exceptional", section.Key);
+            var exceptionalSection = config.GetSection("Exceptional");
+            Assert.NotNull(exceptionalSection);
+            Assert.Equal("Exceptional", exceptionalSection.Key);
 
             var settings = new ExceptionalSettings();
-            config.Bind(settings);
-            Assert.Equal(settings.Store.ApplicationName, $"Samples (ASP.NET Core)");
+            exceptionalSection.Bind(settings);
+
+            Assert.Equal("Samples (ASP.NET Core)", settings.Store.ApplicationName);
+            Assert.Equal("Memory", settings.Store.Type);
+            Assert.Equal(TimeSpan.FromMinutes(5), settings.Store.RollupPeriod);
+            Assert.Equal(100, settings.Store.BackupQueueSize);
+
+            // TODO: Full list + Regex checks
         }
     }
 }
