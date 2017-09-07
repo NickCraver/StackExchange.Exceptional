@@ -33,7 +33,7 @@
     "Store": {
       "ApplicationName": "Samples (ASP.NET Core)",
       "Type": "Memory",
-      "RollupPreiod": "00:05:00",
+      "RollupPeriod": "00:05:00",
       "BackupQueueSize": 100
     }
 
