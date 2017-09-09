@@ -10,6 +10,7 @@ namespace Samples.AspNetCore.Controllers
         public async Task<ActionResult> Throw()
         {
             await Utils.Test.GetRedisException().LogAsync(ControllerContext.HttpContext);
+            await new Exception("").LogAsync(ControllerContext.HttpContext);
 
             var ex = new Exception("This is an exception thrown from the Samples project! - Check out the log to see this exception.");
             // here's how your catch/throw might can add more info, for example SQL is special cased and shown in the UI:

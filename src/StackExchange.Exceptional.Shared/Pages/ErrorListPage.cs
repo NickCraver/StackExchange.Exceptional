@@ -106,7 +106,7 @@ namespace StackExchange.Exceptional.Pages
                       .AppendHtmlEncode(e.Type.ToShortTypeName())
                       .AppendLine("</td>")
                       .Append("              <td class=\"wrap\"><a href=\"").Append(Url(KnownRoutes.Info)).Append("?guid=").Append(e.GUID.ToString())
-                      .Append("\">").AppendHtmlEncode(e.Message).Append("</a>");
+                      .Append("\">").AppendHtmlEncode(e.Message.HasValue() ? e.Message.TruncateWithEllipsis(250) : "(no message)").Append("</a>");
                     if (e.DuplicateCount > 1)
                     {
                         sb.Append(" <span class=\"duplicate-count\" title=\"number of similar errors occurring close to this error\">(")
