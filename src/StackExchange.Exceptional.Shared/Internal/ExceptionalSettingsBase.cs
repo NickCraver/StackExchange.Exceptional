@@ -194,6 +194,12 @@ namespace StackExchange.Exceptional.Internal
             /// The key is the cookie name to match, the value is what to use when logging.
             /// </summary>
             public Dictionary<string, string> Cookie { get; set; } = new Dictionary<string, string>();
+
+            /// <summary>
+            /// Header values to replace on save - this prevents logging authentication tokens, etc.
+            /// The key is the header name to match, the value is what to use when logging.
+            /// </summary>
+            public Dictionary<string, string> Header { get; set; } = new Dictionary<string, string>();
         }
 
         /// <summary>

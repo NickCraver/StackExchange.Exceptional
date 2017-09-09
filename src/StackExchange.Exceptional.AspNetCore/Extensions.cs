@@ -220,9 +220,12 @@ namespace StackExchange.Exceptional
                 if (string.Compare(header.Key, "Cookie", StringComparison.OrdinalIgnoreCase) == 0)
                     continue;
 
+                string val = null;
+                error.Settings?.LogFilters.Header?.TryGetValue(header.Key, out val);
+
                 foreach (var v in header.Value)
                 {
-                    error.RequestHeaders.Add(header.Key, v);
+                    error.RequestHeaders.Add(header.Key, val ?? v);
                 }
             }
         }

@@ -218,8 +218,11 @@ namespace StackExchange.Exceptional
                 if (string.Compare(header, "Cookie", StringComparison.OrdinalIgnoreCase) == 0)
                     continue;
 
+                string val = null;
+                error.Settings?.LogFilters.Header?.TryGetValue(header, out val);
+
                 if (request.Headers[header] != null)
-                    error.RequestHeaders[header] = request.Headers[header];
+                    error.RequestHeaders[header] = val ?? request.Headers[header];
             }
 
             return error;

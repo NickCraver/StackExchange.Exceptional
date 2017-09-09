@@ -54,6 +54,8 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
             Assert.Equal("**no tokens saved! pheww**", settings.LogFilters.Cookie["authToken"]);
             Assert.Single(settings.LogFilters.Form);
             Assert.Equal("*********", settings.LogFilters.Form["password"]);
+            Assert.Single(settings.LogFilters.Header);
+            Assert.Equal("*********", settings.LogFilters.Header["Accept-Language"]);
 
             // Email
             Assert.NotNull(settings.Email);

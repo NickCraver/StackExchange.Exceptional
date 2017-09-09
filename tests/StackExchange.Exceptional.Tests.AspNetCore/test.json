@@ -19,6 +19,9 @@
       },
       "Form": {
         "password": "*********"
+      },
+      "Header": {
+        "Accept-Language": "*********"
       }
     },
     "Ignore": {
