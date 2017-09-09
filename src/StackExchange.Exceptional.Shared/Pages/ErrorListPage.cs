@@ -106,7 +106,7 @@ namespace StackExchange.Exceptional.Pages
                       .AppendHtmlEncode(e.Type.ToShortTypeName())
                       .AppendLine("</td>")
                       .Append("              <td class=\"wrap\"><a href=\"").Append(Url(KnownRoutes.Info)).Append("?guid=").Append(e.GUID.ToString())
-                      .Append("\">").AppendHtmlEncode(e.Message.HasValue() ? e.Message.TruncateWithEllipsis(250) : "(no message)").Append("</a>");
+                      .Append("\">").Append(e.Message.HasValue() ? e.Message.EncodeTruncateWithEllipsis(250) : "(no message)").Append("</a>");
                     if (e.DuplicateCount > 1)
                     {
                         sb.Append(" <span class=\"duplicate-count\" title=\"number of similar errors occurring close to this error\">(")
@@ -118,7 +118,7 @@ namespace StackExchange.Exceptional.Pages
                     if (e.Url.HasValue())
                     {
                         sb.Append("<span title=\"").AppendHtmlEncode(e.Host).AppendHtmlEncode(e.Url).Append("\">")
-                          .AppendHtmlEncode(e.Url.TruncateWithEllipsis(40))
+                          .Append(e.Url.EncodeTruncateWithEllipsis(40))
                           .Append("</span>");
                     }
                     sb.AppendLine("</td>")
