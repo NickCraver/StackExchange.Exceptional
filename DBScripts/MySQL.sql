@@ -70,9 +70,9 @@ SELECT IF (EXISTS(SELECT 1
                     FROM INFORMATION_SCHEMA.COLUMNS
                    WHERE TABLE_SCHEMA = DATABASE()
                      AND TABLE_NAME = 'Exceptions'
-                     AND COLUMN_NAME = 'SQL')
-          ,'ALTER TABLE `Exceptions` DROP COLUMN `SQL`;'
-          ,'Select ''Already Gone''')
+                     AND COLUMN_NAME = 'Category')
+          ,'Select ''Already There'''
+          ,'ALTER TABLE `Exceptions` ADD Category nvarchar(100) NULL;')
   INTO @a;
 PREPARE q1 FROM @a;
 EXECUTE q1;
@@ -82,9 +82,9 @@ SELECT IF (EXISTS(SELECT 1
                     FROM INFORMATION_SCHEMA.COLUMNS
                    WHERE TABLE_SCHEMA = DATABASE()
                      AND TABLE_NAME = 'Exceptions'
-                     AND COLUMN_NAME = 'Category')
-          ,'Select ''Already There'''
-          ,'ALTER TABLE `Exceptions` ADD Category nvarchar(100) NULL;')
+                     AND COLUMN_NAME = 'SQL')
+          ,'ALTER TABLE `Exceptions` DROP COLUMN `SQL`;'
+          ,'Select ''Already Gone''')
   INTO @a;
 PREPARE q1 FROM @a;
 EXECUTE q1;

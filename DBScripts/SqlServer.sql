@@ -74,12 +74,12 @@ Begin
     Alter Table [dbo].[Exceptions] Add [LastLogDate] [datetime] Null;
 End
 
-If Exists (Select 1 From INFORMATION_SCHEMA.COLUMNS Where TABLE_NAME = 'Exceptions' And COLUMN_NAME = 'SQL')
-Begin
-    Alter Table [dbo].[Exceptions] Drop Column [SQL];
-End
-
 If Not Exists (Select 1 From INFORMATION_SCHEMA.COLUMNS Where TABLE_NAME = 'Exceptions' And COLUMN_NAME = 'Category')
 Begin
     Alter Table [dbo].[Exceptions] Add [Category] nvarchar(100) Null;
+End
+
+If Exists (Select 1 From INFORMATION_SCHEMA.COLUMNS Where TABLE_NAME = 'Exceptions' And COLUMN_NAME = 'SQL')
+Begin
+    Alter Table [dbo].[Exceptions] Drop Column [SQL];
 End

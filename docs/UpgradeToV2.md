@@ -40,9 +40,68 @@ Settings.ApplicationName = "MyApp";
 #### SQL Server
 1. Run the same script use for initial setup, it's now an upgrade script as well: [SqlServer.sql][SqlServer]
 
+Note: If you are deploying many services that share a store, you can do this in 2 phases by separating out the scripts. Before your first deploy:
+```sql
+If Not Exists (Select 1 From INFORMATION_SCHEMA.COLUMNS Where TABLE_NAME = 'Exceptions' And COLUMN_NAME = 'LastLogDate')
+Begin
+    Alter Table [dbo].[Exceptions] Add [LastLogDate] [datetime] Null;
+End
+If Not Exists (Select 1 From INFORMATION_SCHEMA.COLUMNS Where TABLE_NAME = 'Exceptions' And COLUMN_NAME = 'Category')
+Begin
+    Alter Table [dbo].[Exceptions] Add [Category] nvarchar(100) Null;
+End
+```
+To cleanup after the last V1 instance is removed:
+```sql
+If Exists (Select 1 From INFORMATION_SCHEMA.COLUMNS Where TABLE_NAME = 'Exceptions' And COLUMN_NAME = 'SQL')
+Begin
+    Alter Table [dbo].[Exceptions] Drop Column [SQL];
+End
+```
+
 #### MySQL
 1. Run the same script use for initial setup, it's now an upgrade script as well: [MySQL.sql][MySQL]
 
+Note: If you are deploying many services that share a store, you can do this in 2 phases by separating out the scripts. Before your first deploy:
+```sql
+SELECT IF (EXISTS(SELECT 1 
+                    FROM INFORMATION_SCHEMA.COLUMNS
+                   WHERE TABLE_SCHEMA = DATABASE()
+                     AND TABLE_NAME = 'Exceptions'
+                     AND COLUMN_NAME = 'LastLogDate')
+          ,'Select ''Already There'''
+          ,'ALTER TABLE `Exceptions` ADD LastLogDate datetime NULL;')
+  INTO @a;
+PREPARE q1 FROM @a;
+EXECUTE q1;
+DEALLOCATE PREPARE q1;
+
+SELECT IF (EXISTS(SELECT 1 
+                    FROM INFORMATION_SCHEMA.COLUMNS
+                   WHERE TABLE_SCHEMA = DATABASE()
+                     AND TABLE_NAME = 'Exceptions'
+                     AND COLUMN_NAME = 'Category')
+          ,'Select ''Already There'''
+          ,'ALTER TABLE `Exceptions` ADD Category nvarchar(100) NULL;')
+  INTO @a;
+PREPARE q1 FROM @a;
+EXECUTE q1;
+DEALLOCATE PREPARE q1;
+```
+To cleanup after the last V1 instance is removed:
+```sql
+SELECT IF (EXISTS(SELECT 1 
+                    FROM INFORMATION_SCHEMA.COLUMNS
+                   WHERE TABLE_SCHEMA = DATABASE()
+                     AND TABLE_NAME = 'Exceptions'
+                     AND COLUMN_NAME = 'SQL')
+          ,'ALTER TABLE `Exceptions` DROP COLUMN `SQL`;'
+          ,'Select ''Already Gone''')
+  INTO @a;
+PREPARE q1 FROM @a;
+EXECUTE q1;
+DEALLOCATE PREPARE q1;
+```
 
 [SqlServer]: https://github.com/NickCraver/StackExchange.Exceptional/blob/master/DBScripts/SqlServer.sql
 [MySQL]: https://github.com/NickCraver/StackExchange.Exceptional/blob/master/DBScripts/MySQL.sql
