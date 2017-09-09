@@ -18,13 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="configureSettings">An Action{ExceptionalSettings} to configure options for Exceptional.</param>
         public static IServiceCollection AddExceptional(this IServiceCollection services, IConfiguration config, Action<ExceptionalSettings> configureSettings = null)
         {
-            // TODO: Clean up this config binding
-            var configSettings = new ConfigSettings(config);
-            if (configSettings != null)
-            {
-                services.Configure<ExceptionalSettings>(settings => configSettings.Populate(settings));
-            }
-
+            services.Configure<ExceptionalSettings>(config.Bind); // Custom extension
             return AddExceptional(services, configureSettings);
         }
 
