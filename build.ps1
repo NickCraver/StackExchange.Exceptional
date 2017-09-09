@@ -20,7 +20,8 @@ $projectsToBuild =
     'StackExchange.Exceptional.AspNetCore',
     'StackExchange.Exceptional.MySQL'
 
-$testsToRun = @()
+$testsToRun =
+	'StackExchange.Exceptional.Tests.AspNetCore'
     
 function CalculateVersion() {
     if ($version) {
