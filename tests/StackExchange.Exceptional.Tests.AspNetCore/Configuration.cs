@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,7 +11,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
         public Configuration(ITestOutputHelper output) : base(output) { }
 
         [Fact]
-        public void FullBinding()
+        public void UsingBindOverride()
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -29,8 +27,9 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
             exceptionalSection.Bind(settings);
 
             // Top level
-            Assert.Null(settings.DataIncludeRegex);
-            Assert.False(settings.UseExceptionalPageOnThrow);
+            Assert.NotNull(settings.DataIncludeRegex);
+            Assert.Matches(settings.DataIncludeRegex, "MyPrefix.Test");
+            Assert.True(settings.UseExceptionalPageOnThrow);
 
             // Store
             Assert.NotNull(settings.Store);
@@ -41,7 +40,10 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
 
             // Ignore
             Assert.NotNull(settings.Ignore);
-            Assert.Empty(settings.Ignore.Regexes); // we expect this to fail binding and be manual
+            Assert.Equal(2, settings.Ignore.Regexes.Count);
+            Assert.Contains(settings.Ignore.Regexes, r => r.IsMatch("Request timed out."));
+            Assert.Contains(settings.Ignore.Regexes, r => r.IsMatch("Top SECRET DATA."));
+            Assert.DoesNotContain(settings.Ignore.Regexes, r => r.IsMatch("Pickles"));
             Assert.Equal(2, settings.Ignore.Types.Count);
             Assert.Contains("MyNameSpace.MyException", settings.Ignore.Types);
             Assert.Contains("MyNameSpace.NoLogPleaseException", settings.Ignore.Types);
@@ -64,32 +66,6 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
             Assert.Equal("pwd", settings.Email.SMTPPassword);
             Assert.True(settings.Email.SMTPEnableSSL);
             Assert.True(settings.Email.PreventDuplicates);
-
-            // Now, explicitly bind the complex types and check for consistency
-            var dataIncludePattern = exceptionalSection.GetValue<string>(nameof(ExceptionalSettings.DataIncludeRegex));
-            Assert.Equal("MyPrefix.*", dataIncludePattern);
-            if (!string.IsNullOrEmpty(dataIncludePattern))
-            {
-                settings.DataIncludeRegex = new Regex(dataIncludePattern, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            }
-            Assert.NotNull(settings.DataIncludeRegex);
-            Assert.Matches(settings.DataIncludeRegex, "MyPrefix.Test");
-
-            var ignoreRegexes = exceptionalSection.GetSection(nameof(ExceptionalSettings.Ignore))
-                                .GetSection(nameof(Internal.ExceptionalSettingsBase.IgnoreSettings.Regexes))
-                                .AsEnumerable();
-            foreach (var ir in ignoreRegexes)
-            {
-                Output.WriteLine("Found: (Key={0}, Value={1})", ir.Key, ir.Value);
-                if (ir.Value != null)
-                {
-                    settings.Ignore.Regexes.Add(new Regex(ir.Value, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline));
-                }
-            }
-            Assert.Equal(2, ignoreRegexes.Count(kv => kv.Value != null));
-            Assert.Contains(settings.Ignore.Regexes, r => r.IsMatch("Request timed out."));
-            Assert.Contains(settings.Ignore.Regexes, r => r.IsMatch("Top SECRET DATA."));
-            Assert.DoesNotContain(settings.Ignore.Regexes, r => r.IsMatch("Pickles"));
         }
     }
 }
