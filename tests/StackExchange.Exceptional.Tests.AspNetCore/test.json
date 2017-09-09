@@ -1,6 +1,7 @@
 ﻿{
   "Exceptional": {
     "DataIncludeRegex": "MyPrefix.*",
+    "UseExceptionalPageOnThrow": true,
     "Email": {
       "ToAddress": "tester@example.com",
       "FromAddress": "exceptions@test.com",

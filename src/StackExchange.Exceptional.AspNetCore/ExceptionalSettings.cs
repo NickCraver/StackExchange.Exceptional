@@ -23,7 +23,10 @@ namespace StackExchange.Exceptional
         public Func<HttpContext, string> GetIPAddress { get; set; } = context => context.Connection.RemoteIpAddress.ToString();
     }
 
-    internal static class ExceptionalSettingsExtensions
+    /// <summary>
+    /// Extension methods for <see cref="ExceptionalSettings"/>.
+    /// </summary>
+    public static class ExceptionalSettingsExtensions
     {
         /// <summary>
         /// Binds an <see cref="IConfigurationSection"/> to an <see cref="ExceptionalSettings"/> object.
@@ -31,7 +34,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         /// <param name="config">The <see cref="IConfigurationSection"/> to bind.</param>
         /// <param name="settings">The <see cref="ExceptionalSettings"/> to bind to.</param>
-        internal static void Bind(this IConfiguration config, ExceptionalSettings settings)
+        public static void Bind(this IConfiguration config, ExceptionalSettings settings)
         {
             // Bind the simple types (almost everything)
             ConfigurationBinder.Bind(config, settings); // because we overrode .Bind() here
