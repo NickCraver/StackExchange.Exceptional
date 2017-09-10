@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using StackExchange.Exceptional;
-using StackExchange.Exceptional.Internal;
 using System;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -15,7 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The services collection to configure.</param>
         /// <param name="config">The config to bind to, e.g. Config.GetSection("Exceptional")</param>
-        /// <param name="configureSettings">An Action{ExceptionalSettings} to configure options for Exceptional.</param>
+        /// <param name="configureSettings">An <see cref="Action{ExceptionalSettings}"/> to configure options for Exceptional.</param>
         public static IServiceCollection AddExceptional(this IServiceCollection services, IConfiguration config, Action<ExceptionalSettings> configureSettings = null)
         {
             services.Configure<ExceptionalSettings>(config.Bind); // Custom extension
@@ -26,7 +25,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds Exceptional configuration for logging errors.
         /// </summary>
         /// <param name="services">The services collection to configure.</param>
-        /// <param name="configureSettings">An Action{ExceptionalSettings} to configure options for Exceptional.</param>
+        /// <param name="configureSettings">An <see cref="Action{ExceptionalSettings}"/> to configure options for Exceptional.</param>
         public static IServiceCollection AddExceptional(this IServiceCollection services, Action<ExceptionalSettings> configureSettings = null)
         {
             if (configureSettings != null)

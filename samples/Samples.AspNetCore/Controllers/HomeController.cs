@@ -13,6 +13,6 @@ namespace Samples.AspNetCore.Controllers
         /// mechanisms are already in place.
         /// </summary>
         /// <remarks>If mapping via RouteAttribute: [Route("errors/{path?}/{subPath?}")]</remarks>
-        public async Task Exceptions() => await ExceptionalMiddleware.HandleRequestAsync(HttpContext);
+        public async Task Exceptions() => await ExceptionalMiddleware.HandleRequestAsync(HttpContext).ConfigureAwait(false);
     }
 }
