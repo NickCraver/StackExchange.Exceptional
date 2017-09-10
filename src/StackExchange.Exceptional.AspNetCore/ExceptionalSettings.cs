@@ -29,7 +29,7 @@ namespace StackExchange.Exceptional
     public static class ExceptionalSettingsExtensions
     {
         /// <summary>
-        /// Binds an <see cref="IConfigurationSection"/> to an <see cref="ExceptionalSettings"/> object.
+        /// Binds an <see cref="IConfiguration"/> to an <see cref="ExceptionalSettings"/> object.
         /// This happens with a normal .Bind() followed by the complex type mappings manually.
         /// </summary>
         /// <param name="config">The <see cref="IConfigurationSection"/> to bind.</param>
@@ -39,7 +39,7 @@ namespace StackExchange.Exceptional
             // Bind the simple types (almost everything)
             ConfigurationBinder.Bind(config, settings); // because we overrode .Bind() here
 
-            // Now, explicitly bind the complex types and check for consistency
+            // Now, explicitly bind the complex types
             var dataIncludePattern = config.GetValue<string>(nameof(ExceptionalSettings.DataIncludeRegex));
             if (!string.IsNullOrEmpty(dataIncludePattern))
             {

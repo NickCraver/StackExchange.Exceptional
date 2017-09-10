@@ -6,7 +6,7 @@ using System;
 namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
-    /// Extension methods for configuring MiniProfiler for MVC.
+    /// Extension methods for configuring Exceptional for MVC.
     /// </summary>
     public static class ExceptionalServiceExtensions
     {
