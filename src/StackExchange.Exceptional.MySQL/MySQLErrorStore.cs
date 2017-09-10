@@ -46,7 +46,7 @@ namespace StackExchange.Exceptional.MySQL
             }) { }
 
         /// <summary>
-        /// Creates a new instance of <see cref="SQLErrorStore" /> with the given configuration.
+        /// Creates a new instance of <see cref="MySQLErrorStore" /> with the given configuration.
         /// </summary>
         /// <param name="settings">The <see cref="ErrorStoreSettings"/> for this store.</param>     
         public MySQLErrorStore(ErrorStoreSettings settings)
