@@ -1,7 +1,5 @@
 <Project>
   <PropertyGroup>
-    <VersionPrefix>1.0.130</VersionPrefix>
-
     <OutputType>Library</OutputType>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -15,7 +13,6 @@
     <DebugType>pdbonly</DebugType>
     <DefaultLanguage>en-US</DefaultLanguage>
     <IncludeSymbols>true</IncludeSymbols>
-    <IsTestProject>$(MSBuildProjectName.Contains('Test'))</IsTestProject>
   </PropertyGroup>
   
   <ItemGroup>
