@@ -69,7 +69,11 @@ namespace StackExchange.Exceptional
                 s.Type = Type;
                 if (Path.HasValue()) s.Path = Path;
                 if (ConnectionString.HasValue()) s.ConnectionString = ConnectionString;
-                if (ConnectionStringName.HasValue()) s.ConnectionStringName = ConnectionStringName;
+                if (ConnectionStringName.HasValue())
+                {
+                    s.ConnectionString = ConfigurationManager.ConnectionStrings[ConnectionStringName]?.ConnectionString
+                        ?? throw new ConfigurationErrorsException("A connection string was not found for the connection string name provided: " + ConnectionStringName);
+                }
                 if (Size.HasValue) s.Size = Size.Value;
                 if (RollupSeconds.HasValue) s.RollupPeriod = TimeSpan.FromSeconds(RollupSeconds.Value);
                 if (BackupQueueSize.HasValue) s.BackupQueueSize = BackupQueueSize.Value;

@@ -9,10 +9,6 @@ using System.Reflection;
 using System.Threading;
 using System.Transactions;
 using System.Threading.Tasks;
-#if !NETSTANDARD2_0
-using StackExchange.Exceptional.Internal;
-using System.Configuration;
-#endif
 
 namespace StackExchange.Exceptional
 {
@@ -574,23 +570,5 @@ namespace StackExchange.Exceptional
             }
             return new List<Type>();
         }
-
-#if !NETSTANDARD2_0
-        /// <summary>
-        /// Gets the connection string from the connectionStrings configuration element, from web.config or app.config, throws if not found.
-        /// </summary>
-        /// <param name="connectionStringName">The connection string name to fetch</param>
-        /// <returns>The connection string requested</returns>
-        /// <exception cref="ConfigurationErrorsException">Connection string was not found</exception>
-        protected static string GetConnectionStringByName(string connectionStringName)
-        {
-            if (connectionStringName.IsNullOrEmpty()) return null;
-
-            var connectionString = ConfigurationManager.ConnectionStrings[connectionStringName];
-            if (connectionString == null)
-                throw new ConfigurationErrorsException("A connection string was not found for the connection string name provided");
-            return connectionString.ConnectionString;
-        }
-#endif
     }
 }

@@ -53,14 +53,7 @@ namespace StackExchange.Exceptional.MySQL
             : base(settings)
         {
             _displayCount = Math.Min(settings.Size, MaximumDisplayCount);
-
-#if NETSTANDARD2_0
             _connectionString = settings.ConnectionString;
-#else
-            _connectionString = settings.ConnectionString.IsNullOrEmpty()
-                ? GetConnectionStringByName(settings.ConnectionStringName)
-                : settings.ConnectionString;
-#endif
 
             if (_connectionString.IsNullOrEmpty())
                 throw new ArgumentOutOfRangeException(nameof(settings), "A connection string or connection string name must be specified when using a SQL error store");

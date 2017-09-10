@@ -29,14 +29,6 @@ namespace StackExchange.Exceptional
         /// </summary>
         public string ConnectionString { get; set; }
 
-#if !NETSTANDARD2_0
-        /// <summary>
-        /// For database-based error stores.
-        /// The name of the connection string to use from the application's configuration.
-        /// </summary>
-        public string ConnectionStringName { get; set; }
-#endif
-
         /// <summary>
         /// The size of this error log, either how many to keep or how many to display depending on type.
         /// Defaults to 200.
