@@ -11,22 +11,6 @@ if ($BuildNumber -and $BuildNumber.Length -lt 5) {
     $BuildNumber = $BuildNumber.PadLeft(5, "0")
 }
 
-Write-Host "Run Parameters:" -ForegroundColor Cyan
-Write-Host "Version: $Version"
-Write-Host "BuildNumber: $BuildNumber"
-Write-Host "CreatePackages: $CreatePackages"
-Write-Host "RunTests: $RunTests"
-
-$packageOutputFolder = "$PSScriptRoot\.nupkgs"
-$projectsToBuild =
-    'StackExchange.Exceptional.Shared',
-    'StackExchange.Exceptional',
-    'StackExchange.Exceptional.AspNetCore',
-    'StackExchange.Exceptional.MySQL'
-
-$testsToRun =
-	'StackExchange.Exceptional.Tests.AspNetCore'
-    
 function CalculateVersion() {
     if ($version) {
         return $version
@@ -52,6 +36,23 @@ function CalculateVersion() {
 
     return "$semVersion-$BuildNumber"
 }
+
+Write-Host "Run Parameters:" -ForegroundColor Cyan
+Write-Host "  Version: $Version"
+Write-Host "  BuildNumber: $BuildNumber"
+Write-Host "  CreatePackages: $CreatePackages"
+Write-Host "  RunTests: $RunTests"
+Write-Host "  Calculated Version (Global): $(CalculateVersion)"
+
+$packageOutputFolder = "$PSScriptRoot\.nupkgs"
+$projectsToBuild =
+    'StackExchange.Exceptional.Shared',
+    'StackExchange.Exceptional',
+    'StackExchange.Exceptional.AspNetCore',
+    'StackExchange.Exceptional.MySQL'
+
+$testsToRun =
+	'StackExchange.Exceptional.Tests.AspNetCore'
 
 if (!$Version -and !$BuildNumber) {
     Write-Host "ERROR: You must supply either a -Version or -BuildNumber argument. `
