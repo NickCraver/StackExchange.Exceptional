@@ -160,7 +160,7 @@
             });
     }).delegate('a.js-show-details', 'click', function (e) {
         e.preventDefault();
-        $(this).text($(this).text() == 'view details' ? 'hide details' : 'view details')
+        $(this).text($(this).text() === 'view details' ? 'hide details' : 'view details')
                .parent().siblings('.details').toggle();
     });
 });
