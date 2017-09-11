@@ -15,7 +15,7 @@ namespace StackExchange.Exceptional
     /// Represents a logical application error (as opposed to the actual <see cref="Exception"/> it may be representing).
     /// </summary>
     [Serializable]
-    public partial class Error
+    public class Error
     {
         /// <summary>
         /// The ID on this error, strictly for primary keying on persistent stores.
@@ -204,7 +204,7 @@ namespace StackExchange.Exceptional
         {
             store = store ?? Settings.DefaultStore;
             var abort = Settings.BeforeLog(this, store);
-            if (abort) return true; // if we've been told to abort, then abort dammit!
+            if (abort) return false; // if we've been told to abort, then abort dammit!
 
             Trace.WriteLine(Exception); // always echo the error to trace for local debugging
             store.Log(this);
