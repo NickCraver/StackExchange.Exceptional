@@ -35,7 +35,7 @@ namespace StackExchange.Exceptional
             Dictionary<string, string> customData = null,
             string applicationName = null)
         {
-            if (ExceptionalSettingsBase.IsLoggingEnabled)
+            if (Exceptional.IsLoggingEnabled)
             {
                 try
                 {
@@ -84,7 +84,7 @@ namespace StackExchange.Exceptional
             Dictionary<string, string> customData = null,
             string applicationName = null)
         {
-            if (ExceptionalSettingsBase.IsLoggingEnabled)
+            if (Exceptional.IsLoggingEnabled)
             {
                 try
                 {

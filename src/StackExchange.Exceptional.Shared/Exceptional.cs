@@ -19,6 +19,24 @@ namespace StackExchange.Exceptional
         public static ExceptionalSettingsBase Settings { get; private set; }
 
         /// <summary>
+        /// Returns whether an error passed in right now would be logged.
+        /// </summary>
+        public static bool IsLoggingEnabled { get; private set; } = true;
+
+        /// <summary>
+        /// Re-enables error logging after a <see cref="DisableLogging"/> call.
+        /// </summary>
+        public static void EnableLogging() => IsLoggingEnabled = true;
+
+        /// <summary>
+        /// Disables error logging, call <see cref="EnableLogging"/> to re-enable.
+        /// </summary>
+        /// <remarks>
+        /// This is useful when an <see cref="AppDomain"/> is being torn down, for example <code>IRegisteredObject.Stop()</code> when a web application is being stopped
+        /// </remarks>
+        public static void DisableLogging() => IsLoggingEnabled = false;
+
+        /// <summary>
         /// Saves the given <paramref name="settings"/> as the global <see cref="Settings"/> available for use globally.
         /// These are intended to be used by global/background handlers where normal context access isn't available.
         /// </summary>
