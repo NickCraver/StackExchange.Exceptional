@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Dapper;
 using MySql.Data.MySqlClient;
-using StackExchange.Exceptional.Stores;
 using StackExchange.Exceptional.Internal;
-using System.Threading.Tasks;
 
 namespace StackExchange.Exceptional.MySQL
 {
@@ -18,32 +17,26 @@ namespace StackExchange.Exceptional.MySQL
         /// </summary>
         public override string Name => "MySQL Error Store";
 
+        private readonly int _displayCount;
+        private readonly string _connectionString;
+
         /// <summary>
         /// The maximum count of errors to show.
         /// </summary>
         public const int MaximumDisplayCount = 500;
 
         /// <summary>
-        /// The default maximum count of errors shown at once.
-        /// </summary>
-        public const int DefaultDisplayCount = 200;
-
-        private readonly string _connectionString;
-        private readonly int _displayCount = DefaultDisplayCount;
-
-        /// <summary>
         /// Creates a new instance of <see cref="MySQLErrorStore" /> with the specified connection string.
         /// </summary>
         /// <param name="connectionString">The database connection string to use.</param>
         /// <param name="applicationName">The application name to use when logging.</param>
-        /// <param name="displayCount">How many errors to display in the log (for display ONLY, the log is not truncated to this value).</param>
-        public MySQLErrorStore(string connectionString, string applicationName, int displayCount = DefaultDisplayCount)
+        public MySQLErrorStore(string connectionString, string applicationName)
             : this(new ErrorStoreSettings()
             {
                 ApplicationName = applicationName,
-                ConnectionString = connectionString,
-                Size = displayCount
-            }) { }
+                ConnectionString = connectionString
+            })
+        { }
 
         /// <summary>
         /// Creates a new instance of <see cref="MySQLErrorStore" /> with the given configuration.
