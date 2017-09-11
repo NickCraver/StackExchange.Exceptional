@@ -165,6 +165,11 @@ namespace StackExchange.Exceptional
                 }
             }
 
+            error.Host = request.Url?.Host;
+            error.UrlPath = request.ServerVariables?["URL"]; // Legacy compatibility, this may be the same as request.Url.AbsolutePath;
+            error.FullUrl = request.Url.ToString();
+            error.HTTPMethod = request.HttpMethod;
+            
             var exs = error.Settings as ExceptionalSettings;
             if (exs?.GetIPAddress != null)
             {
@@ -176,6 +181,10 @@ namespace StackExchange.Exceptional
                 {
                     Trace.WriteLine("Error in GetIPAddress: " + gipe.Message);
                 }
+            }
+            else
+            {
+                error.IPAddress = request.ServerVariables?.GetRemoteIP();
             }
 
             error.ServerVariables = TryGetCollection(r => r.ServerVariables);

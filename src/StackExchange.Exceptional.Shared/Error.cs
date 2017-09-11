@@ -373,46 +373,32 @@ namespace StackExchange.Exceptional
         /// Date this error was deleted (for stores that support deletion and retention, e.g. SQL)
         /// </summary>
         public DateTime? DeletionDate { get; set; }
-
-        private string _host;
+        
         /// <summary>
         /// The URL host of the request causing this error.
         /// </summary>
-        public string Host
-        {
-            get => _host ?? (_host = ServerVariables?["HTTP_HOST"] ?? "");
-            set => _host = value;
-        }
-
-        private string _url;
+        public string Host { get; set; }
+        
         /// <summary>
-        /// The URL path of the request causing this error.
+        /// The URL *path* of the request causing this error, e.g. /MyContoller/MyAction
         /// </summary>
-        public string Url
-        {
-            get => _url ?? (_url = ServerVariables?["URL"] ?? "");
-            set => _url = value;
-        }
+        [JsonProperty("Url")] // Legacy compatibility
+        public string UrlPath { get; set; }
 
-        private string _httpMethod;
+        /// <summary>
+        /// The complete URL of the request causing this error.
+        /// </summary>
+        public string FullUrl { get; set; }
+        
         /// <summary>
         /// The HTTP Method causing this error, e.g. GET or POST.
         /// </summary>
-        public string HTTPMethod
-        {
-            get => _httpMethod ?? (_httpMethod = ServerVariables?["REQUEST_METHOD"] ?? "");
-            set => _httpMethod = value;
-        }
-
-        private string _ipAddress;
+        public string HTTPMethod { get; set; }
+        
         /// <summary>
         /// The IPAddress of the request causing this error.
         /// </summary>
-        public string IPAddress
-        {
-            get => _ipAddress ?? (_ipAddress = ServerVariables?.GetRemoteIP() ?? "");
-            set => _ipAddress = value;
-        }
+        public string IPAddress { get; set; }
 
         /// <summary>
         /// JSON populated from database stored, deserialized after if needed.
@@ -546,7 +532,7 @@ namespace StackExchange.Exceptional
                 WriteName(nameof(Source)).WriteValue(Source);
                 WriteName(nameof(StatusCode)).WriteValue(StatusCode);
                 WriteName(nameof(Type)).WriteValue(Type);
-                WriteName(nameof(Url)).WriteValue(Url);
+                WriteName("Url").WriteValue(UrlPath); // Legacy
                 WriteName(nameof(QueryString)).WriteValue(ServerVariables?["QUERY_STRING"]);
                 WriteDictionary(nameof(CustomData), CustomData);
                 if (Commands != null)

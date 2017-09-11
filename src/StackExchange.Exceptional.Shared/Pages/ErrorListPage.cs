@@ -115,10 +115,10 @@ namespace StackExchange.Exceptional.Pages
                     }
                     sb.AppendLine("</td>")
                       .Append("              <td>");
-                    if (e.Url.HasValue())
+                    if (e.UrlPath.HasValue())
                     {
-                        sb.Append("<span title=\"").AppendHtmlEncode(e.Host).AppendHtmlEncode(e.Url).Append("\">")
-                          .Append(e.Url.EncodeTruncateWithEllipsis(40))
+                        sb.Append("<span title=\"").AppendHtmlEncode(e.Host).AppendHtmlEncode(e.UrlPath).Append("\">")
+                          .Append(e.UrlPath.EncodeTruncateWithEllipsis(40))
                           .Append("</span>");
                     }
                     sb.AppendLine("</td>")

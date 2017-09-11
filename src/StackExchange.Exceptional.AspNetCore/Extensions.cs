@@ -159,6 +159,11 @@ namespace StackExchange.Exceptional
                 }
             }
 
+            error.Host = request.Host.ToString();
+            error.UrlPath = $"{request.PathBase}{request.Path}";
+            error.FullUrl = $"{request.Scheme}://{request.Host}{request.PathBase}{request.Path}{request.QueryString}";
+            error.HTTPMethod = request.Method;
+
             var exs = error.Settings as ExceptionalSettings;
             if (exs?.GetIPAddress != null)
             {
@@ -171,8 +176,11 @@ namespace StackExchange.Exceptional
                     Trace.WriteLine("Error in GetIPAddress: " + gipe.Message);
                 }
             }
+            else
+            {
+                error.IPAddress = context.Connection?.RemoteIpAddress?.ToString();
+            }
 
-            error.Url = $"{request.Scheme}://{request.Host}{request.PathBase}{request.Path}{request.QueryString}";
             error.ServerVariables = new NameValueCollection
             {
                 ["ContentLength"] = request.ContentLength?.ToString(),
@@ -185,7 +193,7 @@ namespace StackExchange.Exceptional
                 ["QueryString"] = request.QueryString.Value,
                 ["Request Method"] = request.Method,
                 ["Scheme"] = request.Scheme,
-                ["Url"] = error.Url,
+                ["Url"] = error.FullUrl,
             };
             error.QueryString = TryGetCollection(r => r.Query);
             if (request.HasFormContentType)
