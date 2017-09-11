@@ -1,8 +1,9 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using StackExchange.Exceptional.Internal;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -619,6 +620,8 @@ namespace StackExchange.Exceptional
         /// Legacy: Sets the SQL command text associated with this error.
         /// Strictly for deserialization of old errors.
         /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [Obsolete("Only for deserializing old Errors, use .Commands now.")]
         public string SQL
         {
             set
