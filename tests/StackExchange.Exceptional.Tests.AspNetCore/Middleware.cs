@@ -34,7 +34,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
                 Assert.Equal("Log me!", ex.Message);
 
                 var errors = await settings.DefaultStore.GetAllAsync(nameof(LogsExceptions)).ConfigureAwait(false);
-                Assert.NotEmpty(errors);
+                Assert.Single(errors);
                 Assert.Equal("Log me!", errors[0].Message);
             }
         }

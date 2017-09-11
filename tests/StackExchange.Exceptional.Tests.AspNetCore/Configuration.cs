@@ -12,7 +12,6 @@ using Xunit.Abstractions;
 
 namespace StackExchange.Exceptional.Tests.AspNetCore
 {
-    [Collection(NonParallel)]
     public class Configuration : BaseTest
     {
         public Configuration(ITestOutputHelper output) : base(output) { }

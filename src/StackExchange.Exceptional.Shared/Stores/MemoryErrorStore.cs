@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System;
 using StackExchange.Exceptional.Internal;
@@ -12,8 +12,8 @@ namespace StackExchange.Exceptional.Stores
     public sealed class MemoryErrorStore : ErrorStore
     {
         // The concurrent collection that provides the storage
-        private static List<Error> _errors;
-        private static readonly object _lock = new object();
+        private List<Error> _errors;
+        private readonly object _lock = new object();
         private readonly int _size = DefaultSize;
 
         /// <summary>
