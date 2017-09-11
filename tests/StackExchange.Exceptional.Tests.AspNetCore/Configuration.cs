@@ -1,11 +1,18 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace StackExchange.Exceptional.Tests.AspNetCore
 {
+    [Collection(NonParallel)]
     public class Configuration : BaseTest
     {
         public Configuration(ITestOutputHelper output) : base(output) { }
@@ -68,6 +75,23 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
             Assert.Equal("pwd", settings.Email.SMTPPassword);
             Assert.True(settings.Email.SMTPEnableSSL);
             Assert.True(settings.Email.PreventDuplicates);
+        }
+
+        [Fact]
+        public async Task ExceptionalStaticSet()
+        {
+            ExceptionalSettings settings = null;
+            var builder = new WebHostBuilder()
+                .ConfigureServices(services => services.AddExceptional(s => settings = s))
+                .Configure(app => app.UseExceptional().Run(context => context.Response.WriteAsync("Hello World")));
+
+            using (var server = new TestServer(builder))
+            {
+                using (var response = await server.CreateClient().GetAsync("").ConfigureAwait(false))
+                {
+                    Assert.Same(Exceptional.Settings, settings);
+                }
+            }
         }
     }
 }
