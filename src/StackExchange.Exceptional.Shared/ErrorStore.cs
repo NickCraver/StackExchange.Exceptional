@@ -1,4 +1,4 @@
-using StackExchange.Exceptional.Stores;
+﻿using StackExchange.Exceptional.Stores;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -51,19 +51,13 @@ namespace StackExchange.Exceptional
         /// Logs an error in log for the application.
         /// </summary>
         /// <param name="error">The error to log.</param>
-        protected abstract void LogError(Error error);
-
-        private static readonly Task _completed = Task.FromResult(true);
+        protected abstract bool LogError(Error error);
 
         /// <summary>
         /// Asynchronously logs an error in log for the application.
         /// </summary>
         /// <param name="error">The error to log.</param>
-        protected virtual Task LogErrorAsync(Error error)
-        {
-            LogError(error);
-            return _completed;
-        }
+        protected virtual Task<bool> LogErrorAsync(Error error) => Task.FromResult(LogError(error));
 
         /// <summary>
         /// Retrieves a single error based on Id.
@@ -207,7 +201,7 @@ namespace StackExchange.Exceptional
         /// Logs an error in log for the application.
         /// </summary>
         /// <param name="error">The error to log.</param>
-        public void Log(Error error)
+        public bool Log(Error error)
         {
             _ = error ?? throw new ArgumentNullException(nameof(error));
 
@@ -216,21 +210,24 @@ namespace StackExchange.Exceptional
             // if we're in a retry state, log directly to the queue
             if (QueuedInRetry(error, originalGuid))
             {
-                return;
+                return false;
             }
             try
             {
+                bool result;
                 using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    LogError(error);
+                    result = LogError(error);
                 }
                 ProcessNotifications(error, originalGuid);
+                return result;
             }
             catch (Exception ex)
             {
                 _retryException = ex;
                 // if we fail to write the error to the store, queue it for re-writing
                 QueueError(error);
+                return false;
             }
         }
 
@@ -238,7 +235,7 @@ namespace StackExchange.Exceptional
         /// Logs an error in log for the application.
         /// </summary>
         /// <param name="error">The error to log.</param>
-        public async Task LogAsync(Error error)
+        public async Task<bool> LogAsync(Error error)
         {
             _ = error ?? throw new ArgumentNullException(nameof(error));
 
@@ -247,21 +244,24 @@ namespace StackExchange.Exceptional
             // if we're in a retry state, log directly to the queue
             if (QueuedInRetry(error, originalGuid))
             {
-                return;
+                return false;
             }
             try
             {
+                bool result;
                 using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    await LogErrorAsync(error).ConfigureAwait(false);
+                    result = await LogErrorAsync(error).ConfigureAwait(false);
                 }
                 ProcessNotifications(error, originalGuid);
+                return result;
             }
             catch (Exception ex)
             {
                 _retryException = ex;
                 // if we fail to write the error to the store, queue it for re-writing
                 QueueError(error);
+                return false;
             }
         }
 

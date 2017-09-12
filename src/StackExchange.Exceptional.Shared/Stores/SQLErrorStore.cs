@@ -241,7 +241,7 @@ Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, 
         /// DuplicateCount += @DuplicateCount (usually 1, unless in retry) rather than a distinct new row for the error.
         /// </summary>
         /// <param name="error">The error to log.</param>
-        protected override void LogError(Error error)
+        protected override bool LogError(Error error)
         {
             using (var c = GetConnection())
             {
@@ -252,12 +252,12 @@ Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, 
                     if (c.Execute(SqlLogUpdate, queryParams) > 0)
                     {
                         error.GUID = queryParams.Get<Guid>("@newGUID");
-                        return;
+                        return true;
                     }
                 }
 
                 error.FullJson = error.ToJson();
-                c.Execute(SqlLogInsert, GetInsertParams(error));
+                return c.Execute(SqlLogInsert, GetInsertParams(error)) > 0;
             }
         }
 
@@ -267,7 +267,7 @@ Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, 
         /// DuplicateCount += @DuplicateCount (usually 1, unless in retry) rather than a distinct new row for the error.
         /// </summary>
         /// <param name="error">The error to log.</param>
-        protected override async Task LogErrorAsync(Error error)
+        protected override async Task<bool> LogErrorAsync(Error error)
         {
             using (var c = GetConnection())
             {
@@ -278,12 +278,12 @@ Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, 
                     if (await c.ExecuteAsync(SqlLogUpdate, queryParams).ConfigureAwait(false) > 0)
                     {
                         error.GUID = queryParams.Get<Guid>("@newGUID");
-                        return;
+                        return true;
                     }
                 }
 
                 error.FullJson = error.ToJson();
-                await c.ExecuteAsync(SqlLogInsert, GetInsertParams(error)).ConfigureAwait(false);
+                return (await c.ExecuteAsync(SqlLogInsert, GetInsertParams(error)).ConfigureAwait(false)) > 0;
             }
         }
 

@@ -4,7 +4,7 @@ using Xunit.Abstractions;
 
 namespace StackExchange.Exceptional.Tests.AspNetCore
 {
-    public class Commands : BaseTest
+    public class Commands : AspNetCoreTest
     {
         public Commands(ITestOutputHelper output) : base(output) { }
 

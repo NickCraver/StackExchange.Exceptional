@@ -124,7 +124,7 @@ namespace StackExchange.Exceptional.Internal
         public ErrorStore DefaultStore
         {
             get => _defaultStore ?? (_defaultStore = ErrorStore.Get(Store));
-            internal set => _defaultStore = value;
+            set => _defaultStore = value;
         }
 
         /// <summary>
