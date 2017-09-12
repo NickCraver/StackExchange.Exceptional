@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -133,7 +133,7 @@ namespace StackExchange.Exceptional.Stores
         /// DuplicateCount += @DuplicateCount (usually 1, unless in retry) rather than a distinct new file for the error.
         /// </summary>
         /// <param name="error">The error to log.</param>
-        protected override void LogError(Error error)
+        protected override bool LogError(Error error)
         {
             // will allow fast comparisons of messages to see if we can ignore an incoming exception
             var detailHash = error.ErrorHash?.ToString() ?? "no-stack-trace";
@@ -173,6 +173,7 @@ namespace StackExchange.Exceptional.Stores
                 // we added a new file, so clean up old smack over our max errors limit
                 RemoveOldErrors();
             }
+            return true;
         }
 
         private static void LogError(Error error, StreamWriter outstream)

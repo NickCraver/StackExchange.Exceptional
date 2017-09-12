@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 
 namespace StackExchange.Exceptional.Tests.AspNetCore
 {
-    public class Configuration : BaseTest
+    public class Configuration : AspNetCoreTest
     {
         public Configuration(ITestOutputHelper output) : base(output) { }
 

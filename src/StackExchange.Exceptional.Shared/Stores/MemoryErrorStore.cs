@@ -113,9 +113,9 @@ namespace StackExchange.Exceptional.Stores
         /// DuplicateCount += @DuplicateCount (usually 1, unless in retry) rather than a distinct new entry for the error.
         /// </summary>
         /// <param name="error">The error to log.</param>
-        protected override void LogError(Error error)
+        protected override bool LogError(Error error)
         {
-            lock(_lock)
+            lock (_lock)
             {
                 if (_errors == null)
                     _errors = new List<Error>(_size);
@@ -132,7 +132,7 @@ namespace StackExchange.Exceptional.Stores
                             dupe.LastLogDate = error.CreationDate;
                         }
                         error.GUID = dupe.GUID;
-                        return;
+                        return true;
                     }
                 }
 
@@ -143,6 +143,7 @@ namespace StackExchange.Exceptional.Stores
 
                 _errors.Add(error);
             }
+            return true;
         }
 
         /// <summary>

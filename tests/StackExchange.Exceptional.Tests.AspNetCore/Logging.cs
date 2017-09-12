@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace StackExchange.Exceptional.Tests.AspNetCore
 {
-    public class Logging : BaseTest
+    public class Logging : AspNetCoreTest
     {
         public Logging(ITestOutputHelper output) : base(output) { }
 

@@ -9,31 +9,20 @@ using Xunit.Abstractions;
 
 namespace StackExchange.Exceptional.Tests.AspNetCore
 {
-    public class Middleware : BaseTest
+    [Collection(NonParallel)]
+    public class Middleware : AspNetCoreTest
     {
         public Middleware(ITestOutputHelper output) : base(output) { }
 
         [Fact]
         public async Task LogsExceptions()
         {
-            ExceptionalSettings settings = null;
-            var builder = new WebHostBuilder()
-                .ConfigureServices(services => services.AddExceptional(s =>
-                {
-                    s.Store.ApplicationName = nameof(LogsExceptions);
-                    settings = s;
-                }))
-                .Configure(app =>
-                {
-                    app.UseExceptional();
-                    app.Run(context => throw new Exception("Log me!"));
-                });
-            using (var server = new TestServer(builder))
+            using (var server = GetServer(context => throw new Exception("Log me!")))
             {
                 var ex = await Assert.ThrowsAsync<Exception>(async () => await server.CreateClient().GetAsync("").ConfigureAwait(false)).ConfigureAwait(false);
                 Assert.Equal("Log me!", ex.Message);
 
-                var errors = await settings.DefaultStore.GetAllAsync(nameof(LogsExceptions)).ConfigureAwait(false);
+                var errors = await GetErrors().ConfigureAwait(false);
                 Assert.Single(errors);
                 Assert.Equal("Log me!", errors[0].Message);
             }
