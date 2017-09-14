@@ -146,8 +146,8 @@ Delete From {_tableName}
    And ApplicationName = @ApplicationName");
 
         /// <summary>
-        /// Hard deletes an error, actually deletes the row from SQL rather than setting DeletionDate
-        /// This is used to cleanup when testing the error store when attempting to come out of retry/failover mode after losing connection to SQL
+        /// Hard deletes an error, actually deletes the row from SQL rather than setting <see cref="Error.DeletionDate"/>.
+        /// This is used to cleanup when testing the error store when attempting to come out of retry/failover mode after losing connection to SQL.
         /// </summary>
         /// <param name="guid">The GUID of the error to hard delete.</param>
         /// <returns><c>true</c> if the error was found and deleted, <c>false</c> otherwise.</returns>
@@ -168,7 +168,7 @@ Update {_tableName}
    And ApplicationName = @ApplicationName");
 
         /// <summary>
-        /// Deleted all errors in the log, by setting DeletionDate = GETUTCDATE() in SQL.
+        /// Deleted all errors in the log, by setting <see cref="Error.DeletionDate"/> = GETUTCDATE() in SQL.
         /// </summary>
         /// <param name="applicationName">The name of the application to delete all errors for.</param>
         /// <returns><c>true</c> if any errors were deleted, <c>false</c> otherwise.</returns>
@@ -354,7 +354,7 @@ Select Count(*)
    And CreationDate > @since");
 
         /// <summary>
-        /// Retrieves a count of application errors since the specified date, or all time if null.
+        /// Retrieves a count of application errors since the specified date, or all time if <c>null</c>.
         /// </summary>
         /// <param name="since">The date to get errors since.</param>
         /// <param name="applicationName">The application name to get an error count for.</param>
