@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 #if NETCOREAPP2_0
 using System.Reflection;
 #endif
@@ -24,7 +23,6 @@ namespace StackExchange.Exceptional.Tests
                     }
                 }
             }
-            Console.WriteLine("Can't find " + name);
             return null;
         }
     }
