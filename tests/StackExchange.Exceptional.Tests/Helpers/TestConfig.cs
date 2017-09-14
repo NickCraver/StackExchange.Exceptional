@@ -18,6 +18,7 @@ namespace StackExchange.Exceptional.Tests
                 if (!string.IsNullOrEmpty(json))
                 {
                     Current = JSON.Deserialize<Config>(json);
+                    Console.WriteLine("  {0} found, using for configuration.", FileName);
                 }
             }
             catch (Exception ex)
