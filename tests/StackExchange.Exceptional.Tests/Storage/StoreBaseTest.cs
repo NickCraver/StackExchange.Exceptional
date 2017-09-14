@@ -6,11 +6,11 @@ using Xunit.Abstractions;
 
 namespace StackExchange.Exceptional.Tests.Storage
 {
-    public abstract class StoreBase : BaseTest
+    public abstract class StoreBaseTest : BaseTest
     {
         protected virtual bool StoreHardDeletes => false;
 
-        public StoreBase(ITestOutputHelper output) : base(output) { }
+        public StoreBaseTest(ITestOutputHelper output) : base(output) { }
 
         [Fact]
         public async Task DeleteErrorAsync()
