@@ -8,12 +8,12 @@ using Xunit.Abstractions;
 
 namespace StackExchange.Exceptional.Tests.Storage
 {
-    public class SQLStorage : StoreBase, IClassFixture<SqlFixture>
+    public class SQLErrorStoreTest : StoreBaseTest, IClassFixture<SqlFixture>
     {
         public string ConnectionString => TestConfig.Current.SQLConnectionString;
         private SqlFixture Fixtue { get; }
 
-        public SQLStorage(SqlFixture fixtue, ITestOutputHelper output) : base(output)
+        public SQLErrorStoreTest(SqlFixture fixtue, ITestOutputHelper output) : base(output)
         {
             Fixtue = fixtue;
             if (Fixtue.ShouldSkip)
@@ -63,9 +63,16 @@ namespace StackExchange.Exceptional.Tests.Storage
 
         public void Dispose()
         {
-            using (var conn = new SqlConnection(TestConfig.Current.SQLConnectionString))
+            try
             {
-                conn.Execute("Drop Table " + TableName);
+                using (var conn = new SqlConnection(TestConfig.Current.SQLConnectionString))
+                {
+                    conn.Execute("Drop Table " + TableName);
+                }
+            }
+            catch when (ShouldSkip)
+            {
+                // if we didn't error initially then we'll throw
             }
         }
     }

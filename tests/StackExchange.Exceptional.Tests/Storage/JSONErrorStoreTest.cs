@@ -5,11 +5,11 @@ using Xunit.Abstractions;
 
 namespace StackExchange.Exceptional.Tests.Storage
 {
-    public class JSONStorage : StoreBase
+    public class JSONErrorStoreTest : StoreBaseTest
     {
         protected override bool StoreHardDeletes => true;
 
-        public JSONStorage(ITestOutputHelper output) : base(output)
+        public JSONErrorStoreTest(ITestOutputHelper output) : base(output)
         {
         }
 

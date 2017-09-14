@@ -4,11 +4,11 @@ using Xunit.Abstractions;
 
 namespace StackExchange.Exceptional.Tests.Storage
 {
-    public class MemoryStorage : StoreBase
+    public class MemoryErrorStoreTest : StoreBaseTest
     {
         protected override bool StoreHardDeletes => true;
 
-        public MemoryStorage(ITestOutputHelper output) : base(output)
+        public MemoryErrorStoreTest(ITestOutputHelper output) : base(output)
         {
         }
 
