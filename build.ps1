@@ -52,6 +52,7 @@ $projectsToBuild =
     'StackExchange.Exceptional.MySQL'
 
 $testsToRun =
+	'StackExchange.Exceptional.Tests',
 	'StackExchange.Exceptional.Tests.AspNetCore'
 
 if (!$Version -and !$BuildNumber) {
