@@ -57,7 +57,7 @@ namespace StackExchange.Exceptional.Stores
             _tableName = tableName;
 
             if (_connectionString.IsNullOrEmpty())
-                throw new ArgumentOutOfRangeException(nameof(settings), "A connection string or connection string name must be specified when using a SQL error store");
+                throw new ArgumentOutOfRangeException(nameof(settings), "A connection string or connection string name must be specified when using a MySQL error store");
         }
 
         private string _sqlProtectError;
@@ -183,20 +183,14 @@ Update {_tableName}
         private string SqlLogUpdate => _sqlLogUpdate ?? (_sqlLogUpdate = $@"
 Update {_tableName} 
    Set DuplicateCount = DuplicateCount + @DuplicateCount,
-       LastLogDate = (Case When LastLogDate Is Null Or @CreationDate > LastLogDate Then @CreationDate Else LastLogDate End)
+       LastLogDate = (Case When LastLogDate Is Null Or @CreationDate > LastLogDate Then @CreationDate Else LastLogDate End),
+       GUID = (@newGUID := GUID)
  Where ErrorHash = @ErrorHash
    And ApplicationName = @ApplicationName
    And DeletionDate Is Null
-   And CreationDate >= @minDate limit 1");
-
-        private string _sqlLogGUID;
-        private string SqlLogGUID => _sqlLogGUID ?? (_sqlLogGUID = $@"
-Select GUID
-  From {_tableName} 
- Where ErrorHash = @ErrorHash
-   And ApplicationName = @ApplicationName
-   And DeletionDate Is Null
-   And CreationDate >= @minDate Limit 1 ");
+   And CreationDate >= @minDate
+ Limit 1;
+Select @newGUID;");
 
         private string _sqlLogInsert;
         private string SqlLogInsert => _sqlLogInsert ?? (_sqlLogInsert = $@"
@@ -249,12 +243,11 @@ Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, 
                 if (Settings.RollupPeriod.HasValue && error.ErrorHash.HasValue)
                 {
                     var queryParams = GetUpdateParams(error);
-                    var count = c.Execute(SqlLogUpdate, queryParams);
+                    var guid = c.QueryFirstOrDefault<string>(SqlLogUpdate, queryParams);
                     // if we found an exception that's a duplicate, jump out
-                    if (count > 0)
+                    if (guid != null)
                     {
-                        // MySQL doesn't support OUT parameters, so we need to query for the GUID.
-                        error.GUID = c.QueryFirst<Guid>(SqlLogGUID, queryParams);
+                        error.GUID = Guid.Parse(guid);
                         return true;
                     }
                 }
@@ -277,12 +270,11 @@ Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, 
                 if (Settings.RollupPeriod.HasValue && error.ErrorHash.HasValue)
                 {
                     var queryParams = GetUpdateParams(error);
-                    var count = await c.ExecuteAsync(SqlLogUpdate, queryParams).ConfigureAwait(false);
+                    var guid = await c.QueryFirstOrDefaultAsync<string>(SqlLogUpdate, queryParams).ConfigureAwait(false);
                     // if we found an exception that's a duplicate, jump out
-                    if (count > 0)
+                    if (guid != null)
                     {
-                        // MySQL doesn't support OUT parameters, so we need to query for the GUID.
-                        error.GUID = await c.QueryFirstAsync<Guid>(SqlLogGUID, queryParams).ConfigureAwait(false);
+                        error.GUID = Guid.Parse(guid);
                         return true;
                     }
                 }
