@@ -24,11 +24,12 @@ Begin
         [Message] [nvarchar](1000) Null,
         [Detail] [nvarchar](max) Null,	
         [StatusCode] [int] Null,
-        [SQL] [nvarchar](max) Null,
         [DeletionDate] [datetime] Null,
         [FullJson] [nvarchar](max) Null,
         [ErrorHash] [int] Null,
-        [DuplicateCount] [int] Not Null Default(1)
+        [DuplicateCount] [int] Not Null Default(1),
+        [LastLogDate] [datetime] Null,
+        [Category] nvarchar(100) Null
      Constraint [PK_Exceptions] Primary Key Clustered ([Id] Asc)
      With (Pad_Index = Off, Statistics_NoRecompute = Off, Ignore_Dup_Key = Off, Allow_Row_Locks = On, Allow_Page_Locks = On) On [PRIMARY]
     );

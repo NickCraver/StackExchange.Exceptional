@@ -18,7 +18,7 @@ namespace StackExchange.Exceptional.Tests.Storage
             Fixtue = fixtue;
             if (Fixtue.ShouldSkip)
             {
-                Skip.Inconclusive("Couldn't connect to: " + ConnectionString + "\n" + fixtue.SkipReason);
+                Skip.Inconclusive("Couldn't test against: " + ConnectionString + "\n" + fixtue.SkipReason);
             }
         }
 
