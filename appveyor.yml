@@ -19,6 +19,7 @@ environment:
   POSTGRES_ENV_POSTGRES_USER: postgres
   POSTGRES_ENV_POSTGRES_PASSWORD: Password12!
   POSTGRES_ENV_POSTGRES_DB: test
+  PostgreSqlConnectionString: Server=localhost;Port=5432;Database=test;User Id=postgres;Password=Password12!;
   # MySQL
   MYSQL_PATH: C:\Program Files\MySql\MySQL Server 5.7
   MYSQL_PWD: Password12!
