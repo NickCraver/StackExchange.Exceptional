@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <ProjectUISubcaption>H</ProjectUISubcaption>
     <AssemblyName>StackExchange.Exceptional.AspNetCore</AssemblyName>
     <RootNamespace>StackExchange.Exceptional</RootNamespace>
     <Description>.NET Error handler/logger used internally at Stack Overflow. Primarily for logging all unhandled exceptions to SQL, but also supporting JSON and Memory based logging.</Description>

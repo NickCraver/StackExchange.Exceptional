@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <ProjectUISubcaption>L</ProjectUISubcaption>
     <AssemblyName>StackExchange.Exceptional.PostgreSql</AssemblyName>
     <Description>PostgreSql storage provider for StackExchange.Exceptional</Description>
     <Authors>$(Authors);Mihai Bogdan Eugen</Authors>

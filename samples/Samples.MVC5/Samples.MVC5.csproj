@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
+    <ProjectUISubcaption>N</ProjectUISubcaption>
     <AssemblyName>Samples.Mvc5</AssemblyName>
     <TargetFramework>net451</TargetFramework>
     <UseIISExpress>true</UseIISExpress>

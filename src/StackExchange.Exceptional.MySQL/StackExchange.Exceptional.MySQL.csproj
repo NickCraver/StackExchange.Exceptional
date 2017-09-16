@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <ProjectUISubcaption>E</ProjectUISubcaption>
     <AssemblyName>StackExchange.Exceptional.MySQL</AssemblyName>
     <Description>MySQL storage provider for StackExchange.Exceptional</Description>
     <PackageTags>SQL MySQL Exception Handler Errors Stack Exchange Exceptional</PackageTags>
