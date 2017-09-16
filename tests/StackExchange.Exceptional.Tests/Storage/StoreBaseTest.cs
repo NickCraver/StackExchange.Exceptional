@@ -10,7 +10,7 @@ namespace StackExchange.Exceptional.Tests.Storage
     {
         protected virtual bool StoreHardDeletes => false;
 
-        public StoreBaseTest(ITestOutputHelper output) : base(output) { }
+        protected StoreBaseTest(ITestOutputHelper output) : base(output) { }
 
         [Fact]
         public async Task DeleteErrorAsync()
