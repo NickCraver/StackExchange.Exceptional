@@ -20,10 +20,10 @@ ASP.NET Core JSON example:
 ```json
 {
   "Exceptional": {
-    "ApplicationName": "Samples (ASP.NET Core)",
-    "ErrorStore": {
-       "Type": "SQL",
-       "ConnectionString": "Data Source=.;Initial Catalog=Exceptions;Uid=Exceptions;Pwd=iloveerrors"
+    "Store": {
+      "ApplicationName": "Samples (ASP.NET Core)",
+      "Type": "SQL",
+      "ConnectionString": "Data Source=.;Initial Catalog=Exceptions;Uid=Exceptions;Pwd=iloveerrors"
     }
   }
 }
@@ -31,7 +31,7 @@ ASP.NET Core JSON example:
 
 C# Code example:
 ```c#
-StackExchange.Exceptional.ErrorStore.Setup("My Application", new SQLErrorStore("Data Source=.;Initial Catalog=Exceptions;Uid=Exceptions;Pwd=iloveerrors"));
+Exceptional.Configure("My Application", new SQLErrorStore("Data Source=.;Initial Catalog=Exceptions;Uid=Exceptions;Pwd=iloveerrors"));
 ```
 
 [SqlServer]: https://github.com/NickCraver/StackExchange.Exceptional/blob/master/DBScripts/SqlServer.sql

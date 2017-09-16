@@ -19,8 +19,8 @@ ASP.NET Core JSON example:
 ```json
 {
   "Exceptional": {
-    "ApplicationName": "Samples (ASP.NET Core)",
-    "ErrorStore": {
+    "Store": {
+      "ApplicationName": "Samples (ASP.NET Core)",
        "Type": "Memory",
        "Size": 500
     }

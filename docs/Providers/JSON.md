@@ -19,17 +19,17 @@ ASP.NET Core JSON example:
 ```json
 {
   "Exceptional": {
-    "ApplicationName": "Samples (ASP.NET Core)",
-      "ErrorStore": {
-        "Type": "JSON",
-        "Path": "/Errors",
-        "Size": 200
-     }
+    "ErrorStore": {
+      "ApplicationName": "Samples (ASP.NET Core)",
+      "Type": "JSON",
+      "Path": "/Errors",
+      "Size": 200
+    }
   }
 }
 ```
 
 C# Code example:
 ```c#
-ErrorStore.Setup("My Application", new JSONErrorStore(path: "Errors", size: 200));
+Exceptional.Configure(new JSONErrorStore("Errors", 200));
 ```
