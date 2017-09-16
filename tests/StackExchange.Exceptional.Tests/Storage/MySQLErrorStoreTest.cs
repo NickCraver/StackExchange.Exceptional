@@ -18,7 +18,7 @@ namespace StackExchange.Exceptional.Tests.Storage
             Fixtue = fixtue;
             if (Fixtue.ShouldSkip)
             {
-                Skip.Inconclusive("Couldn't connect to: " + ConnectionString + "\n" + fixtue.SkipReason);
+                Skip.Inconclusive("Couldn't test against: " + ConnectionString + "\n" + fixtue.SkipReason);
             }
         }
 
@@ -67,7 +67,7 @@ namespace StackExchange.Exceptional.Tests.Storage
             {
                 using (var conn = new MySqlConnection(TestConfig.Current.MySQLConnectionString))
                 {
-                    //conn.Execute("Drop Table " + TableName);
+                    conn.Execute("Drop Table " + TableName);
                 }
             }
             catch when (ShouldSkip)

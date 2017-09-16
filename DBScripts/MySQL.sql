@@ -20,11 +20,12 @@ CREATE TABLE IF NOT EXISTS Exceptions(
     Message nvarchar(1000) NULL,
     Detail MEDIUMTEXT NULL,	
     StatusCode int NULL,
-    `SQL` MEDIUMTEXT NULL,
     DeletionDate datetime NULL,
     FullJson MEDIUMTEXT NULL,
     ErrorHash int NULL,
     DuplicateCount int NOT NULL default 1,
+    LastLogDate datetime NULL,
+    Category nvarchar(100) NULL,
     PRIMARY KEY (Id)
 );
 
