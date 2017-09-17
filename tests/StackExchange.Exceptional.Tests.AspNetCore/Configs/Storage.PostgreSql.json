@@ -1,0 +1,9 @@
+﻿{
+  "Exceptional": {
+    "Store": {
+      "ApplicationName": "Samples (ASP.NET Core PostgreSql)",
+      "Type": "PostgreSql",
+      "ConnectionString": "Server=localhost;Port=5432;Database=Exceptions;User Id=postgres;Password=postgres;"
+    }
+  }
+}

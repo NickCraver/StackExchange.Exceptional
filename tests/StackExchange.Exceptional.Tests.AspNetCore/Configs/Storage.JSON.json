@@ -1,0 +1,10 @@
+﻿{
+  "Exceptional": {
+    "Store": {
+      "ApplicationName": "Samples (ASP.NET Core JSON)",
+      "Type": "JSON",
+      "Path": "/errors", //For file-based error stores. The path to use on for file storage.
+      "Size": 200 //size defaults to 200, this is how many files are kept before the oldest error is removed
+    }
+  }
+}

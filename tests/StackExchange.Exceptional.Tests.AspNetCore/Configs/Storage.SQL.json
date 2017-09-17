@@ -1,0 +1,9 @@
+﻿{
+  "Exceptional": {
+    "Store": {
+      "ApplicationName": "Samples (ASP.NET Core SQL)",
+      "Type": "SQL",
+      "ConnectionString": "Server=.;Database=Local.Exceptions;Trusted_Connection=True;"
+    }
+  }
+}

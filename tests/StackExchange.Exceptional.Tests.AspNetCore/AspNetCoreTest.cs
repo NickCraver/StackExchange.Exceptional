@@ -29,7 +29,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
             new WebHostBuilder()
                .ConfigureServices(services => services.AddExceptional(s =>
                {
-                   s.DefaultStore = new MemoryErrorStore();
+                   s.SetDefaultStore(new MemoryErrorStore());
                    CurrentSettings = s;
                }))
                .Configure(app =>
@@ -38,7 +38,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
                    app.Run(requestDelegate);
                });
     }
-    
+
     [CollectionDefinition(BaseTest.NonParallel, DisableParallelization = true)]
     public class NonParallelDefinition
     {

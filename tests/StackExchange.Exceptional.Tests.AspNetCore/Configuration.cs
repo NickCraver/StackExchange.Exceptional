@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Microsoft.Extensions.Configuration;
+using StackExchange.Exceptional.Stores;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,7 +16,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("test.json")
+                .AddJsonFile(@"Configs\Full.json")
                 .Build();
 
             Assert.NotNull(config);
@@ -68,6 +69,111 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
             Assert.Equal("pwd", settings.Email.SMTPPassword);
             Assert.True(settings.Email.SMTPEnableSSL);
             Assert.True(settings.Email.PreventDuplicates);
+        }
+
+        [Fact]
+        public void JSONStorage()
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile(@"Configs\Storage.JSON.json")
+                .Build();
+
+            Assert.NotNull(config);
+            var exceptionalSection = config.GetSection("Exceptional");
+            Assert.NotNull(exceptionalSection);
+
+            var settings = new ExceptionalSettings();
+            exceptionalSection.Bind(settings);
+
+            // Store
+            Assert.NotNull(settings.Store);
+            Assert.Equal("Samples (ASP.NET Core JSON)", settings.Store.ApplicationName);
+            Assert.Equal("JSON", settings.Store.Type);
+            Assert.Equal("/errors", settings.Store.Path);
+            Assert.Equal(200, settings.Store.Size);
+
+            Assert.IsType<JSONErrorStore>(settings.DefaultStore);
+            var jsonStore = settings.DefaultStore as JSONErrorStore;
+            Assert.Equal("Samples (ASP.NET Core JSON)", jsonStore.ApplicationName);
+        }
+
+        [Fact]
+        public void SQLStorage()
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile(@"Configs\Storage.SQL.json")
+                .Build();
+
+            Assert.NotNull(config);
+            var exceptionalSection = config.GetSection("Exceptional");
+            Assert.NotNull(exceptionalSection);
+
+            var settings = new ExceptionalSettings();
+            exceptionalSection.Bind(settings);
+
+            // Store
+            Assert.NotNull(settings.Store);
+            Assert.Equal("Samples (ASP.NET Core SQL)", settings.Store.ApplicationName);
+            Assert.Equal("SQL", settings.Store.Type);
+            Assert.Equal("Server=.;Database=Local.Exceptions;Trusted_Connection=True;", settings.Store.ConnectionString);
+
+            Assert.IsType<SQLErrorStore>(settings.DefaultStore);
+            var sqlStore = settings.DefaultStore as SQLErrorStore;
+            Assert.Equal("Samples (ASP.NET Core SQL)", sqlStore.ApplicationName);
+        }
+
+        [Fact]
+        public void MySQLStorage()
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile(@"Configs\Storage.MySQL.json")
+                .Build();
+
+            Assert.NotNull(config);
+            var exceptionalSection = config.GetSection("Exceptional");
+            Assert.NotNull(exceptionalSection);
+
+            var settings = new ExceptionalSettings();
+            exceptionalSection.Bind(settings);
+
+            // Store
+            Assert.NotNull(settings.Store);
+            Assert.Equal("Samples (ASP.NET Core MySQL)", settings.Store.ApplicationName);
+            Assert.Equal("MySQL", settings.Store.Type);
+            Assert.Equal("Server=.;Database=Exceptions;Username=Exceptions;Pwd=myPassword!", settings.Store.ConnectionString);
+
+            Assert.IsType<MySQLErrorStore>(settings.DefaultStore);
+            var sqlStore = settings.DefaultStore as MySQLErrorStore;
+            Assert.Equal("Samples (ASP.NET Core MySQL)", sqlStore.ApplicationName);
+        }
+
+        [Fact]
+        public void PostgreSqlStorage()
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile(@"Configs\Storage.PostgreSql.json")
+                .Build();
+
+            Assert.NotNull(config);
+            var exceptionalSection = config.GetSection("Exceptional");
+            Assert.NotNull(exceptionalSection);
+
+            var settings = new ExceptionalSettings();
+            exceptionalSection.Bind(settings);
+
+            // Store
+            Assert.NotNull(settings.Store);
+            Assert.Equal("Samples (ASP.NET Core PostgreSql)", settings.Store.ApplicationName);
+            Assert.Equal("PostgreSql", settings.Store.Type);
+            Assert.Equal("Server=localhost;Port=5432;Database=Exceptions;User Id=postgres;Password=postgres;", settings.Store.ConnectionString);
+
+            Assert.IsType<PostgreSqlErrorStore>(settings.DefaultStore);
+            var sqlStore = settings.DefaultStore as PostgreSqlErrorStore;
+            Assert.Equal("Samples (ASP.NET Core PostgreSql)", sqlStore.ApplicationName);
         }
     }
 }

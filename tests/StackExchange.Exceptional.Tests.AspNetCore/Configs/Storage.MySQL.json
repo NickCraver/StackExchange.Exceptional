@@ -1,0 +1,9 @@
+﻿{
+  "Exceptional": {
+    "Store": {
+      "ApplicationName": "Samples (ASP.NET Core MySQL)",
+      "Type": "MySQL",
+      "ConnectionString": "Server=.;Database=Exceptions;Username=Exceptions;Pwd=myPassword!"
+    }
+  }
+}

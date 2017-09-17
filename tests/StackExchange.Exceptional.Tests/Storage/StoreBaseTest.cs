@@ -21,17 +21,17 @@ namespace StackExchange.Exceptional.Tests.Storage
             store.Log(error);
             store.Log(error2);
 
-            Assert.True(await store.DeleteAsync(error.GUID));
+            Assert.True(await store.DeleteAsync(error.GUID).ConfigureAwait(false));
 
             if (StoreHardDeletes)
             {
-                Assert.Null(await store.GetAsync(error.GUID));
+                Assert.Null(await store.GetAsync(error.GUID).ConfigureAwait(false));
             }
             else
             {
-                Assert.NotNull((await store.GetAsync(error.GUID))?.DeletionDate);
+                Assert.NotNull((await store.GetAsync(error.GUID).ConfigureAwait(false))?.DeletionDate);
             }
-            Assert.Null((await store.GetAsync(error2.GUID)).DeletionDate);
+            Assert.Null((await store.GetAsync(error2.GUID).ConfigureAwait(false)).DeletionDate);
         }
 
         [Fact]
@@ -45,19 +45,19 @@ namespace StackExchange.Exceptional.Tests.Storage
             Assert.True(store.Log(error2));
             Assert.True(store.Log(error3));
 
-            Assert.True(await store.DeleteAsync(new[] { error.GUID, error2.GUID }));
+            Assert.True(await store.DeleteAsync(new[] { error.GUID, error2.GUID }).ConfigureAwait(false));
 
             if (StoreHardDeletes)
             {
-                Assert.Null(await store.GetAsync(error.GUID));
-                Assert.Null(await store.GetAsync(error2.GUID));
+                Assert.Null(await store.GetAsync(error.GUID).ConfigureAwait(false));
+                Assert.Null(await store.GetAsync(error2.GUID).ConfigureAwait(false));
             }
             else
             {
-                Assert.NotNull((await store.GetAsync(error.GUID)).DeletionDate);
-                Assert.NotNull((await store.GetAsync(error2.GUID)).DeletionDate);
+                Assert.NotNull((await store.GetAsync(error.GUID).ConfigureAwait(false)).DeletionDate);
+                Assert.NotNull((await store.GetAsync(error2.GUID).ConfigureAwait(false)).DeletionDate);
             }
-            Assert.Null((await store.GetAsync(error3.GUID)).DeletionDate);
+            Assert.Null((await store.GetAsync(error3.GUID).ConfigureAwait(false)).DeletionDate);
         }
 
         [Fact]
@@ -68,9 +68,9 @@ namespace StackExchange.Exceptional.Tests.Storage
             Assert.True(store.Log(GetBasicError("Test Error2", store)));
             Assert.True(store.Log(GetBasicError("Test Error3", store)));
 
-            Assert.Equal(3, await store.GetCountAsync());
-            Assert.True(await store.DeleteAllAsync());
-            Assert.Equal(0, await store.GetCountAsync());
+            Assert.Equal(3, await store.GetCountAsync().ConfigureAwait(false));
+            Assert.True(await store.DeleteAllAsync().ConfigureAwait(false));
+            Assert.Equal(0, await store.GetCountAsync().ConfigureAwait(false));
         }
 
         [Fact]
@@ -83,7 +83,7 @@ namespace StackExchange.Exceptional.Tests.Storage
             Assert.True(store.Log(GetBasicError("Test Error", store)));
             Assert.True(store.Log(GetBasicError("Test Error", store)));
 
-            var storedError = await store.GetAsync(error.GUID);
+            var storedError = await store.GetAsync(error.GUID).ConfigureAwait(false);
 
             Assert.NotNull(storedError);
             Assert.Equal(3, storedError.DuplicateCount);
@@ -95,8 +95,8 @@ namespace StackExchange.Exceptional.Tests.Storage
             var store = GetStore();
             var error = GetBasicError("Test Error", store);
 
-            Assert.True(await store.LogAsync(error));
-            var storedError = await store.GetAsync(error.GUID);
+            Assert.True(await store.LogAsync(error).ConfigureAwait(false));
+            var storedError = await store.GetAsync(error.GUID).ConfigureAwait(false);
             Assert.NotNull(storedError);
             Assert.Equal(error.GetHash(true), storedError.GetHash(true));
         }
@@ -106,11 +106,11 @@ namespace StackExchange.Exceptional.Tests.Storage
         {
             var store = GetStore();
 
-            Assert.True(await store.LogAsync(GetBasicError("Test Error", store)));
-            Assert.True(await store.LogAsync(GetBasicError("Test Error2", store)));
-            Assert.Equal(2, await store.GetCountAsync());
-            Assert.Equal(2, await store.GetCountAsync(DateTime.UtcNow.AddMinutes(-10)));
-            Assert.Equal(0, await store.GetCountAsync(DateTime.UtcNow.AddMinutes(10)));
+            Assert.True(await store.LogAsync(GetBasicError("Test Error", store)).ConfigureAwait(false));
+            Assert.True(await store.LogAsync(GetBasicError("Test Error2", store)).ConfigureAwait(false));
+            Assert.Equal(2, await store.GetCountAsync().ConfigureAwait(false));
+            Assert.Equal(2, await store.GetCountAsync(DateTime.UtcNow.AddMinutes(-10)).ConfigureAwait(false));
+            Assert.Equal(0, await store.GetCountAsync(DateTime.UtcNow.AddMinutes(10)).ConfigureAwait(false));
         }
 
         [Fact]
@@ -120,7 +120,7 @@ namespace StackExchange.Exceptional.Tests.Storage
             var error = GetBasicError("Test Error", store);
 
             Assert.True(store.Log(error));
-            var storedError = await store.GetAsync(error.GUID);
+            var storedError = await store.GetAsync(error.GUID).ConfigureAwait(false);
 
             Assert.NotNull(storedError);
             Assert.Equal(error.GUID, storedError.GUID);
@@ -132,8 +132,8 @@ namespace StackExchange.Exceptional.Tests.Storage
             var store = GetStore();
             var error = GetBasicError("Test Error", store);
 
-            Assert.True(await store.LogAsync(error));
-            var storedError = await store.GetAsync(error.GUID);
+            Assert.True(await store.LogAsync(error).ConfigureAwait(false));
+            var storedError = await store.GetAsync(error.GUID).ConfigureAwait(false);
 
             Assert.NotNull(storedError);
             Assert.Equal(error.GUID, storedError.GUID);
@@ -148,10 +148,10 @@ namespace StackExchange.Exceptional.Tests.Storage
             store.Log(error);
             store.Log(error2);
 
-            Assert.True(await store.ProtectAsync(error.GUID));
+            Assert.True(await store.ProtectAsync(error.GUID).ConfigureAwait(false));
 
-            Assert.True((await store.GetAsync(error.GUID)).IsProtected);
-            Assert.False((await store.GetAsync(error2.GUID)).IsProtected);
+            Assert.True((await store.GetAsync(error.GUID).ConfigureAwait(false)).IsProtected);
+            Assert.False((await store.GetAsync(error2.GUID).ConfigureAwait(false)).IsProtected);
         }
 
         [Fact]
@@ -165,11 +165,11 @@ namespace StackExchange.Exceptional.Tests.Storage
             Assert.True(store.Log(error2));
             Assert.True(store.Log(error3));
 
-            Assert.True(await store.ProtectAsync(new[] { error.GUID, error2.GUID }));
+            Assert.True(await store.ProtectAsync(new[] { error.GUID, error2.GUID }).ConfigureAwait(false));
 
-            Assert.True((await store.GetAsync(error.GUID)).IsProtected);
-            Assert.True((await store.GetAsync(error2.GUID)).IsProtected);
-            Assert.False((await store.GetAsync(error3.GUID)).IsProtected);
+            Assert.True((await store.GetAsync(error.GUID).ConfigureAwait(false)).IsProtected);
+            Assert.True((await store.GetAsync(error2.GUID).ConfigureAwait(false)).IsProtected);
+            Assert.False((await store.GetAsync(error3.GUID).ConfigureAwait(false)).IsProtected);
         }
 
         [Fact]

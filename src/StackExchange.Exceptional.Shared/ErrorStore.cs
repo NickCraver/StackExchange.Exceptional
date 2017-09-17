@@ -526,10 +526,10 @@ namespace StackExchange.Exceptional
             if (settings.Size < 1)
                 throw new ArgumentOutOfRangeException(nameof(settings), "ErrorStore 'size' must be at least 1");
 
-            var storeTypes = GetErrorStores();
             // Search by convention first
             // or...free for all!
-            Type match = storeTypes.Find(s => s.Name == settings.Type + nameof(ErrorStore)) ?? storeTypes.Find(s => s.Name.Contains(settings.Type));
+            Type match = KnownStoreTypes.Find(s => s.Name == settings.Type + nameof(ErrorStore)) 
+                      ?? KnownStoreTypes.Find(s => s.Name.Contains(settings.Type));
 
             if (match == null)
             {
@@ -546,8 +546,14 @@ namespace StackExchange.Exceptional
             }
         }
 
+        /// <summary>
+        /// The known list of error stores, loaded from all known DLLs in the running directory.
+        /// </summary>
+        public static List<Type> KnownStoreTypes { get; } = GetErrorStores();
+
         private static List<Type> GetErrorStores()
         {
+            var result = new List<Type>();
             try
             {
                 // Ensure all assemblies we expect are loaded before looking at types
@@ -559,16 +565,34 @@ namespace StackExchange.Exceptional
                 }
 
                 // Check for any implementers of ErrorStore anywhere
-                return AppDomain.CurrentDomain.GetAssemblies()
-                                .SelectMany(s => s.GetTypes())
-                                .Where(t => t.IsSubclassOf(typeof(ErrorStore)))
-                                .ToList();
+                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    // Try each assembly by itself, a load of exotic ones shouldn't fail us here
+                    try
+                    {
+                        foreach (var type in assembly.GetTypes())
+                        {
+                            if (type.IsSubclassOf(typeof(ErrorStore)))
+                            {
+                                result.Add(type);
+                            }
+                        }
+                    }
+                    catch { /* nope */ }
+                }
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                foreach (var le in ex.LoaderExceptions)
+                {
+                    Trace.WriteLine("Error loading error stores: " + le.Message);
+                }
             }
             catch (Exception ex)
             {
                 Trace.WriteLine("Error loading error stores: " + ex.Message);
             }
-            return new List<Type>();
+            return result;
         }
     }
 }
