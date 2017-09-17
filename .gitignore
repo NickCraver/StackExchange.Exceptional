@@ -11,6 +11,7 @@
 *.sln.docstates
 .vs/
 **/Properties/launchSettings.json
+.idea/
 
 # Test Files
 error-*.json
