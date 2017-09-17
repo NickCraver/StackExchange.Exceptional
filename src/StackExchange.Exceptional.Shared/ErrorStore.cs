@@ -4,7 +4,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Transactions;
@@ -381,7 +380,14 @@ namespace StackExchange.Exceptional
         {
             if (_isInRetry)
             {
-                return WriteQueue.FirstOrDefault(e => e.GUID == guid);
+                foreach (var e in WriteQueue)
+                {
+                    if (e.GUID == guid)
+                    {
+                        return e;
+                    }
+                }
+                return null;
             }
 
             try { return await GetErrorAsync(guid).ConfigureAwait(false); }
@@ -431,11 +437,14 @@ namespace StackExchange.Exceptional
         protected void QueueError(Error e)
         {
             // try and roll-up in the queue, to save space
-            foreach (var err in WriteQueue.Where(err => e.ErrorHash == err.ErrorHash))
+            foreach (var err in WriteQueue)
             {
-                e.GUID = err.GUID;
-                err.DuplicateCount++;
-                return;
+                if (e.ErrorHash == err.ErrorHash)
+                {
+                    e.GUID = err.GUID;
+                    err.DuplicateCount++;
+                    return;
+                }
             }
 
             // only queue if we're under the cap
@@ -528,7 +537,7 @@ namespace StackExchange.Exceptional
 
             // Search by convention first
             // or...free for all!
-            Type match = KnownStoreTypes.Find(s => s.Name == settings.Type + nameof(ErrorStore)) 
+            Type match = KnownStoreTypes.Find(s => s.Name == settings.Type + nameof(ErrorStore))
                       ?? KnownStoreTypes.Find(s => s.Name.Contains(settings.Type));
 
             if (match == null)
