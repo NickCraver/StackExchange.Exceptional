@@ -169,7 +169,7 @@ namespace StackExchange.Exceptional
             error.UrlPath = request.ServerVariables?["URL"]; // Legacy compatibility, this may be the same as request.Url.AbsolutePath;
             error.FullUrl = request.Url.ToString();
             error.HTTPMethod = request.HttpMethod;
-            
+
             var exs = error.Settings as ExceptionalSettings;
             if (exs?.GetIPAddress != null)
             {

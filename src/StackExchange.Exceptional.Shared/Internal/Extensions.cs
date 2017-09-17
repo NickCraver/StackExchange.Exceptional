@@ -20,7 +20,8 @@ namespace StackExchange.Exceptional.Internal
         /// <returns>Whether this exception should be ignored.</returns>
         public static bool ShouldBeIgnored(this Exception ex, ExceptionalSettingsBase settings)
         {
-            return settings.Ignore.Regexes?.Any(re => re.IsMatch(ex.ToString())) == true
+            var exString = ex.ToString();
+            return settings.Ignore.Regexes?.Any(re => re.IsMatch(exString)) == true
                 || settings.Ignore.Types?.Any(type => ex.GetType().IsDescendentOf(type)) == true;
         }
 
@@ -195,7 +196,7 @@ namespace StackExchange.Exceptional.Internal
         /// </summary>
         public const string UnknownIP = "0.0.0.0";
 
-        private static readonly char[] commaSpace = new char[] { ',', ' ' };
+        private static readonly char[] _commaSpace = new char[] { ',', ' ' };
 
         /// <summary>
         /// Retrieves the IP address of the current request -- handles proxies and private networks.
@@ -206,7 +207,7 @@ namespace StackExchange.Exceptional.Internal
             var ip = serverVariables["REMOTE_ADDR"]; // could be a proxy -- beware
             var forwardedFor = serverVariables["HTTP_X_FORWARDED_FOR"] ?? "";
 
-            var remoteIPs = forwardedFor.Split(commaSpace, StringSplitOptions.RemoveEmptyEntries);
+            var remoteIPs = forwardedFor.Split(_commaSpace, StringSplitOptions.RemoveEmptyEntries);
             // Loop from the end until we get the first IP that's *not* internal:
             for (var i = remoteIPs.Length - 1; i >= 0; i--)
             {
@@ -238,8 +239,6 @@ namespace StackExchange.Exceptional.Internal
             return result;
         }
 
-        private static readonly char[] _dotSplit = new char[] { '.' };
-
         /// <summary>
         /// Gets the short exception name, e.g. "System.IndexOutOfRange" returns just "IndexOutOfRange".
         /// </summary>
@@ -247,7 +246,8 @@ namespace StackExchange.Exceptional.Internal
         public static string ToShortTypeName(this string type)
         {
             if (type.IsNullOrEmpty()) return string.Empty;
-            var shortType = type.Split(_dotSplit).Last();
+            var lastIndex = type.LastIndexOf('.');
+            var shortType = lastIndex > -1 && lastIndex + 1 < type.Length ? type.Substring(lastIndex + 1) : type;
 
             const string suffix = "Exception";
 
