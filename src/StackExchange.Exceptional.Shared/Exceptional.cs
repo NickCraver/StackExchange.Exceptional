@@ -49,7 +49,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         /// <param name="store">The error store used to store, e.g. <code>new SQLErrorStore(myConnectionString)</code></param>
         public static void Configure(ErrorStore store) =>
-            Settings.DefaultStore = store ?? throw new ArgumentNullException(nameof(store));
+            Settings.SetDefaultStore(store ?? throw new ArgumentNullException(nameof(store)));
 
         private static readonly EventHandler<UnobservedTaskExceptionEventArgs> taskHandler = (s, args) =>
         {

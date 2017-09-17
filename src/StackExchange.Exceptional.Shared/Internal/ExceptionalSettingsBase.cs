@@ -121,11 +121,14 @@ namespace StackExchange.Exceptional.Internal
         /// Gets the default error store specified in the configuration, 
         /// or the in-memory store if none is configured.
         /// </summary>
-        public ErrorStore DefaultStore
-        {
-            get => _defaultStore ?? (_defaultStore = ErrorStore.Get(Store));
-            set => _defaultStore = value;
-        }
+        public ErrorStore DefaultStore => _defaultStore ?? (_defaultStore = ErrorStore.Get(Store));
+
+        /// <summary>
+        /// Sets the default store for this settings instance.
+        /// </summary>
+        /// <param name="store">The configured store to use.</param>
+        /// <remarks>This is a method to avoid auto-binding behaviors.</remarks>
+        public void SetDefaultStore(ErrorStore store) => _defaultStore = store;
 
         /// <summary>
         /// The ErrorStore section of the configuration, optional and will default to a MemoryErrorStore if not specified.
@@ -193,5 +196,13 @@ namespace StackExchange.Exceptional.Internal
         /// Settings for prettifying a StackTrace
         /// </summary>
         public StackTraceSettings StackTrace { get; } = new StackTraceSettings();
+
+        /// <summary>
+        /// Creates a new instance of <see cref="ExceptionalSettingsBase"/>.
+        /// </summary>
+        protected ExceptionalSettingsBase()
+        {
+            Store.PropertyChanged += (o, s) => _defaultStore = null;
+        }
     }
 }
