@@ -42,7 +42,7 @@ namespace StackExchange.Exceptional.Tests.Storage
             Skip.IfNoConfig(nameof(TestConfig.Current.MySQLConnectionString), TestConfig.Current.MySQLConnectionString);
             try
             {
-                var script = Resource.Get("MySQL.sql");
+                var script = Resource.Get(@"Scripts\MySQL.sql");
                 var csb = new MySqlConnectionStringBuilder(TestConfig.Current.MySQLConnectionString)
                 {
                     ConnectionTimeout = 2000

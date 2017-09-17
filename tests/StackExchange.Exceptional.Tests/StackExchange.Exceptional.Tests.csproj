@@ -15,6 +15,6 @@
   <ItemGroup>
     <None Update="*.json" CopyToOutputDirectory="Always" />
     <EmbeddedResource Include="*Config.json" />
-    <EmbeddedResource Include="..\..\DBScripts\*.sql" />
+    <EmbeddedResource Include="..\..\DBScripts\*.sql" Link="Scripts\%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>

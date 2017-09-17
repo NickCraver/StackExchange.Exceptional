@@ -42,7 +42,7 @@ namespace StackExchange.Exceptional.Tests.Storage
             Skip.IfNoConfig(nameof(TestConfig.Current.SQLConnectionString), TestConfig.Current.SQLConnectionString);
             try
             {
-                var script = Resource.Get("SqlServer.sql");
+                var script = Resource.Get(@"Scripts\SqlServer.sql");
                 var csb = new SqlConnectionStringBuilder(TestConfig.Current.SQLConnectionString)
                 {
                     ConnectTimeout = 2000

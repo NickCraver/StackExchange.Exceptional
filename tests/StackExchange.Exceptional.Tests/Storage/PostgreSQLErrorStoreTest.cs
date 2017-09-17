@@ -42,7 +42,7 @@ namespace StackExchange.Exceptional.Tests.Storage
             Skip.IfNoConfig(nameof(TestConfig.Current.PostgreSqlConnectionString), TestConfig.Current.PostgreSqlConnectionString);
             try
             {
-                var script = Resource.Get("PostgreSql.sql");
+                var script = Resource.Get(@"Scripts\PostgreSql.sql");
                 using (var conn = new NpgsqlConnection(TestConfig.Current.PostgreSqlConnectionString))
                 {
                     TableName = $@"public.""Test{Guid.NewGuid().ToString("N").Substring(24)}""";
