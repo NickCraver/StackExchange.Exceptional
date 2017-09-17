@@ -162,7 +162,7 @@ namespace StackExchange.Exceptional.Stores
             else
             {
                 string timeStamp = DateTime.UtcNow.ToString("u").Replace(":", "").Replace(" ", "");
-                string fileName = $@"{_path}\error-{timeStamp}-{detailHash}-{error.GUID.ToFileName()}.json";
+                string fileName = $@"{_path}\error-{timeStamp}-{detailHash}-{error.GUID.ToString("N")}.json";
 
                 var file = new FileInfo(fileName);
                 using (var outstream = file.CreateText())
@@ -192,7 +192,7 @@ namespace StackExchange.Exceptional.Stores
 
         private Error GetError(Guid guid)
         {
-            string[] fileList = Directory.GetFiles(_path, $"*{guid.ToFileName()}.json");
+            string[] fileList = Directory.GetFiles(_path, $"*{guid.ToString("N")}.json");
 
             if (fileList.Length < 1)
                 return null;
@@ -279,7 +279,7 @@ namespace StackExchange.Exceptional.Stores
 
         private bool TryGetErrorFile(Guid guid, out FileInfo file)
         {
-            string[] fileList = Directory.GetFiles(_path, $"*{guid.ToFileName()}.json");
+            string[] fileList = Directory.GetFiles(_path, $"*{guid.ToString("N")}.json");
 
             if (fileList.Length != 1)
             {

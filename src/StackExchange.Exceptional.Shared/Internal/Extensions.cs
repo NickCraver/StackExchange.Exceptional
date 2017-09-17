@@ -238,12 +238,6 @@ namespace StackExchange.Exceptional.Internal
             return result;
         }
 
-        /// <summary>
-        /// Strips non-essential characters (dashes!) from a GUID.
-        /// </summary>
-        /// <param name="guid">The GUID to strip dashes from.</param>
-        public static string ToFileName(this Guid guid) => guid.ToString().Replace("-", "");
-
         private static readonly char[] _dotSplit = new char[] { '.' };
 
         /// <summary>
