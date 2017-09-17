@@ -42,7 +42,9 @@ namespace StackExchange.Exceptional.Tests
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     [XunitTestCaseDiscoverer("StackExchange.Exceptional.Tests.TheoryDiscoverer", "StackExchange.Exceptional.Tests")]
-    public class TheoryAttribute : Xunit.TheoryAttribute { }
+    public class TheoryAttribute : Xunit.TheoryAttribute
+    {
+    }
 
     public class FactDiscoverer : Xunit.Sdk.FactDiscoverer
     {
