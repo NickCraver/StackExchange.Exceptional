@@ -9,7 +9,7 @@ namespace StackExchange.Exceptional
     /// </summary>
     public class ExceptionalModule : IHttpModule
     {
-        static ExceptionalModule() => ConfigSettings.LoadSettings();
+        static ExceptionalModule() => Settings.LoadSettings();
 
         /// <summary>
         /// Initializes the module and prepares it to handle requests.

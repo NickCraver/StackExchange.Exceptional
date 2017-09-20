@@ -11,7 +11,7 @@ namespace StackExchange.Exceptional
     /// The Settings element for Exceptional's configuration.
     /// This is the legacy web.config settings, that only serve as an adapter to populate <see cref="ExceptionalSettings"/>.
     /// </summary>
-    internal class ConfigSettings : ConfigurationSection
+    internal class Settings : ConfigurationSection
     {
         private static int _loaded;
         /// <summary>
@@ -22,7 +22,7 @@ namespace StackExchange.Exceptional
             if (Interlocked.CompareExchange(ref _loaded, 1, 0) == 0)
             {
                 var settings = new ExceptionalSettings();
-                var config = ConfigurationManager.GetSection("Exceptional") as ConfigSettings;
+                var config = ConfigurationManager.GetSection("Exceptional") as Settings;
 
                 if (config.DataIncludePattern.HasValue())
                 {

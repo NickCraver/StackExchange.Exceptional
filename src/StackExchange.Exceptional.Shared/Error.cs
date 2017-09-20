@@ -618,5 +618,17 @@ namespace StackExchange.Exceptional
                 }
             }
         }
+
+        /// <summary>
+        /// Legacy: Sets the <see cref="UrlPath"/> from older <see cref="Url"/> columns.
+        /// Strictly for deserialization of old errors.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [Obsolete("Only for deserializing old Errors, use .UrlPath now.")]
+        [JsonIgnore]
+        public string Url
+        {
+            set => UrlPath = value;
+        }
     }
 }
