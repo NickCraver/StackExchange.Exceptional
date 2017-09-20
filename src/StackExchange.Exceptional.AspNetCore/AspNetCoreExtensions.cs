@@ -1,17 +1,20 @@
-﻿using StackExchange.Exceptional.Internal;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
+using StackExchange.Exceptional.Internal;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace StackExchange.Exceptional
 {
     /// <summary>
     /// Extensions methods for logging an <see cref="Exception"/>.
     /// </summary>
-    public static class Extensions
+    public static class AspNetCoreExtensions
     {
         /// <summary>
         /// Logs an exception to the configured error store, or the in-memory default store if none is configured.
@@ -39,7 +42,7 @@ namespace StackExchange.Exceptional
             {
                 try
                 {
-                    var settings = Exceptional.Settings;
+                    var settings = context.RequestServices.GetRequiredService<IOptions<ExceptionalSettings>>().Value;
                     // If we should be ignoring this exception, skip it entirely.
                     if (!ex.ShouldBeIgnored(settings))
                     {
@@ -88,7 +91,7 @@ namespace StackExchange.Exceptional
             {
                 try
                 {
-                    var settings = Exceptional.Settings;
+                    var settings = context.RequestServices.GetRequiredService<IOptions<ExceptionalSettings>>().Value;
                     // If we should be ignoring this exception, skip it entirely.
                     if (!ex.ShouldBeIgnored(settings))
                     {
@@ -117,43 +120,34 @@ namespace StackExchange.Exceptional
         /// <param name="error">The error to set properties on.</param>
         /// <param name="context">The <see cref="HttpContext"/> related to the request.</param>
         /// <returns>The passed-in <see cref="Error"/> for chaining.</returns>
-        private static Error SetProperties(this Error error, HttpContext context)
+        private static void SetProperties(this Error error, HttpContext context)
         {
-            if (error == null)
+            if (error == null || context == null)
             {
-                return null;
-            }
-
-            if (error.Exception is HttpException httpException)
-            {
-                error.StatusCode = httpException.GetHttpCode();
-            }
-            if (context == null || context.Handler == null)
-            {
-                return error;
+                return;
             }
 
             var request = context.Request;
 
-            NameValueCollection TryGetCollection(Func<HttpRequest, NameValueCollection> getter)
+            NameValueCollection TryGetCollection(Func<HttpRequest, IEnumerable<KeyValuePair<string, StringValues>>> getter)
             {
                 try
                 {
                     var original = getter(request);
                     var copy = new NameValueCollection();
-                    foreach (var key in original.AllKeys)
+                    foreach (var kvp in original)
                     {
                         try
                         {
-                            foreach (var value in original.GetValues(key))
+                            foreach (var value in kvp.Value)
                             {
-                                copy.Add(key, value);
+                                copy.Add(kvp.Key, value);
                             }
                         }
                         catch (Exception e)
                         {
-                            Trace.WriteLine(string.Format("Error getting collection value [{0}]: {1}", key, e.Message));
-                            copy.Add(key, "[Error getting value: " + e.Message + "]");
+                            Trace.WriteLine(string.Format("Error getting collection value [{0}]: {1}", kvp.Key, e.Message));
+                            copy.Add(kvp.Key, "[Error getting value: " + e.Message + "]");
                         }
                     }
                     return copy;
@@ -165,10 +159,10 @@ namespace StackExchange.Exceptional
                 }
             }
 
-            error.Host = request.Url?.Host;
-            error.UrlPath = request.ServerVariables?["URL"]; // Legacy compatibility, this may be the same as request.Url.AbsolutePath;
-            error.FullUrl = request.Url.ToString();
-            error.HTTPMethod = request.HttpMethod;
+            error.Host = request.Host.ToString();
+            error.UrlPath = $"{request.PathBase}{request.Path}";
+            error.FullUrl = $"{request.Scheme}://{request.Host}{request.PathBase}{request.Path}{request.QueryString}";
+            error.HTTPMethod = request.Method;
 
             var exs = error.Settings as ExceptionalSettings;
             if (exs?.GetIPAddress != null)
@@ -184,57 +178,64 @@ namespace StackExchange.Exceptional
             }
             else
             {
-                error.IPAddress = request.ServerVariables?.GetRemoteIP();
+                error.IPAddress = context.Connection?.RemoteIpAddress?.ToString();
             }
 
-            error.ServerVariables = TryGetCollection(r => r.ServerVariables);
-            error.QueryString = TryGetCollection(r => r.QueryString);
-            error.Form = TryGetCollection(r => r.Form);
-
-            // Filter form variables for sensitive information
-            var formFilters = error.Settings.LogFilters.Form;
-            if (formFilters?.Count > 0)
+            error.ServerVariables = new NameValueCollection
             {
-                foreach (var kv in formFilters)
+                ["ContentLength"] = request.ContentLength?.ToString(),
+                ["ContentType"] = request.ContentType,
+                ["Host"] = request.Host.Host,
+                ["Path"] = request.Path,
+                ["PathBase"] = request.PathBase,
+                ["Port"] = request.Host.Port?.ToString(),
+                ["Protocol"] = request.Protocol,
+                ["QueryString"] = request.QueryString.Value,
+                ["Request Method"] = request.Method,
+                ["Scheme"] = request.Scheme,
+                ["Url"] = error.FullUrl,
+            };
+            error.QueryString = TryGetCollection(r => r.Query);
+            if (request.HasFormContentType)
+            {
+                error.Form = TryGetCollection(r => r.Form);
+                // Filter form variables for sensitive information
+                var formFilters = error.Settings?.LogFilters.Form;
+                if (formFilters?.Count > 0)
                 {
-                    if (error.Form[kv.Key] != null)
+                    foreach (var kv in formFilters)
                     {
-                        error.Form[kv.Key] = kv.Value ?? "";
+                        if (error.Form[kv.Key] != null)
+                        {
+                            error.Form[kv.Key] = kv.Value ?? string.Empty;
+                        }
                     }
                 }
             }
 
-            try
+            error.Cookies = new NameValueCollection(request.Cookies.Count);
+            foreach (var cookie in request.Cookies)
             {
-                error.Cookies = new NameValueCollection(request.Cookies.Count);
-                for (var i = 0; i < request.Cookies.Count; i++)
-                {
-                    var name = request.Cookies[i].Name;
-                    string val = null;
-                    error.Settings.LogFilters.Cookie?.TryGetValue(name, out val);
-                    error.Cookies.Add(name, val ?? request.Cookies[i].Value);
-                }
-            }
-            catch (HttpRequestValidationException e)
-            {
-                Trace.WriteLine("Error parsing cookie collection: " + e.Message);
+                string val = null;
+                error.Settings?.LogFilters.Cookie?.TryGetValue(cookie.Key, out val);
+                error.Cookies.Add(cookie.Key, val ?? cookie.Value);
             }
 
             error.RequestHeaders = new NameValueCollection(request.Headers.Count);
-            foreach (var header in request.Headers.AllKeys)
+            foreach (var header in request.Headers)
             {
                 // Cookies are handled above, no need to repeat
-                if (string.Compare(header, "Cookie", StringComparison.OrdinalIgnoreCase) == 0)
+                if (string.Compare(header.Key, "Cookie", StringComparison.OrdinalIgnoreCase) == 0)
                     continue;
 
                 string val = null;
-                error.Settings?.LogFilters.Header?.TryGetValue(header, out val);
+                error.Settings?.LogFilters.Header?.TryGetValue(header.Key, out val);
 
-                if (request.Headers[header] != null)
-                    error.RequestHeaders[header] = val ?? request.Headers[header];
+                foreach (var v in header.Value)
+                {
+                    error.RequestHeaders.Add(header.Key, val ?? v);
+                }
             }
-
-            return error;
         }
     }
 }

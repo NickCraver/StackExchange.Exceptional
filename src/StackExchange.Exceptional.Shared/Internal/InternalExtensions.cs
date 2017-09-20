@@ -10,7 +10,7 @@ namespace StackExchange.Exceptional.Internal
     /// Internal Exceptional extensions, not meant for consumption.
     /// This can and probably will break without warning. Don't use the .Internal namespace directly.
     /// </summary>
-    public static class Extensions
+    public static class InternalExtensions
     {
         /// <summary>
         /// Returns if an exception should be ignored according to the passed-in <see cref="ExceptionalSettingsBase"/>.
