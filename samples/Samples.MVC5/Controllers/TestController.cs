@@ -43,7 +43,7 @@ namespace Samples.MVC5.Controllers
 
         public ActionResult Throw()
         {
-            TestLog(Utils.Test.GetRedisException());
+            TestLog(ExceptionalUtils.Test.GetRedisException());
 
             var ex = new Exception("This is an exception thrown from the Samples project! - Check out the log to see this exception.");
             // here's how your catch/throw might can add more info, for example SQL is special cased and shown in the UI:
@@ -54,7 +54,7 @@ namespace Samples.MVC5.Controllers
             throw ex;
         }
 
-        public ActionResult ThrowRedis() => throw Utils.Test.GetRedisException();
+        public ActionResult ThrowRedis() => throw ExceptionalUtils.Test.GetRedisException();
 
 #pragma warning disable RCS1174 // Remove redundant async/await.
 #pragma warning disable RCS1090 // Call 'ConfigureAwait(false)'.
@@ -68,7 +68,7 @@ namespace Samples.MVC5.Controllers
         {
             try
             {
-                await Utils.Test.ThrowStackAsync().ConfigureAwait(false);
+                await ExceptionalUtils.Test.ThrowStackAsync().ConfigureAwait(false);
             }
             catch (Exception e)
             {

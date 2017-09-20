@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace StackExchange.Exceptional
 {
-    public static partial class Utils
+    public static partial class ExceptionalUtils
     {
         /// <summary>
         /// General test methods for exceptions.

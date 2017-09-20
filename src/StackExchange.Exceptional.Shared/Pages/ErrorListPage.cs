@@ -50,7 +50,7 @@ namespace StackExchange.Exceptional.Pages
                 {
                     sb.Append("<div>Last Logging Exception: ").AppendHtmlEncode(le.Message).AppendLine(" (<a href=\"#\" class=\"js-show-details\">view details</a>)</div>")
                       .Append("<pre class=\"stack dark details\"><code>")
-                      .Append(Utils.StackTrace.HtmlPrettify(le.Message + "\n" + le.StackTrace, Settings.StackTrace))
+                      .Append(ExceptionalUtils.StackTrace.HtmlPrettify(le.Message + "\n" + le.StackTrace, Settings.StackTrace))
                       .AppendLine("</code></pre>");
                 }
                 sb.AppendLine("</div>");

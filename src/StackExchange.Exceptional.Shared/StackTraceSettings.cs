@@ -1,4 +1,7 @@
-﻿namespace StackExchange.Exceptional
+﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
+
+namespace StackExchange.Exceptional
 {
     /// <summary>
     /// Settings for prettifying a StackTrace
@@ -20,6 +23,10 @@
         /// Defaults to true.
         /// </summary>
         public bool IncludeGenericTypeNames { get; set; } = true;
+        /// <summary>
+        /// Link replacements to run on the stack trace, e.g. for linkifying SourceLink to GitHub, etc.
+        /// </summary>
+        public Dictionary<Regex, string> LinkReplacements { get; } = new Dictionary<Regex, string>();
 
         /// <summary>
         /// The language to use when operating on errors and stack traces.
@@ -38,6 +45,25 @@
             /// Visual Basic
             /// </summary>
             VB
+        }
+
+        /// <summary>
+        /// Adds a <see cref="Regex"/>-based replacement to <see cref="LinkReplacements"/>.
+        /// </summary>
+        /// <param name="matchPattern">The pattern for the <see cref="Regex"/>.</param>
+        /// <param name="repalcementPattern">The replacement pattern.</param>
+        public void AddReplacement(string matchPattern, string repalcementPattern)
+        {
+            LinkReplacements[new Regex(matchPattern, RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.CultureInvariant)] = repalcementPattern;
+        }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="StackTraceSettings"/> with default replacements.
+        /// </summary>
+        public StackTraceSettings()
+        {
+            // TODO: Other major SourceLink providers
+            AddReplacement("https?://raw\\.githubusercontent\\.com/([^/]+/)([^/]+/)([^/]+/)(.*?):line (\\d+)", "<a href=\"https://github.com/$1$2blob/$3$4#L$5\">$4:line $5</a>");
         }
     }
 }

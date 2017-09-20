@@ -21,7 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Error.*.cs" DependentUpon="Error.cs" />
-    <Compile Update="Utils.*.cs" DependentUpon="Utils.cs" />
+    <Compile Update="ExceptionalUtils.*.cs" DependentUpon="ExceptionalUtils.cs" />
     <EmbeddedResource Include="Resources\Bundle.min.js" DependentUpon="Bundle.js" />
     <EmbeddedResource Include="Resources\Bundle.min.css" DependentUpon="Bundle.css" />
   </ItemGroup>

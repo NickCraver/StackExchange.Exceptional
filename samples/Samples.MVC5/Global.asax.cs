@@ -39,7 +39,7 @@ namespace Samples.MVC5
                 };
             // Example of how to log command data for anything you want
             // These display the command and the data key/value pairs in the log
-            settings.ExceptionActions.AddHandler<Utils.Test.RedisException>((e, ex) =>
+            settings.ExceptionActions.AddHandler<ExceptionalUtils.Test.RedisException>((e, ex) =>
             {
                 var cmd = e.AddCommand(new Command("Redis"));
                 foreach (string k in ex.Data.Keys)

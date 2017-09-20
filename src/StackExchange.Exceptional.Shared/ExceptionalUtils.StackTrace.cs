@@ -1,6 +1,8 @@
 ﻿using StackExchange.Exceptional.Internal;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -9,7 +11,7 @@ namespace StackExchange.Exceptional
     /// <summary>
     /// Utilities for Exceptions!
     /// </summary>
-    public static partial class Utils
+    public static partial class ExceptionalUtils
     {
         /// <summary>
         /// StackTrace utilities
@@ -29,22 +31,30 @@ namespace StackExchange.Exceptional
                 public const string Params = nameof(Params);
                 public const string ParamType = nameof(ParamType);
                 public const string ParamName = nameof(ParamName);
+                public const string SourceInfo = nameof(SourceInfo);
                 public const string Path = nameof(Path);
                 public const string LinePrefix = nameof(LinePrefix);
                 public const string Line = nameof(Line);
             }
+
+            private static readonly char[] NewLine_CarriageReturn = { '\n', '\r' };
 
             private const string EndStack = "--- End of stack trace from previous location where exception was thrown ---";
 
             // TODO: Patterns, or a bunch of these...
             private static readonly HashSet<string> _asyncFrames = new HashSet<string>()
             {
+                "System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()",
+                "System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)",
+                "System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)",
+                "System.Runtime.CompilerServices.TaskAwaiter.ValidateEnd(Task task)",
+                "System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()",
                 "System.Runtime.CompilerServices.ConfiguredTaskAwaitable.ConfiguredTaskAwaiter.GetResult()",
                 "System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()",
                 "System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)",
-                "System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()",
                 "System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()",
-                "Microsoft.Extensions.Internal.ObjectMethodExecutorAwaitable.Awaiter.GetResult()"
+                "Microsoft.Extensions.Internal.ObjectMethodExecutorAwaitable.Awaiter.GetResult()",
+                EndStack
             };
 
             // TODO: Adjust for URLs instead of files
@@ -59,21 +69,24 @@ namespace StackExchange.Exceptional
              )
              ({Space}+
                 (\w+{Space}+
-                (?<{Groups.Path}>[a-z]\:.+?)
-                (?<{Groups.LinePrefix}>\:\w+{Space}+)
-                (?<{Groups.Line}>[0-9]+)\p{{P}}?
-                |\[0x[0-9a-f]+\]{Space}+\w+{Space}+<(?<{Groups.Path}>[^>]+)>(?<{Groups.LinePrefix}>:)(?<{Groups.Line}>[0-9]+))
+					(?<{Groups.SourceInfo}>
+		                (?<{Groups.Path}>([a-z]\:.+?|(\b(https?|ftp|file)://)?[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]))
+		                (?<{Groups.LinePrefix}>\:\w+{Space}+)
+		                (?<{Groups.Line}>[0-9]+)\p{{P}}?
+		                |\[0x[0-9a-f]+\]{Space}+\w+{Space}+<(?<{Groups.Path}>[^>]+)>(?<{Groups.LinePrefix}>:)(?<{Groups.Line}>[0-9]+))
+					)
              )?
             )\s*$",
                 RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.Multiline
                 | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace,
                 TimeSpan.FromSeconds(2));
 
+
             /// <summary>
             /// Converts a stack trace to formatted HTML with styling and linkifiation.
             /// </summary>
             /// <param name="stackTrace">The stack trace to HTMLify.</param>
-            /// <param name="settings">The settings to use when prettifying this stack trace.</param>
+            /// <param name="settings">The <see cref="StackTraceSettings"/> to use in this render.</param>
             /// <returns>An HTML-pretty version of the stack trace.</returns>
             public static string HtmlPrettify(string stackTrace, StackTraceSettings settings)
             {
@@ -90,19 +103,35 @@ namespace StackExchange.Exceptional
                           asyncMethod = m.Groups[Groups.AsyncMethod],
                           method = m.Groups[Groups.Method],
                           allParams = m.Groups[Groups.Params],
-                          path = m.Groups[Groups.Path], // TODO: URLs
+                          sourceInfo = m.Groups[Groups.SourceInfo],
+                          path = m.Groups[Groups.Path],
                           linePrefix = m.Groups[Groups.LinePrefix],
                           line = m.Groups[Groups.Line];
                     CaptureCollection paramTypes = m.Groups[Groups.ParamType].Captures,
                                       paramNames = m.Groups[Groups.ParamName].Captures;
 
                     var isAsync = _asyncFrames.Contains(frame.Value);
-                    sb.Append(isAsync ? "<span class=\"stack row async\">" : "<span class=\"stack row\">");
 
-                    sb.Append("<span class=\"stack misc\">")
-                      .AppendHtmlEncode(stackTrace.Substring(pos, leadIn.Index - pos))
-                      .Append("</span>")
-                      .Append("<span class=\"stack leadin\">")
+                    // The initial message may be above an async frame
+                    if (sb.Length == 0 && isAsync && leadIn.Index > pos)
+                    {
+                        sb.Append("<span class=\"stack stack-row\">")
+                          .Append("<span class=\"stack misc\">")
+                          .AppendHtmlEncode(stackTrace.Substring(pos, leadIn.Index - pos).Trim(NewLine_CarriageReturn))
+                          .Append("</span>")
+                          .Append("</span>");
+                        pos += sb.Length;
+                    }
+
+                    sb.Append(isAsync ? "<span class=\"stack stack-row async\">" : "<span class=\"stack stack-row\">");
+
+                    if (leadIn.Index > pos)
+                    {
+                        sb.Append("<span class=\"stack misc\">")
+                          .AppendHtmlEncode(stackTrace.Substring(pos, leadIn.Index - pos))
+                          .Append("</span>");
+                    }
+                    sb.Append("<span class=\"stack leadin\">")
                       .AppendHtmlEncode(leadIn.Value)
                       .Append("</span>");
 
@@ -172,56 +201,133 @@ namespace StackExchange.Exceptional
                           .Append("</span>");
                     }
                     sb.Append("</span>"); // method-section for table layout
-
-                    // TODO: regular expression replacement for SourceLink
-                    if (path.Value.HasValue())
+                    
+                    if (sourceInfo.Value.HasValue())
                     {
-                        var subPath = GetSubPath(path.Value, type.Value);
+                        sb.Append("<span class=\"stack source-section\">");
 
-                        sb.Append("<span class=\"stack source-section\">")
-                          .Append("<span class=\"stack misc\">")
-                          .AppendHtmlEncode(GetBetween(allParams, path))
-                          .Append("</span>")
-                          .Append("<span class=\"stack path\">")
-                          .AppendHtmlEncode(subPath)
-                          .Append("</span>")
-                          .AppendHtmlEncode(GetBetween(path, linePrefix))
-                          .Append("<span class=\"stack line-prefix\">")
-                          .AppendHtmlEncode(linePrefix.Value)
-                          .Append("</span>")
-                          .Append("<span class=\"stack line\">")
-                          .AppendHtmlEncode(line.Value)
-                          .Append("</span>")
-                          .Append("</span>");
+                        var curPath = sourceInfo.Value;
+                        if (settings.LinkReplacements.Count > 0)
+                        {
+                            foreach (var replacement in settings.LinkReplacements)
+                            {
+                                curPath = replacement.Key.Replace(curPath, replacement.Value);
+                            }
+                        }
+
+                        if (curPath != sourceInfo.Value)
+                        {
+                            sb.Append("<span class=\"stack misc\">")
+                              .AppendHtmlEncode(GetBetween(allParams, sourceInfo))
+                              .Append("</span>")
+                              .Append(curPath);
+                        }
+                        else if (path.Value.HasValue())
+                        {
+                            var subPath = GetSubPath(path.Value, type.Value);
+
+                            sb.Append("<span class=\"stack misc\">")
+                              .AppendHtmlEncode(GetBetween(allParams, path))
+                              .Append("</span>")
+                              .Append("<span class=\"stack path\">")
+                              .AppendHtmlEncode(subPath)
+                              .Append("</span>")
+                              .AppendHtmlEncode(GetBetween(path, linePrefix))
+                              .Append("<span class=\"stack line-prefix\">")
+                              .AppendHtmlEncode(linePrefix.Value)
+                              .Append("</span>")
+                              .Append("<span class=\"stack line\">")
+                              .AppendHtmlEncode(line.Value)
+                              .Append("</span>");
+                        }
+                        sb.Append("</span>");
                     }
 
                     sb.Append("</span>");
 
                     pos = frame.Index + frame.Length;
                 }
+
                 // append anything left
-                sb.Append("<span class=\"stack misc\">")
-                  .AppendHtmlEncode(stackTrace.Substring(pos))
-                  .Append("</span>");
+                sb.Append("<span class=\"stack misc\">");
+                LinkifyRest(sb, stackTrace, pos, settings.LinkReplacements);
+                sb.Append("</span>");
 
                 return sb.ToStringRecycle();
             }
 
+            private static void LinkifyRest(StringBuilder sb, string stackTrace, int pos, Dictionary<Regex, string> linkReplacements)
+            {
+                while (pos < stackTrace.Length)
+                {
+                    var offset = pos;
+                    var matches = linkReplacements
+                        .Select(x => new
+                        {
+                            pattern = x.Key,
+                            match = x.Key.Match(stackTrace, offset),
+                            replacement = x.Value,
+                        })
+                        .Where(x => x.match.Success)
+                        .OrderBy(x => x.match.Index)
+                        .ThenByDescending(x => x.match.Length)
+                        .ToArray();
+
+                    if (matches.Length == 0)
+                    {
+                        break;
+                    }
+
+                    var next = matches[0];
+
+                    var prefixLength = next.match.Index - pos;
+                    if (prefixLength > 0)
+                    {
+                        sb.AppendHtmlEncode(stackTrace.Substring(pos, prefixLength));
+                    }
+
+                    var nextPos = next.match.Index + next.match.Length;
+
+                    // in ambiguous matches, take first one
+                    var overlapping = matches.Skip(1).FirstOrDefault(x => x.match.Index < nextPos);
+                    try
+                    {
+                        var replacement = next.match.Result(next.replacement);
+                        sb.Append("<span class=\"stack source-section\">");
+                        sb.Append(replacement); // allow HTML in the replacement
+                        sb.Append("</span>");
+                    }
+                    catch (Exception ex)
+                    {
+                        Trace.WriteLine($"Error while applying source link pattern replacement for '{next.pattern}': " + ex);
+                        sb.AppendHtmlEncode(next.match.Value);
+                    }
+
+                    pos = nextPos;
+                }
+
+                var tailLength = stackTrace.Length - pos;
+                if (tailLength > 0)
+                {
+                    sb.AppendHtmlEncode(stackTrace.Substring(pos, tailLength));
+                }
+            }
+
             private static char[] Backslash { get; } = new[] { '\\' };
 
-            private static string GetSubPath(string filePath, string type)
+            private static string GetSubPath(string sourcePath, string type)
             {
                 //C:\git\NickCraver\StackExchange.Exceptional\src\StackExchange.Exceptional.Shared\Utils.Test.cs
-                int pos = 0;
-                foreach (var path in filePath.Split(Backslash))
+                int pathPos = 0;
+                foreach (var path in sourcePath.Split(Backslash))
                 {
-                    pos += (path.Length + 1);
+                    pathPos += (path.Length + 1);
                     if (type.StartsWith(path))
                     {
-                        return filePath.Substring(pos);
+                        return sourcePath.Substring(pathPos);
                     }
                 }
-                return filePath;
+                return sourcePath;
             }
         }
     }
@@ -229,7 +335,7 @@ namespace StackExchange.Exceptional
     internal static class StackTraceExtensions
     {
         private static readonly char[] _dot = new char[] { '.' };
-        private static readonly Regex _genericTypeRegex = new Regex($@"(?<BaseClass>{Utils.StackTrace.NoSpace}+)`(?<ArgCount>\d+)");
+        private static readonly Regex _genericTypeRegex = new Regex($@"(?<BaseClass>{ExceptionalUtils.StackTrace.NoSpace}+)`(?<ArgCount>\d+)");
         private static readonly string[] _singleT = new[] { "T" };
 
         private static readonly Dictionary<string, string[]> _commonGenerics = new Dictionary<string, string[]>
@@ -331,7 +437,7 @@ namespace StackExchange.Exceptional
                             args = new string[count];
                             for (var j = 0; j < count; j++)
                             {
-                                args[j] = "T" + (j+1).ToString(); // <T>, or <T1, T2, T3>
+                                args[j] = "T" + (j + 1).ToString(); // <T>, or <T1, T2, T3>
                             }
                         }
                     }

@@ -9,7 +9,7 @@ namespace Samples.AspNetCore.Controllers
     {
         public async Task<ActionResult> Throw()
         {
-            await Utils.Test.GetRedisException().LogAsync(ControllerContext.HttpContext).ConfigureAwait(false);
+            await ExceptionalUtils.Test.GetRedisException().LogAsync(ControllerContext.HttpContext).ConfigureAwait(false);
             await new Exception("").LogAsync(ControllerContext.HttpContext).ConfigureAwait(false);
 
             var ex = new Exception("This is an exception thrown from the Samples project! - Check out the log to see this exception.");
@@ -21,6 +21,6 @@ namespace Samples.AspNetCore.Controllers
             throw ex;
         }
 
-        public ActionResult ThrowRedis() => throw Utils.Test.GetRedisException();
+        public ActionResult ThrowRedis() => throw ExceptionalUtils.Test.GetRedisException();
     }
 }
