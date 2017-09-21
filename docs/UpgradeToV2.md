@@ -22,15 +22,7 @@ Note: `.Log()` is defined separately for ASP.NET (in the `StackExchange.Exceptio
 **Category** is a new string field on `Error` (and an optional parameter on `.Log()`) for further subclassifying errors in an application. This could also be set in a handler for example.
 
 #### Settings
-All settings are now on `Settings`, in the `StackExchange.Exeptional` namespace. The `StackExchange.Exceptional` package tries to ensure backwards compatability with existing `Web.config` layouts, but there is one change:
-```xml
-<section name="Exceptional" type="StackExchange.Exceptional.Settings, StackExchange.Exceptional" />
-```
-is now:
-```xml
-<section name="Exceptional" type="StackExchange.Exceptional.ConfigSettings, StackExchange.Exceptional" />
-```
-The rest of your `Web.config` should work as-is.
+Settings are now on `StackExchange.Exceptional.ExceptionalSettings` (defined in the respective `StackExchange.Exceptional` and `StackExchange.Exceptional.AspNetCore` libraries. The `StackExchange.Exceptional` (ASP.NET non-Core) package tries to ensure backwards compatability with existing `Web.config` layouts with shims. If something doesn't work, *please* file an issue!
 
 The rest of the settings that were spread across `Error` and `ErrorStore` are now unified in `Settings`, with the current instance located at `StackExchange.Exceptional.Settings.Current`. For example:
 ```c#
