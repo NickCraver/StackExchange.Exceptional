@@ -162,7 +162,7 @@ namespace StackExchange.Exceptional.Stores
             else
             {
                 string timeStamp = DateTime.UtcNow.ToString("u").Replace(":", "").Replace(" ", "");
-                string fileName = $@"{_path}\error-{timeStamp}-{detailHash}-{error.GUID.ToString("N")}.json";
+                string fileName = $@"{_path}/error-{timeStamp}-{detailHash}-{error.GUID.ToString("N")}.json";
 
                 var file = new FileInfo(fileName);
                 using (var outstream = file.CreateText())
