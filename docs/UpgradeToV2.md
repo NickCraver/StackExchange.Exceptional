@@ -22,11 +22,13 @@ Note: `.Log()` is defined separately for ASP.NET (in the `StackExchange.Exceptio
 **Category** is a new string field on `Error` (and an optional parameter on `.Log()`) for further subclassifying errors in an application. This could also be set in a handler for example.
 
 #### Settings
-Settings are now on `StackExchange.Exceptional.ExceptionalSettings` (defined in the respective `StackExchange.Exceptional` and `StackExchange.Exceptional.AspNetCore` libraries. The `StackExchange.Exceptional` (ASP.NET non-Core) package tries to ensure backwards compatability with existing `Web.config` layouts with shims. If something doesn't work, *please* file an issue!
+Settings are now in `.ExceptionalSettings` (defined in the `StackExchange.Exceptional` and `StackExchange.Exceptional.AspNetCore` libraries. 
 
-The rest of the settings that were spread across `Error` and `ErrorStore` are now unified in `Settings`, with the current instance located at `StackExchange.Exceptional.Settings.Current`. For example:
+The `StackExchange.Exceptional` (ASP.NET non-Core) package tries to ensure backwards compatability with existing `Web.config` layouts with shims. If something doesn't work, *please* file an issue!
+
+The rest of the settings that were spread across `Error` and `ErrorStore` are now unified in `ExceptionalSettings`. See [the sample applications](https://github.com/NickCraver/StackExchange.Exceptional/tree/master/samples) for configure-by-code examples in your respective platform. Settings are also avaialble statically if needed at `ExceptionalConfig.Settings`, for example:
 ```c#
-Settings.ApplicationName = "MyApp";
+ExceptionalConfig.Settings.Store.ApplicationName = "MyApp";
 ```
 
 #### SQL Server

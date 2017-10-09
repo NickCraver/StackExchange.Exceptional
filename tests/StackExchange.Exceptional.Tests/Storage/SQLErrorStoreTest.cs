@@ -13,12 +13,12 @@ namespace StackExchange.Exceptional.Tests.Storage
         public string ConnectionString => TestConfig.Current.SQLConnectionString;
         private SqlFixture Fixtue { get; }
 
-        public SQLErrorStoreTest(SqlFixture fixtue, ITestOutputHelper output) : base(output)
+        public SQLErrorStoreTest(SqlFixture fixture, ITestOutputHelper output) : base(output)
         {
-            Fixtue = fixtue;
+            Fixtue = fixture;
             if (Fixtue.ShouldSkip)
             {
-                Skip.Inconclusive("Couldn't test against: " + ConnectionString + "\n" + fixtue.SkipReason);
+                Skip.Inconclusive("Couldn't test against: " + ConnectionString + "\n" + fixture.SkipReason);
             }
         }
 

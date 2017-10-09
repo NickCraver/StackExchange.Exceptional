@@ -13,12 +13,12 @@ namespace StackExchange.Exceptional.Tests.Storage
         public string ConnectionString => TestConfig.Current.PostgreSqlConnectionString;
         private PostgreSqlFixture Fixtue { get; }
 
-        public PostgreSqlErrorStoreTest(PostgreSqlFixture fixtue, ITestOutputHelper output) : base(output)
+        public PostgreSqlErrorStoreTest(PostgreSqlFixture fixture, ITestOutputHelper output) : base(output)
         {
-            Fixtue = fixtue;
+            Fixtue = fixture;
             if (Fixtue.ShouldSkip)
             {
-                Skip.Inconclusive("Couldn't test against to: " + ConnectionString + "\n" + fixtue.SkipReason);
+                Skip.Inconclusive("Couldn't test against to: " + ConnectionString + "\n" + fixture.SkipReason);
             }
         }
 
