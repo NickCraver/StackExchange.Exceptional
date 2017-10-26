@@ -118,7 +118,8 @@ namespace StackExchange.Exceptional
                         default:
                             context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
                             context.Response.Cache.SetNoStore();
-                            Page(new ErrorListPage(store, settings, Url, await store.GetAllAsync().ConfigureAwait(false)));
+                            string actualUrl = Uri.TryCreate(Url, UriKind.RelativeOrAbsolute, out var urlResult) ? urlResult.AbsolutePath : Url;
+                            Page(new ErrorListPage(store, settings, actualUrl, await store.GetAllAsync().ConfigureAwait(false)));
                             return;
                     }
                 default:
