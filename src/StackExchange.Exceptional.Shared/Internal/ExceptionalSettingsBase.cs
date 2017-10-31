@@ -205,4 +205,8 @@ namespace StackExchange.Exceptional.Internal
             Store.PropertyChanged += (o, s) => _defaultStore = null;
         }
     }
+
+    internal class ExceptionalSettingsDefault : ExceptionalSettingsBase
+    {
+    }
 }

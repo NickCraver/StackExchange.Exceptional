@@ -16,7 +16,7 @@ namespace StackExchange.Exceptional
         /// In ASP.NET (non-Core) this is populated by the ConfigSettings load.
         /// In ASP.NET Core this is populated by .Configure() in the DI pipeline.
         /// </remarks>
-        public static ExceptionalSettingsBase Settings { get; private set; }
+        public static ExceptionalSettingsBase Settings { get; private set; } = new ExceptionalSettingsDefault();
 
         /// <summary>
         /// Returns whether an error passed in right now would be logged.
