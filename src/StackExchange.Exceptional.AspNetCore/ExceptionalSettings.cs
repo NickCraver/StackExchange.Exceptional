@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Exceptional.Internal;
+using StackExchange.Exceptional.Notifiers;
 using System;
 using System.Text.RegularExpressions;
 
@@ -55,6 +56,11 @@ namespace StackExchange.Exceptional
                 {
                     settings.Ignore.Regexes.Add(new Regex(ir.Value, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline));
                 }
+            }
+            // If email is configured, hook it up
+            if (settings.Email.ToAddress.HasValue())
+            {
+                settings.Register(new EmailNotifier(settings.Email));
             }
         }
     }
