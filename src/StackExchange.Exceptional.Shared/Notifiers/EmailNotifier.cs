@@ -75,5 +75,18 @@ namespace StackExchange.Exceptional.Notifiers
 
             return client;
         }
+
+        /// <summary>
+        /// Equals override, actually using <see cref="GetHashCode"/> underneath.
+        /// </summary>
+        /// <param name="obj"><see cref="EmailNotifier"/> to compare to.</param>
+        /// <returns>Whether <paramref name="obj"/> is equal.</returns>
+        public override bool Equals(object obj) => obj is EmailNotifier en && GetHashCode() == en.GetHashCode();
+
+        /// <summary>
+        /// <see cref="GetHashCode"/> override, actually comparing <see cref="Settings"/>.
+        /// </summary>
+        /// <returns>The hashcode of this notifier/settings variant.</returns>
+        public override int GetHashCode() => Settings.GetHashCode();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using StackExchange.Exceptional.Internal;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
 
@@ -103,5 +104,48 @@ namespace StackExchange.Exceptional
         /// Flags whether or not emails are sent for duplicate errors.
         /// </summary>
         public bool PreventDuplicates { get; set; }
+
+        /// <summary>
+        /// Equals override.
+        /// </summary>
+        /// <param name="obj"><see cref="EmailSettings"/> to compare to.</param>
+        /// <returns>Whether <paramref name="obj"/> is equal.</returns>
+        public override bool Equals(object obj)
+        {
+            var settings = obj as EmailSettings;
+            return settings != null
+                   && _fromAddress == settings._fromAddress
+                   && _fromDisplayName == settings._fromDisplayName
+                   && _SMTPUserName == settings._SMTPUserName
+                   && _SMTPPassword == settings._SMTPPassword
+                   && ToAddress == settings.ToAddress
+                   && FromAddress == settings.FromAddress
+                   && FromDisplayName == settings.FromDisplayName
+                   && SMTPHost == settings.SMTPHost
+                   && EqualityComparer<int?>.Default.Equals(SMTPPort, settings.SMTPPort)
+                   && SMTPEnableSSL == settings.SMTPEnableSSL
+                   && PreventDuplicates == settings.PreventDuplicates;
+        }
+
+        /// <summary>
+        /// <see cref="GetHashCode"/> override.
+        /// </summary>
+        /// <returns>The hashcode of this settings variant.</returns>
+        public override int GetHashCode()
+        {
+            var hashCode = 1406920336;
+            hashCode = (hashCode * -1521134295) + EqualityComparer<string>.Default.GetHashCode(_fromAddress);
+            hashCode = (hashCode * -1521134295) + EqualityComparer<string>.Default.GetHashCode(_fromDisplayName);
+            hashCode = (hashCode * -1521134295) + EqualityComparer<string>.Default.GetHashCode(_SMTPUserName);
+            hashCode = (hashCode * -1521134295) + EqualityComparer<string>.Default.GetHashCode(_SMTPPassword);
+            hashCode = (hashCode * -1521134295) + EqualityComparer<string>.Default.GetHashCode(ToAddress);
+            hashCode = (hashCode * -1521134295) + EqualityComparer<string>.Default.GetHashCode(FromAddress);
+            hashCode = (hashCode * -1521134295) + EqualityComparer<string>.Default.GetHashCode(FromDisplayName);
+            hashCode = (hashCode * -1521134295) + EqualityComparer<string>.Default.GetHashCode(SMTPHost);
+            hashCode = (hashCode * -1521134295) + EqualityComparer<int?>.Default.GetHashCode(SMTPPort);
+            hashCode = (hashCode * -1521134295) + SMTPEnableSSL.GetHashCode();
+            hashCode = (hashCode * -1521134295) + PreventDuplicates.GetHashCode();
+            return hashCode;
+        }
     }
 }
