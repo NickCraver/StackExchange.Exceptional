@@ -49,7 +49,8 @@ $projectsToBuild =
     'StackExchange.Exceptional.Shared',
     'StackExchange.Exceptional',
     'StackExchange.Exceptional.AspNetCore',
-    'StackExchange.Exceptional.MySQL'
+    'StackExchange.Exceptional.MySQL',
+    'StackExchange.Exceptional.PostgreSql'
 
 $testsToRun =
 	'StackExchange.Exceptional.Tests',
