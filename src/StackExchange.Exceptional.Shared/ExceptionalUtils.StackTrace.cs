@@ -81,7 +81,6 @@ namespace StackExchange.Exceptional
                 | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace,
                 TimeSpan.FromSeconds(2));
 
-
             /// <summary>
             /// Converts a stack trace to formatted HTML with styling and linkifiation.
             /// </summary>
@@ -201,7 +200,7 @@ namespace StackExchange.Exceptional
                           .Append("</span>");
                     }
                     sb.Append("</span>"); // method-section for table layout
-                    
+
                     if (sourceInfo.Value.HasValue())
                     {
                         sb.Append("<span class=\"stack source-section\">");

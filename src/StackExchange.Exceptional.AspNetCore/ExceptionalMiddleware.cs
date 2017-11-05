@@ -142,7 +142,7 @@ namespace StackExchange.Exceptional
             var match = Regex.Match(context.Request.Path, @"/?(?<resource>[\w\-\.]+)/?$");
             var resource = match.Success ? match.Groups["resource"].Value.ToLower(CultureInfo.InvariantCulture) : string.Empty;
 
-            Func<IEnumerable<Guid>> getFormGuids = () =>
+            IEnumerable<Guid> GetFormGuids()
             {
                 try
                 {
@@ -152,7 +152,7 @@ namespace StackExchange.Exceptional
                 {
                     return Enumerable.Empty<Guid>();
                 }
-            };
+            }
 
             var settings = context.RequestServices.GetRequiredService<IOptions<ExceptionalSettings>>().Value;
             var store = settings.DefaultStore;
@@ -171,13 +171,13 @@ namespace StackExchange.Exceptional
                             await JsonResult(await store.DeleteAllAsync().ConfigureAwait(false)).ConfigureAwait(false);
                             return;
                         case KnownRoutes.DeleteList:
-                            await JsonResult(await store.DeleteAsync(getFormGuids()).ConfigureAwait(false)).ConfigureAwait(false);
+                            await JsonResult(await store.DeleteAsync(GetFormGuids()).ConfigureAwait(false)).ConfigureAwait(false);
                             return;
                         case KnownRoutes.Protect:
                             await JsonResult(await store.ProtectAsync(errorGuid.ToGuid()).ConfigureAwait(false)).ConfigureAwait(false);
                             return;
                         case KnownRoutes.ProtectList:
-                            await JsonResult(await store.ProtectAsync(getFormGuids()).ConfigureAwait(false)).ConfigureAwait(false);
+                            await JsonResult(await store.ProtectAsync(GetFormGuids()).ConfigureAwait(false)).ConfigureAwait(false);
                             return;
                         default:
                             await Content("Invalid POST Request").ConfigureAwait(false);

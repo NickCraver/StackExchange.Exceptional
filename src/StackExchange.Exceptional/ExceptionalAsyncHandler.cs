@@ -46,7 +46,7 @@ namespace StackExchange.Exceptional
             var match = Regex.Match(context.Request.Path, @"/?(?<resource>[\w\-\.]+)/?$");
             var resource = match.Success ? match.Groups["resource"].Value.ToLower(CultureInfo.InvariantCulture) : string.Empty;
 
-            Func<IEnumerable<Guid>> getFormGuids = () =>
+            IEnumerable<Guid> GetFormGuids()
             {
                 try
                 {
@@ -54,7 +54,7 @@ namespace StackExchange.Exceptional
                 }
                 catch { /* fall through */ }
                 return Enumerable.Empty<Guid>();
-            };
+            }
 
             var settings = Exceptional.Settings;
             var store = settings.DefaultStore;
@@ -73,13 +73,13 @@ namespace StackExchange.Exceptional
                             JsonResult(await store.DeleteAllAsync().ConfigureAwait(false));
                             return;
                         case KnownRoutes.DeleteList:
-                            JsonResult(await store.DeleteAsync(getFormGuids()).ConfigureAwait(false));
+                            JsonResult(await store.DeleteAsync(GetFormGuids()).ConfigureAwait(false));
                             return;
                         case KnownRoutes.Protect:
                             JsonResult(await store.ProtectAsync(errorGuid.ToGuid()).ConfigureAwait(false));
                             return;
                         case KnownRoutes.ProtectList:
-                            JsonResult(await store.ProtectAsync(getFormGuids()).ConfigureAwait(false));
+                            JsonResult(await store.ProtectAsync(GetFormGuids()).ConfigureAwait(false));
                             return;
                         default:
                             Content("Invalid POST Request");

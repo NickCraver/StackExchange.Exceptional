@@ -373,12 +373,12 @@ namespace StackExchange.Exceptional
         /// Date this error was deleted (for stores that support deletion and retention, e.g. SQL)
         /// </summary>
         public DateTime? DeletionDate { get; set; }
-        
+
         /// <summary>
         /// The URL host of the request causing this error.
         /// </summary>
         public string Host { get; set; }
-        
+
         /// <summary>
         /// The URL *path* of the request causing this error, e.g. /MyContoller/MyAction
         /// </summary>
@@ -389,12 +389,12 @@ namespace StackExchange.Exceptional
         /// The complete URL of the request causing this error.
         /// </summary>
         public string FullUrl { get; set; }
-        
+
         /// <summary>
         /// The HTTP Method causing this error, e.g. GET or POST.
         /// </summary>
         public string HTTPMethod { get; set; }
-        
+
         /// <summary>
         /// The IPAddress of the request causing this error.
         /// </summary>
