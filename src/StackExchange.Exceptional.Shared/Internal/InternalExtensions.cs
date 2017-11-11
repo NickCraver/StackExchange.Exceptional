@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
@@ -23,6 +24,38 @@ namespace StackExchange.Exceptional.Internal
             var exString = ex.ToString();
             return settings.Ignore.Regexes?.Any(re => re.IsMatch(exString)) == true
                 || settings.Ignore.Types?.Any(type => ex.GetType().IsDescendentOf(type)) == true;
+        }
+
+        /// <summary>
+        /// Gets an <see cref="Error"/> if current settings don't tell us to ignore it.
+        /// </summary>
+        /// <param name="ex">The exception to consider.</param>
+        /// <param name="category">The category of the exception.</param>
+        /// <param name="applicationName">The application name to log under.</param>
+        /// <param name="rollupPerServer">Whether to rollup by server.</param>
+        /// <param name="customData">The custom data, if any, to pass in.</param>
+        /// <param name="settings">The specific settings to use.</param>
+        /// <returns>An error if not ignored, <c>null</c> if ignored.</returns>
+        public static Error GetErrorIfNotIgnored(
+            this Exception ex,
+            ExceptionalSettingsBase settings,
+            string category = null,
+            string applicationName = null,
+            bool rollupPerServer = false,
+            Dictionary<string, string> customData = null)
+        {
+            if (!Statics.IsLoggingEnabled)
+            {
+                return null;
+            }
+
+            // If we should be ignoring this exception, skip it entirely.
+            if (!ex.ShouldBeIgnored(settings))
+            {
+                // Create the error itself, populating CustomData with what was passed-in.
+                return new Error(ex, settings, category, applicationName, rollupPerServer, customData);
+            }
+            return null;
         }
 
         /// <summary>

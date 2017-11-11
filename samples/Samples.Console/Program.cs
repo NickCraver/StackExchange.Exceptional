@@ -13,23 +13,27 @@ namespace Samples.Console
         {
             // Example of code-only setup, alternatively this can be in the App.config
             // RollupPeriod is null so a new file is always generated, for demonstration purposes
-            Exceptional.Configure(new JSONErrorStore(new ErrorStoreSettings
+            Exceptional.Configure(settings =>
             {
-                ApplicationName = "Samples.Console",
-                Path = "Errors",
-                RollupPeriod = null
-            }));
-            // How to do it with normal roll-up
-            //Exceptional.Configure(new JSONErrorStore(path: "~/Errors"));
+                settings.DefaultStore = new JSONErrorStore(new ErrorStoreSettings
+                {
+                    ApplicationName = "Samples.Console",
+                    Path = "Errors",
+                    RollupPeriod = null
+                });
 
-            // Example of a code-only email setup, alternatively this can be in the App.config
-            Exceptional.Settings.Register(new EmailNotifier(new EmailSettings
-            {
-                SMTPHost = "localhost", // Use Papercut here for testing: https://github.com/ChangemakerStudios/Papercut
-                FromAddress = "exceptions@site.com",
-                FromDisplayName = "Bob the Builder",
-                ToAddress = "dont.use@thisadress.com"
-            }));
+                // Example of a code-only email setup, alternatively this can be in the App.config
+                settings.Register(new EmailNotifier(new EmailSettings
+                {
+                    SMTPHost = "localhost", // Use Papercut here for testing: https://github.com/ChangemakerStudios/Papercut
+                    FromAddress = "exceptions@site.com",
+                    FromDisplayName = "Bob the Builder",
+                    ToAddress = "dont.use@thisadress.com"
+                }));
+            });
+
+            // How to do it with normal roll-up
+            //Exceptional.Configure(new ExceptionalSettings() { DefaultStore = new JSONErrorStore("Errors") });
 
             // Optional: for logging all unhandled exceptions
             Exceptional.ObserveAppDomainUnhandledExceptions();

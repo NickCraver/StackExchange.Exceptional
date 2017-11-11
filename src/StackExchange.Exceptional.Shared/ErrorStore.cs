@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading;
 using System.Transactions;
 using System.Threading.Tasks;
+using StackExchange.Exceptional.Internal;
 
 namespace StackExchange.Exceptional
 {
@@ -515,7 +516,7 @@ namespace StackExchange.Exceptional
         {
             try
             {
-                var error = new Error(new Exception("Test Exception"), Exceptional.Settings);
+                var error = new Error(new Exception("Test Exception"), Statics.Settings);
                 LogError(error);
                 await HardDeleteErrorAsync(error.GUID).ConfigureAwait(false);
                 return true;

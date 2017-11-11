@@ -35,29 +35,26 @@ namespace StackExchange.Exceptional
             Dictionary<string, string> customData = null,
             string applicationName = null)
         {
-            if (Exceptional.IsLoggingEnabled)
+            try
             {
-                try
-                {
-                    var settings = Exceptional.Settings;
-                    // If we should be ignoring this exception, skip it entirely.
-                    if (!ex.ShouldBeIgnored(settings))
-                    {
-                        // Create the error itself, populating CustomData with what was passed-in.
-                        var error = new Error(ex, settings, category, applicationName, rollupPerServer, customData);
-                        // Get everything from the HttpContext
-                        error.SetProperties(context);
+                // If we should be ignoring this exception, skip it entirely.
+                // Otherwise create the error itself, populating CustomData with what was passed-in.
+                var error = ex.GetErrorIfNotIgnored(Exceptional.Settings, category, applicationName, rollupPerServer, customData);
 
-                        if (error.LogToStore())
-                        {
-                            return error;
-                        }
+                if (error != null)
+                {
+                    // Get everything from the HttpContext
+                    error.SetProperties(context);
+
+                    if (error.LogToStore())
+                    {
+                        return error;
                     }
                 }
-                catch (Exception e)
-                {
-                    Trace.WriteLine(e);
-                }
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(e);
             }
             return null;
         }
@@ -84,29 +81,26 @@ namespace StackExchange.Exceptional
             Dictionary<string, string> customData = null,
             string applicationName = null)
         {
-            if (Exceptional.IsLoggingEnabled)
+            try
             {
-                try
-                {
-                    var settings = Exceptional.Settings;
-                    // If we should be ignoring this exception, skip it entirely.
-                    if (!ex.ShouldBeIgnored(settings))
-                    {
-                        // Create the error itself, populating CustomData with what was passed-in.
-                        var error = new Error(ex, settings, category, applicationName, rollupPerServer, customData);
-                        // Get everything from the HttpContext
-                        error.SetProperties(context);
+                // If we should be ignoring this exception, skip it entirely.
+                // Otherwise create the error itself, populating CustomData with what was passed-in.
+                var error = ex.GetErrorIfNotIgnored(Exceptional.Settings, category, applicationName, rollupPerServer, customData);
 
-                        if (await error.LogToStoreAsync().ConfigureAwait(false))
-                        {
-                            return error;
-                        }
+                if (error != null)
+                {
+                    // Get everything from the HttpContext
+                    error.SetProperties(context);
+
+                    if (await error.LogToStoreAsync().ConfigureAwait(false))
+                    {
+                        return error;
                     }
                 }
-                catch (Exception e)
-                {
-                    Trace.WriteLine(e);
-                }
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(e);
             }
             return null;
         }

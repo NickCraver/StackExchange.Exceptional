@@ -20,7 +20,7 @@ namespace StackExchange.Exceptional.Tests
     {
         public TestSettings(ErrorStore store)
         {
-            SetDefaultStore(store);
+            DefaultStore = store;
         }
     }
 

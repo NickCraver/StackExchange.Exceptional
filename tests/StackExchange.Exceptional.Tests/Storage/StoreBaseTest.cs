@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using StackExchange.Exceptional.Internal;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -176,7 +177,7 @@ namespace StackExchange.Exceptional.Tests.Storage
         public async Task TestAsync()
         {
             var store = GetStore();
-            Exceptional.Configure(new TestSettings(store));
+            Statics.Settings = new TestSettings(store);
             Assert.True(await store.TestAsync().ConfigureAwait(false));
         }
 

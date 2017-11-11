@@ -5,7 +5,6 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using StackExchange.Exceptional;
-using StackExchange.Exceptional.Stores;
 
 namespace Samples.MVC5
 {
@@ -20,15 +19,16 @@ namespace Samples.MVC5
             // Setup Exceptional:
 
             // Memory example:
-            //Exceptional.Configure(new MemoryErrorStore());
+            //Exceptional.Configure(settings => settings.DefaultStore = new MemoryErrorStore());
             // JSON example
-            //Exceptional.Configure(new JSONErrorStore(path: "~/Errors"));
+            //Exceptional.Configure(settings => settings.DefaultStore = new JSONErrorStore(path: "~/Errors"));
             // SQL Example
-            //Exceptional.Configure(new SQLErrorStore(applicationName: "My Error Log Name", connectionString: "Data Source=.;Initial Catalog=Exceptions;Integrated Security=SSPI;"));
+            //Exceptional.Configure(settings => settings.DefaultStore = new SQLErrorStore(applicationName: "My Error Log Name", connectionString: "Data Source=.;Initial Catalog=Exceptions;Integrated Security=SSPI;"));
 
-            var settings = Exceptional.Settings;
-            // Optionally add custom data to any logged exception (visible on the exception detail page):
-            settings.GetCustomData = (exception, data) =>
+            Exceptional.Configure(settings =>
+            {
+                // Optionally add custom data to any logged exception (visible on the exception detail page):
+                settings.GetCustomData = (exception, data) =>
                 {
                     // exception is the exception thrown
                     // context is the HttpContext of the request (could be null, e.g. background thread exception)
@@ -37,30 +37,31 @@ namespace Samples.MVC5
                     data.Add("User Id", "You could fetch a user/account Id here, etc.");
                     data.Add("Links get linkified", "https://www.google.com");
                 };
-            // Example of how to log command data for anything you want
-            // These display the command and the data key/value pairs in the log
-            settings.ExceptionActions.AddHandler<ExceptionalUtils.Test.RedisException>((e, ex) =>
-            {
-                var cmd = e.AddCommand(new Command("Redis"));
-                foreach (string k in ex.Data.Keys)
+                // Example of how to log command data for anything you want
+                // These display the command and the data key/value pairs in the log
+                settings.ExceptionActions.AddHandler<ExceptionalUtils.Test.RedisException>((e, ex) =>
                 {
-                    var val = ex.Data[k] as string;
-                    if (k == "redis-command") cmd.CommandString = val;
-                    if (k.StartsWith("Redis-")) cmd.AddData(k.Substring("Redis-".Length), val);
-                }
-            });
+                    var cmd = e.AddCommand(new Command("Redis"));
+                    foreach (string k in ex.Data.Keys)
+                    {
+                        var val = ex.Data[k] as string;
+                        if (k == "redis-command") cmd.CommandString = val;
+                        if (k.StartsWith("Redis-")) cmd.AddData(k.Substring("Redis-".Length), val);
+                    }
+                });
 
-            settings.Render.JSIncludes.Add("/Content/errors.js");
-            settings.OnBeforeLog += (sender, args) =>
+                settings.Render.JSIncludes.Add("/Content/errors.js");
+                settings.OnBeforeLog += (sender, args) =>
                 {
                     args.Error.Message += " (suffix from OnBeforeLog handler)";
                     //args.Abort = true; - you could stop the exception from being logged here
                 };
-            settings.OnAfterLog += (sender, args) =>
+                settings.OnAfterLog += (sender, args) =>
                 {
                     Trace.WriteLine("The logged exception GUID was: " + args.Error.GUID.ToString());
                     // optionally var e = args.GetError() to fetch the actual error from the store
                 };
+            });
 
             AreaRegistration.RegisterAllAreas();
 

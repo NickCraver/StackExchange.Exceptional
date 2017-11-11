@@ -9,24 +9,33 @@ namespace StackExchange.Exceptional
     /// </summary>
     public static class Exceptional
     {
+        static Exceptional()
+        {
+            if (Settings == null)
+            {
+                Settings = new ExceptionalSettings();
+            }
+        }
+
+        private static ExceptionalSettings _settings;
         /// <summary>
         /// Settings for context-less logging.
         /// </summary>
-        /// <remarks>
-        /// In ASP.NET (non-Core) this is populated by the ConfigSettings load.
-        /// In ASP.NET Core this is populated by .Configure() in the DI pipeline.
-        /// </remarks>
-        public static ExceptionalSettingsBase Settings { get; private set; } = new ExceptionalSettingsDefault();
+        public static ExceptionalSettings Settings
+        {
+            get => _settings;
+            set => Statics.Settings = _settings = value;
+        }
 
         /// <summary>
         /// Returns whether an error passed in right now would be logged.
         /// </summary>
-        public static bool IsLoggingEnabled { get; private set; } = true;
+        public static bool IsLoggingEnabled => Statics.IsLoggingEnabled;
 
         /// <summary>
         /// Re-enables error logging after a <see cref="DisableLogging"/> call.
         /// </summary>
-        public static void EnableLogging() => IsLoggingEnabled = true;
+        public static void EnableLogging() => Statics.IsLoggingEnabled = true;
 
         /// <summary>
         /// Disables error logging, call <see cref="EnableLogging"/> to re-enable.
@@ -34,22 +43,29 @@ namespace StackExchange.Exceptional
         /// <remarks>
         /// This is useful when an <see cref="AppDomain"/> is being torn down, for example <code>IRegisteredObject.Stop()</code> when a web application is being stopped
         /// </remarks>
-        public static void DisableLogging() => IsLoggingEnabled = false;
+        public static void DisableLogging() => Statics.IsLoggingEnabled = false;
 
         /// <summary>
         /// Saves the given <paramref name="settings"/> as the global <see cref="Settings"/> available for use globally.
         /// These are intended to be used by global/background handlers where normal context access isn't available.
         /// </summary>
         /// <param name="settings">The settings object to set for background settings.</param>
-        public static void Configure(ExceptionalSettingsBase settings) =>
-            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        public static void Configure(ExceptionalSettings settings) =>
+            Statics.Settings = Settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
         /// <summary>
-        /// Sets the default error store to use for logging.
+        /// Configures existing settings (creating them if missing), also making them available for use globally.
         /// </summary>
-        /// <param name="store">The error store used to store, e.g. <code>new SQLErrorStore(myConnectionString)</code></param>
-        public static void Configure(ErrorStore store) =>
-            Settings.SetDefaultStore(store ?? throw new ArgumentNullException(nameof(store)));
+        /// <param name="configSettings">The settings object to set for background settings.</param>
+        public static void Configure(Action<ExceptionalSettings> configSettings)
+        {
+            _ = configSettings ?? throw new ArgumentNullException(nameof(configSettings));
+            if (Settings == null)
+            {
+                Statics.Settings = Settings = new ExceptionalSettings();
+            }
+            configSettings?.Invoke(Settings);
+        }
 
         private static readonly EventHandler<UnobservedTaskExceptionEventArgs> taskHandler = (s, args) =>
         {

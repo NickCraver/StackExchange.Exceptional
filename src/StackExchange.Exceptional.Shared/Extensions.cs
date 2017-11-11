@@ -26,26 +26,20 @@ namespace StackExchange.Exceptional
             Dictionary<string, string> customData = null,
             string applicationName = null)
         {
-            if (Exceptional.IsLoggingEnabled)
+            try
             {
-                try
+                // If we should be ignoring this exception, skip it entirely.
+                // Otherwise create the error itself, populating CustomData with what was passed-in.
+                var error = ex.GetErrorIfNotIgnored(Statics.Settings, category, applicationName, rollupPerServer, customData);
+
+                if (error?.LogToStore() == true)
                 {
-                    var settings = Exceptional.Settings;
-                    // If we should be ignoring this exception, skip it entirely.
-                    if (!ex.ShouldBeIgnored(settings))
-                    {
-                        // Create the error itself, populating CustomData with what was passed-in.
-                        var error = new Error(ex, settings, category, applicationName, rollupPerServer, customData);
-                        if (error.LogToStore())
-                        {
-                            return error;
-                        }
-                    }
+                    return error;
                 }
-                catch (Exception e)
-                {
-                    Trace.WriteLine(e);
-                }
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(e);
             }
             return null;
         }

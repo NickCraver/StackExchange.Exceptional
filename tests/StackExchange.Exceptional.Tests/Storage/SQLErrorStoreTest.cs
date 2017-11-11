@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Runtime.CompilerServices;
 using Dapper;
+using StackExchange.Exceptional.Internal;
 using StackExchange.Exceptional.Stores;
 using Xunit;
 using Xunit.Abstractions;
@@ -28,6 +29,18 @@ namespace StackExchange.Exceptional.Tests.Storage
                 ConnectionString = ConnectionString,
                 ApplicationName = appName
             }, Fixtue.TableName);
+
+        [Fact]
+        public void StoreName()
+        {
+            const string appName = "TestNameBlarghy";
+            var store = new SQLErrorStore("Server=.;Trusted_Connection=True;", appName);
+
+            Assert.Equal(store.ApplicationName, appName);
+            Statics.Settings = new TestSettings(store);
+
+            Assert.Equal(Statics.Settings.DefaultStore.ApplicationName, appName);
+        }
     }
 
     public class SqlFixture : IDisposable

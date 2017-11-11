@@ -29,7 +29,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
             new WebHostBuilder()
                .ConfigureServices(services => services.AddExceptional(s =>
                {
-                   s.SetDefaultStore(new MemoryErrorStore());
+                   s.DefaultStore = new MemoryErrorStore();
                    CurrentSettings = s;
                }))
                .Configure(app =>
