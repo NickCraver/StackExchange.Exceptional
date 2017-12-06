@@ -67,7 +67,7 @@ namespace StackExchange.Exceptional
                 baseException = e.GetBaseException();
 
             GUID = Guid.NewGuid();
-            ApplicationName = applicationName ?? settings.Store?.ApplicationName;
+            ApplicationName = applicationName ?? settings.DefaultStore.ApplicationName ?? settings.Store?.ApplicationName;
             Category = category;
             MachineName = Environment.MachineName;
             Type = baseException.GetType().FullName;
