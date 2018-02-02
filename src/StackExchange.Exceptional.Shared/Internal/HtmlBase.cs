@@ -84,6 +84,11 @@ namespace StackExchange.Exceptional.Internal
         /// <returns>The linified string, or the encoded string if not a safe URL.</returns>
         protected string Linkify(string s, string color = "#3D85B0")
         {
+            if (s.IsNullOrEmpty())
+            {
+                return string.Empty;
+            }
+
             if (Regex.IsMatch(s, "%[A-Z0-9][A-Z0-9]"))
             {
                 s = s.UrlDecode();
