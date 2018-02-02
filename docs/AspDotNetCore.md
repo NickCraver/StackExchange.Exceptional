@@ -14,21 +14,23 @@ Install-Package StackExchange.Exceptional.AspNetCore
 
 #### Configuration
 
-You attach Exceptional by adding it in your `Startup.Configure()` method. A few overloads are available:
+You register Exceptional by adding it in your `Startup.ConfigureServices()` method. A few overloads are available:
+
 ```c#
-public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+public void ConfigureServices(IServiceCollection services)
 {
     // This uses all defaults (e.g. the in-memory error store)
-    app.UseExceptional(settings => 
+    services.AddExceptional(settings =>
     {
-        settings.ApplicationName = "My App!";
+        settings.ApplicationName = "Samples.AspNetCore";
     });
 }
 ```
-...or the other `.UseExceptional()` overloads:
+
+...or the other `.AddExceptional()` overloads:
 ```c#
     // This uses all defaults (e.g. the in-memory error store)
-    app.UseExceptional(Configuration.GetSection("Exceptional"));
+    services.AddExceptional(Configuration.GetSection("Exceptional"));
 ```
 and configure Exceptional in your `Configuration`, e.g. in your `appsettings.json` ([full schema here](https://github.com/NickCraver/StackExchange.Exceptional/blob/master/samples/Samples.AspNetCore/appsettings.json)):
 ```json
@@ -43,12 +45,22 @@ and configure Exceptional in your `Configuration`, e.g. in your `appsettings.jso
 ```
 ...or you can use a combination of the two:
 ```c#
-    app.UseExceptional(Configuration.GetSection("Exceptional"), settings => 
+    services.AddExceptional(Configuration.GetSection("Exceptional"), settings => 
     {
-        settings.UseExceptionalPageOnThrow = env.IsDevelopment();
+        settings.UseExceptionalPageOnThrow = HostingEnvironment.IsDevelopment();
     });
 ```
 Note the `UseExceptionalPageOnThrow` property here. This is the Exceptional alternative to `app.UseDeveloperExceptionPage();` to view exceptions as they happen locally in a useful/familiar format.
+
+#### Middleware 
+
+To add the Exceptional middleware for handling errors, add it to your `Startup.Configure()` method:
+```c#
+public void Configure(IApplicationBuilder app)
+{
+    app.UseExceptional();
+}
+```
 
 #### Routes
 
