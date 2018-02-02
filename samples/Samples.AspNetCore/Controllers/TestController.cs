@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StackExchange.Exceptional;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Samples.AspNetCore.Controllers
@@ -19,18 +18,6 @@ namespace Samples.AspNetCore.Controllers
             ex.Data["Redis-Server"] = "REDIS01";
             ex.Data["Not-Included"] = "This key is skipped, because it's not in the web.config pattern";
             ex.AddLogData("Via Extension", "Some logged data via the .AddLoggedData() method!");
-            throw ex;
-        }
-
-        public ActionResult ThrowNullCustomData()
-        {
-            var ex = new Exception("My exception");
-            
-            ex.Log(HttpContext, customData: new Dictionary<string, string>
-                {
-                    { "MyData", null }
-                });
-
             throw ex;
         }
 
