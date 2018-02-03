@@ -9,9 +9,11 @@ namespace StackExchange.Exceptional
     /// </summary>
     public static class Exceptional
     {
-        static Exceptional()
+        static Exceptional() => EnsureInit();
+
+        private static void EnsureInit()
         {
-            if (Settings == null)
+            if (!(Settings is ExceptionalSettings))
             {
                 Settings = new ExceptionalSettings();
             }
@@ -24,7 +26,7 @@ namespace StackExchange.Exceptional
         public static ExceptionalSettings Settings
         {
             get => _settings;
-            set => Statics.Settings = _settings = value;
+            private set => Statics.Settings = _settings = value;
         }
 
         /// <summary>
@@ -51,7 +53,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         /// <param name="settings">The settings object to set for background settings.</param>
         public static void Configure(ExceptionalSettings settings) =>
-            Statics.Settings = Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
         /// <summary>
         /// Configures existing settings (creating them if missing), also making them available for use globally.
@@ -60,10 +62,7 @@ namespace StackExchange.Exceptional
         public static void Configure(Action<ExceptionalSettings> configSettings)
         {
             _ = configSettings ?? throw new ArgumentNullException(nameof(configSettings));
-            if (Settings == null)
-            {
-                Statics.Settings = Settings = new ExceptionalSettings();
-            }
+            EnsureInit();
             configSettings?.Invoke(Settings);
         }
 

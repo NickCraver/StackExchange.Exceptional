@@ -128,6 +128,11 @@ namespace StackExchange.Exceptional.Internal
         }
 
         /// <summary>
+        /// Internal fetcher for getting the <see cref="DefaultStore"/>, if it's been initialized.
+        /// </summary>
+        internal ErrorStore DefaultStoreIfExists => _defaultStore;
+
+        /// <summary>
         /// The ErrorStore section of the configuration, optional and will default to a MemoryErrorStore if not specified.
         /// </summary>
         public ErrorStoreSettings Store { get; } = new ErrorStoreSettings();
