@@ -29,6 +29,7 @@ namespace StackExchange.Exceptional.Stores
 
         /// <summary>
         /// Creates a new instance of <see cref="SQLErrorStore"/> with the specified connection string.
+        /// The default table name is "Exceptions".
         /// </summary>
         /// <param name="connectionString">The database connection string to use.</param>
         /// <param name="applicationName">The application name to use when logging.</param>
@@ -42,20 +43,14 @@ namespace StackExchange.Exceptional.Stores
 
         /// <summary>
         /// Creates a new instance of <see cref="SQLErrorStore"/> with the given configuration.
+        /// The default table name is "Exceptions".
         /// </summary>
         /// <param name="settings">The <see cref="ErrorStoreSettings"/> for this store.</param>
-        public SQLErrorStore(ErrorStoreSettings settings) : this(settings, "Exceptions") { }
-
-        /// <summary>
-        /// Creates a new instance of <see cref="SQLErrorStore"/> with the given configuration.
-        /// </summary>
-        /// <param name="settings">The <see cref="ErrorStoreSettings"/> for this store.</param>
-        /// <param name="tableName">The table name (optionally including schema), e.g. "dbo.Exceptions" or "mySchema.MyExceptions".</param>
-        public SQLErrorStore(ErrorStoreSettings settings, string tableName) : base(settings)
+        public SQLErrorStore(ErrorStoreSettings settings) : base(settings)
         {
             _displayCount = Math.Min(settings.Size, MaximumDisplayCount);
             _connectionString = settings.ConnectionString;
-            _tableName = tableName;
+            _tableName = settings.TableName ?? "Exceptions";
 
             if (_connectionString.IsNullOrEmpty())
                 throw new ArgumentOutOfRangeException(nameof(settings), "A connection string or connection string name must be specified when using a SQL error store");

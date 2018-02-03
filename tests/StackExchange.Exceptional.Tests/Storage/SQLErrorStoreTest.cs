@@ -27,8 +27,9 @@ namespace StackExchange.Exceptional.Tests.Storage
             new SQLErrorStore(new ErrorStoreSettings
             {
                 ConnectionString = ConnectionString,
-                ApplicationName = appName
-            }, Fixtue.TableName);
+                ApplicationName = appName,
+                TableName = Fixtue.TableName
+            });
 
         [Fact]
         public void StoreName()

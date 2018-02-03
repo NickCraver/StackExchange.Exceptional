@@ -26,8 +26,9 @@ namespace StackExchange.Exceptional.Tests.Storage
             new MySQLErrorStore(new ErrorStoreSettings
             {
                 ConnectionString = ConnectionString,
-                ApplicationName = appName
-            }, Fixtue.TableName);
+                ApplicationName = appName,
+                TableName = Fixtue.TableName
+            });
     }
 
     public class MySqlFixture : IDisposable

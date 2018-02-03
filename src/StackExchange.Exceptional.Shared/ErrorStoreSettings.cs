@@ -36,7 +36,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         public string Path
         {
-            get { return _path; }
+            get => _path;
             set
             {
                 if (value != _path)
@@ -54,13 +54,31 @@ namespace StackExchange.Exceptional
         /// </summary>
         public string ConnectionString
         {
-            get { return _connectionString; }
+            get => _connectionString;
             set
             {
                 if (value != _connectionString)
                 {
                     _connectionString = value;
                     PropertyChanged?.Invoke(this, nameof(ConnectionString));
+                }
+            }
+        }
+
+        private string _tableName;
+        /// <summary>
+        /// For database-based error stores.
+        /// The table name (optionally including schema), e.g. "dbo.Exceptions" or "mySchema.MyExceptions" to use when storing exceptions. If null, the store default will be used.
+        /// </summary>
+        public string TableName
+        {
+            get => _tableName;
+            set
+            {
+                if (value != _tableName)
+                {
+                    _tableName = value;
+                    PropertyChanged?.Invoke(this, nameof(TableName));
                 }
             }
         }
@@ -90,7 +108,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         public TimeSpan? RollupPeriod
         {
-            get { return _rollupPeriod; }
+            get => _rollupPeriod;
             set
             {
                 if (value != _rollupPeriod)
@@ -108,7 +126,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         public int BackupQueueSize
         {
-            get { return _backupQueueSize; }
+            get => _backupQueueSize;
             set
             {
                 if (value != _backupQueueSize)
@@ -125,7 +143,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         public TimeSpan BackupQueueRetryInterval
         {
-            get { return _backupQueueRetryInterval; }
+            get => _backupQueueRetryInterval;
             set
             {
                 if (value != _backupQueueRetryInterval)

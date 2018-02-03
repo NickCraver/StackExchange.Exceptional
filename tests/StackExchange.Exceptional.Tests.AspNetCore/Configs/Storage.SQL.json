@@ -3,7 +3,8 @@
     "Store": {
       "ApplicationName": "Samples (ASP.NET Core SQL)",
       "Type": "SQL",
-      "ConnectionString": "Server=.;Database=Local.Exceptions;Trusted_Connection=True;"
+      "ConnectionString": "Server=.;Database=Local.Exceptions;Trusted_Connection=True;",
+      "TableName": "MyExceptions"
     }
   }
 }
