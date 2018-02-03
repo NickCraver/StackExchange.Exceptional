@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{9D33C0
 		build.ps1 = build.ps1
 		LICENSE-APACHE = LICENSE-APACHE
 		LICENSE-MIT = LICENSE-MIT
+		NuGet.config = NuGet.config
 		Readme.md = Readme.md
 		semver.txt = semver.txt
 	EndProjectSection

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <OutputPath>bin\$(Configuration)\</OutputPath>
-    <xUnitVersion>2.3.0-beta5-build3769</xUnitVersion>
+    <xUnitVersion>2.4.0-beta1-build3919</xUnitVersion>
   </PropertyGroup>
   
   <ItemGroup>

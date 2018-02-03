@@ -14,14 +14,19 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
         [Fact]
         public void AppNameViaConfigure()
         {
+            if (TestConfig.Current.SQLConnectionString.IsNullOrEmpty())
+            {
+                Skip.Inconclusive("SQLConnectionString config is missing, unable to test.");
+            }
+
             const string appName = "AppNameViaConfig";
-            Exceptional.Configure(settings => settings.DefaultStore = new SQLErrorStore("Server=.", appName));
+            Exceptional.Configure(settings => settings.DefaultStore = new SQLErrorStore(TestConfig.Current.SQLConnectionString, appName));
 
             Assert.Equal(Exceptional.Settings.DefaultStore.ApplicationName, appName);
             Assert.Equal(Statics.Settings.DefaultStore.ApplicationName, appName);
 
-            var e = new Exception().LogNoContext();
-            Assert.Equal(appName, e.ApplicationName);
+            var error = new Exception().GetErrorIfNotIgnored(Statics.Settings);
+            Assert.Equal(appName, error.ApplicationName);
         }
     }
 }
