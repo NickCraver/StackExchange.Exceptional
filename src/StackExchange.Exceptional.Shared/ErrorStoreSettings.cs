@@ -10,7 +10,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Application name to log with.
         /// </summary>
-        public string ApplicationName { get; set; } = "My Application";
+        public string ApplicationName { get; set; }
 
         private string _type;
         /// <summary>
