@@ -112,8 +112,7 @@ namespace StackExchange.Exceptional
         /// <returns>Whether <paramref name="obj"/> is equal.</returns>
         public override bool Equals(object obj)
         {
-            var settings = obj as EmailSettings;
-            return settings != null
+            return obj is EmailSettings settings
                    && _fromAddress == settings._fromAddress
                    && _fromDisplayName == settings._fromDisplayName
                    && _SMTPUserName == settings._SMTPUserName
