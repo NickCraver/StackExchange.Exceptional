@@ -2,7 +2,7 @@
   <PropertyGroup>
     <ProjectUISubcaption>N</ProjectUISubcaption>
     <AssemblyName>Samples.Mvc5</AssemblyName>
-    <TargetFramework>net451</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
     <UseIISExpress>true</UseIISExpress>
     <OutputType>Library</OutputType>
     <OutputPath>bin\</OutputPath>

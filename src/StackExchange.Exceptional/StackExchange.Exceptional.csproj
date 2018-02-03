@@ -4,7 +4,7 @@
     <AssemblyName>StackExchange.Exceptional</AssemblyName>
     <Description>.NET Error handler/logger used internally at Stack Overflow. Primarily for logging all unhandled exceptions to SQL, but also supporting JSON and Memory based logging.</Description>
     <PackageTags>SQL JSON Exception Handler Errors Stack Exchange Exceptional</PackageTags>
-    <TargetFrameworks>net451</TargetFrameworks>
+    <TargetFrameworks>net461</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../StackExchange.Exceptional.Shared/StackExchange.Exceptional.Shared.csproj" />
