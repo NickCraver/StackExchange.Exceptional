@@ -5,10 +5,6 @@ param(
     [string] $PullRequestNumber
 )
 
-if ($BuildNumber -and $BuildNumber.Length -lt 5) {
-    $BuildNumber = $BuildNumber.PadLeft(5, "0")
-}
-
 Write-Host "Run Parameters:" -ForegroundColor Cyan
 Write-Host "  CreatePackages: $CreatePackages"
 Write-Host "  RunTests: $RunTests"
