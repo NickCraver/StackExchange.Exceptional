@@ -70,10 +70,10 @@ If you want to customize the views (adding links, etc.) you can add JavaScript f
 Settings.Current.Render.JSIncludes.Add("/Content/errors.js");
 ```
 
-If you want to store some custom key/value style data with an exception, you can set up `ErrorStore.GetCustomData`, for example:
+If you want to store some custom key/value style data with an exception, you can set up `Settings.GetCustomData`, for example:
 
 ```c#
-Settings.Current.GetCustomData = (exception, data) =>
+Exceptional.Settings.GetCustomData = (exception, data) =>
     {
         // exception is the exception thrown
         // context is the HttpContext of the request (could be null, e.g. background thread exception)
