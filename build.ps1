@@ -53,6 +53,10 @@ if ($CreatePackages) {
     Write-Host "Building all packages" -ForegroundColor "Green"
 }
 
+Write-Host "Doube restoring StackExchange.Exceptional.sln due to NuGet/Home #4337"
+dotnet restore ".\StackExchange.Exceptional.sln"
+dotnet restore ".\StackExchange.Exceptional.sln"
+
 foreach ($project in $projectsToBuild) {
     Write-Host "Working on $project`:" -ForegroundColor "Magenta"
 	
