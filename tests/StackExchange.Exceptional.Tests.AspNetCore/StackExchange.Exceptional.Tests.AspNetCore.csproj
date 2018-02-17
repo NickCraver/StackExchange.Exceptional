@@ -1,6 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <ProjectUISubcaption>!</ProjectUISubcaption>
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <AssemblyName>StackExchange.Exceptional.Tests.AspNetCore</AssemblyName>
   </PropertyGroup>
