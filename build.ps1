@@ -8,6 +8,7 @@ param(
 Write-Host "Run Parameters:" -ForegroundColor Cyan
 Write-Host "  CreatePackages: $CreatePackages"
 Write-Host "  RunTests: $RunTests"
+Write-Host "  dotnet --version:" (dotnet --version)
 
 $packageOutputFolder = "$PSScriptRoot\.nupkgs"
 $projectsToBuild =
@@ -62,14 +63,13 @@ foreach ($project in $projectsToBuild) {
 	
 	Push-Location ".\src\$project"
 
-    Write-Host "  Restoring and packing $project..." -ForegroundColor "Magenta"
-    
-    $targets = "Restore"
     if ($CreatePackages) {
-        $targets += ";Pack"
+        Write-Host "  Packing (dotnet pack)..." -ForegroundColor "Magenta"
+        dotnet pack -c Release /p:PackageOutputPath=$packageOutputFolder /p:NoPackageAnalysis=true /p:CI=true
+    } else {
+        Write-Host "  Building (dotnet build)..." -ForegroundColor "Magenta"
+        dotnet build /p:CI=true
     }
-
-	dotnet msbuild "/t:$targets" "/p:Configuration=Release" "/p:PackageOutputPath=$packageOutputFolder" "/p:CI=true"
 
 	Pop-Location
 
