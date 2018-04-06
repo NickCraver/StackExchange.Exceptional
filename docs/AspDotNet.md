@@ -17,7 +17,7 @@ Web.Config example pieces for an IIS 7.5 deployment:
 ```xml
 <configuration>
   <configSections>
-    <section name="Exceptional" type="StackExchange.Exceptional.ConfigSettings, StackExchange.Exceptional"/>
+    <section name="Exceptional" type="StackExchange.Exceptional.Settings, StackExchange.Exceptional"/>
   </configSections>
   <Exceptional applicationName="Core">
     <IgnoreErrors>
