@@ -10,7 +10,7 @@ namespace Samples.Console
     public static class Program
     {
         private static void Main()
-        {
+        {          
             // Example of code-only setup, alternatively this can be in the App.config
             // RollupPeriod is null so a new file is always generated, for demonstration purposes
             Exceptional.Configure(settings =>
@@ -48,6 +48,10 @@ namespace Samples.Console
             }
             catch (Exception ex)
             {
+                ex.AddLogData("Example string", DateTime.UtcNow.ToString())
+                  .AddLogData("User Id", "You could fetch a user/account Id here, etc.")
+                  .AddLogData("Links get linkified", "https://www.google.com");
+
                 // logged, but caught so we don't crash
                 ex.LogNoContext();
             }
@@ -75,6 +79,9 @@ namespace Samples.Console
 
             var last = errors[0];
             WriteLine($"Latest: {last.Message} on {last.CreationDate.ToString()}");
+            foreach (var customData in last.CustomData)
+                WriteLine($"    CustomData: '{customData.Key}': '{customData.Value}'");
+            
         }
 
         private static void PauseForInput()

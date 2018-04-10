@@ -46,7 +46,7 @@ Web.Config example pieces for an IIS 7.5 deployment:
 This is all optional (except `StackExchange.Exceptional.ExceptionalModule` if you want to capture unhandled MVC exceptions automatically), you can setup completely via code as well.  Examples:
 
 ```c#
-StackExchange.Exceptional.ErrorStore.Setup("My Application", new SQLErrorStore(_connectionString));
+Exceptional.Configure(settings => settings.DefaultStore = new SQLErrorStore(applicationName: "My Application", connectionString: _connectionString));
 ```
 
 ...then to log exceptions (context would be null for non-web applications):
@@ -70,17 +70,12 @@ If you want to customize the views (adding links, etc.) you can add JavaScript f
 Settings.Current.Render.JSIncludes.Add("/Content/errors.js");
 ```
 
-If you want to store some custom key/value style data with an exception, you can set up `Settings.GetCustomData`, for example:
+If you want to store some custom key/value style data with an exception, you can use `.AddLogData` extension method, for example:
+
 
 ```c#
-Exceptional.Settings.GetCustomData = (exception, data) =>
-    {
-        // exception is the exception thrown
-        // context is the HttpContext of the request (could be null, e.g. background thread exception)
-        // data is a Dictionary<string, string> to add custom data too
-        data.Add("Example string", DateTime.UtcNow.ToString());
-        data.Add("User Id", "You could fetch a user/account Id here, etc.");
-        data.Add("Links get linkified", "https://www.google.com");
-    };
+exception.AddLogData("Example string", DateTime.UtcNow.ToString())
+         .AddLogData("User Id", "You could fetch a user/account Id here, etc.")
+         .AddLogData("Links get linkified", "https://www.google.com");
 ```
 ...and these pairs will appear on the error detail screen in a "Custom" section.
