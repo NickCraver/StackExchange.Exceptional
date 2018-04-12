@@ -70,12 +70,17 @@ If you want to customize the views (adding links, etc.) you can add JavaScript f
 Settings.Current.Render.JSIncludes.Add("/Content/errors.js");
 ```
 
-If you want to store some custom key/value style data with an exception, you can use `.AddLogData` extension method, for example:
-
+If you want to store some custom key/value style data with an exception, you can set up `Settings.GetCustomData`, for example:
 
 ```c#
-exception.AddLogData("Example string", DateTime.UtcNow.ToString())
-         .AddLogData("User Id", "You could fetch a user/account Id here, etc.")
-         .AddLogData("Links get linkified", "https://www.google.com");
+Exceptional.Settings.GetCustomData = (exception, data) =>
+    {
+        // exception is the exception thrown
+        // context is the HttpContext of the request (could be null, e.g. background thread exception)
+        // data is a Dictionary<string, string> to add custom data too
+        data.Add("Example string", DateTime.UtcNow.ToString());
+        data.Add("User Id", "You could fetch a user/account Id here, etc.");
+        data.Add("Links get linkified", "https://www.google.com");
+    };
 ```
 ...and these pairs will appear on the error detail screen in a "Custom" section.
