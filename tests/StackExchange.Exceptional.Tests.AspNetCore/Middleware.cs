@@ -17,7 +17,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
         [Fact]
         public async Task LogsExceptions()
         {
-            using (var server = GetServer(context => throw new Exception("Log me!")))
+            using (var server = GetServer(_ => throw new Exception("Log me!")))
             {
                 var ex = await Assert.ThrowsAsync<Exception>(async () => await server.CreateClient().GetAsync("").ConfigureAwait(false)).ConfigureAwait(false);
                 Assert.Equal("Log me!", ex.Message);
@@ -42,7 +42,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
                 .Configure(app =>
                 {
                     app.UseExceptional();
-                    app.Run(context => throw new Exception("Log me!"));
+                    app.Run(_ => throw new Exception("Log me!"));
                 });
             using (var server = new TestServer(builder))
             {

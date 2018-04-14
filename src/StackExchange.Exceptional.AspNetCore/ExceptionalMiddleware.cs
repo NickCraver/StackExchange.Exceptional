@@ -25,7 +25,6 @@ namespace StackExchange.Exceptional
         private readonly ILogger _logger;
         private readonly IHostingEnvironment _env;
         private readonly IOptions<ExceptionalSettings> _settings;
-        private static readonly JsonSerializer _serializer = new JsonSerializer();
 
         /// <summary>
         /// Creates a new instance of <see cref="ExceptionalMiddleware"/>

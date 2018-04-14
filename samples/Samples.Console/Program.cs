@@ -10,7 +10,7 @@ namespace Samples.Console
     public static class Program
     {
         private static void Main()
-        {          
+        {
             // Example of code-only setup, alternatively this can be in the App.config
             // RollupPeriod is null so a new file is always generated, for demonstration purposes
             Exceptional.Configure(settings =>
@@ -81,7 +81,6 @@ namespace Samples.Console
             WriteLine($"Latest: {last.Message} on {last.CreationDate.ToString()}");
             foreach (var customData in last.CustomData)
                 WriteLine($"    CustomData: '{customData.Key}': '{customData.Value}'");
-            
         }
 
         private static void PauseForInput()

@@ -6,7 +6,7 @@ namespace StackExchange.Exceptional.Tests
     public class LegacyCompatTest : BaseTest
     {
         public LegacyCompatTest(ITestOutputHelper output) : base(output) { }
-        
+
         [Fact]
         public void SQLSetter()
         {

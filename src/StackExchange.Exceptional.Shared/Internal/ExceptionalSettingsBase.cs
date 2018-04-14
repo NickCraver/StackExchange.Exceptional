@@ -204,7 +204,7 @@ namespace StackExchange.Exceptional.Internal
         /// </summary>
         protected ExceptionalSettingsBase()
         {
-            Store.PropertyChanged += (o, s) => _defaultStore = null;
+            Store.PropertyChanged += (_, __) => _defaultStore = null;
         }
     }
 
