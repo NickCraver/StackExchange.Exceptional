@@ -15,7 +15,7 @@ namespace StackExchange.Exceptional.Internal
 
         protected override void RenderHtml(StringBuilder sb)
         {
-            void RenderVariableTable(string title, NameValueCollection vars)
+            void RenderVariableTable(string title, NameValueCollection vars, bool renderUrls = false)
             {
                 if (vars == null || vars.Count == 0) return;
 
@@ -29,6 +29,8 @@ namespace StackExchange.Exceptional.Internal
                 {
                     sb.AppendFormat("    <table style=\"font-family: Verdana, Tahoma, Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 12px; width: 100%; border-collapse: collapse; border: 0;\">").AppendLine();
                     var i = 0;
+                    string getBackground() => i++ % 2 == 1 ? " style=\"background-color: #F2F2F2;\"" : "";
+
                     foreach (var k in keys)
                     {
                         // If this has no value, skip it
@@ -36,14 +38,20 @@ namespace StackExchange.Exceptional.Internal
                         {
                             continue;
                         }
-                        sb.AppendFormat("      <tr{2}><td style=\"padding: 0.4em; width: 200px;\">{0}</td><td style=\"padding: 0.4em;\">{1}</td></tr>", k, Linkify(vars[k]), i % 2 == 0 ? " style=\"background-color: #F2F2F2;\"" : "").AppendLine();
-                        i++;
+                        sb.AppendFormat("      <tr{2}><td style=\"padding: 0.4em; width: 200px;\">{0}</td><td style=\"padding: 0.4em;\">{1}</td></tr>", k, Linkify(vars[k]), getBackground()).AppendLine();
                     }
-                    if (vars["HTTP_HOST"].HasValue() && vars["URL"].HasValue())
+                    if (renderUrls) // && vars["Request Method"].IsNullOrEmpty()) // told to render and we don't have them elsewhere
                     {
-                        var ssl = vars["HTTP_X_FORWARDED_PROTO"] == "https" || vars["HTTP_X_SSL"].HasValue() || vars["HTTPS"] == "on";
-                        var url = $"http{(ssl ? "s" : "")}://{vars["HTTP_HOST"]}{vars["URL"]}{(vars["QUERY_STRING"].HasValue() ? "?" + vars["QUERY_STRING"] : "")}";
-                        sb.AppendFormat("      <tr><td style=\"padding: 0.4em; width: 200px;\">URL and Query</td><td style=\"padding: 0.4em;\">{0}</td></tr>", vars["REQUEST_METHOD"] == "GET" ? Linkify(url) : url.HtmlEncode()).AppendLine();
+                        var method = error.HTTPMethod;
+                        if (method.HasValue())
+                        {
+                            sb.AppendFormat("        <tr{1}><td style=\"padding: 0.4em; width: 200px;\">Method</td><td style=\"padding: 0.4em;\">{0}</td></tr>", method, getBackground()).AppendLine();
+                            var fullUrl = error.GetFullUrl();
+                            if (fullUrl.HasValue())
+                            {
+                                sb.AppendFormat("      <tr{1}><td style=\"padding: 0.4em; width: 200px;\">URL and Query</td><td style=\"padding: 0.4em;\">{0}</td></tr>", method == "GET" ? Linkify(fullUrl) : fullUrl.HtmlEncode(), getBackground()).AppendLine();
+                            }
+                        }
                     }
                     sb.AppendFormat("    </table>").AppendLine();
                 }
@@ -94,7 +102,7 @@ namespace StackExchange.Exceptional.Internal
                 //      .Append("<br/>").AppendLine();
                 //}
 
-                RenderVariableTable("Server Variables", error.ServerVariables);
+                RenderVariableTable("Server Variables", error.ServerVariables, renderUrls: true);
 
                 if (error.CustomData?.Count > 0)
                 {

@@ -412,6 +412,26 @@ namespace StackExchange.Exceptional
         public override string ToString() => Message;
 
         /// <summary>
+        /// Gets the full URL associated with the request that threw this error.
+        /// </summary>
+        /// <remarks>
+        /// Accounts for HTTPS from load balancers via X-Forwarded-Proto.
+        /// </remarks>
+        /// <returns>The full URL, if it can be determined, an empty string otherwise.</returns>
+        public string GetFullUrl()
+        {
+            if (FullUrl.IsNullOrEmpty())
+            {
+                return string.Empty;
+            }
+            if (RequestHeaders?[KnownHeaders.XForwardedProto]?.StartsWith("https") == true && FullUrl.StartsWith("http://"))
+            {
+                return "https://" + FullUrl.Substring("http://".Length);
+            }
+            return FullUrl;
+        }
+
+        /// <summary>
         /// Create a copy of the error and collections so if it's modified in memory logging is not affected.
         /// </summary>
         /// <returns>A clone of this error.</returns>
@@ -533,6 +553,7 @@ namespace StackExchange.Exceptional
                 WriteName(nameof(StatusCode)).WriteValue(StatusCode);
                 WriteName(nameof(Type)).WriteValue(Type);
                 WriteName("Url").WriteValue(UrlPath); // Legacy
+                WriteName(nameof(FullUrl)).WriteValue(FullUrl);
                 WriteName(nameof(QueryString)).WriteValue(ServerVariables?["QUERY_STRING"]);
                 WriteDictionary(nameof(CustomData), CustomData);
                 if (Commands != null)

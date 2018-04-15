@@ -39,7 +39,7 @@ namespace StackExchange.Exceptional.Pages
         /// <param name="sb">The <see cref="StringBuilder"/> to render to.</param>
         protected override void RenderInnerHtml(StringBuilder sb)
         {
-            void RenderVariableTable(string title, string className, NameValueCollection vars)
+            void RenderVariableTable(string title, string className, NameValueCollection vars, bool renderUrls = false)
             {
                 if (vars == null || vars.Count == 0) return;
 
@@ -71,11 +71,18 @@ namespace StackExchange.Exceptional.Pages
                             (DefaultHttpKeys.Contains(k) ? hiddenRows : sb).AppendFormat("        <tr><td>{0}</td><td>{1}</td></tr>", k, Linkify(vars[k])).AppendLine();
                         }
                     }
-                    if (vars["HTTP_HOST"].HasValue() && vars["URL"].HasValue())
+                    if (renderUrls && vars["Request Method"].IsNullOrEmpty()) // told to render and we don't have them elsewhere
                     {
-                        var ssl = vars["HTTP_X_FORWARDED_PROTO"] == "https" || vars["HTTP_X_SSL"].HasValue() || vars["HTTPS"] == "on";
-                        var url = string.Format("http{3}://{0}{1}{2}", vars["HTTP_HOST"], vars["URL"], vars["QUERY_STRING"].HasValue() ? "?" + vars["QUERY_STRING"] : "", ssl ? "s" : "");
-                        sb.AppendFormat("        <tr><td>URL and Query</td><td>{0}</td></tr>", vars["REQUEST_METHOD"] == "GET" ? Linkify(url) : url.HtmlEncode()).AppendLine();
+                        var method = Error.HTTPMethod;
+                        if (method.HasValue())
+                        {
+                            sb.AppendFormat("        <tr><td>Method</td><td>{0}</td></tr>", method).AppendLine();
+                            var fullUrl = Error.GetFullUrl();
+                            if (fullUrl.HasValue())
+                            {
+                                sb.AppendFormat("        <tr><td>URL and Query</td><td>{0}</td></tr>", method == "GET" ? Linkify(fullUrl) : fullUrl.HtmlEncode()).AppendLine();
+                            }
+                        }
                     }
                     sb.AppendLine("        </tbody>");
                     if (hiddenRows.Length > 0)
@@ -159,7 +166,7 @@ namespace StackExchange.Exceptional.Pages
                         RenderKeyValueTable(cmd.Data);
                     }
                 }
-                RenderVariableTable("Server Variables", "server-variables", Error.ServerVariables);
+                RenderVariableTable("Server Variables", "server-variables", Error.ServerVariables, renderUrls: true);
 
                 if (Error.CustomData?.Count > 0)
                 {

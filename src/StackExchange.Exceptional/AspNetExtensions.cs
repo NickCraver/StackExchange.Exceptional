@@ -105,6 +105,24 @@ namespace StackExchange.Exceptional
             return null;
         }
 
+        private static bool ShouldRecordServerVariable(string name)
+        {
+            // All HTTP_ are duplicates of headers
+            if (name.StartsWith("HTTP_"))
+            {
+                return false;
+            }
+            switch (name)
+            {
+                case "CONTENT_LENGTH":
+                case "REQUEST_METHOD":
+                case "URL":
+                    return false;
+                default:
+                    return true;
+            }
+        }
+
         /// <summary>
         /// Sets Error properties pulled from HttpContext, if present.
         /// </summary>
@@ -129,7 +147,7 @@ namespace StackExchange.Exceptional
 
             var request = context.Request;
 
-            NameValueCollection TryGetCollection(Func<HttpRequest, NameValueCollection> getter)
+            NameValueCollection TryGetCollection(Func<HttpRequest, NameValueCollection> getter, Func<string, bool> shouldRecord = null)
             {
                 try
                 {
@@ -137,17 +155,20 @@ namespace StackExchange.Exceptional
                     var copy = new NameValueCollection();
                     foreach (var key in original.AllKeys)
                     {
-                        try
+                        if (shouldRecord?.Invoke(key) ?? true)
                         {
-                            foreach (var value in original.GetValues(key))
+                            try
                             {
-                                copy.Add(key, value);
+                                foreach (var value in original.GetValues(key))
+                                {
+                                    copy.Add(key, value);
+                                }
                             }
-                        }
-                        catch (Exception e)
-                        {
-                            Trace.WriteLine(string.Format("Error getting collection value [{0}]: {1}", key, e.Message));
-                            copy.Add(key, "[Error getting value: " + e.Message + "]");
+                            catch (Exception e)
+                            {
+                                Trace.WriteLine(string.Format("Error getting collection value [{0}]: {1}", key, e.Message));
+                                copy.Add(key, "[Error getting value: " + e.Message + "]");
+                            }
                         }
                     }
                     return copy;
@@ -181,7 +202,7 @@ namespace StackExchange.Exceptional
                 error.IPAddress = request.ServerVariables?.GetRemoteIP();
             }
 
-            error.ServerVariables = TryGetCollection(r => r.ServerVariables);
+            error.ServerVariables = TryGetCollection(r => r.ServerVariables, ShouldRecordServerVariable);
             error.QueryString = TryGetCollection(r => r.QueryString);
             error.Form = TryGetCollection(r => r.Form);
 
