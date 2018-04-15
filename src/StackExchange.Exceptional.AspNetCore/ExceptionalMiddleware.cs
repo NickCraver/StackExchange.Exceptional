@@ -130,8 +130,7 @@ namespace StackExchange.Exceptional
             Task Page(WebPage page) => Content(page.Render());
             Task Resource(Resources.ResourceCache cache)
             {
-                context.Response.Headers["Cache-Control"] = "private";
-                context.Response.Headers["Cache-Control"] = "max-age=86400";
+                context.Response.Headers["Cache-Control"] = "private, max-age=86400";
                 return Content(cache.Content, cache.MimeType);
             }
             string TrimEnd(string s, string value) => s.EndsWith(value) ? s.Remove(s.LastIndexOf(value, StringComparison.Ordinal)) : s;
