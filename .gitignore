@@ -12,6 +12,7 @@
 .vs/
 .vscode/
 **/Properties/launchSettings.json
+!samples/Samples.MVC5/Properties/launchSettings.json
 .idea/
 
 # Test Files
