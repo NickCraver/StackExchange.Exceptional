@@ -35,5 +35,5 @@
   <ItemGroup>
     <Compile Update="Global.asax.cs" DependentUpon="Global.asax" />
   </ItemGroup>
-  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
 </Project>
