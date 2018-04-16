@@ -134,6 +134,8 @@ namespace StackExchange.Exceptional
             public SettingsCollection<LogFilter> FormFilters => this["Form"] as SettingsCollection<LogFilter>;
             [ConfigurationProperty("Cookies")]
             public SettingsCollection<LogFilter> CookieFilters => this["Cookies"] as SettingsCollection<LogFilter>;
+            [ConfigurationProperty("Headers")]
+            public SettingsCollection<LogFilter> HeaderFilters => this["Headers"] as SettingsCollection<LogFilter>;
 
             internal void Populate(ExceptionalSettings settings)
             {
@@ -145,6 +147,10 @@ namespace StackExchange.Exceptional
                 foreach (LogFilter c in CookieFilters)
                 {
                     s.Cookie[c.Name] = c.ReplaceWith;
+                }
+                foreach (LogFilter h in HeaderFilters)
+                {
+                    s.Header[h.Name] = h.ReplaceWith;
                 }
             }
 
