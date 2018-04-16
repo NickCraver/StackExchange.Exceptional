@@ -1,5 +1,6 @@
 ﻿using StackExchange.Exceptional.Internal;
 using System;
+using System.Reflection;
 using System.Text;
 
 namespace StackExchange.Exceptional.Pages
@@ -126,7 +127,7 @@ namespace StackExchange.Exceptional.Pages
               .AppendLine("      <div class=\"bottom\"></div>")
               .AppendLine("    </div>")
               .AppendLine("    <footer>")
-              .Append("      <div class=\"version-info\">Exceptional ").Append(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version)
+              .Append("      <div class=\"version-info\">Exceptional ").Append(typeof(Error).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion)
               .Append("<br/>")
               .AppendHtmlEncode(Store.Name).AppendLine("</div>")
               .Append("      <div class=\"server-time\">Server time is ").Append(DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")).AppendLine("</div>")
