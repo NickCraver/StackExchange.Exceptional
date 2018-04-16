@@ -108,7 +108,7 @@ namespace StackExchange.Exceptional
         private static bool ShouldRecordServerVariable(string name)
         {
             // All HTTP_ are duplicates of headers
-            if (name.StartsWith("HTTP_"))
+            if (name?.StartsWith("HTTP_") == true)
             {
                 return false;
             }
