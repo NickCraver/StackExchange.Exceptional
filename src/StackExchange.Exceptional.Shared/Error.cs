@@ -156,12 +156,6 @@ namespace StackExchange.Exceptional
                     Trace.WriteLine(ehe);
                 }
             }
-
-            // Historical special case
-            if (exception.Data?.Contains("SQL") == true)
-            {
-                AddCommand(new Command("SQL Server Query", exception.Data["SQL"] as string));
-            }
         }
 
         /// <summary>
