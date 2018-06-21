@@ -1,4 +1,6 @@
-﻿using StackExchange.Exceptional;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using StackExchange.Exceptional;
 using System;
 
 namespace Microsoft.AspNetCore.Builder
@@ -16,6 +18,10 @@ namespace Microsoft.AspNetCore.Builder
         public static IApplicationBuilder UseExceptional(this IApplicationBuilder builder)
         {
             _ = builder ?? throw new ArgumentNullException(nameof(builder));
+
+            var loggerFactory = builder.ApplicationServices.GetRequiredService<ILoggerFactory>();
+            loggerFactory.AddProvider(builder.ApplicationServices.GetRequiredService<ExceptionalLoggerProvider>());
+
             return builder.UseMiddleware<ExceptionalMiddleware>();
         }
     }
