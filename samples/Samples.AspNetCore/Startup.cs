@@ -22,8 +22,8 @@ namespace Samples.AspNetCore
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            // (Optional): If you want ILogger calls that log an exception to have request details
-            // Then it needs access to the HttpContext statically, this registers that ability.
+            // (Optional): If you want ILogger calls that log an exception to have request details,
+            // then it needs access to the HttpContext statically, this registers that ability.
             // If you're using Identity or ApplicationInsights, this is already registered.
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             // Make IOptions<ExceptionalSettings> available for injection everywhere
