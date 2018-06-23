@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using StackExchange.Exceptional;
 using System;
 using System.Threading.Tasks;
@@ -7,6 +8,17 @@ namespace Samples.AspNetCore.Controllers
 {
     public class TestController : Controller
     {
+        private readonly ILogger<TestController> _logger;
+
+        public TestController(ILogger<TestController> logger) => _logger = logger;
+
+        public ActionResult Logger()
+        {
+            var ex = new Exception("Test Exception for ILogger goodness.");
+            _logger.LogError(ex, ex.Message);
+            return Content("Check the log!");
+        }
+
         public async Task<ActionResult> Throw()
         {
             await ExceptionalUtils.Test.GetRedisException().LogAsync(ControllerContext.HttpContext).ConfigureAwait(false);
