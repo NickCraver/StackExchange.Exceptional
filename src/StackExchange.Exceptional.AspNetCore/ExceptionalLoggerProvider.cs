@@ -1,4 +1,4 @@
-
+﻿
 using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace StackExchange.Exceptional
 {
-    class ExceptionalLoggerProvider : ILoggerProvider
+    internal class ExceptionalLoggerProvider : ILoggerProvider
     {
         private readonly IOptions<ExceptionalSettings> _settings;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -20,8 +20,6 @@ namespace StackExchange.Exceptional
         ILogger ILoggerProvider.CreateLogger(string categoryName)
             => new ExceptionalLogger(categoryName, _settings, _httpContextAccessor);
 
-        void IDisposable.Dispose()
-        {
-        }
+        void IDisposable.Dispose() { }
     }
 }
