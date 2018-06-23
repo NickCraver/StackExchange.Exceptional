@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using StackExchange.Exceptional;
 using System;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -38,8 +36,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // When done configuring, set the background settings object for non-context logging.
             services.Configure<ExceptionalSettings>(Exceptional.Configure);
 
-            // setup for ILogger & co
-            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            // Setup for ILogger
             services.AddSingleton<ExceptionalLoggerProvider>();
 
             return services;
