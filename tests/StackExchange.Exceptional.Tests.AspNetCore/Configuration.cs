@@ -57,6 +57,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
             Assert.Equal("*********", settings.LogFilters.Form["password"]);
             Assert.Single(settings.LogFilters.Header);
             Assert.Equal("*********", settings.LogFilters.Header["Accept-Language"]);
+            Assert.Equal("*********", settings.LogFilters.Header["ACCEPT-language"]);
 
             // Email
             Assert.NotNull(settings.Email);
