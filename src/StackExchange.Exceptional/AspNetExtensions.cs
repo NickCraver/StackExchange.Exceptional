@@ -54,6 +54,7 @@ namespace StackExchange.Exceptional
             }
             catch (Exception e)
             {
+                Exceptional.Settings.OnLogFailure?.Invoke(e);
                 Trace.WriteLine(e);
             }
             return null;
@@ -100,6 +101,7 @@ namespace StackExchange.Exceptional
             }
             catch (Exception e)
             {
+                Exceptional.Settings.OnLogFailure?.Invoke(e);
                 Trace.WriteLine(e);
             }
             return null;

@@ -22,6 +22,11 @@ namespace StackExchange.Exceptional.Internal
         /// </summary>
         public event EventHandler<ErrorAfterLogEventArgs> OnAfterLog;
 
+        /// <summary>
+        /// Action to run when we failed to log an exception to the underlying store.
+        /// </summary>
+        public Action<Exception> OnLogFailure;
+
         internal bool BeforeLog(Error error, ErrorStore store)
         {
             if (OnBeforeLog != null)
