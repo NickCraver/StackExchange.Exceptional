@@ -23,7 +23,7 @@ namespace Samples.AspNetCore
             // Make IOptions<ExceptionalSettings> available for injection everywhere
             services.AddExceptional(Configuration.GetSection("Exceptional"), settings =>
             {
-                //settings.ApplicationName = "Samples.AspNetCore";
+                //settings.DefaultStore.ApplicationName = "Samples.AspNetCore";
                 settings.UseExceptionalPageOnThrow = HostingEnvironment.IsDevelopment();
             });
         }
