@@ -84,3 +84,11 @@ Exceptional.Settings.GetCustomData = (exception, data) =>
     };
 ```
 ...and these pairs will appear on the error detail screen in a "Custom" section.
+
+#### Routes
+
+For convenience, there is an easy to add route handler to render your errors. This way you can lock down the route using your current security models. The route iself is simple, in any controller (probably an admin or localhost controller):
+
+```c#
+public Task Exceptions() => ExceptionalModule.HandleRequestAsync(System.Web.HttpContext.Current);
+```
