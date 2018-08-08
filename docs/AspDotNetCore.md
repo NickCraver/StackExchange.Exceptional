@@ -62,6 +62,8 @@ public void Configure(IApplicationBuilder app)
 }
 ```
 
+Note that you should call this before anything you want handled, as exceptions will "bubble up" to this point. For example, you almost certainly want this called **before** `app.UseMvc();`, so that any errors MVC (or your code running inside it) throws are handled.
+
 #### Routes
 
 For convenience, there is an easy to add route handler to render your errors. This way you can lock down the route using your current security models. The route iself is simple, in any controller (probably an admin or localhost controller):
