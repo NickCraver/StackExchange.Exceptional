@@ -15,7 +15,7 @@ It also supports JSON and memory error stores, filtering of exceptions before lo
   - [Getting started with .NET (non-Core) for a console app]({{ site.baseurl }}/ConsoleDotNet)
 
 #### Details
-While having some features centered around logging/showing exceptions from web applications, **it can be used with either web or console applications**. `HttpContext` is optional when logging exceptions. 
+While having some features centered around logging/showing exceptions from web applications, **it can be used with either web or console applications**. `HttpContext` is optional when logging exceptions.
 An example use of this at Stack Exchange is windows services logging to SQL and viewed elsewhere in a central dashboard called [Opserver](https://github.com/opserver/Opserver).
 
 This project was inspired by [ELMAH](https://code.google.com/p/elmah/), but it didn't suit our particular needs for very, very high volume error logging when a network-level event occurs.
@@ -33,8 +33,11 @@ Here are some examples of what Exceptional looks like.
 
 Error listng:
 ![Error list]({{ site.baseurl }}/images/ErrorList.png)
+
 Error Detail:
 ![Error list]({{ site.baseurl }}/images/ErrorDetail.png)
+
+You can quickly add these routes to ([ASP.NET (non-Core)]({{ site.baseurl }}/AspDotNet#routes) or [ASP.NET Core]({{ site.baseurl }}/AspDotNetCore#routes))
 
 
 #### License
