@@ -37,7 +37,7 @@ Error listng:
 Error Detail:
 ![Error list]({{ site.baseurl }}/images/ErrorDetail.png)
 
-You can quickly add these routes to ([ASP.NET (non-Core)]({{ site.baseurl }}/AspDotNet#routes) or [ASP.NET Core]({{ site.baseurl }}/AspDotNetCore#routes))
+You can quickly add these routes to [ASP.NET (non-Core)]({{ site.baseurl }}/AspDotNet#routes) or [ASP.NET Core]({{ site.baseurl }}/AspDotNetCore#routes).
 
 
 #### License
