@@ -21,6 +21,10 @@ namespace StackExchange.Exceptional.Internal
         /// <returns>Whether this exception should be ignored.</returns>
         public static bool ShouldBeIgnored(this Exception ex, ExceptionalSettingsBase settings)
         {
+            if (ex == null)
+            {
+                return true;
+            }
             var exString = ex.ToString();
             return settings.Ignore.Regexes?.Any(re => re.IsMatch(exString)) == true
                 || settings.Ignore.Types?.Any(type => ex.GetType().IsDescendentOf(type)) == true;

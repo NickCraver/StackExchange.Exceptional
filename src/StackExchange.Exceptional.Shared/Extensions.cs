@@ -39,7 +39,7 @@ namespace StackExchange.Exceptional
             }
             catch (Exception e)
             {
-                Statics.Settings.OnLogFailure?.Invoke(e);
+                Statics.Settings?.OnLogFailure?.Invoke(e);
                 Trace.WriteLine(e);
             }
             return null;

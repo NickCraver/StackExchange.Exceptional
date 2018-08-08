@@ -40,9 +40,10 @@ namespace StackExchange.Exceptional
         {
             if (Statics.IsLoggingEnabled)
             {
+                ExceptionalSettings settings = null;
                 try
                 {
-                    var settings = context.RequestServices.GetRequiredService<IOptions<ExceptionalSettings>>().Value;
+                    settings = context.RequestServices.GetRequiredService<IOptions<ExceptionalSettings>>().Value;
                     // If we should be ignoring this exception, skip it entirely.
                     // Otherwise create the error itself, populating CustomData with what was passed-in.
                     var error = ex.GetErrorIfNotIgnored(settings, category, applicationName, rollupPerServer, customData);
@@ -60,7 +61,7 @@ namespace StackExchange.Exceptional
                 }
                 catch (Exception e)
                 {
-                    Exceptional.Settings.OnLogFailure?.Invoke(e);
+                    settings?.OnLogFailure?.Invoke(e);
                     Trace.WriteLine(e);
                 }
             }
@@ -91,9 +92,10 @@ namespace StackExchange.Exceptional
         {
             if (Statics.IsLoggingEnabled)
             {
+                ExceptionalSettings settings = null;
                 try
                 {
-                    var settings = context.RequestServices.GetRequiredService<IOptions<ExceptionalSettings>>().Value;
+                    settings = context.RequestServices.GetRequiredService<IOptions<ExceptionalSettings>>().Value;
                     // If we should be ignoring this exception, skip it entirely.
                     // Otherwise create the error itself, populating CustomData with what was passed-in.
                     var error = ex.GetErrorIfNotIgnored(settings, category, applicationName, rollupPerServer, customData);
@@ -111,7 +113,7 @@ namespace StackExchange.Exceptional
                 }
                 catch (Exception e)
                 {
-                    Exceptional.Settings.OnLogFailure?.Invoke(e);
+                    settings?.OnLogFailure?.Invoke(e);
                     Trace.WriteLine(e);
                 }
             }
