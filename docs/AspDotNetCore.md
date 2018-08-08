@@ -36,8 +36,8 @@ and configure Exceptional in your `Configuration`, e.g. in your `appsettings.jso
 ```json
 {
   "Exceptional": {
-    "ApplicationName": "Samples (ASP.NET Core)",
     "ErrorStore": {
+      "ApplicationName": "Samples (ASP.NET Core)",
       "Type": "SQL",
       "ConnectionString": "Server=.;Database=Local.Exceptions;Trusted_Connection=True;"
     }
@@ -45,14 +45,14 @@ and configure Exceptional in your `Configuration`, e.g. in your `appsettings.jso
 ```
 ...or you can use a combination of the two:
 ```c#
-    services.AddExceptional(Configuration.GetSection("Exceptional"), settings => 
+    services.AddExceptional(Configuration.GetSection("Exceptional"), settings =>
     {
         settings.UseExceptionalPageOnThrow = HostingEnvironment.IsDevelopment();
     });
 ```
 Note the `UseExceptionalPageOnThrow` property here. This is the Exceptional alternative to `app.UseDeveloperExceptionPage();` to view exceptions as they happen locally in a useful/familiar format.
 
-#### Middleware 
+#### Middleware
 
 To add the Exceptional middleware for handling errors, add it to your `Startup.Configure()` method:
 ```c#
