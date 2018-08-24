@@ -36,7 +36,7 @@ and configure Exceptional in your `Configuration`, e.g. in your `appsettings.jso
 ```json
 {
   "Exceptional": {
-    "ErrorStore": {
+    "Store": {
       "ApplicationName": "Samples (ASP.NET Core)",
       "Type": "SQL",
       "ConnectionString": "Server=.;Database=Local.Exceptions;Trusted_Connection=True;"
