@@ -38,6 +38,8 @@ namespace StackExchange.Exceptional
             Dictionary<string, string> customData = null,
             string applicationName = null)
         {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
             if (Statics.IsLoggingEnabled)
             {
                 ExceptionalSettings settings = null;
@@ -90,6 +92,8 @@ namespace StackExchange.Exceptional
             Dictionary<string, string> customData = null,
             string applicationName = null)
         {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
             if (Statics.IsLoggingEnabled)
             {
                 ExceptionalSettings settings = null;
@@ -128,7 +132,7 @@ namespace StackExchange.Exceptional
         /// <returns>The passed-in <see cref="Error"/> for chaining.</returns>
         private static void SetProperties(this Error error, HttpContext context)
         {
-            if (error == null || context == null)
+            if (error == null)
             {
                 return;
             }
