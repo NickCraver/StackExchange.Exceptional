@@ -142,7 +142,7 @@ namespace StackExchange.Exceptional
             {
                 error.StatusCode = httpException.GetHttpCode();
             }
-            if (context == null || context.Handler == null)
+            if (context == null)
             {
                 return error;
             }
