@@ -118,9 +118,7 @@ namespace StackExchange.Exceptional
                         default:
                             context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
                             context.Response.Cache.SetNoStore();
-
-                            bool isUri = Uri.TryCreate(Url, UriKind.RelativeOrAbsolute, out var urlResult);
-                            string actualUrl = (isUri && urlResult.IsAbsoluteUri) ? urlResult.AbsolutePath : Url;
+                            string actualUrl = Uri.TryCreate(Url, UriKind.RelativeOrAbsolute, out var urlResult) && urlResult.IsAbsoluteUri ? urlResult.AbsolutePath : Url;
                             Page(new ErrorListPage(store, settings, actualUrl, await store.GetAllAsync().ConfigureAwait(false)));
                             return;
                     }
