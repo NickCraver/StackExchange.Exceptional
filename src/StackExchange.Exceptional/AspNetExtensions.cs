@@ -105,7 +105,6 @@ namespace StackExchange.Exceptional
 
         private static async Task<Error> LogAsyncCore(Error error)
         {
-
             if (await error.LogToStoreAsync().ConfigureAwait(false))
             {
                 return error;
