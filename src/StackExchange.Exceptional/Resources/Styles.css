@@ -129,6 +129,7 @@ p { margin: 0; padding: 0; margin-bottom:0.5em; }
     padding: 1em;
     overflow: scroll;
     font: Consolas, monospace;
+    white-space: pre-wrap;
 }
 .sql-detail { background-color: #eee; padding: 8px; }
 .custom-error-label { color: maroon; font-weight: bold; padding-left: 4px; }
