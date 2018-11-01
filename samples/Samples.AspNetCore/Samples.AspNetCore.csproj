@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.5" />
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.AspNetCore\StackExchange.Exceptional.AspNetCore.csproj" />
   </ItemGroup>
 </Project>
