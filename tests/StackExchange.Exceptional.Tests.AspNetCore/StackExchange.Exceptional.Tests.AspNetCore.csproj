@@ -7,9 +7,6 @@
     <Content Include="Configs\*.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Configs\Storage.MongoDB.json" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\StackExchange.Exceptional.Tests\StackExchange.Exceptional.Tests.csproj" />
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.AspNetCore\StackExchange.Exceptional.AspNetCore.csproj" />
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.MySQL\StackExchange.Exceptional.MySQL.csproj" />
