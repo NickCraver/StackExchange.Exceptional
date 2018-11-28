@@ -117,7 +117,7 @@ namespace StackExchange.Exceptional
             return Task.FromResult<Error>(null);
         }
 
-        public static async Task<Error> LogAsyncCore(Error error)
+        private static async Task<Error> LogAsyncCore(Error error)
         {
             if (await error.LogToStoreAsync().ConfigureAwait(false))
             {
