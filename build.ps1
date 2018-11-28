@@ -16,7 +16,8 @@ $projectsToBuild =
     'StackExchange.Exceptional',
     'StackExchange.Exceptional.AspNetCore',
     'StackExchange.Exceptional.MySQL',
-    'StackExchange.Exceptional.PostgreSql'
+    'StackExchange.Exceptional.PostgreSql',
+    'StackExchange.Exceptional.MongoDB'
 
 $testsToRun =
 	'StackExchange.Exceptional.Tests',
