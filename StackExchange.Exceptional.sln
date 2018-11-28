@@ -54,6 +54,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackExchange.Exceptional.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackExchange.Exceptional.PostgreSql", "src\StackExchange.Exceptional.PostgreSql\StackExchange.Exceptional.PostgreSql.csproj", "{0A412433-C2CE-4EBE-BB5A-C3E48983E941}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackExchange.Exceptional.MongoDB", "src\StackExchange.Exceptional.MongoDB\StackExchange.Exceptional.MongoDB.csproj", "{8CFA59A5-5180-4466-A32E-507F3D541163}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -100,6 +102,10 @@ Global
 		{0A412433-C2CE-4EBE-BB5A-C3E48983E941}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A412433-C2CE-4EBE-BB5A-C3E48983E941}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A412433-C2CE-4EBE-BB5A-C3E48983E941}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CFA59A5-5180-4466-A32E-507F3D541163}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CFA59A5-5180-4466-A32E-507F3D541163}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CFA59A5-5180-4466-A32E-507F3D541163}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CFA59A5-5180-4466-A32E-507F3D541163}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -115,6 +121,7 @@ Global
 		{30BDD61C-A94B-4558-BB58-E9EEC0B8B845} = {7D435EF2-8616-460D-82DB-EF4D74EEC459}
 		{8CEB884A-A9A6-4974-AD2C-576AD7785474} = {7D435EF2-8616-460D-82DB-EF4D74EEC459}
 		{0A412433-C2CE-4EBE-BB5A-C3E48983E941} = {8B91532F-A112-4F73-80BD-A95B7359BBC3}
+		{8CFA59A5-5180-4466-A32E-507F3D541163} = {8B91532F-A112-4F73-80BD-A95B7359BBC3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7F066A86-14D8-4A2C-848A-D4371BB704FA}

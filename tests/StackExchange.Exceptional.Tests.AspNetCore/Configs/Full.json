@@ -59,5 +59,11 @@
     //   "Type": "MySQL",
     //   "ConnectionString": "Server=.;Database=Exceptions;Username=Exceptions;Pwd=myPassword!"
     // }
+
+    // "Store": {
+    //   "ApplicationName": "Samples (ASP.NET Core)",
+    //   "Type": "MongoDB",
+    //   "ConnectionString": "mongodb://localhost/test"
+    // }
   }
 }
