@@ -27,10 +27,13 @@ environment:
   MYSQL_ENV_MYSQL_PASSWORD: Password12!
   MYSQL_ENV_MYSQL_DATABASE: test
   MySQLConnectionString: server=localhost;uid=root;pwd=Password12!;database=test;Allow User Variables=true
+  # MongoDB
+  MongoDBConnectionString: mongodb://localhost/test
 services:
   - mssql2016
   - mysql
   - postgresql
+  - mongodb
 
 nuget:
   disable_publish_on_pr: true

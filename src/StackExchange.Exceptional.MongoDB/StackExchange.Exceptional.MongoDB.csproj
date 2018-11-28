@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>StackExchange.Exceptional.MongoDB</AssemblyName>
+    <Description>MongoDB storage provider for StackExchange.Exceptional</Description>
+    <PackageTags>NoSQL MongoDB Exception Handler Errors Stack Exchange Exceptional</PackageTags>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StackExchange.Exceptional.Shared\StackExchange.Exceptional.Shared.csproj" />
+    <PackageReference Include="MongoDB.Driver" Version="2.7.2" />
+  </ItemGroup>
+</Project>

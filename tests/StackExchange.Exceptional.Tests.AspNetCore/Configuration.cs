@@ -177,5 +177,31 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
             var sqlStore = settings.DefaultStore as PostgreSqlErrorStore;
             Assert.Equal("Samples (ASP.NET Core PostgreSql)", sqlStore.ApplicationName);
         }
+
+        [Fact]
+        public void MongoDBStorage()
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile(@"Configs\Storage.MongoDB.json")
+                .Build();
+
+            Assert.NotNull(config);
+            var exceptionalSection = config.GetSection("Exceptional");
+            Assert.NotNull(exceptionalSection);
+
+            var settings = new ExceptionalSettings();
+            exceptionalSection.Bind(settings);
+
+            // Store
+            Assert.NotNull(settings.Store);
+            Assert.Equal("Samples (ASP.NET Core MongoDB)", settings.Store.ApplicationName);
+            Assert.Equal("MongoDB", settings.Store.Type);
+            Assert.Equal("mongodb://localhost/test", settings.Store.ConnectionString);
+
+            Assert.IsType<MongoDBErrorStore>(settings.DefaultStore);
+            var store = settings.DefaultStore as MongoDBErrorStore;
+            Assert.Equal("Samples (ASP.NET Core MongoDB)", store.ApplicationName);
+        }
     }
 }
