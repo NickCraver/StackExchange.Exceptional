@@ -87,7 +87,6 @@ namespace StackExchange.Exceptional.Stores
         protected override async Task<bool> ProtectErrorAsync(Guid guid)
         {
             var c = GetConnection();
-            var builders = Builders<Error>.Filter;
             var filter = Builders<Error>.Filter.Eq(x => x.GUID, guid);
             var update = Builders<Error>.Update.Set(x => x.DeletionDate, null).Set(x => x.IsProtected, true);
             var res = await c.UpdateOneAsync(filter, update).ConfigureAwait(false);
@@ -102,7 +101,6 @@ namespace StackExchange.Exceptional.Stores
         protected override async Task<bool> ProtectErrorsAsync(IEnumerable<Guid> guids)
         {
             var c = GetConnection();
-            var builders = Builders<Error>.Filter;
             var filter = Builders<Error>.Filter.In(x => x.GUID, guids);
             var update = Builders<Error>.Update.Set(x => x.DeletionDate, null).Set(x => x.IsProtected, true);
             var res = await c.UpdateManyAsync(filter, update).ConfigureAwait(false);
@@ -117,7 +115,6 @@ namespace StackExchange.Exceptional.Stores
         protected override async Task<bool> DeleteErrorAsync(Guid guid)
         {
             var c = GetConnection();
-            var builders = Builders<Error>.Filter;
             var filter = Builders<Error>.Filter.Eq(x => x.GUID, guid) & Builders<Error>.Filter.Eq(x => x.DeletionDate, null);
             var update = Builders<Error>.Update.Set(x => x.DeletionDate, DateTime.UtcNow);
             var res = await c.UpdateOneAsync(filter, update).ConfigureAwait(false);
@@ -132,7 +129,6 @@ namespace StackExchange.Exceptional.Stores
         protected override async Task<bool> DeleteErrorsAsync(IEnumerable<Guid> guids)
         {
             var c = GetConnection();
-            var builders = Builders<Error>.Filter;
             var filter = Builders<Error>.Filter.In(x => x.GUID, guids) & Builders<Error>.Filter.Eq(x => x.DeletionDate, null);
             var update = Builders<Error>.Update.Set(x => x.DeletionDate, DateTime.UtcNow);
             var res = await c.UpdateManyAsync(filter, update).ConfigureAwait(false);
@@ -148,7 +144,6 @@ namespace StackExchange.Exceptional.Stores
         protected override async Task<bool> HardDeleteErrorAsync(Guid guid)
         {
             var c = GetConnection();
-            var builders = Builders<Error>.Filter;
             var filter = Builders<Error>.Filter.Eq(x => x.GUID, guid) & Builders<Error>.Filter.Eq(x => x.ApplicationName, ApplicationName);
             var res = await c.DeleteOneAsync(filter).ConfigureAwait(false);
             return res.IsAcknowledged;
@@ -162,7 +157,6 @@ namespace StackExchange.Exceptional.Stores
         protected override async Task<bool> DeleteAllErrorsAsync(string applicationName = null)
         {
             var c = GetConnection();
-            var builders = Builders<Error>.Filter;
             var filter = Builders<Error>.Filter.Eq(x => x.ApplicationName, applicationName ?? ApplicationName) & Builders<Error>.Filter.Eq(x => x.IsProtected, false) & Builders<Error>.Filter.Eq(x => x.DeletionDate, null);
             var update = Builders<Error>.Update.Set(x => x.DeletionDate, DateTime.UtcNow);
             var res = await c.UpdateManyAsync(filter, update).ConfigureAwait(false);
@@ -180,7 +174,6 @@ namespace StackExchange.Exceptional.Stores
             var c = GetConnection();
             if (Settings.RollupPeriod.HasValue && error.ErrorHash.HasValue)
             {
-                var builders = Builders<Error>.Filter;
                 var filter = Builders<Error>.Filter.Eq(x => x.ApplicationName, error.ApplicationName)
                     & Builders<Error>.Filter.Eq(x => x.ErrorHash, error.ErrorHash)
                     & Builders<Error>.Filter.Eq(x => x.DeletionDate, null)
@@ -216,7 +209,6 @@ namespace StackExchange.Exceptional.Stores
             var c = GetConnection();
             if (Settings.RollupPeriod.HasValue && error.ErrorHash.HasValue)
             {
-                var builders = Builders<Error>.Filter;
                 var filter = Builders<Error>.Filter.Eq(x => x.ApplicationName, error.ApplicationName)
                     & Builders<Error>.Filter.Eq(x => x.ErrorHash, error.ErrorHash)
                     & Builders<Error>.Filter.Eq(x => x.DeletionDate, null)
@@ -251,8 +243,7 @@ namespace StackExchange.Exceptional.Stores
         {
             var c = GetConnection();
             var filter = Builders<Error>.Filter.Eq(x => x.GUID, guid);
-            var error = await c.Find(filter).FirstOrDefaultAsync().ConfigureAwait(false);
-            return error;
+            return await c.Find(filter).FirstOrDefaultAsync().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -279,7 +270,7 @@ namespace StackExchange.Exceptional.Stores
             var filter = Builders<Error>.Filter.Eq(x => x.ApplicationName, applicationName ?? ApplicationName) & Builders<Error>.Filter.Eq(x => x.DeletionDate, null);
             if (since.HasValue)
             {
-                filter = filter & Builders<Error>.Filter.Gt(x => x.CreationDate, since.Value);
+                filter &= Builders<Error>.Filter.Gt(x => x.CreationDate, since.Value);
             }
             var count = await c.Find(filter).CountDocumentsAsync().ConfigureAwait(false);
             return (int)count;
@@ -288,8 +279,7 @@ namespace StackExchange.Exceptional.Stores
         private IMongoCollection<Error> GetConnection()
         {
             var databaseName = new MongoUrl(_connectionString).DatabaseName;
-            var collection = new MongoClient(_connectionString).GetDatabase(databaseName).GetCollection<Error>(_tableName);
-            return collection;
+            return new MongoClient(_connectionString).GetDatabase(databaseName).GetCollection<Error>(_tableName);
         }
     }
 }
