@@ -12,12 +12,12 @@ namespace StackExchange.Exceptional.Tests.Storage
     public class SQLErrorStoreTest : StoreBaseTest, IClassFixture<SqlFixture>
     {
         public string ConnectionString => TestConfig.Current.SQLConnectionString;
-        private SqlFixture Fixtue { get; }
+        private SqlFixture Fixture { get; }
 
         public SQLErrorStoreTest(SqlFixture fixture, ITestOutputHelper output) : base(output)
         {
-            Fixtue = fixture;
-            if (Fixtue.ShouldSkip)
+            Fixture = fixture;
+            if (Fixture.ShouldSkip)
             {
                 Skip.Inconclusive("Couldn't test against: " + ConnectionString + "\n" + fixture.SkipReason);
             }
@@ -28,7 +28,7 @@ namespace StackExchange.Exceptional.Tests.Storage
             {
                 ConnectionString = ConnectionString,
                 ApplicationName = appName,
-                TableName = Fixtue.TableName
+                TableName = Fixture.TableName
             });
 
         [Fact]
