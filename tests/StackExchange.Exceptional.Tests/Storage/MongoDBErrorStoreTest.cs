@@ -45,7 +45,9 @@ namespace StackExchange.Exceptional.Tests.Storage
             try
             {
                 var databaseName = new MongoUrl(ConnectionString).DatabaseName;
-                var collection = new MongoClient(ConnectionString).GetDatabase(databaseName);
+                var settings = MongoClientSettings.FromConnectionString(ConnectionString);
+                settings.ConnectTimeout = settings.SocketTimeout = settings.ServerSelectionTimeout = TimeSpan.FromSeconds(5);
+                var collection = new MongoClient(settings).GetDatabase(databaseName);
                 collection.ListCollections();
             }
             catch (Exception e)
