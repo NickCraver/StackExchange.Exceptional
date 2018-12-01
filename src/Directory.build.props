@@ -12,13 +12,12 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>pdbonly</DebugType>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <IncludeSymbols>true</IncludeSymbols>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" Version="2.1.17" PrivateAssets="all" />
-    <PackageReference Include="SourceLink.Create.GitHub" Version="2.1.2" PrivateAssets="All" /> 
-    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.1.2" />
-    <DotNetCliToolReference Include="dotnet-sourcelink-git" Version="2.1.2" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
   </ItemGroup>
 </Project>
