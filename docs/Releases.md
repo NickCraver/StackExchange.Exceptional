@@ -26,6 +26,8 @@ This page tracks major changes included in any update starting with version 2.0.
   - Introduces a `StackExchange.Exceptional.Shared` library (a NuGet dependency) for shared code in all of the above
 - Stack traces are color coded and much more readable
   - `async` stack traces are also much less noisy and state machine frames are collapsed
+  - SourceLink URLs are supported (GitHub built-in) - if the file source is on GitHub, it will be linked in the HTML stack trace
+  - All of the above is usable outside the library via `ExceptionalUtils.StackTrace.HtmlPrettify()`
 - `Commands` are generally accessible and not just SQL-centric anymore (for example logging a Redis command)
   - These can be added via `.AddHandler()` ([example here](https://github.com/NickCraver/StackExchange.Exceptional/blob/dbe2b089462554723fe6d45e4f0a6db4cb718937/src/StackExchange.Exceptional.Shared/Extensions.Handlers.cs#L16))
   - Highlighting in the log is provided by [highlight.js](https://highlightjs.org/)
