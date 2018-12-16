@@ -79,6 +79,11 @@ img {
     display: block;
 }
 
+.critical {
+    font-weight: bold;
+    color: #e20000;
+}
+
 .highlight .hll { background-color: #ffffcc }
 .highlight  { background: #eaeaea; }
 .highlight .c { color: #888888 } /* Comment */
