@@ -22,18 +22,20 @@ namespace StackExchange.Exceptional
             if (Interlocked.CompareExchange(ref _loaded, 1, 0) == 0)
             {
                 var settings = new ExceptionalSettings();
-                var config = ConfigurationManager.GetSection("Exceptional") as Settings;
 
-                if (config.DataIncludePattern.HasValue())
+                if (ConfigurationManager.GetSection("Exceptional") is Settings config)
                 {
-                    settings.DataIncludeRegex = new Regex(config.DataIncludePattern, RegexOptions.Singleline | RegexOptions.Compiled);
-                }
+                    if (config.DataIncludePattern.HasValue())
+                    {
+                        settings.DataIncludeRegex = new Regex(config.DataIncludePattern, RegexOptions.Singleline | RegexOptions.Compiled);
+                    }
 
-                config.ErrorStore?.Populate(settings);
-                config.Ignore?.Populate(settings);
-                config.LogFilters?.Populate(settings);
-                config.Email?.Populate(settings);
-                settings.Store.ApplicationName = config.ApplicationName;
+                    config.ErrorStore?.Populate(settings);
+                    config.Ignore?.Populate(settings);
+                    config.LogFilters?.Populate(settings);
+                    config.Email?.Populate(settings);
+                    settings.Store.ApplicationName = config.ApplicationName;
+                }
 
                 Exceptional.Configure(settings);
             }
