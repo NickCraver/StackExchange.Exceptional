@@ -12,7 +12,7 @@ This doc describes how to upgrade each area of Exceptional you may be using:
 
 Loging has shifted from static methods (`Error.Log()`/`Error.LogWithoutContext()`) to extension methods (`.Log()`/`.LogWithoutContext()`) on `Exception` itself. Example usage in a controller:
 ```c#
-catch (SqlException e) 
+catch (SqlException e)
 {
     e.Log(Context);
 }
@@ -21,8 +21,16 @@ Note: `.Log()` is defined separately for ASP.NET (in the `StackExchange.Exceptio
 
 **Category** is a new string field on `Error` (and an optional parameter on `.Log()`) for further subclassifying errors in an application. This could also be set in a handler for example.
 
+#### Controller (ASP.NET non-Core)
+
+A route that forwards to the exceptional module for handling now looks like this:
+```c#
+[Route("dev/errors/{resource?}/{subResource?}")]
+public Task Exceptions() => ExceptionalModule.HandleRequestAsync(System.Web.HttpContext.Current);
+```
+
 #### Settings
-Settings are now in `.ExceptionalSettings` (defined in the `StackExchange.Exceptional` and `StackExchange.Exceptional.AspNetCore` libraries. 
+Settings are now in `.ExceptionalSettings` (defined in the `StackExchange.Exceptional` and `StackExchange.Exceptional.AspNetCore` libraries.
 
 The `StackExchange.Exceptional` (ASP.NET non-Core) package tries to ensure backwards compatability with existing `Web.config` layouts with shims. If something doesn't work, *please* file an issue!
 
@@ -58,7 +66,7 @@ End
 
 Note: If you are deploying many services that share a store, you can do this in 2 phases by separating out the scripts. Before your first deploy:
 ```sql
-SELECT IF (EXISTS(SELECT 1 
+SELECT IF (EXISTS(SELECT 1
                     FROM INFORMATION_SCHEMA.COLUMNS
                    WHERE TABLE_SCHEMA = DATABASE()
                      AND TABLE_NAME = 'Exceptions'
@@ -70,7 +78,7 @@ PREPARE q1 FROM @a;
 EXECUTE q1;
 DEALLOCATE PREPARE q1;
 
-SELECT IF (EXISTS(SELECT 1 
+SELECT IF (EXISTS(SELECT 1
                     FROM INFORMATION_SCHEMA.COLUMNS
                    WHERE TABLE_SCHEMA = DATABASE()
                      AND TABLE_NAME = 'Exceptions'
@@ -84,7 +92,7 @@ DEALLOCATE PREPARE q1;
 ```
 To cleanup after the last V1 instance is removed:
 ```sql
-SELECT IF (EXISTS(SELECT 1 
+SELECT IF (EXISTS(SELECT 1
                     FROM INFORMATION_SCHEMA.COLUMNS
                    WHERE TABLE_SCHEMA = DATABASE()
                      AND TABLE_NAME = 'Exceptions'
