@@ -1,0 +1,9 @@
+﻿{
+  "Exceptional": {
+    "Store": {
+      "ApplicationName": "Samples (ASP.NET Core MongoDB)",
+      "Type": "MongoDB",
+      "ConnectionString": "mongodb://localhost/test"
+    }
+  }
+}

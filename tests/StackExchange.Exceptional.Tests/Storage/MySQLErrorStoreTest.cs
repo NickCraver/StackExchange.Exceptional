@@ -11,12 +11,12 @@ namespace StackExchange.Exceptional.Tests.Storage
     public class MySQLErrorStoreTest : StoreBaseTest, IClassFixture<MySqlFixture>
     {
         public string ConnectionString => TestConfig.Current.MySQLConnectionString;
-        private MySqlFixture Fixtue { get; }
+        private MySqlFixture Fixture { get; }
 
         public MySQLErrorStoreTest(MySqlFixture fixture, ITestOutputHelper output) : base(output)
         {
-            Fixtue = fixture;
-            if (Fixtue.ShouldSkip)
+            Fixture = fixture;
+            if (Fixture.ShouldSkip)
             {
                 Skip.Inconclusive("Couldn't test against: " + ConnectionString + "\n" + fixture.SkipReason);
             }
@@ -27,7 +27,7 @@ namespace StackExchange.Exceptional.Tests.Storage
             {
                 ConnectionString = ConnectionString,
                 ApplicationName = appName,
-                TableName = Fixtue.TableName
+                TableName = Fixture.TableName
             });
     }
 

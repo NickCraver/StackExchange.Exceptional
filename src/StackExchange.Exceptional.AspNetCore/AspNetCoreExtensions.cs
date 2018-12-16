@@ -40,9 +40,10 @@ namespace StackExchange.Exceptional
         {
             if (Statics.IsLoggingEnabled)
             {
+                ExceptionalSettings settings = null;
                 try
                 {
-                    var settings = context.RequestServices.GetRequiredService<IOptions<ExceptionalSettings>>().Value;
+                    settings = context.RequestServices.GetRequiredService<IOptions<ExceptionalSettings>>().Value;
                     // If we should be ignoring this exception, skip it entirely.
                     // Otherwise create the error itself, populating CustomData with what was passed-in.
                     var error = ex.GetErrorIfNotIgnored(settings, category, applicationName, rollupPerServer, customData);
@@ -60,6 +61,7 @@ namespace StackExchange.Exceptional
                 }
                 catch (Exception e)
                 {
+                    settings?.OnLogFailure?.Invoke(e);
                     Trace.WriteLine(e);
                 }
             }
@@ -80,7 +82,7 @@ namespace StackExchange.Exceptional
         /// When dealing with a non web requests, pass <see langword="null" /> in for context.  
         /// It shouldn't be forgotten for most web application usages, so it's not an optional parameter.
         /// </remarks>
-        public static async Task<Error> LogAsync(
+        public static Task<Error> LogAsync(
             this Exception ex,
             HttpContext context,
             string category = null,
@@ -90,9 +92,10 @@ namespace StackExchange.Exceptional
         {
             if (Statics.IsLoggingEnabled)
             {
+                ExceptionalSettings settings = null;
                 try
                 {
-                    var settings = context.RequestServices.GetRequiredService<IOptions<ExceptionalSettings>>().Value;
+                    settings = context.RequestServices.GetRequiredService<IOptions<ExceptionalSettings>>().Value;
                     // If we should be ignoring this exception, skip it entirely.
                     // Otherwise create the error itself, populating CustomData with what was passed-in.
                     var error = ex.GetErrorIfNotIgnored(settings, category, applicationName, rollupPerServer, customData);
@@ -102,16 +105,23 @@ namespace StackExchange.Exceptional
                         // Get everything from the HttpContext
                         error.SetProperties(context);
 
-                        if (await error.LogToStoreAsync().ConfigureAwait(false))
-                        {
-                            return error;
-                        }
+                        return LogAsyncCore(error);
                     }
                 }
                 catch (Exception e)
                 {
+                    settings?.OnLogFailure?.Invoke(e);
                     Trace.WriteLine(e);
                 }
+            }
+            return Task.FromResult<Error>(null);
+        }
+
+        private static async Task<Error> LogAsyncCore(Error error)
+        {
+            if (await error.LogToStoreAsync().ConfigureAwait(false))
+            {
+                return error;
             }
             return null;
         }

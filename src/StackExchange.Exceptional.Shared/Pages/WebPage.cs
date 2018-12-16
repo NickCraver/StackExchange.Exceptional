@@ -82,6 +82,7 @@ namespace StackExchange.Exceptional.Pages
         protected override void RenderHtml(StringBuilder sb)
         {
             sb.AppendLine("<!DOCTYPE html>")
+              .AppendLine("<meta charset=\"utf-8\">")
               .AppendLine("<html>")
               .AppendLine("  <head>")
               .AppendFormat("    <title>{0}</title>", PageTitle.HtmlEncode()).AppendLine();

@@ -1,4 +1,5 @@
-﻿using StackExchange.Exceptional.Notifiers;
+﻿using Newtonsoft.Json;
+using StackExchange.Exceptional.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,6 +21,11 @@ namespace StackExchange.Exceptional.Internal
         /// Event handler to run after an exception has been logged to the store.
         /// </summary>
         public event EventHandler<ErrorAfterLogEventArgs> OnAfterLog;
+
+        /// <summary>
+        /// Action to run when we failed to log an exception to the underlying store.
+        /// </summary>
+        public Action<Exception> OnLogFailure;
 
         internal bool BeforeLog(Error error, ErrorStore store)
         {
@@ -186,7 +192,8 @@ namespace StackExchange.Exceptional.Internal
             /// Header values to replace on save - this prevents logging authentication tokens, etc.
             /// The key is the header name to match, the value is what to use when logging.
             /// </summary>
-            public Dictionary<string, string> Header { get; set; } = new Dictionary<string, string>();
+            [JsonConverter(typeof(CaseInsensitiveDictionaryConverter<string>))]
+            public Dictionary<string, string> Header { get; set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
