@@ -9,7 +9,7 @@
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.MySQL\StackExchange.Exceptional.MySQL.csproj" />
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.PostgreSql\StackExchange.Exceptional.PostgreSql.csproj" />
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.MongoDB\StackExchange.Exceptional.MongoDB.csproj" />
-    <PackageReference Include="Jil" Version="2.15.4" />
+    <PackageReference Include="Jil" Version="2.16.0" />
   </ItemGroup>
   
   <ItemGroup>
