@@ -37,7 +37,7 @@ if ($RunTests) {
         Write-Host "Running tests: $project (all frameworks)" -ForegroundColor "Magenta"
         Push-Location ".\tests\$project"
 
-        dotnet xunit
+        dotnet test
         if ($LastExitCode -ne 0) { 
             Write-Host "Error with tests, aborting build." -Foreground "Red"
             Pop-Location
