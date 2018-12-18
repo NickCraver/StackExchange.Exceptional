@@ -13,6 +13,12 @@ $(function () {
     };
     hljs.initHighlighting();
 
+    $(document).delegate('a.js-show-details', 'click', function (e) {
+        e.preventDefault();
+        $(this).text($(this).text() === 'view details' ? 'hide details' : 'view details')
+            .parent().siblings('.details').toggle();
+    });
+
     if (table.length === 0) {
         return;
     }
@@ -166,9 +172,5 @@ $(function () {
                 loading.removeClass('loading');
                 alert('Error occurred when trying to delete all errors.');
             });
-    }).delegate('a.js-show-details', 'click', function (e) {
-        e.preventDefault();
-        $(this).text($(this).text() === 'view details' ? 'hide details' : 'view details')
-               .parent().siblings('.details').toggle();
     });
 });
