@@ -194,6 +194,13 @@ namespace StackExchange.Exceptional.Internal
             /// </summary>
             [JsonConverter(typeof(CaseInsensitiveDictionaryConverter<string>))]
             public Dictionary<string, string> Header { get; set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            /// <summary>
+            /// Query string values to replace on save - this prevents logging authentication tokens, etc.
+            /// The key is the query string parameter name to match, the value is what to use when logging.
+            /// </summary>
+            [JsonConverter(typeof(CaseInsensitiveDictionaryConverter<string>))]
+            public Dictionary<string, string> QueryString { get; set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>

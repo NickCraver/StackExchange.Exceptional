@@ -22,6 +22,9 @@
       },
       "Header": {
         "Accept-Language": "*********"
+      },
+      "QueryString": {
+        "queryToken": "**no tokens saved! pheww**"
       }
     },
     "Ignore": {

@@ -58,6 +58,9 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
             Assert.Single(settings.LogFilters.Header);
             Assert.Equal("*********", settings.LogFilters.Header["Accept-Language"]);
             Assert.Equal("*********", settings.LogFilters.Header["ACCEPT-language"]);
+            Assert.Single(settings.LogFilters.QueryString);
+            Assert.Equal("**no tokens saved! pheww**", settings.LogFilters.QueryString["queryToken"]);
+            Assert.Equal("**no tokens saved! pheww**", settings.LogFilters.QueryString["QUERYToken"]);
 
             // Email
             Assert.NotNull(settings.Email);

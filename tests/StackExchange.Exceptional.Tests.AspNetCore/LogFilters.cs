@@ -26,8 +26,9 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
                 CurrentSettings.LogFilters.Header["HeaderSecret"] = "***2";
                 CurrentSettings.LogFilters.Form["FormSecret"] = "***3";
                 CurrentSettings.LogFilters.Header["HeaderSecret-CaseTest"] = "***4";
+                CurrentSettings.LogFilters.QueryString["QuerySECRET"] = "***5"; // testing insensitivity too
 
-                var request = server.CreateRequest("/");
+                var request = server.CreateRequest("/?QueryNotSecret=QueryNotSecretValue&QuerySecret=dontlogme");
                 request.AddHeader("Cookie", "CookieNotSecret=CookieNotSecretValue; CookieSecret=secretcookie!;");
                 request.AddHeader("HeaderNotSecret", "HeaderNotSecretValue");
                 request.AddHeader("HeaderSecret", "secret header!");
@@ -55,6 +56,10 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
                 Assert.Equal(2, error.Form.Count);
                 Assert.Equal("FormNotSecretValue", error.Form["FormNotSecret"]);
                 Assert.Equal("***3", error.Form["FormSecret"]);
+
+                Assert.Equal(2, error.QueryString.Count);
+                Assert.Equal("QueryNotSecretValue", error.QueryString["QueryNotSecret"]);
+                Assert.Equal("***5", error.QueryString["QuerySecret"]);
             }
         }
     }
