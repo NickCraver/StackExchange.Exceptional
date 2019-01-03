@@ -207,7 +207,21 @@ namespace StackExchange.Exceptional
                 ["Scheme"] = request.Scheme,
                 ["Url"] = error.FullUrl,
             };
+
             error.QueryString = TryGetCollection(r => r.Query);
+            // Filter query variables for sensitive information
+            var queryFilters = error.Settings.LogFilters.QueryString;
+            if (queryFilters?.Count > 0)
+            {
+                foreach (var kv in queryFilters)
+                {
+                    if (error.QueryString[kv.Key] != null)
+                    {
+                        error.QueryString[kv.Key] = kv.Value ?? "";
+                    }
+                }
+            }
+
             if (request.HasFormContentType)
             {
                 error.Form = TryGetCollection(r => r.Form);

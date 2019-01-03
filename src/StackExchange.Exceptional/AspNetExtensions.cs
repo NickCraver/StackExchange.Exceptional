@@ -210,9 +210,22 @@ namespace StackExchange.Exceptional
             }
 
             error.ServerVariables = TryGetCollection(r => r.ServerVariables, ShouldRecordServerVariable);
-            error.QueryString = TryGetCollection(r => r.QueryString);
-            error.Form = TryGetCollection(r => r.Form);
 
+            error.QueryString = TryGetCollection(r => r.QueryString);
+            // Filter query variables for sensitive information
+            var queryFilters = error.Settings.LogFilters.QueryString;
+            if (queryFilters?.Count > 0)
+            {
+                foreach (var kv in queryFilters)
+                {
+                    if (error.QueryString[kv.Key] != null)
+                    {
+                        error.QueryString[kv.Key] = kv.Value ?? "";
+                    }
+                }
+            }
+
+            error.Form = TryGetCollection(r => r.Form);
             // Filter form variables for sensitive information
             var formFilters = error.Settings.LogFilters.Form;
             if (formFilters?.Count > 0)
