@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace StackExchange.Exceptional.Internal
 {
@@ -319,5 +321,20 @@ namespace StackExchange.Exceptional.Internal
         /// </summary>
         /// <param name="dt">The <see cref="DateTime"/> to convert.</param>
         public static long? ToEpochTime(this DateTime? dt) => dt.HasValue ? (long?)ToEpochTime(dt.Value) : null;
+
+        private static readonly ConcurrentDictionary<string, Regex> _regexCache = new ConcurrentDictionary<string, Regex>();
+
+        /// <summary>
+        /// Replaces a QueryString token with the repalcement value.
+        /// </summary>
+        /// <param name="queryString">The querystring to operate on.</param>
+        /// <param name="key">The key to look for.</param>
+        /// <param name="value">The value to replace.</param>
+        /// <returns>The updated query string.</returns>
+        public static string QueryStringReplace(this string queryString, string key, string value)
+        {
+            var regex = _regexCache.GetOrAdd(key, k => new Regex("(?<=[?&]" + Regex.Escape(k) + "=)[^&]*", RegexOptions.IgnoreCase | RegexOptions.Compiled));
+            return regex.Replace(queryString, value);
+        }
     }
 }
