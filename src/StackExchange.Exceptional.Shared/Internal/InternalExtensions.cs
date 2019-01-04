@@ -325,7 +325,7 @@ namespace StackExchange.Exceptional.Internal
         private static readonly ConcurrentDictionary<string, Regex> _regexCache = new ConcurrentDictionary<string, Regex>();
 
         /// <summary>
-        /// Replaces a QueryString token with the repalcement value.
+        /// Replaces a QueryString token with the replacement value.
         /// </summary>
         /// <param name="queryString">The querystring to operate on.</param>
         /// <param name="key">The key to look for.</param>
