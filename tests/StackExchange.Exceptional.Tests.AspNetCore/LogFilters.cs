@@ -58,6 +58,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
                 Assert.Equal("***3", error.Form["FormSecret"]);
 
                 Assert.Equal(2, error.QueryString.Count);
+                Assert.EndsWith("?QueryNotSecret=QueryNotSecretValue&QuerySecret=***5", error.FullUrl);
                 Assert.Equal("QueryNotSecretValue", error.QueryString["QueryNotSecret"]);
                 Assert.Equal("***5", error.QueryString["QuerySecret"]);
             }
