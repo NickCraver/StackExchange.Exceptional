@@ -193,13 +193,13 @@ namespace StackExchange.Exceptional
             error.QueryString = TryGetCollection(r => r.Query);
             // Filter query variables for sensitive information
             var queryFilters = error.Settings.LogFilters.QueryString;
-            if (queryFilters?.Count > 0)
+            if (queryFilters?.Count > 0 && error.QueryString.Count > 0)
             {
                 foreach (var kv in queryFilters)
                 {
-                    queryString = queryString.QueryStringReplace(kv.Key, kv.Value);
                     if (error.QueryString[kv.Key] != null)
                     {
+                        queryString = queryString.QueryStringReplace(kv.Key, kv.Value);
                         error.QueryString[kv.Key] = kv.Value ?? "";
                     }
                 }
