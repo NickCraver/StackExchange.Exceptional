@@ -4,9 +4,11 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using StackExchange.Exceptional.Internal;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace StackExchange.Exceptional
@@ -126,6 +128,8 @@ namespace StackExchange.Exceptional
             return null;
         }
 
+        private static readonly ConcurrentDictionary<string, Regex> _regexCache = new ConcurrentDictionary<string, Regex>();
+
         /// <summary>
         /// Sets Error properties pulled from HttpContext, if present.
         /// </summary>
@@ -171,11 +175,6 @@ namespace StackExchange.Exceptional
                 }
             }
 
-            error.Host = request.Host.ToString();
-            error.UrlPath = $"{request.PathBase}{request.Path}";
-            error.FullUrl = $"{request.Scheme}://{request.Host}{request.PathBase}{request.Path}{request.QueryString}";
-            error.HTTPMethod = request.Method;
-
             var exs = error.Settings as ExceptionalSettings;
             if (exs?.GetIPAddress != null)
             {
@@ -193,6 +192,29 @@ namespace StackExchange.Exceptional
                 error.IPAddress = context.Connection?.RemoteIpAddress?.ToString();
             }
 
+            // Parse out query string bits before recording them below
+            var queryString = request.QueryString.Value;
+            error.QueryString = TryGetCollection(r => r.Query);
+            // Filter query variables for sensitive information
+            var queryFilters = error.Settings.LogFilters.QueryString;
+            if (queryFilters?.Count > 0)
+            {
+                foreach (var kv in queryFilters)
+                {
+                    var regex = _regexCache.GetOrAdd(kv.Key, key => new Regex("(?<=[?&]" + Regex.Escape(key) + "=)[^&]*", RegexOptions.IgnoreCase | RegexOptions.Compiled));
+                    queryString = regex.Replace(queryString, kv.Value);
+                    if (error.QueryString[kv.Key] != null)
+                    {
+                        error.QueryString[kv.Key] = kv.Value ?? "";
+                    }
+                }
+            }
+
+            error.Host = request.Host.ToString();
+            error.UrlPath = $"{request.PathBase}{request.Path}";
+            error.FullUrl = $"{request.Scheme}://{request.Host}{request.PathBase}{request.Path}{queryString}";
+            error.HTTPMethod = request.Method;
+
             error.ServerVariables = new NameValueCollection
             {
                 ["ContentLength"] = request.ContentLength?.ToString(),
@@ -202,25 +224,11 @@ namespace StackExchange.Exceptional
                 ["PathBase"] = request.PathBase,
                 ["Port"] = request.Host.Port?.ToString(),
                 ["Protocol"] = request.Protocol,
-                ["QueryString"] = request.QueryString.Value,
+                ["QueryString"] = queryString,
                 ["Request Method"] = request.Method,
                 ["Scheme"] = request.Scheme,
                 ["Url"] = error.FullUrl,
             };
-
-            error.QueryString = TryGetCollection(r => r.Query);
-            // Filter query variables for sensitive information
-            var queryFilters = error.Settings.LogFilters.QueryString;
-            if (queryFilters?.Count > 0)
-            {
-                foreach (var kv in queryFilters)
-                {
-                    if (error.QueryString[kv.Key] != null)
-                    {
-                        error.QueryString[kv.Key] = kv.Value ?? "";
-                    }
-                }
-            }
 
             if (request.HasFormContentType)
             {

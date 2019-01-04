@@ -1,8 +1,10 @@
 ﻿using StackExchange.Exceptional.Internal;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -130,6 +132,8 @@ namespace StackExchange.Exceptional
             }
         }
 
+        private static readonly ConcurrentDictionary<string, Regex> _regexCache = new ConcurrentDictionary<string, Regex>();
+
         /// <summary>
         /// Sets Error properties pulled from HttpContext, if present.
         /// </summary>
@@ -216,13 +220,18 @@ namespace StackExchange.Exceptional
             var queryFilters = error.Settings.LogFilters.QueryString;
             if (queryFilters?.Count > 0)
             {
+                var oldQuery = request.Url.Query;
+                var newQuery = oldQuery;
                 foreach (var kv in queryFilters)
                 {
+                    var regex = _regexCache.GetOrAdd(kv.Key, key => new Regex("(?<=[?&]" + Regex.Escape(key) + "=)[^&]*", RegexOptions.IgnoreCase | RegexOptions.Compiled));
+                    newQuery = regex.Replace(newQuery, kv.Value);
                     if (error.QueryString[kv.Key] != null)
                     {
                         error.QueryString[kv.Key] = kv.Value ?? "";
                     }
                 }
+                error.FullUrl = error.FullUrl.Replace(oldQuery, newQuery);
             }
 
             error.Form = TryGetCollection(r => r.Form);
