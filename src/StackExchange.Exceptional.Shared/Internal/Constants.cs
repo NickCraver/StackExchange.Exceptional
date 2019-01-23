@@ -19,5 +19,10 @@
         /// Key for prefixing fields in .Data for logging to CustomData
         /// </summary>
         public const string CustomDataKeyPrefix = "ExceptionalCustom-";
+
+        /// <summary>
+        /// The key in Exception.Data that indicates Exceptional has already handled this exception and should ignore future attempts to log it.
+        /// </summary>
+        public const string LoggedDataKey = "Exceptional.Logged";
     }
 }

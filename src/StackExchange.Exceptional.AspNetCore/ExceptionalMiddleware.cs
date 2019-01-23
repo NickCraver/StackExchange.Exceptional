@@ -63,7 +63,7 @@ namespace StackExchange.Exceptional
             }
             catch (Exception ex)
             {
-                _logger.LogError(0, ex, "An unhandled exception has occurred, logging to Exceptional");
+                _logger.LogError(ExceptionalLoggingEvents.RequestException, ex, "An unhandled exception has occurred, logging to Exceptional");
                 var error = await ex.LogAsync(context).ConfigureAwait(false);
 
                 // If options say to do so, show the exception page to the user
@@ -101,7 +101,7 @@ namespace StackExchange.Exceptional
                     }
                     catch (Exception pex)
                     {
-                        _logger.LogError(0, pex, "An exception was thrown attempting to display the Exceptional page.");
+                        _logger.LogError(ExceptionalLoggingEvents.ExceptionalPageException, pex, "An exception was thrown attempting to display the Exceptional page.");
                     }
                 }
                 throw;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using StackExchange.Exceptional.Internal;
 using System;
 
@@ -19,5 +20,11 @@ namespace StackExchange.Exceptional
         /// but may need to be replaced in special multi-proxy situations.
         /// </summary>
         public Func<HttpContext, string> GetIPAddress { get; set; } = context => context.Connection.RemoteIpAddress.ToString();
+
+        /// <summary>
+        /// The minimum log level for <see cref="ExceptionalLogger"/>.
+        /// Defaults to <see cref="Microsoft.Extensions.Logging.LogLevel.Error"/>.
+        /// </summary>
+        public LogLevel ILoggerLevel { get; set; } = LogLevel.Error;
     }
 }

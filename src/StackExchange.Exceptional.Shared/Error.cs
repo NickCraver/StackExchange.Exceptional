@@ -119,6 +119,10 @@ namespace StackExchange.Exceptional
 
                 foreach (string k in exception.Data.Keys)
                 {
+                    if (k == Constants.LoggedDataKey)
+                    {
+                        continue;
+                    }
                     if (regex?.IsMatch(k) == true)
                     {
                         InitCustomData();
@@ -201,7 +205,17 @@ namespace StackExchange.Exceptional
             if (abort) return false; // if we've been told to abort, then abort dammit!
 
             Trace.WriteLine(Exception); // always echo the error to trace for local debugging
+
+            if (Exception.Data?.Contains(Constants.LoggedDataKey) == true)
+            {
+                // already logged - match the GUIDs up
+                GUID = (Guid)Exception.Data[Constants.LoggedDataKey];
+                return true;
+            }
+
             store.Log(this);
+
+            if (Exception.Data != null) Exception.Data[Constants.LoggedDataKey] = GUID; // mark as logged
 
             Settings.AfterLog(this, store);
 
@@ -220,7 +234,17 @@ namespace StackExchange.Exceptional
             if (abort) return true; // if we've been told to abort, then abort dammit!
 
             Trace.WriteLine(Exception); // always echo the error to trace for local debugging
+
+            if (Exception.Data?.Contains(Constants.LoggedDataKey) == true)
+            {
+                // already logged - match the GUIDs up
+                GUID = (Guid)Exception.Data[Constants.LoggedDataKey];
+                return true;
+            }
+
             await store.LogAsync(this).ConfigureAwait(false);
+
+            if (Exception.Data != null) Exception.Data[Constants.LoggedDataKey] = GUID; // mark as logged
 
             Settings.AfterLog(this, store);
 

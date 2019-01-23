@@ -1,8 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using StackExchange.Exceptional.Stores;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -136,6 +144,61 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
                 Assert.Null(error.Form);
                 Assert.Null(error.QueryString);
                 Assert.Null(error.ServerVariables);
+            }
+        }
+
+        [Fact]
+        public async Task ILoggerLogging()
+        {
+            Error error = null;
+            using (var server = new TestServer(new WebHostBuilder()
+                   .ConfigureServices(services =>
+                   {
+                       services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+                       services.AddExceptional(s =>
+                       {
+                           s.DefaultStore = new MemoryErrorStore();
+                           CurrentSettings = s;
+                       });
+                   })
+                   .Configure(app =>
+                   {
+                       var logger = app.ApplicationServices.GetRequiredService<ILogger<Logging>>();
+                       app.UseExceptional();
+                       app.Run(async context =>
+                       {
+                           var ex = new Exception("Log!");
+                           logger.LogError(ex, ex.Message);
+                           var errors = await CurrentSettings.DefaultStore.GetAllAsync();
+                           error = errors.FirstOrDefault();
+                           await context.Response.WriteAsync("Hey.");
+                       });
+                   })))
+            {
+                using (var response = await server.CreateClient().GetAsync("?QueryKey=QueryValue").ConfigureAwait(false))
+                {
+                    Assert.Equal("Hey.", await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                }
+
+                Assert.Equal("Log!", error.Message);
+                Assert.Equal("System.Exception", error.Type);
+                Assert.Equal(Environment.MachineName, error.MachineName);
+                Assert.Equal("localhost", error.Host);
+                Assert.Equal("http://localhost/?QueryKey=QueryValue", error.FullUrl);
+                Assert.Equal("/", error.UrlPath);
+
+                Assert.NotEmpty(error.RequestHeaders);
+                Assert.Equal("localhost", error.RequestHeaders["Host"]);
+
+                Assert.Single(error.QueryString);
+                Assert.Equal("QueryValue", error.QueryString["QueryKey"]);
+
+                Assert.NotEmpty(error.ServerVariables);
+                Assert.Equal("localhost", error.ServerVariables["Host"]);
+                Assert.Equal("/", error.ServerVariables["Path"]);
+                Assert.Equal("GET", error.ServerVariables["Request Method"]);
+                Assert.Equal("http", error.ServerVariables["Scheme"]);
+                Assert.Equal("http://localhost/?QueryKey=QueryValue", error.ServerVariables["Url"]);
             }
         }
     }

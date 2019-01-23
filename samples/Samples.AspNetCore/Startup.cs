@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Samples.AspNetCore
 {
@@ -20,6 +22,11 @@ namespace Samples.AspNetCore
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            // (Optional): If you want ILogger calls that log an exception to have request details,
+            // then it needs access to the HttpContext statically, this registers that ability.
+            // If you're using Identity or ApplicationInsights, this is already registered.
+            // If using .NET Core 2.1+, you can call the new helper instead: services.AddHttpContextAccessor();
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             // Make IOptions<ExceptionalSettings> available for injection everywhere
             services.AddExceptional(Configuration.GetSection("Exceptional"), settings =>
             {

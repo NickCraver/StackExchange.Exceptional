@@ -36,6 +36,9 @@ namespace Microsoft.Extensions.DependencyInjection
             // When done configuring, set the background settings object for non-context logging.
             services.Configure<ExceptionalSettings>(Exceptional.Configure);
 
+            // Setup for ILogger
+            services.AddSingleton<ExceptionalLoggerProvider>();
+
             return services;
         }
     }
