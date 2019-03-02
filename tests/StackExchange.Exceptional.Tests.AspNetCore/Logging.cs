@@ -138,5 +138,76 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
                 Assert.Null(error.ServerVariables);
             }
         }
+
+        [Fact]
+        public async Task LogNull()
+        {
+            Error error = null;
+            using (var server = GetServer(context =>
+            {
+                error = new Exception("Log!").Log(null, "TestCategoy");
+                return context.Response.WriteAsync("Hey.");
+            }))
+            {
+                var content = new FormUrlEncodedContent(new Dictionary<string, string>()
+                {
+                    ["FormKey"] = "FormValue",
+                });
+                using (var response = await server.CreateClient().PostAsync("?QueryKey=QueryValue", content).ConfigureAwait(false))
+                {
+                    Assert.Equal("Hey.", await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                }
+
+                Assert.Equal("Log!", error.Message);
+                Assert.Equal("System.Exception", error.Type);
+                Assert.Equal(Environment.MachineName, error.MachineName);
+                Assert.Equal("TestCategoy", error.Category);
+
+                // No context, so we expect these to be null
+                Assert.Null(error.Host);
+                Assert.Null(error.FullUrl);
+                Assert.Null(error.UrlPath);
+                Assert.Null(error.RequestHeaders);
+                Assert.Null(error.Form);
+                Assert.Null(error.QueryString);
+                Assert.Null(error.ServerVariables);
+            }
+        }
+
+
+        [Fact]
+        public async Task LogNullAsync()
+        {
+            Error error = null;
+            using (var server = GetServer(async context =>
+            {
+                error = await new Exception("Log!").LogAsync(null, "TestCategoy").ConfigureAwait(false);
+                await context.Response.WriteAsync("Hey.").ConfigureAwait(false);
+            }))
+            {
+                var content = new FormUrlEncodedContent(new Dictionary<string, string>()
+                {
+                    ["FormKey"] = "FormValue",
+                });
+                using (var response = await server.CreateClient().PostAsync("?QueryKey=QueryValue", content).ConfigureAwait(false))
+                {
+                    Assert.Equal("Hey.", await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                }
+
+                Assert.Equal("Log!", error.Message);
+                Assert.Equal("System.Exception", error.Type);
+                Assert.Equal(Environment.MachineName, error.MachineName);
+                Assert.Equal("TestCategoy", error.Category);
+
+                // No context, so we expect these to be null
+                Assert.Null(error.Host);
+                Assert.Null(error.FullUrl);
+                Assert.Null(error.UrlPath);
+                Assert.Null(error.RequestHeaders);
+                Assert.Null(error.Form);
+                Assert.Null(error.QueryString);
+                Assert.Null(error.ServerVariables);
+            }
+        }
     }
 }

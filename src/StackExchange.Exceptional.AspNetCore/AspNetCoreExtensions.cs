@@ -43,7 +43,8 @@ namespace StackExchange.Exceptional
                 ExceptionalSettings settings = null;
                 try
                 {
-                    settings = context.RequestServices.GetRequiredService<IOptions<ExceptionalSettings>>().Value;
+                    // If context is null, still log with a fallback...this is far better than going boom.
+                    settings = context?.RequestServices.GetRequiredService<IOptions<ExceptionalSettings>>().Value ?? Exceptional.Settings;
                     // If we should be ignoring this exception, skip it entirely.
                     // Otherwise create the error itself, populating CustomData with what was passed-in.
                     var error = ex.GetErrorIfNotIgnored(settings, category, applicationName, rollupPerServer, customData);
@@ -95,7 +96,8 @@ namespace StackExchange.Exceptional
                 ExceptionalSettings settings = null;
                 try
                 {
-                    settings = context.RequestServices.GetRequiredService<IOptions<ExceptionalSettings>>().Value;
+                    // If context is null, still log with a fallback...this is far better than going boom.
+                    settings = context?.RequestServices.GetRequiredService<IOptions<ExceptionalSettings>>().Value ?? Exceptional.Settings;
                     // If we should be ignoring this exception, skip it entirely.
                     // Otherwise create the error itself, populating CustomData with what was passed-in.
                     var error = ex.GetErrorIfNotIgnored(settings, category, applicationName, rollupPerServer, customData);
