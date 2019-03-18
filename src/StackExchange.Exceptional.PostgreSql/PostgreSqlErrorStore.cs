@@ -242,7 +242,7 @@ VALUES (:GUID, :ApplicationName, :Category, :MachineName, :CreationDate, :Type, 
                     var queryParams = GetUpdateParams(error);
                     var guid = c.QueryFirstOrDefault<Guid>(SqlLogUpdate, queryParams);
                     // if we found an exception that's a duplicate, jump out
-                    if (guid != default(Guid))
+                    if (guid != default)
                     {
                         error.GUID = guid;
                         return true;
@@ -269,7 +269,7 @@ VALUES (:GUID, :ApplicationName, :Category, :MachineName, :CreationDate, :Type, 
                     var queryParams = GetUpdateParams(error);
                     var guid = await c.QueryFirstOrDefaultAsync<Guid>(SqlLogUpdate, queryParams).ConfigureAwait(false);
                     // if we found an exception that's a duplicate, jump out
-                    if (guid != default(Guid))
+                    if (guid != default)
                     {
                         error.GUID = guid;
                         return true;
