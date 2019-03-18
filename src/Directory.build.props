@@ -3,6 +3,7 @@
     <OutputType>Library</OutputType>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <LangVersion>7.3</LangVersion>
 
     <Authors>Nick Craver</Authors>    
     <PackageId>$(AssemblyName)</PackageId>
