@@ -47,9 +47,18 @@ namespace StackExchange.Exceptional
         {
             handlers[typeof(T).FullName] = e =>
             {
-                if (e.Exception is T tex)
+                // Note: we're cheating here and assuming nested exceptions won't be the same type and we're mirroring
+                // the exception core code in iterating through nested exceptions. This isn't correct, but it's a design flaw
+                // in the Action<Error>...we should have Action<Error,Exception> in the handlers dictionary so we can pass
+                // the inner exception we're triggering on Error.ProcessHandlers. That's a breaking change for a 3.x release.
+                var ex = e.Exception;
+                while (ex != null)
                 {
-                    handler(e, tex);
+                    if (ex is T tex)
+                    {
+                        handler(e, tex);
+                    }
+                    ex = ex.InnerException;
                 }
             };
         }
@@ -63,7 +72,19 @@ namespace StackExchange.Exceptional
         /// <param name="handler">The handler action to use.</param>
         public static void AddHandler(this Dictionary<string, Action<Error>> handlers, string typeName, Action<Error, Exception> handler)
         {
-            handlers[typeName] = e => handler(e, e.Exception);
+            handlers[typeName] = e =>
+            {
+                // Note: cheating - see method above
+                var ex = e.Exception;
+                while (ex != null)
+                {
+                    if (ex.GetType().FullName == typeName)
+                    {
+                        handler(e, ex);
+                    }
+                    ex = ex.InnerException;
+                }
+            };
         }
     }
 }
