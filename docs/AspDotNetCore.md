@@ -22,7 +22,7 @@ public void ConfigureServices(IServiceCollection services)
     // This uses all defaults (e.g. the in-memory error store)
     services.AddExceptional(settings =>
     {
-        settings.ApplicationName = "Samples.AspNetCore";
+        settings.Store.ApplicationName = "Samples.AspNetCore";
     });
 }
 ```
