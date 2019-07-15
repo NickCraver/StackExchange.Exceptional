@@ -44,6 +44,20 @@ namespace StackExchange.Exceptional
             // TODO: Patterns, or a bunch of these...
             private static readonly HashSet<string> _asyncFrames = new HashSet<string>()
             {
+                // 3.0 Stacks
+                "System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)",
+                "System.Threading.Tasks.Task.RunContinuations(Object continuationObject)",
+                "System.Threading.Tasks.Task<TResult>.TrySetResult(TResult result)",
+                "System.Threading.Tasks.AwaitTaskContinuation.RunOrScheduleAction(Action action, Boolean allowInlining)",
+
+                "System.Runtime.CompilerServices.AsyncTaskMethodBuilder<T>.SetExistingTaskResult(TResult result)",
+                "System.Runtime.CompilerServices.AsyncTaskMethodBuilder<T>.AsyncStateMachineBox<T>.ExecutionContextCallback(Object s)",
+                "System.Runtime.CompilerServices.AsyncTaskMethodBuilder<T>.AsyncStateMachineBox<T>.MoveNext(Thread threadPoolThread)",
+                "System.Runtime.CompilerServices.AsyncTaskMethodBuilder<T>.AsyncStateMachineBox<T>.MoveNext()",
+                "System.Runtime.CompilerServices.AsyncTaskMethodBuilder.SetResult()",
+                "System.Runtime.CompilerServices.TaskAwaiter.<>c.<OutputWaitEtwEvents>b__12_0(Action innerContinuation, Task innerTask)",
+
+                // < .NET Core 3.0 stacks
                 "System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()",
                 "System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)",
                 "System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)",
