@@ -53,6 +53,7 @@ namespace StackExchange.Exceptional
                 "System.Threading.Tasks.Task.TrySetCanceled(CancellationToken tokenToRecord, Object cancellationException)",
                 "System.Threading.Tasks.Task.FinishContinuations()",
 
+                "System.Runtime.CompilerServices.AsyncMethodBuilderCore.ContinuationWrapper.Invoke()",
                 "System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.SetExistingTaskResult(TResult result)",
                 "System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecutionContextCallback(Object s)",
                 "System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.MoveNext(Thread threadPoolThread)",
@@ -60,8 +61,8 @@ namespace StackExchange.Exceptional
                 "System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.SetException(Exception exception)",
                 "System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.SetResult(TResult result)",
                 "System.Runtime.CompilerServices.AsyncTaskMethodBuilder.SetResult()",
+                "System.Runtime.CompilerServices.AsyncValueTaskMethodBuilder`1.SetResult(TResult result)",
                 "System.Runtime.CompilerServices.TaskAwaiter.<>c.<OutputWaitEtwEvents>b__12_0(Action innerContinuation, Task innerTask)",
-                "System.Runtime.CompilerServices.AsyncMethodBuilderCore.ContinuationWrapper.Invoke()",
 
                 // < .NET Core 3.0 stacks
                 "System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()",
