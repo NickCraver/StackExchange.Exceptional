@@ -47,13 +47,13 @@ namespace StackExchange.Exceptional
                 // 3.0 Stacks
                 "System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)",
                 "System.Threading.Tasks.Task.RunContinuations(Object continuationObject)",
-                "System.Threading.Tasks.Task<TResult>.TrySetResult(TResult result)",
+                "System.Threading.Tasks.Task`1.TrySetResult(TResult result)",
                 "System.Threading.Tasks.AwaitTaskContinuation.RunOrScheduleAction(Action action, Boolean allowInlining)",
 
-                "System.Runtime.CompilerServices.AsyncTaskMethodBuilder<T>.SetExistingTaskResult(TResult result)",
-                "System.Runtime.CompilerServices.AsyncTaskMethodBuilder<T>.AsyncStateMachineBox<T>.ExecutionContextCallback(Object s)",
-                "System.Runtime.CompilerServices.AsyncTaskMethodBuilder<T>.AsyncStateMachineBox<T>.MoveNext(Thread threadPoolThread)",
-                "System.Runtime.CompilerServices.AsyncTaskMethodBuilder<T>.AsyncStateMachineBox<T>.MoveNext()",
+                "System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.SetExistingTaskResult(TResult result)",
+                "System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecutionContextCallback(Object s)",
+                "System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.MoveNext(Thread threadPoolThread)",
+                "System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.MoveNext()",
                 "System.Runtime.CompilerServices.AsyncTaskMethodBuilder.SetResult()",
                 "System.Runtime.CompilerServices.TaskAwaiter.<>c.<OutputWaitEtwEvents>b__12_0(Action innerContinuation, Task innerTask)",
 
