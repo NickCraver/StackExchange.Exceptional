@@ -115,8 +115,10 @@ namespace StackExchange.Exceptional
 
                 int pos = 0;
                 var sb = StringBuilderCache.Get();
-                foreach (Match m in _regex.Matches(stackTrace))
+                var matches = _regex.Matches(stackTrace);
+                for (var mi = 0; mi < matches.Count; mi++)
                 {
+                    Match m = matches[mi];
                     Group leadIn = m.Groups[Groups.LeadIn],
                           frame = m.Groups[Groups.Frame],
                           type = m.Groups[Groups.Type],
@@ -129,6 +131,12 @@ namespace StackExchange.Exceptional
                           line = m.Groups[Groups.Line];
                     CaptureCollection paramTypes = m.Groups[Groups.ParamType].Captures,
                                       paramNames = m.Groups[Groups.ParamName].Captures;
+                    bool nextIsAsync = false;
+                    if (mi < matches.Count - 1)
+                    {
+                        Group nextFrame = matches[mi + 1].Groups[Groups.Frame];
+                        nextIsAsync = _asyncFrames.Contains(nextFrame.Value);
+                    }
 
                     var isAsync = _asyncFrames.Contains(frame.Value);
 
@@ -147,8 +155,17 @@ namespace StackExchange.Exceptional
 
                     if (leadIn.Index > pos)
                     {
+                        var miscContent = stackTrace.Substring(pos, leadIn.Index - pos);
+                        if (miscContent.Contains(EndStack))
+                        {
+                            // Handle end-of-stack removals and redundant multilines remaining
+                            miscContent = miscContent.Replace(EndStack, "")
+                                                     .Replace("\r\n\r\n", "\r\n")
+                                                     .Replace("\n\n", "\n\n");
+                        }
+
                         sb.Append("<span class=\"stack misc\">")
-                          .AppendHtmlEncode(stackTrace.Substring(pos, leadIn.Index - pos))
+                          .AppendHtmlEncode(miscContent)
                           .Append("</span>");
                     }
                     sb.Append("<span class=\"stack leadin\">")
@@ -157,7 +174,7 @@ namespace StackExchange.Exceptional
 
                     // Check if the next line is the end of an async hand-off
                     var nextEndStack = stackTrace.IndexOf(EndStack, m.Index + m.Length);
-                    if (nextEndStack > -1 && nextEndStack < m.Index + m.Length + 3)
+                    if ((nextEndStack > -1 && nextEndStack < m.Index + m.Length + 3) || (!isAsync && nextIsAsync))
                     {
                         sb.Append("<span class=\"stack async-tag\">async</span> ");
                     }
@@ -185,7 +202,7 @@ namespace StackExchange.Exceptional
                     }
                     sb.Append("<span class=\"stack method-section\">")
                       .Append("<span class=\"stack method\">")
-                      .AppendHtmlEncode(method.Value)
+                      .AppendHtmlEncode(NormalizeMethodName(method.Value))
                       .Append("</span>");
 
                     if (paramTypes.Count > 0)
@@ -348,6 +365,14 @@ namespace StackExchange.Exceptional
                     }
                 }
                 return sourcePath;
+            }
+
+            /// <summary>
+            /// .NET Core changes methods so generics render as as Method[T], this normalizes it.
+            /// </summary>
+            private static string NormalizeMethodName(string method)
+            {
+                return method?.Replace("[", "<").Replace("]", ">");
             }
         }
     }
