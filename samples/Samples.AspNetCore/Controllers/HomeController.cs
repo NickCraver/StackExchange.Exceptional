@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using StackExchange.Exceptional;
 
@@ -7,6 +9,17 @@ namespace Samples.AspNetCore.Controllers
     public class HomeController : Controller
     {
         public IActionResult Index() => View();
+
+        [HttpGet]
+        public IActionResult Stacks() => View();
+
+        [HttpPost]
+        public IActionResult Stacks(IFormCollection form)
+        {
+            var error = new Exception("").Log(ControllerContext.HttpContext);
+            error.Detail = form["details"];
+            return Redirect("/Home/Exceptions/info?guid=" + error.GUID);
+        }
 
         /// <summary>
         /// This lets you access the error handler via a route in your application, secured by whatever
