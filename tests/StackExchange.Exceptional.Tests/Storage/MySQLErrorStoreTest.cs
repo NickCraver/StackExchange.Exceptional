@@ -37,6 +37,7 @@ namespace StackExchange.Exceptional.Tests.Storage
         public string SkipReason { get; }
         public string TableName { get; }
         public string TableScript { get; }
+        private string ConnectionString { get; }
 
         public MySqlFixture()
         {
@@ -48,7 +49,8 @@ namespace StackExchange.Exceptional.Tests.Storage
                 {
                     ConnectionTimeout = 2000
                 };
-                using (var conn = new MySqlConnection(csb.ConnectionString))
+                ConnectionString = csb.ConnectionString;
+                using (var conn = new MySqlConnection(ConnectionString))
                 {
                     TableName = "Test" + Guid.NewGuid().ToString("N").Substring(24);
                     TableScript = script.Replace("Exceptions", TableName);
@@ -66,7 +68,7 @@ namespace StackExchange.Exceptional.Tests.Storage
         {
             try
             {
-                using (var conn = new MySqlConnection(TestConfig.Current.MySQLConnectionString))
+                using (var conn = new MySqlConnection(ConnectionString))
                 {
                     conn.Execute("Drop Table " + TableName);
                 }

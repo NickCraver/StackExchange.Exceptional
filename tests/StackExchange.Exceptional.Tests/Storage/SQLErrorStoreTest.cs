@@ -50,6 +50,7 @@ namespace StackExchange.Exceptional.Tests.Storage
         public string SkipReason { get; }
         public string TableName { get; }
         public string TableScript { get; }
+        public string ConnectionString { get; }
 
         public SqlFixture()
         {
@@ -61,7 +62,8 @@ namespace StackExchange.Exceptional.Tests.Storage
                 {
                     ConnectTimeout = 2000
                 };
-                using (var conn = new SqlConnection(csb.ConnectionString))
+                ConnectionString = csb.ConnectionString;
+                using (var conn = new SqlConnection(ConnectionString))
                 {
                     TableName = "Test" + Guid.NewGuid().ToString("N");
                     TableScript = script.Replace("Exceptions", TableName);
@@ -79,7 +81,7 @@ namespace StackExchange.Exceptional.Tests.Storage
         {
             try
             {
-                using (var conn = new SqlConnection(TestConfig.Current.SQLConnectionString))
+                using (var conn = new SqlConnection(ConnectionString))
                 {
                     conn.Execute("Drop Table " + TableName);
                 }

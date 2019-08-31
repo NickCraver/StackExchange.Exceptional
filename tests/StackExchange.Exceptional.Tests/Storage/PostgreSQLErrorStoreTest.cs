@@ -37,6 +37,7 @@ namespace StackExchange.Exceptional.Tests.Storage
         public string SkipReason { get; }
         public string TableName { get; }
         public string TableScript { get; }
+        private string ConnectionString { get; }
 
         public PostgreSqlFixture()
         {
@@ -44,7 +45,12 @@ namespace StackExchange.Exceptional.Tests.Storage
             try
             {
                 var script = Resource.Get("Scripts.PostgreSql.sql");
-                using (var conn = new NpgsqlConnection(TestConfig.Current.PostgreSqlConnectionString))
+                var csb = new NpgsqlConnectionStringBuilder(TestConfig.Current.PostgreSqlConnectionString)
+                {
+                    Timeout = 2
+                };
+                ConnectionString = csb.ConnectionString;
+                using (var conn = new NpgsqlConnection(ConnectionString))
                 {
                     TableName = $@"public.""Test{Guid.NewGuid().ToString("N").Substring(24)}""";
                     TableScript = script.Replace(@"""public"".""Errors""", TableName);
@@ -62,7 +68,7 @@ namespace StackExchange.Exceptional.Tests.Storage
         {
             try
             {
-                using (var conn = new NpgsqlConnection(TestConfig.Current.PostgreSqlConnectionString))
+                using (var conn = new NpgsqlConnection(ConnectionString))
                 {
                     conn.Execute("Drop Table " + TableName);
                 }
