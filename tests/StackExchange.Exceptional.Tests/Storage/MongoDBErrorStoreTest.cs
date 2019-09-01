@@ -36,6 +36,7 @@ namespace StackExchange.Exceptional.Tests.Storage
         public string SkipReason { get; }
         public string ConnectionString { get; }
         public string TableName { get; }
+        public IMongoDatabase MongoDatabase { get; }
 
         public MongoDBFixture()
         {
@@ -46,9 +47,10 @@ namespace StackExchange.Exceptional.Tests.Storage
             {
                 var databaseName = new MongoUrl(ConnectionString).DatabaseName;
                 var settings = MongoClientSettings.FromConnectionString(ConnectionString);
-                settings.ConnectTimeout = settings.SocketTimeout = settings.ServerSelectionTimeout = TimeSpan.FromSeconds(5);
-                var collection = new MongoClient(settings).GetDatabase(databaseName);
-                collection.ListCollections();
+                settings.ConnectTimeout = settings.SocketTimeout = settings.ServerSelectionTimeout = TimeSpan.FromSeconds(2);
+                var database = new MongoClient(settings).GetDatabase(databaseName);
+                MongoDatabase = database;
+                database.ListCollections();
             }
             catch (Exception e)
             {
@@ -61,9 +63,7 @@ namespace StackExchange.Exceptional.Tests.Storage
         {
             try
             {
-                var databaseName = new MongoUrl(ConnectionString).DatabaseName;
-                var collection = new MongoClient(ConnectionString).GetDatabase(databaseName);
-                collection.DropCollection(TableName);
+                MongoDatabase.DropCollection(TableName);
             }
             catch when (ShouldSkip)
             {
