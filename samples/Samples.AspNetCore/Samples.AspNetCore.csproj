@@ -3,9 +3,8 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.AspNetCore\StackExchange.Exceptional.AspNetCore.csproj" />
   </ItemGroup>
 </Project>
