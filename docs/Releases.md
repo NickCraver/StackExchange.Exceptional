@@ -6,7 +6,7 @@ layout: "default"
 This page tracks major changes included in any update starting with version 2.0.0.
 
 #### Version 2.1.0
-- ASP.NET Core 3.0 support ([StackExchange.Exceptional.AspNetCore](https://www.nuget.org/packages/StackExchange.Exceptional.AspNetCore/))
+- ASP.NET Core 3.0 support ([StackExchange.Exceptional.AspNetCore](https://www.nuget.org/packages/StackExchange.Exceptional.AspNetCore/)) with specific `netcoreapp3.0` builds and fewer dependencies.
 
 #### Version 2.0.0
 
