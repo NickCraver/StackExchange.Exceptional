@@ -23,7 +23,11 @@ namespace StackExchange.Exceptional
     {
         private readonly RequestDelegate _next;
         private readonly ILogger _logger;
+#if NETSTANDARD2_0 || NET461
         private readonly IHostingEnvironment _env;
+#else
+        private readonly IWebHostEnvironment _env;
+#endif
         private readonly IOptions<ExceptionalSettings> _settings;
 
         /// <summary>
@@ -36,7 +40,11 @@ namespace StackExchange.Exceptional
         public ExceptionalMiddleware(
             RequestDelegate next,
             IOptions<ExceptionalSettings> settings,
-            IHostingEnvironment hostingEnvironment,
+#if NETSTANDARD2_0 || NET461
+        IHostingEnvironment hostingEnvironment,
+#else
+        IWebHostEnvironment hostingEnvironment,
+#endif
             ILoggerFactory loggerFactory)
         {
             _next = next;

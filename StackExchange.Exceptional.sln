@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackExchange.Exceptional.M
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8B91532F-A112-4F73-80BD-A95B7359BBC3}"
 	ProjectSection(SolutionItems) = preProject
-		src\Directory.build.props = src\Directory.build.props
+		src\Directory.Build.props = src\Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{001E5AA4-42C8-4AC3-B14A-AF1DFA02E9FB}"
@@ -45,7 +45,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.AspNetCore", "sampl
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7D435EF2-8616-460D-82DB-EF4D74EEC459}"
 	ProjectSection(SolutionItems) = preProject
-		tests\Directory.build.props = tests\Directory.build.props
+		tests\Directory.Build.props = tests\Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackExchange.Exceptional.Tests.AspNetCore", "tests\StackExchange.Exceptional.Tests.AspNetCore\StackExchange.Exceptional.Tests.AspNetCore.csproj", "{30BDD61C-A94B-4558-BB58-E9EEC0B8B845}"
