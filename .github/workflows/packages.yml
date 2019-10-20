@@ -1,17 +1,23 @@
 name: Package Build CI
 
-on: [push]
+on:
+  pull_request:
+  push:
+    branches:
+    - master
+    paths:
+    - '*'
+    - '!/docs/*' # Don't run workflow when files are only in the /docs directory
 
 jobs:
   build:
-
     runs-on: windows-2019
-    
     steps:
-    - uses: actions/checkout@v1
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 2.2.108
-    - name: Build with dotnet
-      run: build.cmd -CreatePackages $true
+    - name: Checkout code
+      uses: actions/checkout@v1
+    - name: .NET Build
+      run: dotnet build Build.csproj -c Release /p:CI=true
+    - name: .NET Test
+      run: dotnet test Build.csproj -c Release --no-build /p:CI=true
+    - name: .NET Lib Pack
+      run: dotnet pack Build.csproj --no-build -c Release /p:Packing=true /p:PackageOutputPath=%CD%\.nupkgs /p:CI=true
