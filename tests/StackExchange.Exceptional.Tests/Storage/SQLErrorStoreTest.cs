@@ -72,6 +72,7 @@ namespace StackExchange.Exceptional.Tests.Storage
             }
             catch (Exception e)
             {
+                e.MaybeLog(TestConfig.Current.SQLConnectionString);
                 ShouldSkip = true;
                 SkipReason = e.Message;
             }

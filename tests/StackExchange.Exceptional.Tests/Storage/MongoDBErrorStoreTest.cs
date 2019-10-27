@@ -54,6 +54,7 @@ namespace StackExchange.Exceptional.Tests.Storage
             }
             catch (Exception e)
             {
+                e.MaybeLog(TestConfig.Current.MongoDBConnectionString);
                 ShouldSkip = true;
                 SkipReason = e.Message;
             }
