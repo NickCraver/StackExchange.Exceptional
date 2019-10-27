@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp2.2</TargetFrameworks>
     <AssemblyName>StackExchange.Exceptional.Tests</AssemblyName>
+    <IsTestProject Condition="'$(OS)' != 'Windows_NT' AND $(TargetFramework.StartsWith('net4'))">false</IsTestProject>
   </PropertyGroup>
   
   <ItemGroup>
@@ -9,7 +10,7 @@
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.MySQL\StackExchange.Exceptional.MySQL.csproj" />
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.PostgreSql\StackExchange.Exceptional.PostgreSql.csproj" />
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.MongoDB\StackExchange.Exceptional.MongoDB.csproj" />
-    <PackageReference Include="Jil" Version="2.15.4" />
+    <PackageReference Include="Jil" Version="2.17" />
   </ItemGroup>
   
   <ItemGroup>

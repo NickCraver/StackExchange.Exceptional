@@ -11,42 +11,24 @@ Write-Host "  RunTests: $RunTests"
 Write-Host "  dotnet --version:" (dotnet --version)
 
 $packageOutputFolder = "$PSScriptRoot\.nupkgs"
-$projectsToBuild =
-    'StackExchange.Exceptional.Shared',
-    'StackExchange.Exceptional',
-    'StackExchange.Exceptional.AspNetCore',
-    'StackExchange.Exceptional.MySQL',
-    'StackExchange.Exceptional.PostgreSql',
-    'StackExchange.Exceptional.MongoDB'
-
-$testsToRun =
-	'StackExchange.Exceptional.Tests',
-	'StackExchange.Exceptional.Tests.AspNetCore'
 
 if ($PullRequestNumber) {
     Write-Host "Building for a pull request (#$PullRequestNumber), skipping packaging." -ForegroundColor Yellow
     $CreatePackages = $false
 }
 
-Write-Host "Building solution..." -ForegroundColor "Magenta"
-dotnet build ".\StackExchange.Exceptional.sln" /p:CI=true
+Write-Host "Building all projects (Build.csproj traversal)..." -ForegroundColor "Magenta"
+dotnet build ".\Build.csproj" -c Release /p:CI=true
 Write-Host "Done building." -ForegroundColor "Green"
 
 if ($RunTests) {
-    foreach ($project in $testsToRun) {
-        Write-Host "Running tests: $project (all frameworks)" -ForegroundColor "Magenta"
-        Push-Location ".\tests\$project"
-
-        dotnet test
-        if ($LastExitCode -ne 0) { 
-            Write-Host "Error with tests, aborting build." -Foreground "Red"
-            Pop-Location
-            Exit 1
-        }
-
-        Write-Host "Tests passed!" -ForegroundColor "Green"
-	    Pop-Location
+    Write-Host "Running tests: Build.csproj traversal (all frameworks)" -ForegroundColor "Magenta"
+    dotnet test ".\Build.csproj" -c Release --no-build --logger trx
+    if ($LastExitCode -ne 0) {
+        Write-Host "Error with tests, aborting build." -Foreground "Red"
+        Exit 1
     }
+    Write-Host "Tests passed!" -ForegroundColor "Green"
 }
 
 if ($CreatePackages) {
@@ -56,12 +38,7 @@ if ($CreatePackages) {
     Write-Host "done." -ForegroundColor "Green"
 
     Write-Host "Building all packages" -ForegroundColor "Green"
-
-    foreach ($project in $projectsToBuild) {
-        Write-Host "Packing $project (dotnet pack)..." -ForegroundColor "Magenta"
-        dotnet pack ".\src\$project\$project.csproj" -c Release /p:PackageOutputPath=$packageOutputFolder /p:NoPackageAnalysis=true /p:CI=true
-        Write-Host ""
-    }
+    dotnet pack ".\Build.csproj" --no-build -c Release /p:Packing=true /p:PackageOutputPath=$packageOutputFolder /p:CI=true
 }
 
 Write-Host "Done."
