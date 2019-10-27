@@ -11,7 +11,7 @@ namespace StackExchange.Exceptional.Tests.Storage
 {
     public class SQLErrorStoreTest : StoreBaseTest, IClassFixture<SqlFixture>
     {
-        public string ConnectionString => TestConfig.Current.SQLConnectionString;
+        public string ConnectionString => TestConfig.Current.SQLServerConnectionString;
         private SqlFixture Fixture { get; }
 
         public SQLErrorStoreTest(SqlFixture fixture, ITestOutputHelper output) : base(output)
@@ -54,11 +54,11 @@ namespace StackExchange.Exceptional.Tests.Storage
 
         public SqlFixture()
         {
-            Skip.IfNoConfig(nameof(TestConfig.Current.SQLConnectionString), TestConfig.Current.SQLConnectionString);
+            Skip.IfNoConfig(nameof(TestConfig.Current.SQLServerConnectionString), TestConfig.Current.SQLServerConnectionString);
             try
             {
                 var script = Resource.Get("Scripts.SqlServer.sql");
-                var csb = new SqlConnectionStringBuilder(TestConfig.Current.SQLConnectionString)
+                var csb = new SqlConnectionStringBuilder(TestConfig.Current.SQLServerConnectionString)
                 {
                     ConnectTimeout = 2000
                 };
@@ -72,7 +72,7 @@ namespace StackExchange.Exceptional.Tests.Storage
             }
             catch (Exception e)
             {
-                e.MaybeLog(TestConfig.Current.SQLConnectionString);
+                e.MaybeLog(TestConfig.Current.SQLServerConnectionString);
                 ShouldSkip = true;
                 SkipReason = e.Message;
             }

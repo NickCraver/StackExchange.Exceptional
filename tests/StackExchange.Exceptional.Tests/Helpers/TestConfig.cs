@@ -32,7 +32,7 @@ namespace StackExchange.Exceptional.Tests
             public bool RunLongRunning { get; set; }
             public bool EnableTestLogging { get; set; } = Environment.GetEnvironmentVariable(nameof(EnableTestLogging)) == "true";
 
-            public string SQLConnectionString { get; set; } = Environment.GetEnvironmentVariable(nameof(SQLConnectionString)) ?? "Server=.;Database=tempdb;Trusted_Connection=True;";
+            public string SQLServerConnectionString { get; set; } = Environment.GetEnvironmentVariable(nameof(SQLServerConnectionString)) ?? "Server=.;Database=tempdb;Trusted_Connection=True;";
             public string MySQLConnectionString { get; set; } = Environment.GetEnvironmentVariable(nameof(MySQLConnectionString)) ?? "server=localhost;uid=root;pwd=root;database=test;Allow User Variables=true";
             public string PostgreSqlConnectionString { get; set; } = Environment.GetEnvironmentVariable(nameof(PostgreSqlConnectionString)) ?? "Server=localhost;Port=5432;Database=test;User Id=postgres;Password=postgres;";
             public string MongoDBConnectionString { get; set; } = Environment.GetEnvironmentVariable(nameof(MongoDBConnectionString)) ?? "mongodb://localhost/test";
