@@ -16,7 +16,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(@"Configs\Full.json")
+                .AddJsonFile(GetPath("Full.json"))
                 .Build();
 
             Assert.NotNull(config);
@@ -80,7 +80,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(@"Configs\Storage.JSON.json")
+                .AddJsonFile(GetPath("Storage.JSON.json"))
                 .Build();
 
             Assert.NotNull(config);
@@ -107,7 +107,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(@"Configs\Storage.SQL.json")
+                .AddJsonFile(GetPath("Storage.SQL.json"))
                 .Build();
 
             Assert.NotNull(config);
@@ -134,7 +134,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(@"Configs\Storage.MySQL.json")
+                .AddJsonFile(GetPath("Storage.MySQL.json"))
                 .Build();
 
             Assert.NotNull(config);
@@ -160,7 +160,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(@"Configs\Storage.PostgreSql.json")
+                .AddJsonFile(GetPath("Storage.PostgreSql.json"))
                 .Build();
 
             Assert.NotNull(config);
@@ -186,7 +186,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(@"Configs\Storage.MongoDB.json")
+                .AddJsonFile(GetPath("Storage.MongoDB.json"))
                 .Build();
 
             Assert.NotNull(config);
@@ -206,5 +206,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
             var store = settings.DefaultStore as MongoDBErrorStore;
             Assert.Equal("Samples (ASP.NET Core MongoDB)", store.ApplicationName);
         }
+
+        private string GetPath(string configFile) => Path.Combine("Configs", configFile);
     }
 }
