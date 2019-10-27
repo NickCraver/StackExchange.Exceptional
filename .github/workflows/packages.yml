@@ -12,6 +12,41 @@ on:
 jobs:
   build:
     runs-on: windows-2019
+    services:
+      redis:
+        image: redis
+        ports:
+        - 6379/tcp
+        options: --entrypoint redis-server
+      mongo:
+        image: mongo
+        ports:
+        - 27017/tcp
+        env:
+          MONGO_INITDB_DATABASE: test
+      postgres:
+        image: postgres
+        ports:
+        - 5432/tcp
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
+        ports:
+        - 1433/tcp
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: g0d4mm!tSQLServer
+      mysql:
+        image: mysql
+        ports:
+        - 3306/tcp
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test
     steps:
     - name: Checkout code
       uses: actions/checkout@v1
