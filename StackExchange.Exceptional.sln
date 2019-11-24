@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26906.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.161
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{9D33C076-4A0C-4366-89B8-9A735E6867EA}"
 	ProjectSection(SolutionItems) = preProject
@@ -56,6 +56,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackExchange.Exceptional.P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackExchange.Exceptional.MongoDB", "src\StackExchange.Exceptional.MongoDB\StackExchange.Exceptional.MongoDB.csproj", "{8CFA59A5-5180-4466-A32E-507F3D541163}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples.ConsoleNetCore", "samples\Samples.ConsoleNetCore\Samples.ConsoleNetCore.csproj", "{6CE269E1-6DC9-43A4-B6B8-683CE8A19E6A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -106,6 +108,10 @@ Global
 		{8CFA59A5-5180-4466-A32E-507F3D541163}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8CFA59A5-5180-4466-A32E-507F3D541163}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8CFA59A5-5180-4466-A32E-507F3D541163}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CE269E1-6DC9-43A4-B6B8-683CE8A19E6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CE269E1-6DC9-43A4-B6B8-683CE8A19E6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CE269E1-6DC9-43A4-B6B8-683CE8A19E6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CE269E1-6DC9-43A4-B6B8-683CE8A19E6A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -122,6 +128,7 @@ Global
 		{8CEB884A-A9A6-4974-AD2C-576AD7785474} = {7D435EF2-8616-460D-82DB-EF4D74EEC459}
 		{0A412433-C2CE-4EBE-BB5A-C3E48983E941} = {8B91532F-A112-4F73-80BD-A95B7359BBC3}
 		{8CFA59A5-5180-4466-A32E-507F3D541163} = {8B91532F-A112-4F73-80BD-A95B7359BBC3}
+		{6CE269E1-6DC9-43A4-B6B8-683CE8A19E6A} = {001E5AA4-42C8-4AC3-B14A-AF1DFA02E9FB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7F066A86-14D8-4A2C-848A-D4371BB704FA}
