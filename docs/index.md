@@ -13,6 +13,7 @@ It also supports JSON and memory error stores, filtering of exceptions before lo
   - [Getting started with ASP.NET Core]({{ site.baseurl }}/AspDotNetCore)
 - Other .NET (eg: console application)
   - [Getting started with .NET (non-Core) for a console app]({{ site.baseurl }}/ConsoleDotNet)
+  - [Getting started with .NET Core for a console app]({{ site.baseurl }}/ConsoleDotNetCore)
 
 #### Details
 While having some features centered around logging/showing exceptions from web applications, **it can be used with either web or console applications**. `HttpContext` is optional when logging exceptions.

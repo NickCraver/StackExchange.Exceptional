@@ -1,36 +1,32 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using StackExchange.Exceptional;
 using StackExchange.Exceptional.Stores;
-using StackExchange.Exceptional.Notifiers;
 using static System.Console;
 using System.Threading.Tasks;
 
-namespace Samples.Console
+namespace Samples.NetCoreConsole
 {
-    public static class Program
+    internal static class Program
     {
-        private static void Main()
+        private static async Task Main()
         {
-            // Example of code-only setup, alternatively this can be in the App.config
-            // RollupPeriod is null so a new file is always generated, for demonstration purposes
-            Exceptional.Configure(settings =>
-            {
-                settings.DefaultStore = new JSONErrorStore(new ErrorStoreSettings
-                {
-                    ApplicationName = "Samples.Console",
-                    Path = "Errors",
-                    RollupPeriod = null
-                });
+            // Example of setting things up from appsettings.json config
+            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            var exceptionalSettings = config.GetSection("Exceptional").Get<ExceptionalSettings>();
+            Exceptional.Configure(exceptionalSettings);
 
-                // Example of a code-only email setup, alternatively this can be in the App.config
-                settings.Register(new EmailNotifier(new EmailSettings
-                {
-                    SMTPHost = "localhost", // Use Papercut here for testing: https://github.com/ChangemakerStudios/Papercut
-                    FromAddress = "exceptions@site.com",
-                    FromDisplayName = "Bob the Builder",
-                    ToAddress = "dont.use@thisadress.com"
-                }));
-            });
+            // Example of code-only setup, alternatively this can be in the appsettings.json (or any config format) as shown above
+            // RollupPeriod is null so a new file is always generated, for demonstration purposes
+            //Exceptional.Configure(settings =>
+            //{
+            //    settings.DefaultStore = new JSONErrorStore(new ErrorStoreSettings
+            //    {
+            //        ApplicationName = "Samples.ConsoleNetCore",
+            //        Path = "Errors",
+            //        RollupPeriod = null
+            //    });
+            //});
 
             // How to do it with normal roll-up
             //Exceptional.Configure(new ExceptionalSettings() { DefaultStore = new JSONErrorStore("Errors") });
@@ -38,8 +34,7 @@ namespace Samples.Console
             // Optional: for logging all unhandled exceptions
             Exceptional.ObserveAppDomainUnhandledExceptions();
 
-            // Normally we wouldn't want to .GetAwaiter().GetResult(), but async Main is only on a the latest platforms at the moment
-            DisplayExceptionStatsAsync().GetAwaiter().GetResult();
+            await DisplayExceptionStatsAsync();
             PauseForInput();
 
             try
@@ -56,7 +51,7 @@ namespace Samples.Console
                 ex.LogNoContext();
             }
 
-            DisplayExceptionStatsAsync().GetAwaiter().GetResult();
+            await DisplayExceptionStatsAsync();
             PauseForInput();
 
             WriteLine("This next one will crash the program, but will be logged on the way out...");
@@ -70,10 +65,10 @@ namespace Samples.Console
         {
             var settings = Exceptional.Settings;
             WriteLine(settings.DefaultStore.Name + " for " + settings.DefaultStore.Name);
-            var count = await settings.DefaultStore.GetCountAsync().ConfigureAwait(false);
+            var count = await settings.DefaultStore.GetCountAsync();
             WriteLine("Exceptions in the log: " + count.ToString());
 
-            var errors = await settings.DefaultStore.GetAllAsync().ConfigureAwait(false);
+            var errors = await settings.DefaultStore.GetAllAsync();
 
             if (errors.Count == 0) return;
 
