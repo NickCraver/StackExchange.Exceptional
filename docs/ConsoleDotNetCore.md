@@ -1,8 +1,8 @@
 ---
 layout: default
-title: '.NET Console App (non-Core)'
+title: '.NET Core Console App'
 ---
-## .NET Console Applications (non-Core)
+## .NET Core Console Applications
 
 Install [the `StackExchange.Exceptional.AspNetCore` nuget package](https://www.nuget.org/packages/StackExchange.Exceptional.AspNetCore) via:
 
