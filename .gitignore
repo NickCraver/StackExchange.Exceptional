@@ -89,3 +89,4 @@ docs/Gemfile.lock
 docs/.sass-cache/
 docs/_site/
 _site/
+appsettings.local.json

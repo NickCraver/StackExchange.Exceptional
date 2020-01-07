@@ -8,6 +8,9 @@
     <Content Include="Configs\*.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Configs\Storage.Oracle.json" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\StackExchange.Exceptional.Tests\StackExchange.Exceptional.Tests.csproj" />
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.AspNetCore\StackExchange.Exceptional.AspNetCore.csproj" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
