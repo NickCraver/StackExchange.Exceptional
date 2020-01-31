@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿#if NETSTANDARD2_0 || NET461
+using Microsoft.AspNetCore.Hosting;
+#else
+using Microsoft.Extensions.Hosting;
+#endif
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +30,7 @@ namespace StackExchange.Exceptional
 #if NETSTANDARD2_0 || NET461
         private readonly IHostingEnvironment _env;
 #else
-        private readonly IWebHostEnvironment _env;
+        private readonly IHostEnvironment _env;
 #endif
         private readonly IOptions<ExceptionalSettings> _settings;
 
@@ -43,7 +47,7 @@ namespace StackExchange.Exceptional
 #if NETSTANDARD2_0 || NET461
         IHostingEnvironment hostingEnvironment,
 #else
-        IWebHostEnvironment hostingEnvironment,
+        IHostEnvironment hostingEnvironment,
 #endif
             ILoggerFactory loggerFactory)
         {
