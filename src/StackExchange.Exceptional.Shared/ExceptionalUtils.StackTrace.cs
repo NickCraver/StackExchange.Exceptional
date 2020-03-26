@@ -44,6 +44,13 @@ namespace StackExchange.Exceptional
             // TODO: Patterns, or a bunch of these...
             private static readonly HashSet<string> _asyncFrames = new HashSet<string>()
             {
+                // 3.1 Stacks
+                "System.Runtime.CompilerServices.AsyncTaskMethodBuilder.SetException(Exception exception)",
+                "System.Runtime.CompilerServices.AsyncValueTaskMethodBuilder`1.SetException(Exception exception)",
+                "System.Threading.Tasks.AwaitTaskContinuation.RunOrScheduleAction(IAsyncStateMachineBox box, Boolean allowInlining)",
+                "System.Threading.Tasks.Task.FinishSlow(Boolean userDelegateExecute)",
+                "System.Threading.Tasks.Task.TrySetException(Object exceptionObject)",
+
                 // 3.0 Stacks
                 "System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)",
                 "System.Threading.Tasks.Task.RunContinuations(Object continuationObject)",
