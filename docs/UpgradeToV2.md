@@ -10,7 +10,7 @@ This doc describes how to upgrade each area of Exceptional you may be using:
 
 #### Logging
 
-Loging has shifted from static methods (`Error.Log()`/`Error.LogWithoutContext()`) to extension methods (`.Log()`/`.LogWithoutContext()`) on `Exception` itself. Example usage in a controller:
+Loging has shifted from static methods (`Error.Log()`/`Error.LogNoContext()`) to extension methods (`.Log()`/`.LogNoContext()`) on `Exception` itself. Example usage in a controller:
 ```c#
 catch (SqlException e)
 {

@@ -12,7 +12,7 @@ This page tracks major changes included in any update starting with version 2.0.
 
 ##### <span class="critical">Major version breaking changes</span>
   - An upgrade guide for moving from v1 to v2 [can be found here](https://nickcraver.com/StackExchange.Exceptional/UpgradeToV2)
-  - Logging has changed fom static methods to `.Log()` and `.LogWithoutContext()` extensions on `Exception`
+  - Logging has changed fom static methods to `.Log()` and `.LogNoContext()` extensions on `Exception`
   - Errors now have a `LastLogDate` which is updated when duplicates are logged
   - Errors now have a `Category` field for use in storage (no UI changes yet)
   - Due to the additions above, new columns are necessary on data stores. Upgrade scripts for every provider above are in [the V2 upgrade guide](https://nickcraver.com/StackExchange.Exceptional/UpgradeToV2).
