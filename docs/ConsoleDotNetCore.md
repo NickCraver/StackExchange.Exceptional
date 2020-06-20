@@ -10,7 +10,7 @@ Install [the `StackExchange.Exceptional.AspNetCore` nuget package](https://www.n
 Install-Package StackExchange.Exceptional.AspNetCore
 ```
 
-**If setting up a console application, I encourage you to [check out the .NET Core Console sample project](https://github.com/NickCraver/StackExchange.Exceptional/tree/master/samples/Samples.NetCoreConsole), it has all of the below in a proper context.**
+**If setting up a console application, I encourage you to [check out the .NET Core Console sample project](https://github.com/NickCraver/StackExchange.Exceptional/tree/main/samples/Samples.NetCoreConsole), it has all of the below in a proper context.**
 
 You can either configure things via a config file, for example `appsettings.json`:
 ```json

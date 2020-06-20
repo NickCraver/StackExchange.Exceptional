@@ -16,7 +16,7 @@ This page tracks major changes included in any update starting with version 2.0.
   - Errors now have a `LastLogDate` which is updated when duplicates are logged
   - Errors now have a `Category` field for use in storage (no UI changes yet)
   - Due to the additions above, new columns are necessary on data stores. Upgrade scripts for every provider above are in [the V2 upgrade guide](https://nickcraver.com/StackExchange.Exceptional/UpgradeToV2).
-  - Settings have changed greatly in code and for ASP.NET Core, but existing `web.config` settings should load as-is. The [sample applications](https://github.com/NickCraver/StackExchange.Exceptional/tree/master/samples) and getting started guides above explain usage.
+  - Settings have changed greatly in code and for ASP.NET Core, but existing `web.config` settings should load as-is. The [sample applications](https://github.com/NickCraver/StackExchange.Exceptional/tree/main/samples) and getting started guides above explain usage.
 
 ##### **Features**
 - ASP.NET Core 2.0+ support ([StackExchange.Exceptional.AspNetCore](https://www.nuget.org/packages/StackExchange.Exceptional.AspNetCore/))

@@ -34,4 +34,4 @@ C# Code example:
 Exceptional.Configure("My Application", new SQLErrorStore("Data Source=.;Initial Catalog=Exceptions;Uid=Exceptions;Pwd=iloveerrors"));
 ```
 
-[SqlServer]: https://github.com/NickCraver/StackExchange.Exceptional/blob/master/DBScripts/SqlServer.sql
+[SqlServer]: https://github.com/NickCraver/StackExchange.Exceptional/blob/main/DBScripts/SqlServer.sql

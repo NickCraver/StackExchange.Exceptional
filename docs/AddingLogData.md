@@ -48,7 +48,7 @@ public class RedisException : Exception, IExceptionalHandled
 
 Commands are a V2 feature and replace the V1 SQL-only logging field. Commands have a type (a title/description), a command string (e.g. the SQL query), and a key/value store for any relevant data you want to associate there, e.g. the SQL Server it was hitting, the timeout, etc.
 
-Here's an example of how a command is added in a handler (this example is one of [the default handlers](https://github.com/NickCraver/StackExchange.Exceptional/blob/master/src/StackExchange.Exceptional.Shared/Extensions.Handlers.cs)):
+Here's an example of how a command is added in a handler (this example is one of [the default handlers](https://github.com/NickCraver/StackExchange.Exceptional/blob/main/src/StackExchange.Exceptional.Shared/Extensions.Handlers.cs)):
 
 ```c#
 Handlers.AddHandler<SqlException>((e, se) =>

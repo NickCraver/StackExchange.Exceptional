@@ -35,4 +35,4 @@ C# Code example:
 Exceptional.Configure("My Application", new MySQLErrorStore("Data Source=.;Initial Catalog=Exceptions;Uid=Exceptions;Pwd=iloveerrors"));
 ```
 
-[MySQL]: https://github.com/NickCraver/StackExchange.Exceptional/blob/master/DBScripts/MySQL.sql
+[MySQL]: https://github.com/NickCraver/StackExchange.Exceptional/blob/main/DBScripts/MySQL.sql

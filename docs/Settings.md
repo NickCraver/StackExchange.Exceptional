@@ -8,7 +8,7 @@ Exceptional has many configuration settings you can use to customize logging and
 
 However, **all** settings are always available in code, so pick whatever flavor suits you.
 
-In code, settings are in the `StackExchange.Exceptional` namespace, in [the `Settings` class](https://github.com/NickCraver/StackExchange.Exceptional/blob/master/src/StackExchange.Exceptional.Shared/Settings.cs). The current instance is accessible at `Settings.Current`. For example:
+In code, settings are in the `StackExchange.Exceptional` namespace, in [the `Settings` class](https://github.com/NickCraver/StackExchange.Exceptional/blob/main/src/StackExchange.Exceptional.Shared/Settings.cs). The current instance is accessible at `Settings.Current`. For example:
 
 ```c#
 using StackExchange.Exceptional;
@@ -50,13 +50,13 @@ UseExceptionalPageOnThrow = true;
 ```
 
 **Notifiers** (`List<IErrorNotifier>`): These run just after an exception is logged, like emailing it to a user.
-The [`EmailNotifier` is built-in](https://github.com/NickCraver/StackExchange.Exceptional/blob/master/src/StackExchange.Exceptional.Shared/Notifiers/EmailNotifier.cs), but anyone [can implement `IErrorNotifier`](https://github.com/NickCraver/StackExchange.Exceptional/blob/master/src/StackExchange.Exceptional.Shared/Notifiers/IErrorNotifier.cs) for things like posting to a chat room, etc.
+The [`EmailNotifier` is built-in](https://github.com/NickCraver/StackExchange.Exceptional/blob/main/src/StackExchange.Exceptional.Shared/Notifiers/EmailNotifier.cs), but anyone [can implement `IErrorNotifier`](https://github.com/NickCraver/StackExchange.Exceptional/blob/main/src/StackExchange.Exceptional.Shared/Notifiers/IErrorNotifier.cs) for things like posting to a chat room, etc.
 Usage: There is a `.Register()` extension method on `IEmailNotifier` to automate usage, e.g. this registers the notifier on `Settings.Current`:
 ```c#
 new EmailNotifier(settings).Register();
 ```
 
-**ExceptionActions** (`Dictionary<string, Action<Error>>`): These run just before an exception is logged, for each `.InnerException` within that matches. The `string` is the full type name (so that references are less burdensome). [The `.AddDefault()` extensions](https://github.com/NickCraver/StackExchange.Exceptional/blob/master/src/StackExchange.Exceptional.Shared/Extensions.Handlers.cs) are added by default (e.g. for backwards compatability to keep logging SQL exceptions in a rich format). There are extension methods to ease registering here as well: `.AddHandler<T>(Action<Error, T> handler)` and `.AddHandler(string typeName, Action<Error, Exception> handler)`, used like this:
+**ExceptionActions** (`Dictionary<string, Action<Error>>`): These run just before an exception is logged, for each `.InnerException` within that matches. The `string` is the full type name (so that references are less burdensome). [The `.AddDefault()` extensions](https://github.com/NickCraver/StackExchange.Exceptional/blob/main/src/StackExchange.Exceptional.Shared/Extensions.Handlers.cs) are added by default (e.g. for backwards compatability to keep logging SQL exceptions in a rich format). There are extension methods to ease registering here as well: `.AddHandler<T>(Action<Error, T> handler)` and `.AddHandler(string typeName, Action<Error, Exception> handler)`, used like this:
 ```c#
 ExceptionActions.AddHandler<SqlException>((e, se) =>
 {

@@ -4,7 +4,7 @@ StackExchange.Exceptional is the error handler/logger used internally by [Stack 
 It also supports adding custom data to exceptions as they're logged, filtering of what's logged, ignoring errors, and much more.
 [Check out the docs to get started][Docs].
 
-![Build Status](https://ci.appveyor.com/api/projects/status/650qft3qrt2r0gre/branch/master?svg=true)
+![Build Status](https://ci.appveyor.com/api/projects/status/650qft3qrt2r0gre/branch/main?svg=true)
 
 ### Documentation
 [See the docs for how to get configured and logging in just a few minutes][Docs].

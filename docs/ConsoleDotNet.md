@@ -10,7 +10,7 @@ Install [the `StackExchange.Exceptional` nuget package](https://www.nuget.org/pa
 Install-Package StackExchange.Exceptional
 ```
 
-**If setting up a console application, I encourage you to [check out the Console sample project](https://github.com/NickCraver/StackExchange.Exceptional/tree/master/samples/Samples.Console), it has all of the below in a proper context.**
+**If setting up a console application, I encourage you to [check out the Console sample project](https://github.com/NickCraver/StackExchange.Exceptional/tree/main/samples/Samples.Console), it has all of the below in a proper context.**
 
 
 App.Config example pieces:

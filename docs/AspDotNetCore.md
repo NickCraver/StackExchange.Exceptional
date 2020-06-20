@@ -10,7 +10,7 @@ Install [the `StackExchange.Exceptional.AspNetCore` nuget package](https://www.n
 Install-Package StackExchange.Exceptional.AspNetCore
 ```
 
-**If setting up a web application, I encourage you to [check out the ASP.NET Core sample project](https://github.com/NickCraver/StackExchange.Exceptional/tree/master/samples/Samples.AspNetCore), it has all of the below in a proper context.**
+**If setting up a web application, I encourage you to [check out the ASP.NET Core sample project](https://github.com/NickCraver/StackExchange.Exceptional/tree/main/samples/Samples.AspNetCore), it has all of the below in a proper context.**
 
 #### Configuration
 
@@ -32,7 +32,7 @@ public void ConfigureServices(IServiceCollection services)
     // This uses all defaults (e.g. the in-memory error store)
     services.AddExceptional(Configuration.GetSection("Exceptional"));
 ```
-and configure Exceptional in your `Configuration`, e.g. in your `appsettings.json` ([full schema here](https://github.com/NickCraver/StackExchange.Exceptional/blob/master/samples/Samples.AspNetCore/appsettings.json)):
+and configure Exceptional in your `Configuration`, e.g. in your `appsettings.json` ([full schema here](https://github.com/NickCraver/StackExchange.Exceptional/blob/main/samples/Samples.AspNetCore/appsettings.json)):
 ```json
 {
   "Exceptional": {

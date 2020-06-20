@@ -35,4 +35,4 @@ C# Code example:
 Exceptional.Configure("My Application", new PostgreSqlErrorStore("Server=..."));
 ```
 
-[PostgreSql]: https://github.com/NickCraver/StackExchange.Exceptional/blob/master/DBScripts/PostgreSql.sql
+[PostgreSql]: https://github.com/NickCraver/StackExchange.Exceptional/blob/main/DBScripts/PostgreSql.sql

@@ -34,7 +34,7 @@ Settings are now in `.ExceptionalSettings` (defined in the `StackExchange.Except
 
 The `StackExchange.Exceptional` (ASP.NET non-Core) package tries to ensure backwards compatability with existing `Web.config` layouts with shims. If something doesn't work, *please* file an issue!
 
-The rest of the settings that were spread across `Error` and `ErrorStore` are now unified in `ExceptionalSettings`. See [the sample applications](https://github.com/NickCraver/StackExchange.Exceptional/tree/master/samples) for configure-by-code examples in your respective platform. Settings are also avaialble statically if needed at `ExceptionalConfig.Settings`, for example:
+The rest of the settings that were spread across `Error` and `ErrorStore` are now unified in `ExceptionalSettings`. See [the sample applications](https://github.com/NickCraver/StackExchange.Exceptional/tree/main/samples) for configure-by-code examples in your respective platform. Settings are also avaialble statically if needed at `ExceptionalConfig.Settings`, for example:
 ```c#
 ExceptionalConfig.Settings.Store.ApplicationName = "MyApp";
 ```
@@ -105,5 +105,5 @@ EXECUTE q1;
 DEALLOCATE PREPARE q1;
 ```
 
-[SqlServer]: https://github.com/NickCraver/StackExchange.Exceptional/blob/master/DBScripts/SqlServer.sql
-[MySQL]: https://github.com/NickCraver/StackExchange.Exceptional/blob/master/DBScripts/MySQL.sql
+[SqlServer]: https://github.com/NickCraver/StackExchange.Exceptional/blob/main/DBScripts/SqlServer.sql
+[MySQL]: https://github.com/NickCraver/StackExchange.Exceptional/blob/main/DBScripts/MySQL.sql
