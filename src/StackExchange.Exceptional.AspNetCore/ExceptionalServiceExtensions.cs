@@ -19,7 +19,6 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddExceptional(this IServiceCollection services, IConfiguration config, Action<ExceptionalSettings> configureSettings = null)
         {
             services.Configure<ExceptionalSettings>(config.Bind); // Custom extension
-            services.AddTransient<IStartupFilter, ExceptionalStartupFilter>();
             return AddExceptional(services, configureSettings);
         }
 
@@ -37,7 +36,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // When done configuring, set the background settings object for non-context logging.
             services.Configure<ExceptionalSettings>(Exceptional.Configure);
-            services.AddTransient<IStartupFilter, ExceptionalStartupFilter>();
+            services.AddTransient<IStartupFilter, ExceptionalStartupFilter>(); // Note: transient is how all framework IStartupFilters are registered
 
             return services;
         }
