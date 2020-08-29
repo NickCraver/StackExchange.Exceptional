@@ -3,6 +3,7 @@
     <OutputType>Library</OutputType>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <xUnitVersion>2.4.1</xUnitVersion>
+    <LangVersion>Latest</LangVersion>
   </PropertyGroup>
   
   <ItemGroup>
