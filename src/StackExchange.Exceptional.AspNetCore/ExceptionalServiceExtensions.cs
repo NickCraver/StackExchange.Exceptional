@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using StackExchange.Exceptional;
 using System;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -35,6 +36,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // When done configuring, set the background settings object for non-context logging.
             services.Configure<ExceptionalSettings>(Exceptional.Configure);
+            services.AddTransient<IStartupFilter, ExceptionalStartupFilter>(); // Note: transient is how all framework IStartupFilters are registered
 
             return services;
         }
