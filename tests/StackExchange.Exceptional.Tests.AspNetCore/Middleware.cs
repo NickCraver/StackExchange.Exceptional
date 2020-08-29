@@ -22,7 +22,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
                 var ex = await Assert.ThrowsAsync<Exception>(async () => await server.CreateClient().GetAsync("").ConfigureAwait(false)).ConfigureAwait(false);
                 Assert.Equal("Log me!", ex.Message);
 
-                var errors = await GetErrors().ConfigureAwait(false);
+                var errors = await GetErrorsAsync().ConfigureAwait(false);
                 Assert.Single(errors);
                 Assert.Equal("Log me!", errors[0].Message);
             }

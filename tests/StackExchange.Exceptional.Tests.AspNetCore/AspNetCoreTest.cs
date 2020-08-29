@@ -20,7 +20,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
 
         protected string LogName([CallerMemberName]string name = null) => name;
 
-        protected Task<List<Error>> GetErrors() => CurrentSettings.DefaultStore.GetAllAsync();
+        protected Task<List<Error>> GetErrorsAsync() => CurrentSettings.DefaultStore.GetAllAsync();
 
         protected TestServer GetServer(RequestDelegate requestDelegate, [CallerMemberName]string name = null) =>
             new TestServer(BasicBuilder(requestDelegate, name));
