@@ -30,7 +30,7 @@ environment:
   # MongoDB
   MongoDBConnectionString: mongodb://localhost/test
 services:
-  - mssql2016
+  - mssql2017
   - mysql
   - postgresql
   - mongodb
