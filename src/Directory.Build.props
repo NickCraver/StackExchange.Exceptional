@@ -9,6 +9,7 @@
     <PackageId>$(AssemblyName)</PackageId>
     <PackageLicenseExpression>MIT OR Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/NickCraver/StackExchange.Exceptional</PackageProjectUrl>
+    <PackageReleaseNotes>https://nickcraver.com/StackExchange.Exceptional/Releases</PackageReleaseNotes>
     <Deterministic>false</Deterministic>
     
     <DebugSymbols>true</DebugSymbols>
