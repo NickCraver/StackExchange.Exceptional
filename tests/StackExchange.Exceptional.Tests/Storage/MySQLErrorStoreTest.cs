@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using Dapper;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using StackExchange.Exceptional.Stores;
 using Xunit;
 using Xunit.Abstractions;
