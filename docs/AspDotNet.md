@@ -76,7 +76,6 @@ If you want to store some custom key/value style data with an exception, you can
 Exceptional.Settings.GetCustomData = (exception, data) =>
     {
         // exception is the exception thrown
-        // context is the HttpContext of the request (could be null, e.g. background thread exception)
         // data is a Dictionary<string, string> to add custom data too
         data.Add("Example string", DateTime.UtcNow.ToString());
         data.Add("User Id", "You could fetch a user/account Id here, etc.");
