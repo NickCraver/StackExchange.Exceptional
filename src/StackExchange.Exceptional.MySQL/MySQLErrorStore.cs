@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using StackExchange.Exceptional.Internal;
 
 namespace StackExchange.Exceptional.Stores
