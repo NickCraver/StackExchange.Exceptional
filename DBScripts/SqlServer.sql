@@ -68,6 +68,15 @@ Begin
     Where DeletionDate Is Null;
 End
 
+If Not Exists (Select 1 From sys.indexes Where object_id = OBJECT_ID('dbo.Exceptions') And name = 'IX_Exceptions_CreationDate_Includes')
+Begin
+    Create Nonclustered Index [IX_Exceptions_CreationDate_Includes] On [dbo].[Exceptions] 
+    (
+        [CreationDate] Asc
+    )
+    Include ([ApplicationName], [MachineName], [DuplicateCount])
+End
+
 /* Begin V2 Schema changes */
 
 If Not Exists (Select 1 From INFORMATION_SCHEMA.COLUMNS Where TABLE_NAME = 'Exceptions' And COLUMN_NAME = 'LastLogDate')
