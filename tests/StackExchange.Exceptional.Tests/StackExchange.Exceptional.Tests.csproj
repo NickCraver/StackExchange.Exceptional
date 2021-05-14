@@ -6,6 +6,7 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\..\src\StackExchange.Exceptional.Oracle\StackExchange.Exceptional.Oracle.csproj" />
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.Shared\StackExchange.Exceptional.Shared.csproj" />
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.MySQL\StackExchange.Exceptional.MySQL.csproj" />
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.PostgreSql\StackExchange.Exceptional.PostgreSql.csproj" />

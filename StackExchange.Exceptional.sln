@@ -35,6 +35,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DBScripts", "DBScripts", "{7669A017-BBDA-45B0-89B1-A9E0F2FD0BF8}"
 	ProjectSection(SolutionItems) = preProject
 		DBScripts\MySQL.sql = DBScripts\MySQL.sql
+		DBScripts\Oracle.sql = DBScripts\Oracle.sql
 		DBScripts\PostgreSql.sql = DBScripts\PostgreSql.sql
 		DBScripts\SqlServer.sql = DBScripts\SqlServer.sql
 	EndProjectSection
@@ -56,7 +57,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackExchange.Exceptional.P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackExchange.Exceptional.MongoDB", "src\StackExchange.Exceptional.MongoDB\StackExchange.Exceptional.MongoDB.csproj", "{8CFA59A5-5180-4466-A32E-507F3D541163}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples.ConsoleNetCore", "samples\Samples.ConsoleNetCore\Samples.ConsoleNetCore.csproj", "{6CE269E1-6DC9-43A4-B6B8-683CE8A19E6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.ConsoleNetCore", "samples\Samples.ConsoleNetCore\Samples.ConsoleNetCore.csproj", "{6CE269E1-6DC9-43A4-B6B8-683CE8A19E6A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackExchange.Exceptional.Oracle", "src\StackExchange.Exceptional.Oracle\StackExchange.Exceptional.Oracle.csproj", "{A51A932D-67DB-4A1C-89D2-886DE2258E58}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -112,6 +115,10 @@ Global
 		{6CE269E1-6DC9-43A4-B6B8-683CE8A19E6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6CE269E1-6DC9-43A4-B6B8-683CE8A19E6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6CE269E1-6DC9-43A4-B6B8-683CE8A19E6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A51A932D-67DB-4A1C-89D2-886DE2258E58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A51A932D-67DB-4A1C-89D2-886DE2258E58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A51A932D-67DB-4A1C-89D2-886DE2258E58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A51A932D-67DB-4A1C-89D2-886DE2258E58}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -129,6 +136,7 @@ Global
 		{0A412433-C2CE-4EBE-BB5A-C3E48983E941} = {8B91532F-A112-4F73-80BD-A95B7359BBC3}
 		{8CFA59A5-5180-4466-A32E-507F3D541163} = {8B91532F-A112-4F73-80BD-A95B7359BBC3}
 		{6CE269E1-6DC9-43A4-B6B8-683CE8A19E6A} = {001E5AA4-42C8-4AC3-B14A-AF1DFA02E9FB}
+		{A51A932D-67DB-4A1C-89D2-886DE2258E58} = {8B91532F-A112-4F73-80BD-A95B7359BBC3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7F066A86-14D8-4A2C-848A-D4371BB704FA}

@@ -207,6 +207,32 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
             Assert.Equal("Samples (ASP.NET Core MongoDB)", store.ApplicationName);
         }
 
+        [Fact]
+        public void OracleStorage()
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile(GetPath("Storage.Oracle.json"))
+                .Build();
+
+            Assert.NotNull(config);
+            var exceptionalSection = config.GetSection("Exceptional");
+            Assert.NotNull(exceptionalSection);
+
+            var settings = new ExceptionalSettings();
+            exceptionalSection.Bind(settings);
+
+            // Store
+            Assert.NotNull(settings.Store);
+            Assert.Equal("Samples (ASP.NET Core Oracle)", settings.Store.ApplicationName);
+            Assert.Equal("Oracle", settings.Store.Type);
+            Assert.Equal("User Id=root;Password=root;Data Source=127.0.0.1:1521", settings.Store.ConnectionString);
+
+            Assert.IsType<OracleErrorStore>(settings.DefaultStore);
+            var sqlStore = settings.DefaultStore as OracleErrorStore;
+            Assert.Equal("Samples (ASP.NET Core Oracle)", sqlStore.ApplicationName);
+        }
+
         private string GetPath(string configFile) => Path.Combine("Configs", configFile);
     }
 }
