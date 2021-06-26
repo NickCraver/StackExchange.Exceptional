@@ -140,6 +140,40 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
         }
 
         [Fact]
+        public async Task LogNoContextAsync()
+        {
+            Error error = null;
+            using var server = GetServer(async context =>
+            {
+                error = await new Exception("Log!").LogNoContextAsync("TestCategoy");
+                await context.Response.WriteAsync("Hey.");
+            });
+
+            var content = new FormUrlEncodedContent(new Dictionary<string, string>()
+            {
+                ["FormKey"] = "FormValue",
+            });
+            using (var response = await server.CreateClient().PostAsync("?QueryKey=QueryValue", content).ConfigureAwait(false))
+            {
+                Assert.Equal("Hey.", await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            }
+
+            Assert.Equal("Log!", error.Message);
+            Assert.Equal("System.Exception", error.Type);
+            Assert.Equal(Environment.MachineName, error.MachineName);
+            Assert.Equal("TestCategoy", error.Category);
+            Assert.Null(error.Host);
+            Assert.Null(error.FullUrl);
+            Assert.Null(error.UrlPath);
+            Assert.Null(error.IPAddress);
+
+            Assert.Null(error.RequestHeaders);
+            Assert.Null(error.Form);
+            Assert.Null(error.QueryString);
+            Assert.Null(error.ServerVariables);
+        }
+
+        [Fact]
         public async Task LogNull()
         {
             Error error = null;
