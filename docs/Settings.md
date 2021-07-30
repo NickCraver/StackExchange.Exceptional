@@ -135,6 +135,9 @@ These settings are under `.LogFilters`, e.g. `Settings.Current.LogFilters`. Thes
 
 **Cookie** (`Dictionary<string, string>`): Cookie values to replace on save - this prevents logging authentication tokens, etc. The key is the cookie name to match, the value is what to use when logging.
 
+**Header** (`Dictionary<string, string>`): Header values to replace on save - this prevents logging authentication tokens, etc. The key is the header name to match, the value is what to use when logging.
+
+**QueryString** (`Dictionary<string, string>`): Query string values to replace on save - this prevents logging authentication tokens, etc. The key is the query string parameter name to match, the value is what to use when logging.
 
 ### Stack Trace
 
