@@ -32,7 +32,7 @@ Given the above needs, StackExchange.Exceptional was created.  It's as lightweig
 
 Here are some examples of what Exceptional looks like.
 
-Error listng:
+Error listing:
 ![Error list]({{ site.baseurl }}/images/ErrorList.png)
 
 Error Detail:
