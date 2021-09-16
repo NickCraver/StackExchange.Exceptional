@@ -97,12 +97,12 @@ namespace StackExchange.Exceptional
              )
              ({Space}+
                 (\w+{Space}+
-					(?<{Groups.SourceInfo}>
-		                (?<{Groups.Path}>([a-z]\:.+?|(\b(https?|ftp|file)://)?[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]))
-		                (?<{Groups.LinePrefix}>\:\w+{Space}+)
-		                (?<{Groups.Line}>[0-9]+)\p{{P}}?
-		                |\[0x[0-9a-f]+\]{Space}+\w+{Space}+<(?<{Groups.Path}>[^>]+)>(?<{Groups.LinePrefix}>:)(?<{Groups.Line}>[0-9]+))
-					)
+                    (?<{Groups.SourceInfo}>
+                        (?<{Groups.Path}>([a-z]\:.+?|(\b(https?|ftp|file)://)?[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]))
+                        (?<{Groups.LinePrefix}>\:\w+{Space}+)
+                        (?<{Groups.Line}>[0-9]+)\p{{P}}?
+                        |\[0x[0-9a-f]+\]{Space}+\w+{Space}+<(?<{Groups.Path}>[^>]+)>(?<{Groups.LinePrefix}>:)(?<{Groups.Line}>[0-9]+))
+                    )
              )?
             )\s*$",
                 RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.Multiline
