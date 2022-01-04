@@ -3,93 +3,94 @@
     Run this script for creating the exceptions table
     It will also upgrade a V1 schema to V2, just run the full script.
 */
-If Not Exists (Select 1 
-                 From INFORMATION_SCHEMA.TABLES 
-                Where [TABLE_SCHEMA] = 'dbo'
-                  And [TABLE_NAME] = 'Exceptions')
-Begin
-    Create Table [dbo].[Exceptions](
-        [Id] [bigint] Not Null Identity,
-        [GUID] [uniqueidentifier] Not Null,
-        [ApplicationName] [nvarchar](50) Not Null,
-        [MachineName] [nvarchar](50) Not Null,
-        [CreationDate] [datetime] Not Null,
-        [Type] [nvarchar](100) Not Null,
-        [IsProtected] [bit] Not Null Default(0),
-        [Host] [nvarchar](100) Null,
-        [Url] [nvarchar](500) Null,
-        [HTTPMethod] [nvarchar](10) Null,
-        [IPAddress] [varchar](40) Null,
-        [Source] [nvarchar](100) Null,
-        [Message] [nvarchar](1000) Null,
-        [Detail] [nvarchar](max) Null,	
-        [StatusCode] [int] Null,
-        [DeletionDate] [datetime] Null,
-        [FullJson] [nvarchar](max) Null,
-        [ErrorHash] [int] Null,
-        [DuplicateCount] [int] Not Null Default(1),
-        [LastLogDate] [datetime] Null,
-        [Category] nvarchar(100) Null
-     Constraint [PK_Exceptions] Primary Key Clustered ([Id] Asc)
-     With (Pad_Index = Off, Statistics_NoRecompute = Off, Ignore_Dup_Key = Off, Allow_Row_Locks = On, Allow_Page_Locks = On) On [PRIMARY]
+IF NOT EXISTS (SELECT 1 
+                 FROM INFORMATION_SCHEMA.TABLES 
+                WHERE [TABLE_SCHEMA] = 'dbo'
+                  AND [TABLE_NAME] = 'Exceptions')
+BEGIN
+    CREATE TABLE [dbo].[Exceptions](
+        [Id] bigint NOT NULL Identity,
+        [GUID] uniqueidentifier NOT NULL,
+        [ApplicationName] nvarchar(50) NOT NULL,
+        [MachineName] nvarchar(50) NOT NULL,
+        [CreationDate] datetime NOT NULL,
+        [Type] nvarchar(100) NOT NULL,
+        [IsProtected] bit NOT NULL DEFAULT(0),
+        [Host] nvarchar(100) NULL,
+        [Url] nvarchar(500) NULL,
+        [HTTPMethod] nvarchar(10) NULL,
+        [IPAddress] varchar(40) NULL,
+        [Source] nvarchar(100) NULL,
+        [Message] nvarchar(1000) NULL,
+        [Detail] nvarchar(max) NULL,	
+        [StatusCode] int NULL,
+        [DeletionDate] datetime NULL,
+        [FullJson] nvarchar(max) NULL,
+        [ErrorHash] int NULL,
+        [DuplicateCount] int NOT NULL DEFAULT(1),
+        [LastLogDate] datetime NULL,
+        [Category] nvarchar(100) NULL,
+        [LogLevel] nvarchar(8) NOT NULL DEFAULT('Critical')
+     CONSTRAINT [PK_Exceptions] PRIMARY KEY Clustered ([Id] ASC)
+     WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
     );
-End
+END
 
-If Not Exists (Select 1 From sys.indexes Where object_id = OBJECT_ID('dbo.Exceptions') And name = 'IX_Exceptions_GUID_ApplicationName_DeletionDate_CreationDate')
-Begin
-    Create Unique Nonclustered Index [IX_Exceptions_GUID_ApplicationName_DeletionDate_CreationDate] On [dbo].[Exceptions] 
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID('dbo.Exceptions') AND [name] = 'IX_Exceptions_GUID_ApplicationName_DeletionDate_CreationDate')
+BEGIN
+    CREATE UNIQUE NONCLUSTERED INDEX [IX_Exceptions_GUID_ApplicationName_DeletionDate_CreationDate] ON [dbo].[Exceptions] 
     (
-        [GUID] Asc,
-        [ApplicationName] Asc,
-        [DeletionDate] Asc,
-        [CreationDate] Desc
+        [GUID] ASC,
+        [ApplicationName] ASC,
+        [DeletionDate] ASC,
+        [CreationDate] DESC
     );
-End
+END
 
-If Not Exists (Select 1 From sys.indexes Where object_id = OBJECT_ID('dbo.Exceptions') And name = 'IX_Exceptions_ErrorHash_ApplicationName_CreationDate_DeletionDate')
-Begin
-    Create Nonclustered Index [IX_Exceptions_ErrorHash_ApplicationName_CreationDate_DeletionDate] On [dbo].[Exceptions] 
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID('dbo.Exceptions') AND [name] = 'IX_Exceptions_ErrorHash_ApplicationName_CreationDate_DeletionDate')
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_Exceptions_ErrorHash_ApplicationName_CreationDate_DeletionDate] ON [dbo].[Exceptions] 
     (
-        [ErrorHash] Asc,
-        [ApplicationName] Asc,
-        [CreationDate] Desc,
-        [DeletionDate] Asc
+        [ErrorHash] ASC,
+        [ApplicationName] ASC,
+        [CreationDate] DESC,
+        [DeletionDate] ASC
     );
-End
+END
 
-If Not Exists (Select 1 From sys.indexes Where object_id = OBJECT_ID('dbo.Exceptions') And name = 'IX_Exceptions_ApplicationName_DeletionDate_CreationDate_Filtered')
-Begin
-    Create Nonclustered Index [IX_Exceptions_ApplicationName_DeletionDate_CreationDate_Filtered] On [dbo].[Exceptions] 
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID('dbo.Exceptions') AND [name] = 'IX_Exceptions_ApplicationName_DeletionDate_CreationDate_Filtered')
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_Exceptions_ApplicationName_DeletionDate_CreationDate_Filtered] ON [dbo].[Exceptions] 
     (
-        [ApplicationName] Asc,
-        [DeletionDate] Asc,
-        [CreationDate] Desc
+        [ApplicationName] ASC,
+        [DeletionDate] ASC,
+        [CreationDate] DESC
     )
-    Where DeletionDate Is Null;
-End
+    WHERE DeletionDate IS NULL;
+END
 
-If Not Exists (Select 1 From sys.indexes Where object_id = OBJECT_ID('dbo.Exceptions') And name = 'IX_Exceptions_CreationDate_Includes')
-Begin
-    Create Nonclustered Index [IX_Exceptions_CreationDate_Includes] On [dbo].[Exceptions] 
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID('dbo.Exceptions') AND [name] = 'IX_Exceptions_CreationDate_Includes')
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_Exceptions_CreationDate_Includes] ON [dbo].[Exceptions] 
     (
-        [CreationDate] Asc
+        [CreationDate] ASC
     )
-    Include ([ApplicationName], [MachineName], [DuplicateCount])
-End
+    INCLUDE ([ApplicationName], [MachineName], [DuplicateCount])
+END
 
-/* Begin V2 Schema changes */
+/* BEGIN V2 Schema changes */
 
-If Not Exists (Select 1 From INFORMATION_SCHEMA.COLUMNS Where TABLE_NAME = 'Exceptions' And COLUMN_NAME = 'LastLogDate')
-Begin
-    Alter Table [dbo].[Exceptions] Add [LastLogDate] [datetime] Null;
-End
+IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Exceptions' AND COLUMN_NAME = 'LastLogDate')
+BEGIN
+    ALTER TABLE [dbo].[Exceptions] Add [LastLogDate] [datetime] NULL;
+END
 
-If Not Exists (Select 1 From INFORMATION_SCHEMA.COLUMNS Where TABLE_NAME = 'Exceptions' And COLUMN_NAME = 'Category')
-Begin
-    Alter Table [dbo].[Exceptions] Add [Category] nvarchar(100) Null;
-End
+IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Exceptions' AND COLUMN_NAME = 'Category')
+BEGIN
+    ALTER TABLE [dbo].[Exceptions] Add [Category] nvarchar(100) NULL;
+END
 
-If Exists (Select 1 From INFORMATION_SCHEMA.COLUMNS Where TABLE_NAME = 'Exceptions' And COLUMN_NAME = 'SQL')
-Begin
-    Alter Table [dbo].[Exceptions] Drop Column [SQL];
-End
+IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Exceptions' AND COLUMN_NAME = 'SQL')
+BEGIN
+    ALTER TABLE [dbo].[Exceptions] DROP COLUMN [SQL];
+END
