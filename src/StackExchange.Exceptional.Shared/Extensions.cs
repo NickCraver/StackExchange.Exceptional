@@ -1,7 +1,7 @@
 ﻿using StackExchange.Exceptional.Internal;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using Diagnostics = System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace StackExchange.Exceptional
@@ -41,7 +41,7 @@ namespace StackExchange.Exceptional
             catch (Exception e)
             {
                 Statics.Settings?.OnLogFailure?.Invoke(e);
-                Trace.WriteLine(e);
+                Diagnostics.Trace.WriteLine(e);
             }
             return null;
         }
@@ -76,7 +76,7 @@ namespace StackExchange.Exceptional
             catch (Exception e)
             {
                 Statics.Settings?.OnLogFailure?.Invoke(e);
-                Trace.WriteLine(e);
+                Diagnostics.Trace.WriteLine(e);
             }
             return Task.FromResult<Error>(null);
         }

@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Samples.LogLevelTesting</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net461</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <!--<ProjectReference Include="..\..\src\StackExchange.Exceptional.Shared\StackExchange.Exceptional.Shared.csproj" />-->
+    <ProjectReference Include="..\..\src\StackExchange.Exceptional\StackExchange.Exceptional.csproj" />
+    <PackageReference Include="Dapper.StrongName" Version="1.50.2" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.105.2" />
+  </ItemGroup>
+</Project>

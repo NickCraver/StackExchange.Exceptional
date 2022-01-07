@@ -94,6 +94,10 @@ namespace StackExchange.Exceptional
                 AddData(exCursor);
                 exCursor = exCursor.InnerException;
             }
+            ExceptionLogLevel level = baseException.Data[Extensions.LogLevelKey] != null ?
+                                        (ExceptionLogLevel)baseException.Data[Extensions.LogLevelKey] :
+                                        ExceptionLogLevel.Critical;
+            AddExceptionLevel(level);
             AddCustomData();
         }
 
@@ -187,6 +191,11 @@ namespace StackExchange.Exceptional
                     CustomData.Add(Constants.CustomDataErrorKey, cde.ToString());
                 }
             }
+        }
+
+        private void AddExceptionLevel(ExceptionLogLevel level)
+        {
+            LogLevel = (int)level;
         }
 
         /// <summary>
@@ -644,6 +653,20 @@ namespace StackExchange.Exceptional
         public string Url
         {
             set => UrlPath = value;
+        }
+
+        /// <summary>
+        /// Level of exception as an integer, ranging from Trace to Critical, used by monitoring tools
+        /// </summary>
+        public int LogLevel { get; set; }
+
+        /// <summary>
+        /// Translate the LogLevel to the enum entry it corresponds to
+        /// </summary>
+        public ExceptionLogLevel ExceptionLevel()
+        {
+            int level = LogLevel;
+            return (ExceptionLogLevel)level;
         }
     }
 }
