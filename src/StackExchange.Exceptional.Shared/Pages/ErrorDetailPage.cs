@@ -68,7 +68,7 @@ namespace StackExchange.Exceptional.Pages
                         if (vars[k].HasValue())
                         {
                             // If this is a hidden row, buffer it up, since CSS has no clean mechanism for :visible:nth-row(odd) type styling behavior
-                            (DefaultHttpKeys.Contains(k) ? hiddenRows : sb).AppendFormat("        <tr><td>{0}</td><td>{1}</td></tr>", k, Linkify(vars[k])).AppendLine();
+                            (DefaultHttpKeys.Contains(k) ? hiddenRows : sb).AppendFormat("        <tr><td>{0}</td><td>{1}</td></tr>", k.HtmlEncode(), Linkify(vars[k])).AppendLine();
                         }
                     }
                     if (renderUrls && vars["Request Method"].IsNullOrEmpty()) // told to render and we don't have them elsewhere

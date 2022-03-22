@@ -38,7 +38,7 @@ namespace StackExchange.Exceptional.Internal
                         {
                             continue;
                         }
-                        sb.AppendFormat("      <tr{2}><td style=\"padding: 0.4em; width: 200px;\">{0}</td><td style=\"padding: 0.4em;\">{1}</td></tr>", k, Linkify(vars[k]), getBackground()).AppendLine();
+                        sb.AppendFormat("      <tr{2}><td style=\"padding: 0.4em; width: 200px;\">{0}</td><td style=\"padding: 0.4em;\">{1}</td></tr>", k.HtmlEncode(), Linkify(vars[k]), getBackground()).AppendLine();
                     }
                     if (renderUrls && vars["Request Method"].IsNullOrEmpty()) // told to render and we don't have them elsewhere
                     {
