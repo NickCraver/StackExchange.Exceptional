@@ -47,6 +47,12 @@ namespace StackExchange.Exceptional
             }
         }
 
+        /// <summary>
+        /// For file-based error stores.
+        /// Whether to auto-create the <see cref="Path"/> directory on startup if it doesn't exist.
+        /// </summary>
+        public bool CreatePathIfMissing { get; set; }
+
         private string _connectionString;
         /// <summary>
         /// For database-based error stores.

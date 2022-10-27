@@ -53,6 +53,12 @@ namespace StackExchange.Exceptional.Stores
         {
             _size = Math.Min(settings.Size, MaximumSize);
             _path = settings.Path.ResolvePath();
+
+            // If we're instructed to create the path on startup and need to, do so.
+            if (settings.CreatePathIfMissing)
+            {
+                Directory.CreateDirectory(_path);
+            }
         }
 
         /// <summary>

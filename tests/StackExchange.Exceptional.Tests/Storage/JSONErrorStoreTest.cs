@@ -17,14 +17,10 @@ namespace StackExchange.Exceptional.Tests.Storage
             new JSONErrorStore(new ErrorStoreSettings
             {
                 ApplicationName = appName,
-                Path = GetUniqueFolder()
+                Path = GetUniqueFolder(),
+                CreatePathIfMissing = true
             });
 
-        protected string GetUniqueFolder()
-        {
-            string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            Directory.CreateDirectory(tempDirectory);
-            return tempDirectory;
-        }
+        protected string GetUniqueFolder() => Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
     }
 }
