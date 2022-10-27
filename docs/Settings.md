@@ -105,6 +105,8 @@ These settings are under `.Store`, e.g. `Exceptional.Settings.Store`. Usages are
 
 **Path** (`string`): Only for file-based error stores. The path to use on for file storage.
 
+**CreatePathIfMissing** (`bool`): Only for file-based error stores. Whether to create the `Path` (if needed) on startup.
+
 **ConnectionString** (`string`): Only for database-based error stores. The connection string to use.  If provided, `ConnectionStringName` below is ignored.
 
 **ConnectionStringName** <span class="badge">Non-Core Only</span> (`string`): Only for database-based error stores. The name of the connection string to use from the application's configuration.
