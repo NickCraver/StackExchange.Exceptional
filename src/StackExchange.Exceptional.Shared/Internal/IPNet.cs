@@ -153,7 +153,7 @@ namespace StackExchange.Exceptional.Internal
         {
             AddressFamily.InterNetwork => 32,
             AddressFamily.InterNetworkV6 => 128,
-            _ => throw new ArgumentOutOfRangeException(nameof(family), "You're probably from the future, they added another more IPs, fix me."),
+            _ => throw new ArgumentOutOfRangeException(nameof(family), "You're probably from the future, they added more IPs, fix me."),
         };
 
         // This is a much faster version thanks to Marc Gravell
