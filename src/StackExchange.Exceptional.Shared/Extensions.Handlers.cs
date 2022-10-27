@@ -41,7 +41,7 @@ namespace StackExchange.Exceptional
         /// Convenience method for adding a handler for an exception type.
         /// </summary>
         /// <typeparam name="T">The specific type of <see cref="Exception"/> to handle.</typeparam>
-        /// <param name="handlers">The handlers collection to add to (usually Settings.Current.DataHandlers)</param>
+        /// <param name="handlers">The handlers collection to add to (usually Exceptional.Settings.DataHandlers)</param>
         /// <param name="handler">The handler action to use.</param>
         public static void AddHandler<T>(this Dictionary<string, Action<Error>> handlers, Action<Error, T> handler) where T : Exception
         {
@@ -67,7 +67,7 @@ namespace StackExchange.Exceptional
         /// Convenience method for adding a handler for an exception type. Note that the handler here doesn't have the exception
         /// (due to not having a reference to every exception on earth), so behavior is limited to Exception for things like .Data, etc.
         /// </summary>
-        /// <param name="handlers">The handlers collection to add to (usually Settings.Current.DataHandlers)</param>
+        /// <param name="handlers">The handlers collection to add to (usually Exceptional.Settings.DataHandlers)</param>
         /// <param name="typeName">The full name of the type, e.g. "System.Data.SqlClient.SqlException"</param>
         /// <param name="handler">The handler action to use.</param>
         public static void AddHandler(this Dictionary<string, Action<Error>> handlers, string typeName, Action<Error, Exception> handler)

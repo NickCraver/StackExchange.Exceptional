@@ -73,7 +73,7 @@ namespace Samples.NetCoreConsole
             if (errors.Count == 0) return;
 
             var last = errors[0];
-            WriteLine($"Latest: {last.Message} on {last.CreationDate.ToString()}");
+            WriteLine($"Latest: {last.Message} on {last.CreationDate}");
             foreach (var customData in last.CustomData)
                 WriteLine($"    CustomData: '{customData.Key}': '{customData.Value}'");
         }

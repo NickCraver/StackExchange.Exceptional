@@ -67,7 +67,7 @@ public Task Exceptions() => ExceptionalModule.HandleRequestAsync(System.Web.Http
 If you want to customize the views (adding links, etc.) you can add JavaScript files which will be included on both the exception list and exception detail views.  In the exception detail view parsing is not necessary since all of the detail is available via `window.Exception` as well:
 
 ```c#
-Settings.Current.Render.JSIncludes.Add("/Content/errors.js");
+Exceptional.Settings.Render.JSIncludes.Add("/Content/errors.js");
 ```
 
 If you want to store some custom key/value style data with an exception, you can set up `Settings.GetCustomData`, for example:

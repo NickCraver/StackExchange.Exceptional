@@ -124,12 +124,12 @@ namespace StackExchange.Exceptional.Internal
 
         private ErrorStore _defaultStore;
         /// <summary>
-        /// Gets the default error store specified in the configuration, 
+        /// Gets the default error store specified in the configuration,
         /// or the in-memory store if none is configured.
         /// </summary>
         public ErrorStore DefaultStore
         {
-            get => _defaultStore ?? (_defaultStore = ErrorStore.Get(Store));
+            get => _defaultStore ??= ErrorStore.Get(Store);
             set => _defaultStore = value;
         }
 
@@ -154,13 +154,13 @@ namespace StackExchange.Exceptional.Internal
         public class IgnoreSettings
         {
             /// <summary>
-            /// Regular expressions collection for errors to ignore.  
+            /// Regular expressions collection for errors to ignore.
             /// Any errors with a .ToString() matching any <see cref="Regex"/> here will not be logged.
             /// </summary>
             public HashSet<Regex> Regexes { get; set; } = new HashSet<Regex>();
 
             /// <summary>
-            /// Types collection for errors to ignore.  
+            /// Types collection for errors to ignore.
             /// Any errors with a Type matching any name here will not be logged.
             /// </summary>
             public HashSet<string> Types { get; set; } = new HashSet<string>();

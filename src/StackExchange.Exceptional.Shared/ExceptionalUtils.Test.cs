@@ -10,8 +10,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         public static class Test
         {
-#pragma warning disable CS1591
-#pragma warning disable CS1998
+#pragma warning disable CS1591, CS1998
             public static async Task ThrowStackAsync() => await MethodA().ConfigureAwait(false);
             private static async Task MethodA() => await MethodB().ConfigureAwait(false);
             private static async Task MethodB() => await MethodC().ConfigureAwait(false);
@@ -22,8 +21,7 @@ namespace StackExchange.Exceptional
                 ex.Data["Some-Key"] = "Hello!";
                 throw ex;
             }
-#pragma warning restore CS1998
-#pragma warning restore CS1591
+#pragma warning restore CS1998, CS1591
 
             /// <summary>
             /// Gets an example RedisException

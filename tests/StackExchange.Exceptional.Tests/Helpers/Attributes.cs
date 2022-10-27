@@ -9,11 +9,12 @@ using Xunit.Sdk;
 namespace StackExchange.Exceptional.Tests
 {
     /// <summary>
-    /// Override for <see cref="Xunit.FactAttribute"/> that truncates our DisplayName down.
-    /// 
+    /// <para>Override for <see cref="Xunit.FactAttribute"/> that truncates our DisplayName down.</para>
+    /// <para>
     /// Attribute that is applied to a method to indicate that it is a fact that should
     /// be run by the test runner. It can also be extended to support a customized definition
     /// of a test method.
+    /// </para>
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     [XunitTestCaseDiscoverer("StackExchange.Exceptional.Tests.FactDiscoverer", "StackExchange.Exceptional.Tests")]
@@ -32,13 +33,14 @@ namespace StackExchange.Exceptional.Tests
     }
 
     /// <summary>
-    /// Override for <see cref="Xunit.TheoryAttribute"/> that truncates our DisplayName down.
-    /// 
+    /// <para>Override for <see cref="Xunit.TheoryAttribute"/> that truncates our DisplayName down.</para>
+    /// <para>
     /// Marks a test method as being a data theory. Data theories are tests which are
     /// fed various bits of data from a data source, mapping to parameters on the test
     /// method. If the data source contains multiple rows, then the test method is executed
     /// multiple times (once with each data row). Data is provided by attributes which
     /// derive from Xunit.Sdk.DataAttribute (notably, Xunit.InlineDataAttribute and Xunit.MemberDataAttribute).
+    /// </para>
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     [XunitTestCaseDiscoverer("StackExchange.Exceptional.Tests.TheoryDiscoverer", "StackExchange.Exceptional.Tests")]

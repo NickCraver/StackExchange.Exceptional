@@ -4,14 +4,17 @@
     <RootNamespace>StackExchange.Exceptional</RootNamespace>
     <Description>.NET Error handler/logger used internally at Stack Overflow. Primarily for logging all unhandled exceptions to SQL, but also supporting JSON and Memory based logging.</Description>
     <PackageTags>SQL JSON Exception Handler Errors Stack Exchange Exceptional</PackageTags>
-    <TargetFrameworks>net461;netstandard2.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net461;netstandard2.0;netcoreapp3.1;net6.0</TargetFrameworks>
   </PropertyGroup>
+  
   <ItemGroup>
     <ProjectReference Include="../StackExchange.Exceptional.Shared/StackExchange.Exceptional.Shared.csproj" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1' OR '$(TargetFramework)' == 'net6.0'">
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
+  
   <ItemGroup Condition="'$(TargetFramework)' == 'net461' OR '$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.0" />

@@ -13,7 +13,7 @@ namespace StackExchange.Exceptional
 
         private static void EnsureInit()
         {
-            if (!(Settings is ExceptionalSettings))
+            if (Settings is not ExceptionalSettings)
             {
                 Settings = new ExceptionalSettings();
             }
@@ -43,7 +43,7 @@ namespace StackExchange.Exceptional
         /// Disables error logging, call <see cref="EnableLogging"/> to re-enable.
         /// </summary>
         /// <remarks>
-        /// This is useful when an <see cref="AppDomain"/> is being torn down, for example <code>IRegisteredObject.Stop()</code> when a web application is being stopped
+        /// This is useful when an <see cref="AppDomain"/> is being torn down, for example <c>IRegisteredObject.Stop()</c> when a web application is being stopped
         /// </remarks>
         public static void DisableLogging() => Statics.IsLoggingEnabled = false;
 

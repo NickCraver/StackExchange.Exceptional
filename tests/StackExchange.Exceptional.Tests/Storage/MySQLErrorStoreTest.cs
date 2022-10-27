@@ -50,12 +50,10 @@ namespace StackExchange.Exceptional.Tests.Storage
                     ConnectionTimeout = 2000
                 };
                 ConnectionString = csb.ConnectionString;
-                using (var conn = new MySqlConnection(ConnectionString))
-                {
-                    TableName = "Test" + Guid.NewGuid().ToString("N").Substring(24);
-                    TableScript = script.Replace("Exceptions", TableName);
-                    conn.Execute(TableScript);
-                }
+                using var conn = new MySqlConnection(ConnectionString);
+                TableName = "Test" + Guid.NewGuid().ToString("N").Substring(24);
+                TableScript = script.Replace("Exceptions", TableName);
+                conn.Execute(TableScript);
             }
             catch (Exception e)
             {

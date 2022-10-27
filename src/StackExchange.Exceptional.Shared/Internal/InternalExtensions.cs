@@ -38,9 +38,9 @@ namespace StackExchange.Exceptional.Internal
         /// <param name="ex">The exception to consider.</param>
         /// <param name="category">The category of the exception.</param>
         /// <param name="applicationName">The application name to log under.</param>
+        /// <param name="settings">The specific settings to use.</param>
         /// <param name="rollupPerServer">Whether to rollup by server.</param>
         /// <param name="customData">The custom data, if any, to pass in.</param>
-        /// <param name="settings">The specific settings to use.</param>
         /// <returns>An error if not ignored, <c>null</c> if ignored.</returns>
         public static Error GetErrorIfNotIgnored(
             this Exception ex,
@@ -172,7 +172,7 @@ namespace StackExchange.Exceptional.Internal
             (s.HasValue() && s.Length > maxLength) ? s.Remove(maxLength) : s;
 
         /// <summary>
-        /// If this <see cref="string"/> is over <paramref name="maxLength"/>, answers a new <see cref="string"/> 
+        /// If this <see cref="string"/> is over <paramref name="maxLength"/>, answers a new <see cref="string"/>
         /// with Length = <paramref name="maxLength"/> and ... as the final three characters.
         /// </summary>
         /// <param name="s">The <see cref="string"/> to truncate.</param>
@@ -308,7 +308,7 @@ namespace StackExchange.Exceptional.Internal
             return path;
         }
 
-        private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0);
+        private static readonly DateTime Epoch = new(1970, 1, 1, 0, 0, 0);
 
         /// <summary>
         /// Returns a Unix Epoch time given a <see cref="DateTime"/>.
@@ -322,7 +322,7 @@ namespace StackExchange.Exceptional.Internal
         /// <param name="dt">The <see cref="DateTime"/> to convert.</param>
         public static long? ToEpochTime(this DateTime? dt) => dt.HasValue ? (long?)ToEpochTime(dt.Value) : null;
 
-        private static readonly ConcurrentDictionary<string, Regex> _regexCache = new ConcurrentDictionary<string, Regex>();
+        private static readonly ConcurrentDictionary<string, Regex> _regexCache = new();
 
         /// <summary>
         /// Replaces a QueryString token with the replacement value.

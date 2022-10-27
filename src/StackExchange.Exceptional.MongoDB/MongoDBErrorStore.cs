@@ -165,7 +165,7 @@ namespace StackExchange.Exceptional.Stores
 
         /// <summary>
         /// Logs the error to MongoDB.
-        /// If the roll-up conditions are met, then the matching error will have a 
+        /// If the roll-up conditions are met, then the matching error will have a
         /// DuplicateCount += @DuplicateCount (usually 1, unless in retry) rather than a distinct new document for the error.
         /// </summary>
         /// <param name="error">The error to log.</param>
@@ -200,7 +200,7 @@ namespace StackExchange.Exceptional.Stores
 
         /// <summary>
         /// Asynchronously logs the error to MongoDB.
-        /// If the roll-up conditions are met, then the matching error will have a 
+        /// If the roll-up conditions are met, then the matching error will have a
         /// DuplicateCount += @DuplicateCount (usually 1, unless in retry) rather than a distinct new document for the error.
         /// </summary>
         /// <param name="error">The error to log.</param>

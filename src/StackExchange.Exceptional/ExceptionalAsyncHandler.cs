@@ -16,7 +16,7 @@ namespace StackExchange.Exceptional
     /// </summary>
     internal class ExceptionalAsyncHandler : HttpTaskAsyncHandler
     {
-        private static readonly JsonSerializer serializer = new JsonSerializer();
+        private static readonly JsonSerializer serializer = new();
         private string Url { get; }
 
         public ExceptionalAsyncHandler(string url)

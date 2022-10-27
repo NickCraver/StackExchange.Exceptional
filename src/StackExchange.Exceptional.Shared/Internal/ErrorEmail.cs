@@ -73,13 +73,13 @@ namespace StackExchange.Exceptional.Internal
             {
                 sb.Append("  <h1 style=\"color: maroon; font-size: 16px; padding: 0; margin: 0;\">")
                   .AppendHtmlEncode(error.Message)
-                  .Append("</h1>").AppendLine()
+                  .AppendLine("</h1>")
                   .Append("  <div style=\"font-size: 12px; color: #444; padding: 0; margin: 2px 0;\">")
                   .AppendHtmlEncode(error.Type)
-                  .Append("</div>").AppendLine()
+                  .AppendLine("</div>")
                   .Append("  <pre style=\"background-color: #FFFFCC; font-family: Consolas, Monaco, monospace; font-size: 12px; margin: 2px 0; padding: 12px;\">")
                   .AppendHtmlEncode(error.Detail).AppendLine()
-                  .Append("  </pre>").AppendLine()
+                  .AppendLine("  </pre>")
                   .Append("  <p class=\"error-time\" style=\"font-size: 13px; color: #555; margin: 5px 0;\">occurred at <b title=\"")
                   .AppendHtmlEncode(error.CreationDate.ToLongDateString())
                   .Append(" at ")
@@ -88,8 +88,7 @@ namespace StackExchange.Exceptional.Internal
                   .AppendHtmlEncode(error.CreationDate.ToUniversalTime().ToString())
                   .Append(" UTC</b> on ")
                   .AppendHtmlEncode(error.MachineName)
-                  .Append("</p>")
-                  .AppendLine();
+                  .AppendLine("</p>");
 
                 // TODO: Commands
                 //if (!string.IsNullOrEmpty(error.SQL))

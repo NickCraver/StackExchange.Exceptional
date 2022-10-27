@@ -47,7 +47,7 @@ namespace StackExchange.Exceptional
         }
 
         /// <summary>
-        /// For logging an exception with no HttpContext asynchronously, most commonly used in non-web applications 
+        /// For logging an exception with no HttpContext asynchronously, most commonly used in non-web applications
         /// so that they don't have to carry a reference to System.Web.
         /// </summary>
         /// <param name="ex">The exception to log.</param>

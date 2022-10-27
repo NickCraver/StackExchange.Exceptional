@@ -34,7 +34,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
                             //app.UseExceptional();
                             //app.Run(r => throw new Exception("Log me!"));
                         })));
-            
+
             Assert.Equal("A-a-a-a-a-a-app killer!", startupEx.Message);
 
             var errors = await GetErrorsAsync();

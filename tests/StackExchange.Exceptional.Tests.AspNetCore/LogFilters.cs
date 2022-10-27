@@ -48,7 +48,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
                 Assert.Equal("CookieNotSecretValue", error.Cookies["CookieNotSecret"]);
                 Assert.Equal("***1", error.Cookies["CookieSecret"]);
 
-                Assert.Equal(5, error.RequestHeaders.Count); // Host and Content-Type
+                Assert.Equal(6, error.RequestHeaders.Count); // Host and Content-Type
                 Assert.Equal("HeaderNotSecretValue", error.RequestHeaders["HeaderNotSecret"]);
                 Assert.Equal("***2", error.RequestHeaders["HeaderSecret"]);
                 Assert.Equal("***4", error.RequestHeaders["headersecret-CASETest"]); // case insensitive

@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace StackExchange.Exceptional.Stores
 {
     /// <summary>
-    /// An <see cref="ErrorStore"/> implementation that uses memory as its backing store. 
+    /// An <see cref="ErrorStore"/> implementation that uses memory as its backing store.
     /// </summary>
     public sealed class MemoryErrorStore : ErrorStore
     {
         // The concurrent collection that provides the storage
         private List<Error> _errors;
-        private readonly object _lock = new object();
+        private readonly object _lock = new();
         private readonly int _size = DefaultSize;
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace StackExchange.Exceptional.Stores
 
         /// <summary>
         /// The default maximum count of errors stored before the first is overwritten.
-        /// </summary>        
+        /// </summary>
         public const int DefaultSize = 250;
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace StackExchange.Exceptional.Stores
         /// <summary>
         /// Creates a new instance of <see cref="MemoryErrorStore"/> with the given size.
         /// </summary>
-        /// <param name="settings">The <see cref="ErrorStoreSettings"/> for this store.</param>  
+        /// <param name="settings">The <see cref="ErrorStoreSettings"/> for this store.</param>
         public MemoryErrorStore(ErrorStoreSettings settings) : base(settings)
         {
             _size = Math.Min(settings.Size, MaximumSize);
@@ -109,7 +109,7 @@ namespace StackExchange.Exceptional.Stores
 
         /// <summary>
         /// Logs the error to the in-memory error log.
-        /// If the roll-up conditions are met, then the matching error will have a 
+        /// If the roll-up conditions are met, then the matching error will have a
         /// DuplicateCount += @DuplicateCount (usually 1, unless in retry) rather than a distinct new entry for the error.
         /// </summary>
         /// <param name="error">The error to log.</param>
@@ -117,8 +117,7 @@ namespace StackExchange.Exceptional.Stores
         {
             lock (_lock)
             {
-                if (_errors == null)
-                    _errors = new List<Error>(_size);
+                _errors ??= new List<Error>(_size);
 
                 if (Settings.RollupPeriod.HasValue && _errors.Count > 0)
                 {

@@ -63,12 +63,10 @@ namespace StackExchange.Exceptional.Tests.Storage
                     ConnectTimeout = 2000
                 };
                 ConnectionString = csb.ConnectionString;
-                using (var conn = new SqlConnection(ConnectionString))
-                {
-                    TableName = "Test" + Guid.NewGuid().ToString("N");
-                    TableScript = script.Replace("Exceptions", TableName);
-                    conn.Execute(TableScript);
-                }
+                using var conn = new SqlConnection(ConnectionString);
+                TableName = "Test" + Guid.NewGuid().ToString("N");
+                TableScript = script.Replace("Exceptions", TableName);
+                conn.Execute(TableScript);
             }
             catch (Exception e)
             {
@@ -82,10 +80,8 @@ namespace StackExchange.Exceptional.Tests.Storage
         {
             try
             {
-                using (var conn = new SqlConnection(ConnectionString))
-                {
-                    conn.Execute("Drop Table " + TableName);
-                }
+                using var conn = new SqlConnection(ConnectionString);
+                conn.Execute("Drop Table " + TableName);
             }
             catch when (ShouldSkip)
             {

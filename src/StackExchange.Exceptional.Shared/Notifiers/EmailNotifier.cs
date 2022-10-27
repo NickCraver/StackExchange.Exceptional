@@ -53,10 +53,8 @@ namespace StackExchange.Exceptional.Notifiers
                     message.Body = new ErrorEmail(error).Render();
                     message.IsBodyHtml = true;
 
-                    using (var client = GetClient())
-                    {
-                        client.Send(message);
-                    }
+                    using var client = GetClient();
+                    client.Send(message);
                 }
             }
             catch (Exception e)

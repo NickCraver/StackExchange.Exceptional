@@ -8,12 +8,12 @@ Exceptional has many configuration settings you can use to customize logging and
 
 However, **all** settings are always available in code, so pick whatever flavor suits you.
 
-In code, settings are in the `StackExchange.Exceptional` namespace, in [the `Settings` class](https://github.com/NickCraver/StackExchange.Exceptional/blob/main/src/StackExchange.Exceptional.Shared/Settings.cs). The current instance is accessible at `Settings.Current`. For example:
+In code, settings are in the `StackExchange.Exceptional` namespace, in [the `Settings` class](https://github.com/NickCraver/StackExchange.Exceptional/blob/main/src/StackExchange.Exceptional.Shared/Settings.cs). The current instance is accessible at `Exceptional.Settings`. For example:
 
 ```c#
 using StackExchange.Exceptional;
 //...
-Settings.Current.ApplicationName = "My Application";
+Exceptional.Settings.ApplicationName = "My Application";
 ```
 
 ### Controls
@@ -26,7 +26,7 @@ There are a few global controls useful for stopping logging during shutdown even
 
 **`EnableLogging()`**: Re-enabled all error logging.
 
-Here are the available settings in shorthand beneath `Settings`, e.g. `Notifiers` is `Settings.Current.Notifiers`.
+Here are the available settings in shorthand beneath `Settings`, e.g. `Notifiers` is `Exceptional.Settings.Notifiers`.
 
 ### Top Level
 **ApplicationName** (`string`): This is the name of the application. It's logged with every exception and is used as the unique name in your logging store. For example, 20 apps can all have different application names and share the same SQL database. Tip: [Opserver](https://github.com/opserver/Opserver) can display all of them, this is the dashboard we use to see the entire network at Stack Overflow. Usage:
@@ -51,7 +51,7 @@ UseExceptionalPageOnThrow = true;
 
 **Notifiers** (`List<IErrorNotifier>`): These run just after an exception is logged, like emailing it to a user.
 The [`EmailNotifier` is built-in](https://github.com/NickCraver/StackExchange.Exceptional/blob/main/src/StackExchange.Exceptional.Shared/Notifiers/EmailNotifier.cs), but anyone [can implement `IErrorNotifier`](https://github.com/NickCraver/StackExchange.Exceptional/blob/main/src/StackExchange.Exceptional.Shared/Notifiers/IErrorNotifier.cs) for things like posting to a chat room, etc.
-Usage: There is a `.Register()` extension method on `IEmailNotifier` to automate usage, e.g. this registers the notifier on `Settings.Current`:
+Usage: There is a `.Register()` extension method on `IEmailNotifier` to automate usage, e.g. this registers the notifier on `Exceptional.Settings`:
 ```c#
 new EmailNotifier(settings).Register();
 ```
@@ -84,7 +84,7 @@ GetCustomData = (exception, data) =>
 
 ### Render
 
-These settings are under `.Render`, e.g. `Settings.Current.Render`.
+These settings are under `.Render`, e.g. `Exceptional.Settings.Render`.
 
 **JSIncludes** (`List<string>`): A list of a JavaScript files to include to all error log pages, for customizing the behavior and such. Be sure to resolve the path before passing it in here, as it will be rendered literally in the `<script src=""` attribute. Usage:
 ```c#
@@ -99,7 +99,7 @@ Render.CSSIncludes.Add("/path/to/my.css");
 
 ### Store
 
-These settings are under `.Store`, e.g. `Settings.Current.Store`. Usages aren't shown here since these are usually used when creating a store, see the left-hand nav for different store examples.
+These settings are under `.Store`, e.g. `Exceptional.Settings.Store`. Usages aren't shown here since these are usually used when creating a store, see the left-hand nav for different store examples.
 
 **Type** (`string`): The type of error store to use, e.g. `Memory`, `SQL`, `MySQL`.
 
@@ -120,7 +120,7 @@ These settings are under `.Store`, e.g. `Settings.Current.Store`. Usages aren't 
 
 ### Ignore (Don't Log)
 
-These settings are under `.Ignore`, e.g. `Settings.Current.Ignore`. These are for completely ignoring errors and not logging them at all.
+These settings are under `.Ignore`, e.g. `Exceptional.Settings.Ignore`. These are for completely ignoring errors and not logging them at all.
 
 **Regexes** (`HashSet<Regex>`): Regular expressions collection for errors to ignore. Any errors with a `.ToString()` matching any <see cref="Regex"/> here will not be logged.
 
@@ -129,7 +129,7 @@ These settings are under `.Ignore`, e.g. `Settings.Current.Ignore`. These are fo
 
 ### LogFilters (Sanitization)
 
-These settings are under `.LogFilters`, e.g. `Settings.Current.LogFilters`. These are for filtering out form and cookie values to prevent logging sensitive data.
+These settings are under `.LogFilters`, e.g. `Exceptional.Settings.LogFilters`. These are for filtering out form and cookie values to prevent logging sensitive data.
 
 **Form** (`Dictionary<string, string>`): Form submitted values to replace on save - this prevents logging passwords, etc. The key is the form value to match, the value is what to replace it with when logging.
 
@@ -141,7 +141,7 @@ These settings are under `.LogFilters`, e.g. `Settings.Current.LogFilters`. Thes
 
 ### Stack Trace
 
-These settings are under `.StackTrace`, e.g. `Settings.Current.StackTrace`. These are for controlling how stack traces render on the detail pages (and affect nothing at logging time).
+These settings are under `.StackTrace`, e.g. `Exceptional.Settings.StackTrace`. These are for controlling how stack traces render on the detail pages (and affect nothing at logging time).
 
 **EnablePrettyGenerics** (`bool`, default: `true`): Replaces generic names like ``Dictionary`2`` with `Dictionary<TKey,TValue>`. Specific formatting is based on the `Language` setting below.
 
@@ -152,7 +152,7 @@ These settings are under `.StackTrace`, e.g. `Settings.Current.StackTrace`. Thes
 
 ### Email
 
-These settings are under `.Email`, e.g. `Settings.Current.Email`. These are for email notification, if you'd like some inbox love when an error occurs.
+These settings are under `.Email`, e.g. `Exceptional.Settings.Email`. These are for email notification, if you'd like some inbox love when an error occurs.
 
 **ToAddress** (`string`): Required to send email. The address to send email messages to.
 

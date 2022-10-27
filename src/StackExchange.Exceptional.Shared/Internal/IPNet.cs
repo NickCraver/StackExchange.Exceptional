@@ -22,14 +22,16 @@ namespace StackExchange.Exceptional.Internal
                     ? "IPv6"
                     : "";
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "I like it this way.")]
         private TinyIPAddress? _tinyIPAddress { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "I like it this way.")]
         private TinyIPAddress? _tinySubnet { get; set; }
 
         internal TinyIPAddress TIPAddress =>
-            (_tinyIPAddress ?? (_tinyIPAddress = TinyIPAddress.FromIPAddress(IPAddress))).Value;
+            (_tinyIPAddress ??= TinyIPAddress.FromIPAddress(IPAddress)).Value;
 
         internal TinyIPAddress TSubnet =>
-            (_tinySubnet ?? (_tinySubnet = TinyIPAddress.FromIPAddress(Subnet ?? IPAddress))).Value;
+            (_tinySubnet ??= TinyIPAddress.FromIPAddress(Subnet ?? IPAddress)).Value;
 
         public IPAddress FirstAddressInSubnet => TinyFirstAddressInSubnet.ToIPAddress();
         public IPAddress LastAddressInSubnet => TinyLastAddressInSubnet.ToIPAddress();
@@ -147,15 +149,12 @@ namespace StackExchange.Exceptional.Internal
         public static IPAddress ToNetmask(AddressFamily addressFamily, int cidr) =>
             IPAddressFromCIDR(GetBitLength(addressFamily), cidr);
 
-        private static int GetBitLength(AddressFamily family)
+        private static int GetBitLength(AddressFamily family) => family switch
         {
-            switch (family)
-            {
-                case AddressFamily.InterNetwork: return 32;
-                case AddressFamily.InterNetworkV6: return 128;
-                default: throw new ArgumentOutOfRangeException(nameof(family), "You're probably from the future, they added another more IPs, fix me.");
-            }
-        }
+            AddressFamily.InterNetwork => 32,
+            AddressFamily.InterNetworkV6 => 128,
+            _ => throw new ArgumentOutOfRangeException(nameof(family), "You're probably from the future, they added more IPs, fix me."),
+        };
 
         // This is a much faster version thanks to Marc Gravell
         private static IPAddress IPAddressFromCIDR(int bitLength, int cidr)
@@ -177,8 +176,8 @@ namespace StackExchange.Exceptional.Internal
         /// Private IP Ranges reserved for internal use by ARIN
         /// These are not routable on the global Internet
         /// </summary>
-        private static readonly List<IPNet> ReservedPrivateRanges = new List<IPNet>
-            {
+        private static readonly List<IPNet> ReservedPrivateRanges = new()
+        {
                 Parse("10.0.0.0/8"),
                 Parse("172.16.0.0/12"),
                 Parse("192.168.0.0/16"),
@@ -193,7 +192,7 @@ namespace StackExchange.Exceptional.Internal
 #pragma warning restore RCS1194 // Implement exception constructors.
 
         [DataContract]
-        public struct TinyIPAddress : IEquatable<TinyIPAddress>, IComparable<TinyIPAddress>
+        public readonly struct TinyIPAddress : IEquatable<TinyIPAddress>, IComparable<TinyIPAddress>
         {
             [DataMember(Order = 1)]
             private readonly uint? IPv4Address;
@@ -322,7 +321,7 @@ namespace StackExchange.Exceptional.Internal
             }
 
             ///<summary>
-            /// Gets the number of bits set in a <see cref="uint"/>, taken from 
+            /// Gets the number of bits set in a <see cref="uint"/>, taken from
             /// https://stackoverflow.com/questions/109023/how-to-count-the-number-of-set-bits-in-a-32-bit-integer
             /// </summary>
             /// <param name="i">The value to check.</param>
@@ -334,7 +333,7 @@ namespace StackExchange.Exceptional.Internal
             }
 
             ///<summary>
-            /// Gets the number of bits set in a <see cref="ulong"/>, taken from 
+            /// Gets the number of bits set in a <see cref="ulong"/>, taken from
             /// https://stackoverflow.com/questions/2709430/count-number-of-bits-in-a-64-bit-long-big-integer
             /// </summary>
             /// <param name="i">The value to check.</param>
@@ -441,7 +440,7 @@ namespace StackExchange.Exceptional.Internal
             public override bool Equals(object obj)
             {
                 if (obj is null) return false;
-                return obj is TinyIPAddress && Equals((TinyIPAddress)obj);
+                return obj is TinyIPAddress tinyIPAddress && Equals(tinyIPAddress);
             }
 
             public int CompareTo(TinyIPAddress other) => Compare(this, other);

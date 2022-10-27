@@ -56,8 +56,6 @@ namespace Samples.MVC5.Controllers
 
         public ActionResult ThrowRedis() => throw ExceptionalUtils.Test.GetRedisException();
 
-#pragma warning disable RCS1174 // Remove redundant async/await.
-#pragma warning disable RCS1090 // Call 'ConfigureAwait(false)'.
         public async Task<ActionResult> ThrowAsync() => await RelayC().ConfigureAwait(false);
 
         public async Task<ActionResult> RelayA() => await RelayC().ConfigureAwait(false);
@@ -75,8 +73,8 @@ namespace Samples.MVC5.Controllers
                 await TestLogAsync(e);
             }
             // TODO: Make these switchable in the UI somewhere
-            //ExceptionalSettings.Current.StackTrace.IncludeGenericTypeNames = false;
-            //ExceptionalSettings.Current.StackTrace.Language = ExceptionalSettings.StackTraceSettings.CodeLanguage.FSharp;
+            //Exceptional.Settings.StackTrace.IncludeGenericTypeNames = false;
+            //Exceptional.Settings.StackTrace.Language = ExceptionalSettings.StackTraceSettings.CodeLanguage.FSharp;
             (new MyGenericClass<string, bool, int, long, string, bool?, int?, long?>()).Throw<string, int>();
             return Content("Not here!"); // this will throw a KeyNotFoundException
         }
@@ -97,8 +95,6 @@ namespace Samples.MVC5.Controllers
             );
             return Content("Thrown!");
         }
-#pragma warning restore RCS1174 // Remove redundant async/await.
-#pragma warning restore RCS1090 // Call 'ConfigureAwait(false)'.
 
         private void TestLog(params Exception[] errors)
         {

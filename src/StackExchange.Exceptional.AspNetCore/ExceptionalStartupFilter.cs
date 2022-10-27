@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 namespace StackExchange.Exceptional
 {
     internal class ExceptionalStartupFilter : IStartupFilter
-    {   
+    {
         /// <summary>
         /// Configures exceptional early on, as to catch any errors that happen in Startup.Configure (or equivalent).
         /// </summary>
