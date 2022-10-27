@@ -60,7 +60,7 @@ namespace StackExchange.Exceptional.Tests.Storage
                 var script = Resource.Get("Scripts.SqlServer.sql");
                 var csb = new SqlConnectionStringBuilder(TestConfig.Current.SQLServerConnectionString)
                 {
-                    ConnectTimeout = 2000
+                    ConnectTimeout = 2
                 };
                 ConnectionString = csb.ConnectionString;
                 using var conn = new SqlConnection(ConnectionString);
