@@ -1,4 +1,4 @@
-image: Visual Studio 2019
+image: Visual Studio 2022
 
 init:
   - git config --global core.autocrlf input
@@ -30,7 +30,7 @@ environment:
   # MongoDB
   MongoDBConnectionString: mongodb://localhost/test
 services:
-  - mssql2017
+  - mssql2019
   - mysql
   - postgresql
   - mongodb
