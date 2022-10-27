@@ -8,7 +8,7 @@ namespace StackExchange.Exceptional
     public class Command
     {
         /// <summary>
-        /// The type of this command, e.g. "SQL Server Query" 
+        /// The type of this command, e.g. "SQL Server Query"
         /// </summary>
         public string Type { get; set; }
         /// <summary>
@@ -16,7 +16,7 @@ namespace StackExchange.Exceptional
         /// </summary>
         public string CommandString { get; set; }
         /// <summary>
-        /// Data attributes about the command, e.g. the SQL, Redis, or Elastic Server, the timeout...whatever may help 
+        /// Data attributes about the command, e.g. the SQL, Redis, or Elastic Server, the timeout...whatever may help
         /// debug an error can be logged here.
         /// </summary>
         public Dictionary<string, string> Data { get; set; }
@@ -40,7 +40,7 @@ namespace StackExchange.Exceptional
         /// <param name="value">The value for this data.</param>
         public Command AddData(string key, string value)
         {
-            (Data ?? (Data = new Dictionary<string, string>())).Add(key, value);
+            (Data ??= new Dictionary<string, string>()).Add(key, value);
             return this;
         }
 

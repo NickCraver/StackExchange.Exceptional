@@ -15,11 +15,11 @@ namespace StackExchange.Exceptional.Internal
         /// <summary>
         /// The JavaScript bundle.
         /// </summary>
-        public static ResourceCache BundleJs = new ResourceCache("Bundle.min.js", "text/javascript");
+        public static ResourceCache BundleJs = new("Bundle.min.js", "text/javascript");
         /// <summary>
         /// The CSS bundle.
         /// </summary>
-        public static ResourceCache BundleCss = new ResourceCache("Bundle.min.css", "text/css");
+        public static ResourceCache BundleCss = new("Bundle.min.css", "text/css");
 
         /// <summary>
         /// Cache data for a specific resource.
@@ -49,10 +49,8 @@ namespace StackExchange.Exceptional.Internal
                     Content = reader.ReadToEnd();
                 }
 
-                using (var hash = SHA512.Create())
-                {
-                    Sha512 = Convert.ToBase64String(hash.ComputeHash(Encoding.UTF8.GetBytes(Content)));
-                }
+                using var hash = SHA512.Create();
+                Sha512 = Convert.ToBase64String(hash.ComputeHash(Encoding.UTF8.GetBytes(Content)));
             }
         }
     }

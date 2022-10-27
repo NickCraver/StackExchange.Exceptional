@@ -42,7 +42,7 @@ namespace StackExchange.Exceptional
             private const string EndStack = "--- End of stack trace from previous location where exception was thrown ---";
 
             // TODO: Patterns, or a bunch of these...
-            private static readonly HashSet<string> _asyncFrames = new HashSet<string>()
+            private static readonly HashSet<string> _asyncFrames = new()
             {
                 // 3.1 Stacks
                 "System.Runtime.CompilerServices.AsyncTaskMethodBuilder.SetException(Exception exception)",
@@ -86,7 +86,7 @@ namespace StackExchange.Exceptional
             };
 
             // TODO: Adjust for URLs instead of files
-            private static readonly Regex _regex = new Regex($@"
+            private static readonly Regex _regex = new($@"
             ^(?<{Groups.LeadIn}>{Space}*\w+{Space}+)
              (?<{Groups.Frame}>
                 (?<{Groups.Type}>({NoSpace}+(<(?<{Groups.AsyncMethod}>\w+)>d__[0-9]+))|{NoSpace}+)\.
@@ -375,7 +375,7 @@ namespace StackExchange.Exceptional
             }
 
             /// <summary>
-            /// .NET Core changes methods so generics render as as Method[T], this normalizes it.
+            /// .NET Core changes methods so generics render as Method[T], this normalizes it.
             /// </summary>
             private static string NormalizeMethodName(string method)
             {
@@ -387,10 +387,10 @@ namespace StackExchange.Exceptional
     internal static class StackTraceExtensions
     {
         private static readonly char[] _dot = new char[] { '.' };
-        private static readonly Regex _genericTypeRegex = new Regex($@"(?<BaseClass>{ExceptionalUtils.StackTrace.NoSpace}+)`(?<ArgCount>\d+)");
+        private static readonly Regex _genericTypeRegex = new($@"(?<BaseClass>{ExceptionalUtils.StackTrace.NoSpace}+)`(?<ArgCount>\d+)");
         private static readonly string[] _singleT = new[] { "T" };
 
-        private static readonly Dictionary<string, string[]> _commonGenerics = new Dictionary<string, string[]>
+        private static readonly Dictionary<string, string[]> _commonGenerics = new()
         {
             ["Microsoft.CodeAnalysis.SymbolVisitor`1"] = new[] { "TResult" },
             ["Microsoft.CodeAnalysis.Diagnostics.CodeBlockStartAnalysisContext`1"] = new[] { "TLanguageKindEnum" },

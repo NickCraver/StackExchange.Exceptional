@@ -56,8 +56,6 @@ namespace Samples.MVC5.Controllers
 
         public ActionResult ThrowRedis() => throw ExceptionalUtils.Test.GetRedisException();
 
-#pragma warning disable RCS1174 // Remove redundant async/await.
-#pragma warning disable RCS1090 // Call 'ConfigureAwait(false)'.
         public async Task<ActionResult> ThrowAsync() => await RelayC().ConfigureAwait(false);
 
         public async Task<ActionResult> RelayA() => await RelayC().ConfigureAwait(false);
@@ -97,8 +95,6 @@ namespace Samples.MVC5.Controllers
             );
             return Content("Thrown!");
         }
-#pragma warning restore RCS1174 // Remove redundant async/await.
-#pragma warning restore RCS1090 // Call 'ConfigureAwait(false)'.
 
         private void TestLog(params Exception[] errors)
         {

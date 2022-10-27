@@ -23,7 +23,7 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
         protected Task<List<Error>> GetErrorsAsync() => CurrentSettings.DefaultStore.GetAllAsync();
 
         protected TestServer GetServer(RequestDelegate requestDelegate, [CallerMemberName]string name = null) =>
-            new TestServer(BasicBuilder(requestDelegate, name));
+            new(BasicBuilder(requestDelegate, name));
 
         protected IWebHostBuilder BasicBuilder(RequestDelegate requestDelegate, [CallerMemberName]string name = null) =>
             new WebHostBuilder()

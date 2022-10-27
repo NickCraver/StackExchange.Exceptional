@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace StackExchange.Exceptional.Stores
 {
     /// <summary>
-    /// An <see cref="ErrorStore"/> implementation that uses JSON files as its backing store. 
+    /// An <see cref="ErrorStore"/> implementation that uses JSON files as its backing store.
     /// </summary>
     public sealed class JSONErrorStore : ErrorStore
     {
@@ -29,7 +29,7 @@ namespace StackExchange.Exceptional.Stores
 
         /// <summary>
         /// The default maximum count of errors stored before the first is overwritten.
-        /// </summary>        
+        /// </summary>
         public const int DefaultSize = 200;
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace StackExchange.Exceptional.Stores
         /// <summary>
         /// Creates a new instance of <see cref="JSONErrorStore"/> with the given configuration.
         /// </summary>
-        /// <param name="settings">The <see cref="ErrorStoreSettings"/> for this store.</param>    
+        /// <param name="settings">The <see cref="ErrorStoreSettings"/> for this store.</param>
         public JSONErrorStore(ErrorStoreSettings settings) : base(settings)
         {
             _size = Math.Min(settings.Size, MaximumSize);
@@ -129,7 +129,7 @@ namespace StackExchange.Exceptional.Stores
 
         /// <summary>
         /// Logs the JSON representation of an Error to the file store specified by the page for this store.
-        /// If the roll-up conditions are met, then the matching error will have a 
+        /// If the roll-up conditions are met, then the matching error will have a
         /// DuplicateCount += @DuplicateCount (usually 1, unless in retry) rather than a distinct new file for the error.
         /// </summary>
         /// <param name="error">The error to log.</param>
@@ -142,7 +142,7 @@ namespace StackExchange.Exceptional.Stores
             if (TryFindOriginalError(detailHash, out Error original))
             {
                 // just update the existing file after incrementing its "duplicate count"
-                original.DuplicateCount = original.DuplicateCount.GetValueOrDefault(0) + error.DuplicateCount;
+                original.DuplicateCount = (original.DuplicateCount ?? 0) + error.DuplicateCount;
                 // Update the LastLogDate to the latest occurrence
                 if (original.LastLogDate == null || error.CreationDate > original.LastLogDate)
                 {
@@ -153,16 +153,14 @@ namespace StackExchange.Exceptional.Stores
                 if (!TryGetErrorFile(original.GUID, out FileInfo f))
                     throw new ArgumentOutOfRangeException("Unable to find a file for error with GUID = " + original.GUID.ToString());
 
-                using (var stream = f.Open(FileMode.Create))
-                using (var writer = new StreamWriter(stream))
-                {
-                    LogError(original, writer);
-                }
+                using var stream = f.Open(FileMode.Create);
+                using var writer = new StreamWriter(stream);
+                LogError(original, writer);
             }
             else
             {
                 string timeStamp = DateTime.UtcNow.ToString("u").Replace(":", "").Replace(" ", "");
-                string fileName = $"{_path}/error-{timeStamp}-{detailHash}-{error.GUID.ToString("N")}.json";
+                string fileName = $"{_path}/error-{timeStamp}-{detailHash}-{error.GUID:N}.json";
 
                 var file = new FileInfo(fileName);
                 using (var outstream = file.CreateText())
@@ -192,7 +190,7 @@ namespace StackExchange.Exceptional.Stores
 
         private Error GetError(Guid guid)
         {
-            string[] fileList = Directory.GetFiles(_path, $"*{guid.ToString("N")}.json");
+            string[] fileList = Directory.GetFiles(_path, $"*{guid:N}.json");
 
             if (fileList.Length < 1)
                 return null;
@@ -279,7 +277,7 @@ namespace StackExchange.Exceptional.Stores
 
         private bool TryGetErrorFile(Guid guid, out FileInfo file)
         {
-            string[] fileList = Directory.GetFiles(_path, $"*{guid.ToString("N")}.json");
+            string[] fileList = Directory.GetFiles(_path, $"*{guid:N}.json");
 
             if (fileList.Length != 1)
             {

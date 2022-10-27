@@ -45,7 +45,7 @@ namespace StackExchange.Exceptional.Tests
             Assert.Equal(typeof(ArgumentOutOfRangeException).FullName, argError.Commands[0].CommandString);
         }
 
-        private TestSettings GetHandlerSettings()
+        private static TestSettings GetHandlerSettings()
         {
             var settings = new TestSettings(new MemoryErrorStore());
             settings.ExceptionActions.Clear();
@@ -57,10 +57,7 @@ namespace StackExchange.Exceptional.Tests
                         .AddData("ParamName", ex.ParamName));
             });
             // String helper
-            settings.ExceptionActions.AddHandler(typeof(ArgumentOutOfRangeException).FullName, (e, ex) =>
-            {
-                e.AddCommand(new Command("Type", ex.GetType().FullName));
-            });
+            settings.ExceptionActions.AddHandler(typeof(ArgumentOutOfRangeException).FullName, (e, ex) => e.AddCommand(new Command("Type", ex.GetType().FullName)));
             return settings;
         }
     }

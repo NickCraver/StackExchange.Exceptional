@@ -24,7 +24,7 @@ namespace StackExchange.Exceptional
         /// <param name="applicationName">If specified, the application name to log with, if not specified the name in <see cref="ErrorStoreSettings.ApplicationName"/> is used.</param>
         /// <returns>The Error created, if one was created and logged, null if nothing was logged.</returns>
         /// <remarks>
-        /// When dealing with a non web requests, pass <see langword="null" /> in for context.  
+        /// When dealing with a non web requests, pass <see langword="null" /> in for context.
         /// It shouldn't be forgotten for most web application usages, so it's not an optional parameter.
         /// </remarks>
         public static Error Log(
@@ -71,7 +71,7 @@ namespace StackExchange.Exceptional
         /// <param name="applicationName">If specified, the application name to log with, if not specified the name in <see cref="ErrorStoreSettings.ApplicationName"/> is used.</param>
         /// <returns>The Error created, if one was created and logged, null if nothing was logged.</returns>
         /// <remarks>
-        /// When dealing with a non web requests, pass <see langword="null" /> in for context.  
+        /// When dealing with a non web requests, pass <see langword="null" /> in for context.
         /// It shouldn't be forgotten for most web application usages, so it's not an optional parameter.
         /// </remarks>
         public static Task<Error> LogAsync(
@@ -119,15 +119,11 @@ namespace StackExchange.Exceptional
             {
                 return false;
             }
-            switch (name)
+            return name switch
             {
-                case "CONTENT_LENGTH":
-                case "REQUEST_METHOD":
-                case "URL":
-                    return false;
-                default:
-                    return true;
-            }
+                "CONTENT_LENGTH" or "REQUEST_METHOD" or "URL" => false,
+                _ => true,
+            };
         }
 
         /// <summary>

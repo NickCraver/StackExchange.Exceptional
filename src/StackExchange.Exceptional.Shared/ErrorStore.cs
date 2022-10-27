@@ -19,7 +19,7 @@ namespace StackExchange.Exceptional
     {
         private ConcurrentQueue<Error> _writeQueue;
         private Thread _retryThread;
-        private readonly object _retryLock = new object();
+        private readonly object _retryLock = new();
         private bool _isInRetry;
         private Exception _retryException;
 
@@ -151,7 +151,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Gets the write queue for errors, which is populated in the case of a write failure.
         /// </summary>
-        public ConcurrentQueue<Error> WriteQueue => _writeQueue ?? (_writeQueue = new ConcurrentQueue<Error>());
+        public ConcurrentQueue<Error> WriteQueue => _writeQueue ??= new ConcurrentQueue<Error>();
 
         /// <summary>
         /// Gets the last exception that happened when trying to log exceptions.

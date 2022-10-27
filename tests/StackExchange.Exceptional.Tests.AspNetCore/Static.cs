@@ -28,13 +28,9 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
                 }))
                 .Configure(app => app.UseExceptional().Run(context => context.Response.WriteAsync("Hello World")));
 
-            using (var server = new TestServer(builder))
-            {
-                using (var response = await server.CreateClient().GetAsync("").ConfigureAwait(false))
-                {
-                    Assert.Same(settings.Store.ApplicationName, Exceptional.Settings.Store.ApplicationName);
-                }
-            }
+            using var server = new TestServer(builder);
+            using var response = await server.CreateClient().GetAsync("").ConfigureAwait(false);
+            Assert.Same(settings.Store.ApplicationName, Exceptional.Settings.Store.ApplicationName);
         }
     }
 }

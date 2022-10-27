@@ -12,7 +12,7 @@ namespace StackExchange.Exceptional.Internal
         /// <summary>
         /// Known ServerVariable keys to hide when rendering
         /// </summary>
-        protected static readonly HashSet<string> HiddenHttpKeys = new HashSet<string>
+        protected static readonly HashSet<string> HiddenHttpKeys = new()
         {
             "ALL_HTTP",
             "ALL_RAW",
@@ -25,7 +25,7 @@ namespace StackExchange.Exceptional.Internal
         /// <summary>
         /// Known ServerVariable keys
         /// </summary>
-        protected static readonly HashSet<string> DefaultHttpKeys = new HashSet<string>
+        protected static readonly HashSet<string> DefaultHttpKeys = new()
         {
             "APPL_MD_PATH",
             "APPL_PHYSICAL_PATH",
@@ -68,7 +68,7 @@ namespace StackExchange.Exceptional.Internal
             return sb.ToStringRecycle();
         }
 
-        private static readonly Regex _sanitizeUrl = new Regex(@"[^-a-z0-9+&@#/%?=~_|!:,.;\*\(\)\{\}]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex _sanitizeUrl = new(@"[^-a-z0-9+&@#/%?=~_|!:,.;\*\(\)\{\}]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         /// <summary>
         /// Sanitizes a URL for safety.
         /// </summary>

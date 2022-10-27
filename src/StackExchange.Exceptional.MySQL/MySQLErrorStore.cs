@@ -56,10 +56,10 @@ namespace StackExchange.Exceptional.Stores
         }
 
         private string _sqlProtectError;
-        private string SqlProtectError => _sqlProtectError ?? (_sqlProtectError = $@"
+        private string SqlProtectError => _sqlProtectError ??= $@"
 Update {_tableName}
    Set IsProtected = 1, DeletionDate = Null
- Where GUID = @guid");
+ Where GUID = @guid";
 
         /// <summary>
         /// Protects an error from deletion, by making IsProtected = 1 in the database.
@@ -68,17 +68,15 @@ Update {_tableName}
         /// <returns><c>true</c> if the error was found and protected, <c>false</c> otherwise.</returns>
         protected override async Task<bool> ProtectErrorAsync(Guid guid)
         {
-            using (var c = GetConnection())
-            {
-                return await c.ExecuteAsync(SqlProtectError, new { guid }).ConfigureAwait(false) > 0;
-            }
+            using var c = GetConnection();
+            return await c.ExecuteAsync(SqlProtectError, new { guid }).ConfigureAwait(false) > 0;
         }
 
         private string _sqlProtectErrors;
-        private string SqlProtectErrors => _sqlProtectErrors ?? (_sqlProtectErrors = $@"
+        private string SqlProtectErrors => _sqlProtectErrors ??= $@"
 Update {_tableName}
    Set IsProtected = 1, DeletionDate = Null
- Where GUID In @guids");
+ Where GUID In @guids";
 
         /// <summary>
         /// Protects errors from deletion, by making IsProtected = 1 in the database.
@@ -87,18 +85,16 @@ Update {_tableName}
         /// <returns><c>true</c> if the errors were found and protected, <c>false</c> otherwise.</returns>
         protected override async Task<bool> ProtectErrorsAsync(IEnumerable<Guid> guids)
         {
-            using (var c = GetConnection())
-            {
-                return await c.ExecuteAsync(SqlProtectErrors, new { guids }).ConfigureAwait(false) > 0;
-            }
+            using var c = GetConnection();
+            return await c.ExecuteAsync(SqlProtectErrors, new { guids }).ConfigureAwait(false) > 0;
         }
 
         private string _sqlDeleteError;
-        private string SqlDeleteError => _sqlDeleteError ?? (_sqlDeleteError = $@"
+        private string SqlDeleteError => _sqlDeleteError ??= $@"
 Update {_tableName} 
    Set DeletionDate = UTC_DATE() 
  Where GUID = @guid 
-   And DeletionDate Is Null");
+   And DeletionDate Is Null";
 
         /// <summary>
         /// Deletes an error, by setting DeletionDate = UTC_DATE() in SQL.
@@ -107,18 +103,16 @@ Update {_tableName}
         /// <returns><c>true</c> if the error was found and deleted, <c>false</c> otherwise.</returns>
         protected override async Task<bool> DeleteErrorAsync(Guid guid)
         {
-            using (var c = GetConnection())
-            {
-                return await c.ExecuteAsync(SqlDeleteError, new { guid, ApplicationName }).ConfigureAwait(false) > 0;
-            }
+            using var c = GetConnection();
+            return await c.ExecuteAsync(SqlDeleteError, new { guid, ApplicationName }).ConfigureAwait(false) > 0;
         }
 
         private string _sqlDeleteErrors;
-        private string SqlDeleteErrors => _sqlDeleteErrors ?? (_sqlDeleteErrors = $@"
+        private string SqlDeleteErrors => _sqlDeleteErrors ??= $@"
 Update {_tableName} 
    Set DeletionDate = UTC_DATE() 
  Where GUID In @guids
-   And DeletionDate Is Null");
+   And DeletionDate Is Null";
 
         /// <summary>
         /// Deletes errors, by setting DeletionDate = UTC_DATE() in SQL.
@@ -127,17 +121,15 @@ Update {_tableName}
         /// <returns><c>true</c> if the errors were found and deleted, <c>false</c> otherwise.</returns>
         protected override async Task<bool> DeleteErrorsAsync(IEnumerable<Guid> guids)
         {
-            using (var c = GetConnection())
-            {
-                return await c.ExecuteAsync(SqlDeleteErrors, new { guids }).ConfigureAwait(false) > 0;
-            }
+            using var c = GetConnection();
+            return await c.ExecuteAsync(SqlDeleteErrors, new { guids }).ConfigureAwait(false) > 0;
         }
 
         private string _sqlHardDeleteErrors;
-        private string SqlHardDeleteErrors => _sqlHardDeleteErrors ?? (_sqlHardDeleteErrors = $@"
+        private string SqlHardDeleteErrors => _sqlHardDeleteErrors ??= $@"
 Delete From {_tableName} 
  Where GUID = @guid
-   And ApplicationName = @ApplicationName");
+   And ApplicationName = @ApplicationName";
 
         /// <summary>
         /// Hard deletes an error, actually deletes the row from SQL rather than setting <see cref="Error.DeletionDate"/>.
@@ -147,19 +139,17 @@ Delete From {_tableName}
         /// <returns><c>true</c> if the error was found and deleted, <c>false</c> otherwise.</returns>
         protected override async Task<bool> HardDeleteErrorAsync(Guid guid)
         {
-            using (var c = GetConnection())
-            {
-                return await c.ExecuteAsync(SqlHardDeleteErrors, new { guid, ApplicationName }).ConfigureAwait(false) > 0;
-            }
+            using var c = GetConnection();
+            return await c.ExecuteAsync(SqlHardDeleteErrors, new { guid, ApplicationName }).ConfigureAwait(false) > 0;
         }
 
         private string _sqlDeleteAllErrors;
-        private string SqlDeleteAllErrors => _sqlDeleteAllErrors ?? (_sqlDeleteAllErrors = $@"
+        private string SqlDeleteAllErrors => _sqlDeleteAllErrors ??= $@"
 Update {_tableName}
    Set DeletionDate = UTC_DATE() 
  Where DeletionDate Is Null 
    And IsProtected = 0 
-   And ApplicationName = @ApplicationName");
+   And ApplicationName = @ApplicationName";
 
         /// <summary>
         /// Deleted all errors in the log, by setting <see cref="Error.DeletionDate"/> = UTC_DATE() in SQL.
@@ -168,14 +158,12 @@ Update {_tableName}
         /// <returns><c>true</c> if any errors were deleted, <c>false</c> otherwise.</returns>
         protected override async Task<bool> DeleteAllErrorsAsync(string applicationName = null)
         {
-            using (var c = GetConnection())
-            {
-                return await c.ExecuteAsync(SqlDeleteAllErrors, new { ApplicationName = applicationName ?? ApplicationName }).ConfigureAwait(false) > 0;
-            }
+            using var c = GetConnection();
+            return await c.ExecuteAsync(SqlDeleteAllErrors, new { ApplicationName = applicationName ?? ApplicationName }).ConfigureAwait(false) > 0;
         }
 
         private string _sqlLogUpdate;
-        private string SqlLogUpdate => _sqlLogUpdate ?? (_sqlLogUpdate = $@"
+        private string SqlLogUpdate => _sqlLogUpdate ??= $@"
 Update {_tableName} 
    Set DuplicateCount = DuplicateCount + @DuplicateCount,
        LastLogDate = (Case When LastLogDate Is Null Or @CreationDate > LastLogDate Then @CreationDate Else LastLogDate End),
@@ -185,15 +173,14 @@ Update {_tableName}
    And DeletionDate Is Null
    And CreationDate >= @minDate
  Limit 1;
-Select @newGUID;");
+Select @newGUID;";
 
         private string _sqlLogInsert;
-        private string SqlLogInsert => _sqlLogInsert ?? (_sqlLogInsert = $@"
+        private string SqlLogInsert => _sqlLogInsert ??= $@"
 Insert Into {_tableName} (GUID, ApplicationName, Category, MachineName, CreationDate, Type, IsProtected, Host, Url, HTTPMethod, IPAddress, Source, Message, Detail, StatusCode, FullJson, ErrorHash, DuplicateCount, LastLogDate)
-Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, @IsProtected, @Host, @Url, @HTTPMethod, @IPAddress, @Source, @Message, @Detail, @StatusCode, @FullJson, @ErrorHash, @DuplicateCount, @LastLogDate)");
+Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, @IsProtected, @Host, @Url, @HTTPMethod, @IPAddress, @Source, @Message, @Detail, @StatusCode, @FullJson, @ErrorHash, @DuplicateCount, @LastLogDate)";
 
-        private DynamicParameters GetUpdateParams(Error error) =>
-            new DynamicParameters(new
+        private DynamicParameters GetUpdateParams(Error error) => new(new
             {
                 error.DuplicateCount,
                 error.ErrorHash,
@@ -227,64 +214,60 @@ Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, 
 
         /// <summary>
         /// Logs the error to SQL.
-        /// If the roll-up conditions are met, then the matching error will have a 
+        /// If the roll-up conditions are met, then the matching error will have a
         /// DuplicateCount += @DuplicateCount (usually 1, unless in retry) rather than a distinct new row for the error.
         /// </summary>
         /// <param name="error">The error to log.</param>
         protected override bool LogError(Error error)
         {
-            using (var c = GetConnection())
+            using var c = GetConnection();
+            if (Settings.RollupPeriod.HasValue && error.ErrorHash.HasValue)
             {
-                if (Settings.RollupPeriod.HasValue && error.ErrorHash.HasValue)
+                var queryParams = GetUpdateParams(error);
+                var guid = c.QueryFirstOrDefault<string>(SqlLogUpdate, queryParams);
+                // if we found an exception that's a duplicate, jump out
+                if (guid != null)
                 {
-                    var queryParams = GetUpdateParams(error);
-                    var guid = c.QueryFirstOrDefault<string>(SqlLogUpdate, queryParams);
-                    // if we found an exception that's a duplicate, jump out
-                    if (guid != null)
-                    {
-                        error.GUID = Guid.Parse(guid);
-                        return true;
-                    }
+                    error.GUID = Guid.Parse(guid);
+                    return true;
                 }
-
-                error.FullJson = error.ToJson();
-                return c.Execute(SqlLogInsert, GetInsertParams(error)) > 0;
             }
+
+            error.FullJson = error.ToJson();
+            return c.Execute(SqlLogInsert, GetInsertParams(error)) > 0;
         }
 
         /// <summary>
         /// Asynchronously logs the error to SQL.
-        /// If the roll-up conditions are met, then the matching error will have a 
+        /// If the roll-up conditions are met, then the matching error will have a
         /// DuplicateCount += @DuplicateCount (usually 1, unless in retry) rather than a distinct new row for the error.
         /// </summary>
         /// <param name="error">The error to log.</param>
         protected override async Task<bool> LogErrorAsync(Error error)
         {
-            using (var c = GetConnection())
+            using var c = GetConnection();
+            if (Settings.RollupPeriod.HasValue && error.ErrorHash.HasValue)
             {
-                if (Settings.RollupPeriod.HasValue && error.ErrorHash.HasValue)
+                var queryParams = GetUpdateParams(error);
+                var guid = await c.QueryFirstOrDefaultAsync<string>(SqlLogUpdate, queryParams).ConfigureAwait(false);
+                // if we found an exception that's a duplicate, jump out
+                if (guid != null)
                 {
-                    var queryParams = GetUpdateParams(error);
-                    var guid = await c.QueryFirstOrDefaultAsync<string>(SqlLogUpdate, queryParams).ConfigureAwait(false);
-                    // if we found an exception that's a duplicate, jump out
-                    if (guid != null)
-                    {
-                        error.GUID = Guid.Parse(guid);
-                        return true;
-                    }
+                    error.GUID = Guid.Parse(guid);
+                    return true;
                 }
-
-                error.FullJson = error.ToJson();
-
-                return (await c.ExecuteAsync(SqlLogInsert, GetInsertParams(error)).ConfigureAwait(false)) > 0;
             }
+
+            error.FullJson = error.ToJson();
+
+            return (await c.ExecuteAsync(SqlLogInsert, GetInsertParams(error)).ConfigureAwait(false)) > 0;
         }
 
         private string _sqlGetError;
-        private string SqlGetError => _sqlGetError ?? (_sqlGetError = $@"
+        private string SqlGetError => _sqlGetError ??= $@"
 Select * 
   From {_tableName} 
- Where GUID = @guid");
+ Where GUID = @guid";
 
         /// <summary>
         /// Gets the error with the specified GUID from SQL.
@@ -312,12 +295,12 @@ Select *
         }
 
         private string _sqlGetAllErrors;
-        private string SqlGetAllErrors => _sqlGetAllErrors ?? (_sqlGetAllErrors = $@"
+        private string SqlGetAllErrors => _sqlGetAllErrors ??= $@"
 Select * 
   From {_tableName} 
  Where DeletionDate Is Null
    And ApplicationName = @ApplicationName
-Order By CreationDate Desc Limit {{=max}}");
+Order By CreationDate Desc Limit {{=max}}";
 
         /// <summary>
         /// Retrieves all non-deleted application errors in the database.
@@ -325,26 +308,24 @@ Order By CreationDate Desc Limit {{=max}}");
         /// <param name="applicationName">The name of the application to get all errors for.</param>
         protected override async Task<List<Error>> GetAllErrorsAsync(string applicationName = null)
         {
-            using (var c = GetConnection())
-            {
-                return (await c.QueryAsync<Error>(SqlGetAllErrors, new { max = _displayCount, ApplicationName = applicationName ?? ApplicationName }).ConfigureAwait(false)).AsList();
-            }
+            using var c = GetConnection();
+            return (await c.QueryAsync<Error>(SqlGetAllErrors, new { max = _displayCount, ApplicationName = applicationName ?? ApplicationName }).ConfigureAwait(false)).AsList();
         }
 
         private string _sqlGetErrorCount;
-        private string SqlGetErrorCount => _sqlGetErrorCount ?? (_sqlGetErrorCount = $@"
+        private string SqlGetErrorCount => _sqlGetErrorCount ??= $@"
 Select Count(*) 
   From {_tableName} 
  Where DeletionDate Is Null
-   And ApplicationName = @ApplicationName");
+   And ApplicationName = @ApplicationName";
 
         private string _sqlGetErrorCountWithSince;
-        private string SqlGetErrorCountWithSince => _sqlGetErrorCountWithSince ?? (_sqlGetErrorCountWithSince = $@"
+        private string SqlGetErrorCountWithSince => _sqlGetErrorCountWithSince ??= $@"
 Select Count(*) 
   From {_tableName} 
  Where DeletionDate Is Null
    And ApplicationName = @ApplicationName
-   And CreationDate > @since");
+   And CreationDate > @since";
 
         /// <summary>
         /// Retrieves a count of application errors since the specified date, or all time if <c>null</c>.
@@ -353,15 +334,13 @@ Select Count(*)
         /// <param name="applicationName">The application name to get an error count for.</param>
         protected override async Task<int> GetErrorCountAsync(DateTime? since = null, string applicationName = null)
         {
-            using (var c = GetConnection())
-            {
-                return await c.QueryFirstOrDefaultAsync<int>(
-                    since.HasValue ? SqlGetErrorCountWithSince : SqlGetErrorCount,
-                    new { since, ApplicationName = applicationName ?? ApplicationName }
-                ).ConfigureAwait(false);
-            }
+            using var c = GetConnection();
+            return await c.QueryFirstOrDefaultAsync<int>(
+                since.HasValue ? SqlGetErrorCountWithSince : SqlGetErrorCount,
+                new { since, ApplicationName = applicationName ?? ApplicationName }
+            ).ConfigureAwait(false);
         }
 
-        private MySqlConnection GetConnection() => new MySqlConnection(_connectionString);
+        private MySqlConnection GetConnection() => new(_connectionString);
     }
 }

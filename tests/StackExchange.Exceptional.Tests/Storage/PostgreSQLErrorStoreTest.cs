@@ -50,12 +50,10 @@ namespace StackExchange.Exceptional.Tests.Storage
                     Timeout = 2
                 };
                 ConnectionString = csb.ConnectionString;
-                using (var conn = new NpgsqlConnection(ConnectionString))
-                {
-                    TableName = $@"public.""Test{Guid.NewGuid().ToString("N").Substring(24)}""";
-                    TableScript = script.Replace(@"""public"".""Errors""", TableName);
-                    conn.Execute(TableScript);
-                }
+                using var conn = new NpgsqlConnection(ConnectionString);
+                TableName = $@"public.""Test{Guid.NewGuid().ToString("N").Substring(24)}""";
+                TableScript = script.Replace(@"""public"".""Errors""", TableName);
+                conn.Execute(TableScript);
             }
             catch (Exception e)
             {
@@ -69,10 +67,8 @@ namespace StackExchange.Exceptional.Tests.Storage
         {
             try
             {
-                using (var conn = new NpgsqlConnection(ConnectionString))
-                {
-                    conn.Execute("Drop Table " + TableName);
-                }
+                using var conn = new NpgsqlConnection(ConnectionString);
+                conn.Execute("Drop Table " + TableName);
             }
             catch when (ShouldSkip)
             {

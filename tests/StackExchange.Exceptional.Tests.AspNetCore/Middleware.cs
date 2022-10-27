@@ -17,15 +17,13 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
         [Fact]
         public async Task LogsExceptions()
         {
-            using (var server = GetServer(_ => throw new Exception("Log me!")))
-            {
-                var ex = await Assert.ThrowsAsync<Exception>(async () => await server.CreateClient().GetAsync("").ConfigureAwait(false)).ConfigureAwait(false);
-                Assert.Equal("Log me!", ex.Message);
+            using var server = GetServer(_ => throw new Exception("Log me!"));
+            var ex = await Assert.ThrowsAsync<Exception>(async () => await server.CreateClient().GetAsync("").ConfigureAwait(false)).ConfigureAwait(false);
+            Assert.Equal("Log me!", ex.Message);
 
-                var errors = await GetErrorsAsync().ConfigureAwait(false);
-                Assert.Single(errors);
-                Assert.Equal("Log me!", errors[0].Message);
-            }
+            var errors = await GetErrorsAsync().ConfigureAwait(false);
+            Assert.Single(errors);
+            Assert.Equal("Log me!", errors[0].Message);
         }
 
         [Fact]
@@ -44,22 +42,20 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
                     app.UseExceptional();
                     app.Run(_ => throw new Exception("Log me!"));
                 });
-            using (var server = new TestServer(builder))
+            using var server = new TestServer(builder);
+            using (var response = await server.CreateClient().GetAsync("").ConfigureAwait(false))
             {
-                using (var response = await server.CreateClient().GetAsync("").ConfigureAwait(false))
-                {
-                    Assert.False(response.IsSuccessStatusCode);
-                    Assert.Equal(System.Net.HttpStatusCode.InternalServerError, response.StatusCode);
-                    var responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    Assert.Contains("var Exception = ", responseText);
-                    Assert.Contains("An error was thrown during this request.", responseText);
-                    Assert.Contains("Log me!", responseText);
-                }
-
-                var errors = await settings.DefaultStore.GetAllAsync(nameof(RendersExceptionalPage)).ConfigureAwait(false);
-                Assert.Single(errors);
-                Assert.Equal("Log me!", errors[0].Message);
+                Assert.False(response.IsSuccessStatusCode);
+                Assert.Equal(System.Net.HttpStatusCode.InternalServerError, response.StatusCode);
+                var responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                Assert.Contains("var Exception = ", responseText);
+                Assert.Contains("An error was thrown during this request.", responseText);
+                Assert.Contains("Log me!", responseText);
             }
+
+            var errors = await settings.DefaultStore.GetAllAsync(nameof(RendersExceptionalPage)).ConfigureAwait(false);
+            Assert.Single(errors);
+            Assert.Equal("Log me!", errors[0].Message);
         }
     }
 }

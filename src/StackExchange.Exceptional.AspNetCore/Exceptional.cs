@@ -13,7 +13,7 @@ namespace StackExchange.Exceptional
 
         private static void EnsureInit()
         {
-            if (!(Settings is ExceptionalSettings))
+            if (Settings is not ExceptionalSettings)
             {
                 Settings = new ExceptionalSettings();
             }

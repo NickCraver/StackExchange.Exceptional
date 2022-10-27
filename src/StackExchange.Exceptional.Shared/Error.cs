@@ -100,7 +100,7 @@ namespace StackExchange.Exceptional
         /// <summary>
         /// Only allocate this dictionary if there's a need.
         /// </summary>
-        private void InitCustomData() => CustomData = CustomData ?? new Dictionary<string, string>();
+        private void InitCustomData() => CustomData ??= new Dictionary<string, string>();
 
         /// <summary>
         /// Adds data from the .Data on an Exception. Note: runs for every primary and inner exception
@@ -165,7 +165,7 @@ namespace StackExchange.Exceptional
         /// <returns>The added command.</returns>
         public Command AddCommand(Command command)
         {
-            (Commands ?? (Commands = new List<Command>())).Add(command);
+            (Commands ??= new List<Command>()).Add(command);
             return command;
         }
 
@@ -196,7 +196,7 @@ namespace StackExchange.Exceptional
         /// <returns>The error if logged, or null if logging was aborted.</returns>
         public bool LogToStore(ErrorStore store = null)
         {
-            store = store ?? Settings.DefaultStore;
+            store ??= Settings.DefaultStore;
             var abort = Settings.BeforeLog(this, store);
             if (abort) return false; // if we've been told to abort, then abort dammit!
 
@@ -215,7 +215,7 @@ namespace StackExchange.Exceptional
         /// <returns>The error if logged, or null if logging was aborted.</returns>
         public async Task<bool> LogToStoreAsync(ErrorStore store = null)
         {
-            store = store ?? Settings.DefaultStore;
+            store ??= Settings.DefaultStore;
             var abort = Settings.BeforeLog(this, store);
             if (abort) return true; // if we've been told to abort, then abort dammit!
 
@@ -353,7 +353,7 @@ namespace StackExchange.Exceptional
         public Dictionary<string, string> CustomData { get; set; }
 
         /// <summary>
-        /// The number of newer Errors that have been discarded because they match this Error and fall 
+        /// The number of newer Errors that have been discarded because they match this Error and fall
         /// within the configured <see cref="ErrorStoreSettings.RollupPeriod"/> <see cref="TimeSpan"/> value.
         /// </summary>
         public int? DuplicateCount { get; set; }
@@ -493,81 +493,79 @@ namespace StackExchange.Exceptional
         /// <param name="sb">The <see cref="StringBuilder"/> to write to.</param>
         public void WriteDetailedJson(StringBuilder sb)
         {
-            using (var sw = new StringWriter(sb))
-            using (var w = new JsonTextWriter(sw))
+            using var sw = new StringWriter(sb);
+            using var w = new JsonTextWriter(sw);
+            w.StringEscapeHandling = StringEscapeHandling.EscapeHtml;
+            JsonTextWriter WriteName(string name)
             {
-                w.StringEscapeHandling = StringEscapeHandling.EscapeHtml;
-                JsonTextWriter WriteName(string name)
-                {
-                    w.WritePropertyName(name);
-                    return w;
-                }
-                JsonTextWriter WritePairs(string name, List<NameValuePair> pairs)
-                {
-                    WriteName(name).WriteStartObject();
-                    if (pairs != null)
-                    {
-                        foreach (var p in pairs)
-                        {
-                            WriteName(p.Name).WriteValue(p.Value);
-                        }
-                    }
-                    w.WriteEndObject();
-                    return w;
-                }
-                JsonTextWriter WriteDictionary(string name, Dictionary<string, string> pairs)
-                {
-                    WriteName(name).WriteStartObject();
-                    if (pairs != null)
-                    {
-                        foreach (var p in pairs)
-                        {
-                            WriteName(p.Key).WriteValue(p.Value);
-                        }
-                    }
-                    w.WriteEndObject();
-                    return w;
-                }
-                w.WriteStartObject();
-                WriteName(nameof(GUID)).WriteValue(GUID);
-                WriteName(nameof(ApplicationName)).WriteValue(ApplicationName);
-                WriteName(nameof(Category)).WriteValue(Category);
-                WriteName(nameof(CreationDate)).WriteValue(CreationDate.ToEpochTime());
-                WriteName(nameof(DeletionDate)).WriteValue(DeletionDate.ToEpochTime());
-                WriteName(nameof(Detail)).WriteValue(Detail);
-                WriteName(nameof(DuplicateCount)).WriteValue(DuplicateCount);
-                WriteName(nameof(ErrorHash)).WriteValue(ErrorHash);
-                WriteName(nameof(HTTPMethod)).WriteValue(HTTPMethod);
-                WriteName(nameof(Host)).WriteValue(Host);
-                WriteName(nameof(IPAddress)).WriteValue(IPAddress);
-                WriteName(nameof(IsProtected)).WriteValue(IsProtected);
-                WriteName(nameof(MachineName)).WriteValue(MachineName);
-                WriteName(nameof(Message)).WriteValue(Message);
-                WriteName(nameof(Source)).WriteValue(Source);
-                WriteName(nameof(StatusCode)).WriteValue(StatusCode);
-                WriteName(nameof(Type)).WriteValue(Type);
-                WriteName("Url").WriteValue(UrlPath); // Legacy
-                WriteName(nameof(FullUrl)).WriteValue(FullUrl);
-                WriteName(nameof(QueryString)).WriteValue(ServerVariables?["QUERY_STRING"]);
-                WriteDictionary(nameof(CustomData), CustomData);
-                if (Commands != null)
-                {
-                    foreach (var c in Commands)
-                    {
-                        WriteName(nameof(Commands)).WriteStartObject();
-                        WriteName(nameof(c.Type)).WriteValue(c.Type);
-                        WriteName(nameof(c.CommandString)).WriteValue(c.CommandString);
-                        WriteDictionary(nameof(c.Data), c.Data);
-                        w.WriteEndObject();
-                    }
-                }
-                WritePairs(nameof(ServerVariables), ServerVariablesSerializable);
-                WritePairs(nameof(Cookies), CookiesSerializable);
-                WritePairs(nameof(RequestHeaders), RequestHeadersSerializable);
-                WritePairs(nameof(QueryString), QueryStringSerializable);
-                WritePairs(nameof(Form), FormSerializable);
-                w.WriteEndObject();
+                w.WritePropertyName(name);
+                return w;
             }
+            JsonTextWriter WritePairs(string name, List<NameValuePair> pairs)
+            {
+                WriteName(name).WriteStartObject();
+                if (pairs != null)
+                {
+                    foreach (var p in pairs)
+                    {
+                        WriteName(p.Name).WriteValue(p.Value);
+                    }
+                }
+                w.WriteEndObject();
+                return w;
+            }
+            JsonTextWriter WriteDictionary(string name, Dictionary<string, string> pairs)
+            {
+                WriteName(name).WriteStartObject();
+                if (pairs != null)
+                {
+                    foreach (var p in pairs)
+                    {
+                        WriteName(p.Key).WriteValue(p.Value);
+                    }
+                }
+                w.WriteEndObject();
+                return w;
+            }
+            w.WriteStartObject();
+            WriteName(nameof(GUID)).WriteValue(GUID);
+            WriteName(nameof(ApplicationName)).WriteValue(ApplicationName);
+            WriteName(nameof(Category)).WriteValue(Category);
+            WriteName(nameof(CreationDate)).WriteValue(CreationDate.ToEpochTime());
+            WriteName(nameof(DeletionDate)).WriteValue(DeletionDate.ToEpochTime());
+            WriteName(nameof(Detail)).WriteValue(Detail);
+            WriteName(nameof(DuplicateCount)).WriteValue(DuplicateCount);
+            WriteName(nameof(ErrorHash)).WriteValue(ErrorHash);
+            WriteName(nameof(HTTPMethod)).WriteValue(HTTPMethod);
+            WriteName(nameof(Host)).WriteValue(Host);
+            WriteName(nameof(IPAddress)).WriteValue(IPAddress);
+            WriteName(nameof(IsProtected)).WriteValue(IsProtected);
+            WriteName(nameof(MachineName)).WriteValue(MachineName);
+            WriteName(nameof(Message)).WriteValue(Message);
+            WriteName(nameof(Source)).WriteValue(Source);
+            WriteName(nameof(StatusCode)).WriteValue(StatusCode);
+            WriteName(nameof(Type)).WriteValue(Type);
+            WriteName("Url").WriteValue(UrlPath); // Legacy
+            WriteName(nameof(FullUrl)).WriteValue(FullUrl);
+            WriteName(nameof(QueryString)).WriteValue(ServerVariables?["QUERY_STRING"]);
+            WriteDictionary(nameof(CustomData), CustomData);
+            if (Commands != null)
+            {
+                foreach (var c in Commands)
+                {
+                    WriteName(nameof(Commands)).WriteStartObject();
+                    WriteName(nameof(c.Type)).WriteValue(c.Type);
+                    WriteName(nameof(c.CommandString)).WriteValue(c.CommandString);
+                    WriteDictionary(nameof(c.Data), c.Data);
+                    w.WriteEndObject();
+                }
+            }
+            WritePairs(nameof(ServerVariables), ServerVariablesSerializable);
+            WritePairs(nameof(Cookies), CookiesSerializable);
+            WritePairs(nameof(RequestHeaders), RequestHeadersSerializable);
+            WritePairs(nameof(QueryString), QueryStringSerializable);
+            WritePairs(nameof(Form), FormSerializable);
+            w.WriteEndObject();
         }
 
         /// <summary>
