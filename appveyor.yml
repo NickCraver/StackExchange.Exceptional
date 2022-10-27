@@ -3,6 +3,7 @@ image: Visual Studio 2022
 init:
   - git config --global core.autocrlf input
   - SET PATH=%POSTGRES_PATH%\bin;%MYSQL_PATH%\bin;%PATH%
+  - net start MSSQL$SQL2019
 
 skip_branch_with_pr: true
 skip_tags: true
@@ -29,8 +30,9 @@ environment:
   MySQLConnectionString: server=localhost;uid=root;pwd=Password12!;database=test;Allow User Variables=true
   # MongoDB
   MongoDBConnectionString: mongodb://localhost/test
+  # SQL Server
+  SQLServerConnectionString: Server=(local)\SQL2019;Database=master;User ID=sa;Password=Password12!
 services:
-  - mssql2019
   - mysql
   - postgresql
   - mongodb
