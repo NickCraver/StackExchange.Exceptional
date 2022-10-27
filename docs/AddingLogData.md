@@ -15,7 +15,7 @@ new Exception("Oops.")
 
 **Setting** `Settings.GetCustomData`: This hook lets you add custom data (*if it's not already provided*) to an exception while logging. Example usage:
 ```c#
-Settings.Current.GetCustomData = (exception, data) =>
+Exceptional.Settings.GetCustomData = (exception, data) =>
 {
     data.Add("Example string", DateTime.UtcNow.ToString());
     data.Add("User Id", "You could fetch a user/account Id here, etc.");

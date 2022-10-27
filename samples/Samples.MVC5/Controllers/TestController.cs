@@ -73,8 +73,8 @@ namespace Samples.MVC5.Controllers
                 await TestLogAsync(e);
             }
             // TODO: Make these switchable in the UI somewhere
-            //ExceptionalSettings.Current.StackTrace.IncludeGenericTypeNames = false;
-            //ExceptionalSettings.Current.StackTrace.Language = ExceptionalSettings.StackTraceSettings.CodeLanguage.FSharp;
+            //Exceptional.Settings.StackTrace.IncludeGenericTypeNames = false;
+            //Exceptional.Settings.StackTrace.Language = ExceptionalSettings.StackTraceSettings.CodeLanguage.FSharp;
             (new MyGenericClass<string, bool, int, long, string, bool?, int?, long?>()).Throw<string, int>();
             return Content("Not here!"); // this will throw a KeyNotFoundException
         }
