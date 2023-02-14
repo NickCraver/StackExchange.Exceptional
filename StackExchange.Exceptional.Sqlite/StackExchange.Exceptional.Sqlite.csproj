@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>StackExchange.Exceptional.Sqlite</AssemblyName>
+    <Description>Sqlite storage provider for StackExchange.Exceptional</Description>
+    <PackageTags>SQL Sqlite Exception Handler Errors Stack Exchange Exceptional</PackageTags>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <Company>Nick Craver</Company>
+    <Authors>Nemina Amarasinghe</Authors>
+    <PackageProjectUrl>https://github.com/NickCraver/StackExchange.Exceptional</PackageProjectUrl>
+    <PackageLicenseExpression>MIT OR Apache-2.0</PackageLicenseExpression>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\src\StackExchange.Exceptional.Shared\StackExchange.Exceptional.Shared.csproj" />
+    <PackageReference Include="Dapper" Version="1.50.2" />
+    <PackageReference Include="Microsoft.Data.SQLite" Version="3.1.7" />
+
+  </ItemGroup>
+
+</Project>
