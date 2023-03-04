@@ -7,6 +7,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\StackExchange.Exceptional.Shared\StackExchange.Exceptional.Shared.csproj" />
-    <PackageReference Include="MongoDB.Driver" Version="2.9.1" />
+    <PackageReference Include="MongoDB.Driver" Version="2.19.0" />
   </ItemGroup>
 </Project>
