@@ -1,0 +1,9 @@
+﻿{
+  "Exceptional": {
+    "Store": {
+      "ApplicationName": "Samples (ASP.NET Core Oracle)",
+      "Type": "Oracle",
+      "ConnectionString": "User Id=root;Password=root;Data Source=127.0.0.1:1521"
+    }
+  }
+}
