@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
+using System.Data.SqlClient;
 using StackExchange.Exceptional.Internal;
 
 namespace StackExchange.Exceptional.Stores
@@ -345,5 +345,10 @@ Select Count(*)
         }
 
         private SqlConnection GetConnection() => new(_connectionString);
+
+        static SQLErrorStore()
+        {
+            Statics.Settings.ExceptionActions.AddSqlException();
+        }
     }
 }

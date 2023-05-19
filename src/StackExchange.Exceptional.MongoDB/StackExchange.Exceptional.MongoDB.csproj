@@ -3,10 +3,10 @@
     <AssemblyName>StackExchange.Exceptional.MongoDB</AssemblyName>
     <Description>MongoDB storage provider for StackExchange.Exceptional</Description>
     <PackageTags>NoSQL MongoDB Exception Handler Errors Stack Exchange Exceptional</PackageTags>
-    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\StackExchange.Exceptional.Shared\StackExchange.Exceptional.Shared.csproj" />
-    <PackageReference Include="MongoDB.Driver" Version="2.9.1" />
+    <PackageReference Include="MongoDB.Driver" />
   </ItemGroup>
 </Project>

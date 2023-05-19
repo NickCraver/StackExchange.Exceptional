@@ -81,7 +81,7 @@ namespace StackExchange.Exceptional.Internal
         /// Data handlers, for adding any data desirable to an exception before logging, like Commands.
         /// The key here is the full type name, e.g. "System.Data.SqlClient.SqlException"
         /// </summary>
-        public Dictionary<string, Action<Error>> ExceptionActions { get; } = new Dictionary<string, Action<Error>>().AddDefault();
+        public Dictionary<string, Action<Error>> ExceptionActions { get; } = new Dictionary<string, Action<Error>>();
 
         /// <summary>
         /// The <see cref="Regex"/> of data keys to include. For example, "Redis.*" would include all keys that start with Redis.
