@@ -4,13 +4,13 @@
     <AssemblyName>StackExchange.Exceptional.Tests</AssemblyName>
     <IsTestProject Condition="'$(OS)' != 'Windows_NT' AND $(TargetFramework.StartsWith('net4'))">false</IsTestProject>
   </PropertyGroup>
-  
+
   <ItemGroup>
-    <ProjectReference Include="..\..\src\StackExchange.Exceptional.MicrosoftDataSqlClient\StackExchange.Exceptional.MicrosoftDataSqlClient.csproj" />
-    <ProjectReference Include="..\..\src\StackExchange.Exceptional.Shared\StackExchange.Exceptional.Shared.csproj" />
+    <ProjectReference Include="..\..\src\StackExchange.Exceptional.MicrosoftDataSql\StackExchange.Exceptional.MicrosoftDataSql.csproj" />
+    <ProjectReference Include="..\..\src\StackExchange.Exceptional.MongoDB\StackExchange.Exceptional.MongoDB.csproj" />
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.MySQL\StackExchange.Exceptional.MySQL.csproj" />
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.PostgreSql\StackExchange.Exceptional.PostgreSql.csproj" />
-    <ProjectReference Include="..\..\src\StackExchange.Exceptional.MongoDB\StackExchange.Exceptional.MongoDB.csproj" />
+    <ProjectReference Include="..\..\src\StackExchange.Exceptional.Shared\StackExchange.Exceptional.Shared.csproj" />
     <PackageReference Include="Jil" />
     <PackageReference Include="xunit" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />

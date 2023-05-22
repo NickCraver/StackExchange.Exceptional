@@ -11,7 +11,7 @@ namespace StackExchange.Exceptional.Stores
     /// <summary>
     /// An <see cref="ErrorStore"/> implementation that uses SQL Server as its backing store.
     /// </summary>
-    public sealed class SQLErrorStore : ErrorStore
+    public sealed class MicrosoftDataSQLErrorStore : ErrorStore
     {
         /// <summary>
         /// Name for this error store.
@@ -28,12 +28,12 @@ namespace StackExchange.Exceptional.Stores
         public const int MaximumDisplayCount = 500;
 
         /// <summary>
-        /// Creates a new instance of <see cref="SQLErrorStore"/> with the specified connection string.
+        /// Creates a new instance of <see cref="MicrosoftDataSQLErrorStore"/> with the specified connection string.
         /// The default table name is "Exceptions".
         /// </summary>
         /// <param name="connectionString">The database connection string to use.</param>
         /// <param name="applicationName">The application name to use when logging.</param>
-        public SQLErrorStore(string connectionString, string applicationName)
+        public MicrosoftDataSQLErrorStore(string connectionString, string applicationName)
             : this(new ErrorStoreSettings()
             {
                 ApplicationName = applicationName,
@@ -42,11 +42,11 @@ namespace StackExchange.Exceptional.Stores
         { }
 
         /// <summary>
-        /// Creates a new instance of <see cref="SQLErrorStore"/> with the given configuration.
+        /// Creates a new instance of <see cref="MicrosoftDataSQLErrorStore"/> with the given configuration.
         /// The default table name is "Exceptions".
         /// </summary>
         /// <param name="settings">The <see cref="ErrorStoreSettings"/> for this store.</param>
-        public SQLErrorStore(ErrorStoreSettings settings) : base(settings)
+        public MicrosoftDataSQLErrorStore(ErrorStoreSettings settings) : base(settings)
         {
             _displayCount = Math.Min(settings.Size, MaximumDisplayCount);
             _connectionString = settings.ConnectionString;
@@ -346,9 +346,18 @@ Select Count(*)
 
         private SqlConnection GetConnection() => new(_connectionString);
 
-        static SQLErrorStore()
+        static MicrosoftDataSQLErrorStore()
         {
-            Statics.Settings.ExceptionActions.AddSqlException();
+            Statics.DefaultExceptionActions
+                .AddHandler<SqlException>((e, se) =>
+                {
+                    e.AddCommand(new Command("SQL Server Query", se.Data.Contains("SQL") ? se.Data["SQL"] as string : null)
+                        .AddData(nameof(se.Server), se.Server)
+                        .AddData(nameof(se.Number), se.Number.ToString())
+                        .AddData(nameof(se.LineNumber), se.LineNumber.ToString())
+                        .AddData(se.Procedure.HasValue(), nameof(se.Procedure), se.Procedure)
+                    );
+                });
         }
     }
 }

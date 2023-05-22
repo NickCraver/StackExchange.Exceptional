@@ -9,12 +9,12 @@ using Xunit.Abstractions;
 
 namespace StackExchange.Exceptional.Tests.Storage
 {
-    public class SQLErrorStoreTest : StoreBaseTest, IClassFixture<SqlFixture>
+    public class MicrosoftDataSQLErrorStoreTest : StoreBaseTest, IClassFixture<SqlFixture>
     {
         public string ConnectionString => TestConfig.Current.SQLServerConnectionString;
         private SqlFixture Fixture { get; }
 
-        public SQLErrorStoreTest(SqlFixture fixture, ITestOutputHelper output) : base(output)
+        public MicrosoftDataSQLErrorStoreTest(SqlFixture fixture, ITestOutputHelper output) : base(output)
         {
             Fixture = fixture;
             if (Fixture.ShouldSkip)
@@ -24,7 +24,7 @@ namespace StackExchange.Exceptional.Tests.Storage
         }
 
         protected override ErrorStore GetStore([CallerMemberName]string appName = null) =>
-            new SQLErrorStore(new ErrorStoreSettings
+            new MicrosoftDataSQLErrorStore(new ErrorStoreSettings
             {
                 ConnectionString = ConnectionString,
                 ApplicationName = appName,
@@ -35,7 +35,7 @@ namespace StackExchange.Exceptional.Tests.Storage
         public void StoreName()
         {
             const string appName = "TestNameBlarghy";
-            var store = new SQLErrorStore("Server=.;Trusted_Connection=True;", appName);
+            var store = new MicrosoftDataSQLErrorStore("Server=.;Trusted_Connection=True;", appName);
 
             Assert.Equal(appName, store.ApplicationName);
             Statics.Settings = new TestSettings(store);

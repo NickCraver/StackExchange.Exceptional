@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>StackExchange.Exceptional.SystemDataSqlClient</AssemblyName>
+    <AssemblyName>StackExchange.Exceptional.SystemDataSql</AssemblyName>
     <Description>System.Data.SqlClient storage provider for StackExchange.Exceptional</Description>
     <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
     <RootNamespace>StackExchange.Exceptional</RootNamespace>

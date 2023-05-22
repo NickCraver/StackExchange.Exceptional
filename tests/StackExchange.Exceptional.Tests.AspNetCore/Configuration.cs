@@ -124,8 +124,8 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
             Assert.Equal("Server=.;Database=Local.Exceptions;Trusted_Connection=True;", settings.Store.ConnectionString);
             Assert.Equal("MyExceptions", settings.Store.TableName);
 
-            Assert.IsType<SQLErrorStore>(settings.DefaultStore);
-            var sqlStore = settings.DefaultStore as SQLErrorStore;
+            Assert.IsType<MicrosoftDataSQLErrorStore>(settings.DefaultStore);
+            var sqlStore = settings.DefaultStore as MicrosoftDataSQLErrorStore;
             Assert.Equal("Samples (ASP.NET Core SQL)", sqlStore.ApplicationName);
         }
 
