@@ -100,37 +100,16 @@ namespace StackExchange.Exceptional.Internal
         public Action<Exception, Dictionary<string, string>> GetCustomData { get; set; }
 
         /// <summary>
-        /// Method of filtering errors; will be called when the error list page is loading.
+        /// Method to filter errors.
+        /// The method takes an `Error` object as input and returns a boolean value indicating whether the object should be filtered.
         /// </summary>
         public Func<Error, bool> FilterDataInErrorGrid { get; set; }
 
         /// <summary>
-        /// Headers to add to the error list grid.
+        /// Method to get the default columns for a list of strings.
+        /// The list of strings can be manipulated to remove or add columns.
         /// </summary>
-        public List<string> AddedHeaders { get; set; } = new List<string>();
-
-        /// <summary>
-        /// Method to add custom headers to the error list grid.
-        /// </summary>
-        /// <param name="headers"></param>
-        public void AddCustomDataToErrorGrid(params string[] headers)
-        {
-            AddedHeaders.AddRange(headers);
-        }
-
-        /// <summary>
-        /// Headers to hide from the error list grid.
-        /// </summary>
-        public List<string> ExcludedHeaders { get; set; } = new List<string>();
-
-        /// <summary>
-        /// Method to hide default headers from the error list grid.
-        /// </summary>
-        /// <param name="headers"></param>
-        public void HideDefaultHeadersFromErrorGrid(params string[] headers)
-        {
-            ExcludedHeaders.AddRange(headers);
-        }
+        public Action<List<string>> GetColumns { get; set; }
 
         /// <summary>
         /// Settings for the rendering of pages.

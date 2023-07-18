@@ -91,7 +91,7 @@ namespace StackExchange.Exceptional.Pages
             <tr>
               <th></th>");
 
-                headers = headers.Concat(Settings.AddedHeaders).Distinct().Except(Settings.ExcludedHeaders).ToList();
+                Settings.GetColumns?.Invoke(headers);
 
                 foreach (var header in headers)
                 {
