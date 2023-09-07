@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -23,11 +23,6 @@ namespace StackExchange.Exceptional
     {
         private readonly RequestDelegate _next;
         private readonly ILogger _logger;
-#if NETSTANDARD2_0 || NET461
-        private readonly IHostingEnvironment _env;
-#else
-        private readonly IWebHostEnvironment _env;
-#endif
         private readonly IOptions<ExceptionalSettings> _settings;
 
         /// <summary>
@@ -40,22 +35,17 @@ namespace StackExchange.Exceptional
         public ExceptionalMiddleware(
             RequestDelegate next,
             IOptions<ExceptionalSettings> settings,
-#if NETSTANDARD2_0 || NET461
-        IHostingEnvironment hostingEnvironment,
-#else
-        IWebHostEnvironment hostingEnvironment,
-#endif
+            IHostEnvironment hostingEnvironment,
             ILoggerFactory loggerFactory)
         {
             _next = next;
-            _env = hostingEnvironment;
             _logger = loggerFactory.CreateLogger<ExceptionalMiddleware>();
             _settings = settings;
 
             // If an ApplicationName isn't provided, default to IHostingEnvironment.ApplicationName
             if (!_settings.Value.Store.ApplicationName.HasValue())
             {
-                _settings.Value.Store.ApplicationName = _env.ApplicationName;
+                _settings.Value.Store.ApplicationName = hostingEnvironment.ApplicationName;
             }
         }
 

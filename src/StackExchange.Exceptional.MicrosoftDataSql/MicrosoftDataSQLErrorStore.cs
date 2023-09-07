@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 using Dapper;
-using MySqlConnector;
+using Microsoft.Data.SqlClient;
 using StackExchange.Exceptional.Internal;
 
 namespace StackExchange.Exceptional.Stores
 {
     /// <summary>
-    /// An <see cref="ErrorStore" /> implementation that uses MySQL as its backing store.
+    /// An <see cref="ErrorStore"/> implementation that uses SQL Server as its backing store.
     /// </summary>
-    public sealed class MySQLErrorStore : ErrorStore
+    public sealed class MicrosoftDataSQLErrorStore : ErrorStore
     {
         /// <summary>
         /// Name for this error store.
         /// </summary>
-        public override string Name => "MySQL Error Store";
+        public override string Name => "SQL Error Store";
 
         private readonly string _tableName;
         private readonly int _displayCount;
@@ -27,12 +28,12 @@ namespace StackExchange.Exceptional.Stores
         public const int MaximumDisplayCount = 500;
 
         /// <summary>
-        /// Creates a new instance of <see cref="MySQLErrorStore" /> with the specified connection string.
+        /// Creates a new instance of <see cref="MicrosoftDataSQLErrorStore"/> with the specified connection string.
         /// The default table name is "Exceptions".
         /// </summary>
         /// <param name="connectionString">The database connection string to use.</param>
         /// <param name="applicationName">The application name to use when logging.</param>
-        public MySQLErrorStore(string connectionString, string applicationName)
+        public MicrosoftDataSQLErrorStore(string connectionString, string applicationName)
             : this(new ErrorStoreSettings()
             {
                 ApplicationName = applicationName,
@@ -41,18 +42,18 @@ namespace StackExchange.Exceptional.Stores
         { }
 
         /// <summary>
-        /// Creates a new instance of <see cref="MySQLErrorStore"/> with the given configuration.
+        /// Creates a new instance of <see cref="MicrosoftDataSQLErrorStore"/> with the given configuration.
         /// The default table name is "Exceptions".
         /// </summary>
         /// <param name="settings">The <see cref="ErrorStoreSettings"/> for this store.</param>
-        public MySQLErrorStore(ErrorStoreSettings settings) : base(settings)
+        public MicrosoftDataSQLErrorStore(ErrorStoreSettings settings) : base(settings)
         {
             _displayCount = Math.Min(settings.Size, MaximumDisplayCount);
             _connectionString = settings.ConnectionString;
             _tableName = settings.TableName ?? "Exceptions";
 
             if (_connectionString.IsNullOrEmpty())
-                throw new ArgumentOutOfRangeException(nameof(settings), "A connection string or connection string name must be specified when using a MySQL error store");
+                throw new ArgumentOutOfRangeException(nameof(settings), "A connection string or connection string name must be specified when using a SQL error store");
         }
 
         private string _sqlProtectError;
@@ -92,12 +93,12 @@ Update {_tableName}
         private string _sqlDeleteError;
         private string SqlDeleteError => _sqlDeleteError ??= $@"
 Update {_tableName} 
-   Set DeletionDate = UTC_DATE() 
+   Set DeletionDate = GETUTCDATE() 
  Where GUID = @guid 
    And DeletionDate Is Null";
 
         /// <summary>
-        /// Deletes an error, by setting DeletionDate = UTC_DATE() in SQL.
+        /// Deletes an error, by setting DeletionDate = GETUTCDATE() in SQL.
         /// </summary>
         /// <param name="guid">The GUID of the error to delete.</param>
         /// <returns><c>true</c> if the error was found and deleted, <c>false</c> otherwise.</returns>
@@ -110,12 +111,12 @@ Update {_tableName}
         private string _sqlDeleteErrors;
         private string SqlDeleteErrors => _sqlDeleteErrors ??= $@"
 Update {_tableName} 
-   Set DeletionDate = UTC_DATE() 
+   Set DeletionDate = GETUTCDATE() 
  Where GUID In @guids
    And DeletionDate Is Null";
 
         /// <summary>
-        /// Deletes errors, by setting DeletionDate = UTC_DATE() in SQL.
+        /// Deletes errors, by setting DeletionDate = GETUTCDATE() in SQL.
         /// </summary>
         /// <param name="guids">The GUIDs of the errors to delete.</param>
         /// <returns><c>true</c> if the errors were found and deleted, <c>false</c> otherwise.</returns>
@@ -146,13 +147,13 @@ Delete From {_tableName}
         private string _sqlDeleteAllErrors;
         private string SqlDeleteAllErrors => _sqlDeleteAllErrors ??= $@"
 Update {_tableName}
-   Set DeletionDate = UTC_DATE() 
+   Set DeletionDate = GETUTCDATE() 
  Where DeletionDate Is Null 
    And IsProtected = 0 
    And ApplicationName = @ApplicationName";
 
         /// <summary>
-        /// Deleted all errors in the log, by setting <see cref="Error.DeletionDate"/> = UTC_DATE() in SQL.
+        /// Deleted all errors in the log, by setting <see cref="Error.DeletionDate"/> = GETUTCDATE() in SQL.
         /// </summary>
         /// <param name="applicationName">The name of the application to delete all errors for.</param>
         /// <returns><c>true</c> if any errors were deleted, <c>false</c> otherwise.</returns>
@@ -167,20 +168,22 @@ Update {_tableName}
 Update {_tableName} 
    Set DuplicateCount = DuplicateCount + @DuplicateCount,
        LastLogDate = (Case When LastLogDate Is Null Or @CreationDate > LastLogDate Then @CreationDate Else LastLogDate End),
-       GUID = (@newGUID := GUID)
- Where ErrorHash = @ErrorHash
-   And ApplicationName = @ApplicationName
-   And DeletionDate Is Null
-   And CreationDate >= @minDate
- Limit 1;
-Select @newGUID;";
+       @newGUID = GUID
+ Where Id In (Select Top 1 Id
+                From {_tableName} 
+               Where ErrorHash = @ErrorHash
+                 And ApplicationName = @ApplicationName
+                 And DeletionDate Is Null
+                 And CreationDate >= @minDate)";
 
         private string _sqlLogInsert;
         private string SqlLogInsert => _sqlLogInsert ??= $@"
 Insert Into {_tableName} (GUID, ApplicationName, Category, MachineName, CreationDate, Type, IsProtected, Host, Url, HTTPMethod, IPAddress, Source, Message, Detail, StatusCode, FullJson, ErrorHash, DuplicateCount, LastLogDate)
 Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, @IsProtected, @Host, @Url, @HTTPMethod, @IPAddress, @Source, @Message, @Detail, @StatusCode, @FullJson, @ErrorHash, @DuplicateCount, @LastLogDate)";
 
-        private DynamicParameters GetUpdateParams(Error error) => new(new
+        private DynamicParameters GetUpdateParams(Error error)
+        {
+            var queryParams = new DynamicParameters(new
             {
                 error.DuplicateCount,
                 error.ErrorHash,
@@ -188,6 +191,9 @@ Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, 
                 ApplicationName = error.ApplicationName.Truncate(50),
                 minDate = DateTime.UtcNow.Subtract(Settings.RollupPeriod.Value)
             });
+            queryParams.Add("@newGUID", dbType: DbType.Guid, direction: ParameterDirection.Output);
+            return queryParams;
+        }
 
         private object GetInsertParams(Error error) => new
         {
@@ -224,11 +230,10 @@ Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, 
             if (Settings.RollupPeriod.HasValue && error.ErrorHash.HasValue)
             {
                 var queryParams = GetUpdateParams(error);
-                var guid = c.QueryFirstOrDefault<string>(SqlLogUpdate, queryParams);
-                // if we found an exception that's a duplicate, jump out
-                if (guid != null)
+                // if we found an error that's a duplicate, jump out
+                if (c.Execute(SqlLogUpdate, queryParams) > 0)
                 {
-                    error.GUID = Guid.Parse(guid);
+                    error.GUID = queryParams.Get<Guid>("@newGUID");
                     return true;
                 }
             }
@@ -249,17 +254,15 @@ Values (@GUID, @ApplicationName, @Category, @MachineName, @CreationDate, @Type, 
             if (Settings.RollupPeriod.HasValue && error.ErrorHash.HasValue)
             {
                 var queryParams = GetUpdateParams(error);
-                var guid = await c.QueryFirstOrDefaultAsync<string>(SqlLogUpdate, queryParams).ConfigureAwait(false);
-                // if we found an exception that's a duplicate, jump out
-                if (guid != null)
+                // if we found an error that's a duplicate, jump out
+                if (await c.ExecuteAsync(SqlLogUpdate, queryParams).ConfigureAwait(false) > 0)
                 {
-                    error.GUID = Guid.Parse(guid);
+                    error.GUID = queryParams.Get<Guid>("@newGUID");
                     return true;
                 }
             }
 
             error.FullJson = error.ToJson();
-
             return (await c.ExecuteAsync(SqlLogInsert, GetInsertParams(error)).ConfigureAwait(false)) > 0;
         }
 
@@ -271,10 +274,10 @@ Select *
 
         /// <summary>
         /// Gets the error with the specified GUID from SQL.
-        /// This can return a deleted error as well, there's no filter based on <see cref="Error.DeletionDate"/>.
+        /// This can return a deleted error as well, there's no filter based on DeletionDate.
         /// </summary>
         /// <param name="guid">The GUID of the error to retrieve.</param>
-        /// <returns>The error object if found, <c>null</c> otherwise.</returns>
+        /// <returns>The error object if found, null otherwise.</returns>
         protected override async Task<Error> GetErrorAsync(Guid guid)
         {
             Error sqlError;
@@ -296,11 +299,11 @@ Select *
 
         private string _sqlGetAllErrors;
         private string SqlGetAllErrors => _sqlGetAllErrors ??= $@"
-Select * 
+Select Top {{=max}} * 
   From {_tableName} 
  Where DeletionDate Is Null
    And ApplicationName = @ApplicationName
-Order By CreationDate Desc Limit {{=max}}";
+Order By CreationDate Desc";
 
         /// <summary>
         /// Retrieves all non-deleted application errors in the database.
@@ -341,6 +344,20 @@ Select Count(*)
             ).ConfigureAwait(false);
         }
 
-        private MySqlConnection GetConnection() => new(_connectionString);
+        private SqlConnection GetConnection() => new(_connectionString);
+
+        static MicrosoftDataSQLErrorStore()
+        {
+            Statics.DefaultExceptionActions
+                .AddHandler<SqlException>((e, se) =>
+                {
+                    e.AddCommand(new Command("SQL Server Query", se.Data.Contains("SQL") ? se.Data["SQL"] as string : null)
+                        .AddData(nameof(se.Server), se.Server)
+                        .AddData(nameof(se.Number), se.Number.ToString())
+                        .AddData(nameof(se.LineNumber), se.LineNumber.ToString())
+                        .AddData(se.Procedure.HasValue(), nameof(se.Procedure), se.Procedure)
+                    );
+                });
+        }
     }
 }
