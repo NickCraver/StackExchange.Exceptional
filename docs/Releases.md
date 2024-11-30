@@ -6,6 +6,9 @@ layout: "default"
 This page tracks major changes included in any update starting with version 2.0.0.
 
 #### Unreleased
+No pending unreleased changes.
+
+#### Version 3.0.1
 - Moves to `net8.0` builds for main packages (dropping `netstandard2.0` and `netcoreapp*` support)
 - Upgraded dependencies to avoid transitive CVE warnings for consumers
 - Adds `Exceptional.Settings.CreatePathIfMissing` for auto-creating directories on startup (opt-in)
