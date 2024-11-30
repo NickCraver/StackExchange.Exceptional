@@ -24,7 +24,7 @@ namespace StackExchange.Exceptional.Internal
         public static bool IsLoggingEnabled { get; set; } = true;
 
         /// <summary>
-        /// 
+        /// Default exception actions to handle for any exception types globally.
         /// </summary>
         public static Dictionary<string, Action<Error>> DefaultExceptionActions { get; }
 

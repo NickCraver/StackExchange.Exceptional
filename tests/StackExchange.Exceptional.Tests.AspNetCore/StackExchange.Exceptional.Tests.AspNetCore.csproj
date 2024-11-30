@@ -12,7 +12,7 @@
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.AspNetCore\StackExchange.Exceptional.AspNetCore.csproj" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" />
-    <PackageReference Include="xunit" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
   </ItemGroup>
 </Project>
