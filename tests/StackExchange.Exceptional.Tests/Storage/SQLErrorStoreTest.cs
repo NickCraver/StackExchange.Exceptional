@@ -77,6 +77,7 @@ namespace StackExchange.Exceptional.Tests.Storage
                 e.MaybeLog(TestConfig.Current.SQLServerConnectionString);
                 ShouldSkip = true;
                 SkipReason = e.Message;
+                Console.WriteLine("Skipping SQL: " + SkipReason);
             }
         }
 
