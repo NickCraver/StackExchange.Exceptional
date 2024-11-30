@@ -1,11 +1,15 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Runtime.CompilerServices;
 using Dapper;
 using StackExchange.Exceptional.Internal;
 using StackExchange.Exceptional.Stores;
 using Xunit;
 using Xunit.Abstractions;
+#if NET8_0_OR_GREATER
+using Microsoft.Data.SqlClient;
+#else
+using System.Data.SqlClient;
+#endif
 
 namespace StackExchange.Exceptional.Tests.Storage
 {
@@ -23,7 +27,7 @@ namespace StackExchange.Exceptional.Tests.Storage
             }
         }
 
-        protected override ErrorStore GetStore([CallerMemberName]string appName = null) =>
+        protected override ErrorStore GetStore([CallerMemberName] string appName = null) =>
             new SQLErrorStore(new ErrorStoreSettings
             {
                 ConnectionString = ConnectionString,
@@ -37,10 +41,10 @@ namespace StackExchange.Exceptional.Tests.Storage
             const string appName = "TestNameBlarghy";
             var store = new SQLErrorStore("Server=.;Trusted_Connection=True;", appName);
 
-            Assert.Equal(store.ApplicationName, appName);
+            Assert.Equal(appName, store.ApplicationName);
             Statics.Settings = new TestSettings(store);
 
-            Assert.Equal(Statics.Settings.DefaultStore.ApplicationName, appName);
+            Assert.Equal(appName, Statics.Settings.DefaultStore.ApplicationName);
         }
     }
 
@@ -73,6 +77,7 @@ namespace StackExchange.Exceptional.Tests.Storage
                 e.MaybeLog(TestConfig.Current.SQLServerConnectionString);
                 ShouldSkip = true;
                 SkipReason = e.Message;
+                Console.WriteLine("Skipping SQL: " + SkipReason);
             }
         }
 

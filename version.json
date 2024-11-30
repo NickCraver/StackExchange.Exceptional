@@ -1,11 +1,11 @@
 {
-  "version": "2.2",
+  "version": "3.0",
   "publicReleaseRefSpec": [
     "^refs/heads/main$",
     "^refs/tags/v\\d+\\.\\d+"
   ],
   "nugetPackageVersion": {
-    "semVer": 2
+    "semVer": 3
   },
   "cloudBuild": {
     "buildNumber": {

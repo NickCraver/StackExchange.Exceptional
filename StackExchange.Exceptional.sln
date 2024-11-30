@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29519.161
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.33711.374
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{9D33C076-4A0C-4366-89B8-9A735E6867EA}"
 	ProjectSection(SolutionItems) = preProject
@@ -26,9 +26,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8B91532F-A112-4F73-80BD-A95B7359BBC3}"
 	ProjectSection(SolutionItems) = preProject
 		src\Directory.Build.props = src\Directory.Build.props
+		src\Directory.Packages.props = src\Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{001E5AA4-42C8-4AC3-B14A-AF1DFA02E9FB}"
+	ProjectSection(SolutionItems) = preProject
+		samples\Directory.Build.props = samples\Directory.Build.props
+		samples\Directory.Packages.props = samples\Directory.Packages.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackExchange.Exceptional.Shared", "src\StackExchange.Exceptional.Shared\StackExchange.Exceptional.Shared.csproj", "{D316FA70-8563-4360-A60F-1A43F3FA30E5}"
 EndProject
@@ -46,6 +51,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7D435EF2-8616-460D-82DB-EF4D74EEC459}"
 	ProjectSection(SolutionItems) = preProject
 		tests\Directory.Build.props = tests\Directory.Build.props
+		tests\Directory.Packages.props = tests\Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackExchange.Exceptional.Tests.AspNetCore", "tests\StackExchange.Exceptional.Tests.AspNetCore\StackExchange.Exceptional.Tests.AspNetCore.csproj", "{30BDD61C-A94B-4558-BB58-E9EEC0B8B845}"
@@ -56,7 +62,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackExchange.Exceptional.P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackExchange.Exceptional.MongoDB", "src\StackExchange.Exceptional.MongoDB\StackExchange.Exceptional.MongoDB.csproj", "{8CFA59A5-5180-4466-A32E-507F3D541163}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples.ConsoleNetCore", "samples\Samples.ConsoleNetCore\Samples.ConsoleNetCore.csproj", "{6CE269E1-6DC9-43A4-B6B8-683CE8A19E6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.ConsoleNetCore", "samples\Samples.ConsoleNetCore\Samples.ConsoleNetCore.csproj", "{6CE269E1-6DC9-43A4-B6B8-683CE8A19E6A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

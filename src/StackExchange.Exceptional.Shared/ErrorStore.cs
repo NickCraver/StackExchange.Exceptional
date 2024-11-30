@@ -567,7 +567,7 @@ namespace StackExchange.Exceptional
             try
             {
                 // Ensure all assemblies we expect are loaded before looking at types
-                var assemblyUri = new Uri(Assembly.GetExecutingAssembly().GetName().CodeBase);
+                var assemblyUri = new Uri(AppDomain.CurrentDomain.BaseDirectory);
                 var path = Path.GetDirectoryName(assemblyUri.LocalPath);
                 foreach (var filename in Directory.GetFiles(path, "StackExchange.Exceptional.*.dll"))
                 {

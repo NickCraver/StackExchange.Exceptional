@@ -22,8 +22,8 @@ namespace StackExchange.Exceptional.Tests.AspNetCore
             const string appName = "AppNameViaConfig";
             Exceptional.Configure(settings => settings.DefaultStore = new SQLErrorStore(TestConfig.Current.SQLServerConnectionString, appName));
 
-            Assert.Equal(Exceptional.Settings.DefaultStore.ApplicationName, appName);
-            Assert.Equal(Statics.Settings.DefaultStore.ApplicationName, appName);
+            Assert.Equal(appName, Exceptional.Settings.DefaultStore.ApplicationName);
+            Assert.Equal(appName, Statics.Settings.DefaultStore.ApplicationName);
 
             var error = new Exception().GetErrorIfNotIgnored(Statics.Settings);
             Assert.Equal(appName, error.ApplicationName);

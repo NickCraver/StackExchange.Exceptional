@@ -2,7 +2,7 @@
   <ItemGroup>
     <ProjectReference Include="src\**\*.csproj" />
   </ItemGroup>
-  <ItemGroup Condition="$(Packing) != 'true'">
+  <ItemGroup Condition="$(Packing) != 'true' and $(_IsPacking) != 'true'">
     <ProjectReference Include="samples\**\*.csproj" Exclude="samples\**\*Mvc5*.csproj" />
     <ProjectReference Include="tests\**\*.csproj" />
   </ItemGroup>

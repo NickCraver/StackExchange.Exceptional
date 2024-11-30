@@ -1,16 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net48;net6.0</TargetFrameworks>
+    <TargetFrameworks>net48;net8.0</TargetFrameworks>
     <AssemblyName>StackExchange.Exceptional.Tests</AssemblyName>
     <IsTestProject Condition="'$(OS)' != 'Windows_NT' AND $(TargetFramework.StartsWith('net4'))">false</IsTestProject>
   </PropertyGroup>
-  
+
   <ItemGroup>
-    <ProjectReference Include="..\..\src\StackExchange.Exceptional.Shared\StackExchange.Exceptional.Shared.csproj" />
+    <ProjectReference Include="..\..\src\StackExchange.Exceptional.MongoDB\StackExchange.Exceptional.MongoDB.csproj" />
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.MySQL\StackExchange.Exceptional.MySQL.csproj" />
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.PostgreSql\StackExchange.Exceptional.PostgreSql.csproj" />
-    <ProjectReference Include="..\..\src\StackExchange.Exceptional.MongoDB\StackExchange.Exceptional.MongoDB.csproj" />
-    <PackageReference Include="Jil" Version="2.17" />
+    <ProjectReference Include="..\..\src\StackExchange.Exceptional.Shared\StackExchange.Exceptional.Shared.csproj" />
+    <PackageReference Include="Jil" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
   </ItemGroup>
   
   <ItemGroup>

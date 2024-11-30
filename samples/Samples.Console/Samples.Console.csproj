@@ -11,7 +11,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\StackExchange.Exceptional\StackExchange.Exceptional.csproj" />
-    <PackageReference Include="Dapper.StrongName" Version="1.50.2" />
-    <PackageReference Include="System.Data.SQLite" Version="1.0.105.2" />
   </ItemGroup>
 </Project>

@@ -6,9 +6,10 @@ layout: "default"
 This page tracks major changes included in any update starting with version 2.0.0.
 
 #### Unreleased
-- Adds a `net6.0` build to main packages
-- Bumps `Newtonsoft.Json` to version 13.0.1
+- Moves to `net8.0` builds for main packages (dropping `netstandard2.0` and `netcoreapp*` support)
+- Upgraded dependencies to avoid transitive CVE warnings for consumers
 - Adds `Exceptional.Settings.CreatePathIfMissing` for auto-creating directories on startup (opt-in)
+- Moved to `Microsoft.Data.SqlClient` for `net8.0` (still `System.Data.SqlClient` for `net462`) to simplify migrations
 
 #### Version 2.2.17
 - Bumps from `netcoreapp3.0` to `netcoreapp3.1` (since .NET Core 3.0 is no loner supported)
