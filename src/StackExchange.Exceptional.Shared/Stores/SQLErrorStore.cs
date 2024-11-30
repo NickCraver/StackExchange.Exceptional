@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
-using System.Data.SqlClient;
 using StackExchange.Exceptional.Internal;
+#if NET8_0_OR_GREATER
+using Microsoft.Data.SqlClient;
+#else
+using System.Data.SqlClient;
+#endif
 
 namespace StackExchange.Exceptional.Stores
 {
     /// <summary>
     /// An <see cref="ErrorStore"/> implementation that uses SQL Server as its backing store.
     /// </summary>
-    public sealed class SystemDataSQLErrorStore : ErrorStore
+    public sealed class SQLErrorStore : ErrorStore
     {
         /// <summary>
         /// Name for this error store.
@@ -28,12 +32,12 @@ namespace StackExchange.Exceptional.Stores
         public const int MaximumDisplayCount = 500;
 
         /// <summary>
-        /// Creates a new instance of <see cref="SystemDataSQLErrorStore"/> with the specified connection string.
+        /// Creates a new instance of <see cref="SQLErrorStore"/> with the specified connection string.
         /// The default table name is "Exceptions".
         /// </summary>
         /// <param name="connectionString">The database connection string to use.</param>
         /// <param name="applicationName">The application name to use when logging.</param>
-        public SystemDataSQLErrorStore(string connectionString, string applicationName)
+        public SQLErrorStore(string connectionString, string applicationName)
             : this(new ErrorStoreSettings()
             {
                 ApplicationName = applicationName,
@@ -42,11 +46,11 @@ namespace StackExchange.Exceptional.Stores
         { }
 
         /// <summary>
-        /// Creates a new instance of <see cref="SystemDataSQLErrorStore"/> with the given configuration.
+        /// Creates a new instance of <see cref="SQLErrorStore"/> with the given configuration.
         /// The default table name is "Exceptions".
         /// </summary>
         /// <param name="settings">The <see cref="ErrorStoreSettings"/> for this store.</param>
-        public SystemDataSQLErrorStore(ErrorStoreSettings settings) : base(settings)
+        public SQLErrorStore(ErrorStoreSettings settings) : base(settings)
         {
             _displayCount = Math.Min(settings.Size, MaximumDisplayCount);
             _connectionString = settings.ConnectionString;
@@ -346,7 +350,7 @@ Select Count(*)
 
         private SqlConnection GetConnection() => new(_connectionString);
 
-        static SystemDataSQLErrorStore()
+        static SQLErrorStore()
         {
             Statics.DefaultExceptionActions
                 .AddHandler<SqlException>((e, se) =>

@@ -4,7 +4,7 @@
     <Description>PostgreSql storage provider for StackExchange.Exceptional</Description>
     <Authors>$(Authors);Mihai Bogdan Eugen</Authors>
     <PackageTags>SQL PostgreSql Exception Handler Errors Stack Exchange Exceptional</PackageTags>
-    <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net462;net8.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\StackExchange.Exceptional.Shared\StackExchange.Exceptional.Shared.csproj" />

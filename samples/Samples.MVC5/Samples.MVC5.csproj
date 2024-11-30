@@ -1,21 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.SDK.SystemWeb">
   <PropertyGroup>
     <AssemblyName>Samples.Mvc5</AssemblyName>
     <TargetFramework>net472</TargetFramework>
     <OutputType>Library</OutputType>
-    <OutputPath>bin\</OutputPath>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\StackExchange.Exceptional\StackExchange.Exceptional.csproj" />
     <ProjectReference Include="..\..\src\StackExchange.Exceptional.MySQL\StackExchange.Exceptional.MySQL.csproj" />
     <PackageReference Include="Microsoft.AspNet.Mvc" />
     <PackageReference Include="Microsoft.AspNet.Web.Optimization" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Web" />
+    <PackageReference Include="Microsoft.CSharp" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Global.asax.cs" DependentUpon="Global.asax" />
-  </ItemGroup>
-  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
 </Project>

@@ -1,20 +1,24 @@
 ﻿using System;
-using Microsoft.Data.SqlClient;
 using System.Runtime.CompilerServices;
 using Dapper;
 using StackExchange.Exceptional.Internal;
 using StackExchange.Exceptional.Stores;
 using Xunit;
 using Xunit.Abstractions;
+#if NET8_0_OR_GREATER
+using Microsoft.Data.SqlClient;
+#else
+using System.Data.SqlClient;
+#endif
 
 namespace StackExchange.Exceptional.Tests.Storage
 {
-    public class MicrosoftDataSQLErrorStoreTest : StoreBaseTest, IClassFixture<SqlFixture>
+    public class SQLErrorStoreTest : StoreBaseTest, IClassFixture<SqlFixture>
     {
         public string ConnectionString => TestConfig.Current.SQLServerConnectionString;
         private SqlFixture Fixture { get; }
 
-        public MicrosoftDataSQLErrorStoreTest(SqlFixture fixture, ITestOutputHelper output) : base(output)
+        public SQLErrorStoreTest(SqlFixture fixture, ITestOutputHelper output) : base(output)
         {
             Fixture = fixture;
             if (Fixture.ShouldSkip)
@@ -23,8 +27,8 @@ namespace StackExchange.Exceptional.Tests.Storage
             }
         }
 
-        protected override ErrorStore GetStore([CallerMemberName]string appName = null) =>
-            new MicrosoftDataSQLErrorStore(new ErrorStoreSettings
+        protected override ErrorStore GetStore([CallerMemberName] string appName = null) =>
+            new SQLErrorStore(new ErrorStoreSettings
             {
                 ConnectionString = ConnectionString,
                 ApplicationName = appName,
@@ -35,7 +39,7 @@ namespace StackExchange.Exceptional.Tests.Storage
         public void StoreName()
         {
             const string appName = "TestNameBlarghy";
-            var store = new MicrosoftDataSQLErrorStore("Server=.;Trusted_Connection=True;", appName);
+            var store = new SQLErrorStore("Server=.;Trusted_Connection=True;", appName);
 
             Assert.Equal(appName, store.ApplicationName);
             Statics.Settings = new TestSettings(store);

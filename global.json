@@ -1,4 +1,7 @@
 {
+    "msbuild-sdks": {
+      "MSBuild.SDK.SystemWeb" : "4.0.93"
+    },
     "sdk": {
         "allowPrerelease": false
     }
