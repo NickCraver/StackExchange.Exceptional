@@ -1,4 +1,5 @@
 ﻿using StackExchange.Exceptional.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,7 +23,14 @@ namespace StackExchange.Exceptional.Pages
         public ErrorListPage(ErrorStore store, ExceptionalSettingsBase settings, string baseURL, List<Error> errors)
             : base(null, settings, store, baseURL, "Error Log")
         {
-            Errors = errors.OrderByDescending(e => e.LastLogDate ?? e.CreationDate).ToList();
+            if (Settings.FilterDataInErrorGrid != null)
+            {
+                Errors = errors.Where(settings.FilterDataInErrorGrid).ToList();
+            }
+            else
+            {
+                Errors = errors.OrderByDescending(e => e.LastLogDate ?? e.CreationDate).ToList();
+            }
         }
 
         /// <summary>
@@ -64,6 +72,10 @@ namespace StackExchange.Exceptional.Pages
             }
             else
             {
+                var headers = new List<string>()
+                {
+                    "Type", "Error", "Url", "Remote IP", "Time", "Site", "Server"
+                };
                 var last = Errors.FirstOrDefault(); // oh the irony
                 sb.Append("        <h1>")
                   .Append("<span class=\"js-error-count\">")
@@ -77,17 +89,55 @@ namespace StackExchange.Exceptional.Pages
                   .AppendLine(@"        <table class=""js-error-list hover alt-rows error-list"">
           <thead>
             <tr>
-              <th></th>
-              <th>Type</th>
-              <th>Error</th>
-              <th>Url</th>
-              <th>Remote IP</th>
-              <th>Time</th>
-              <th>Site</th>
-              <th>Server</th>
-            </tr>
+              <th></th>");
+
+                Settings.GetColumns?.Invoke(headers);
+
+                foreach (var header in headers)
+                {
+                    sb.AppendLine($"              <th>{header}</th>");
+                }
+
+                var displayLogic = new Dictionary<string, Action<Error, StringBuilder>>()
+                {
+                    { "Type", (e, sb) => sb.Append("              <td title=\"").AppendHtmlEncode(e.Type).Append("\">")
+                      .AppendHtmlEncode(e.Type.ToShortTypeName())
+                      .AppendLine("</td>") },
+                    { "Error", (e, sb) => {
+                        sb.Append("              <td class=\"wrap\"><a href=\"").Append(Url(KnownRoutes.Info)).Append("?guid=").Append(e.GUID.ToString())
+                      .Append("\">").Append(e.Message.HasValue() ? e.Message.EncodeTruncateWithEllipsis(250) : "(no message)").Append("</a>");
+                        if (e.DuplicateCount > 1)
+                        {
+                            sb.Append(" <span class=\"duplicate-count\" title=\"number of similar errors occurring close to this error\">(")
+                                .Append(e.DuplicateCount.ToString())
+                                .Append(")</span>");
+                        }
+                        sb.AppendLine("</td>");
+                    } },
+                    { "Url", (e, sb) => {
+                        sb.Append("              <td>");
+                        if (e.UrlPath.HasValue())
+                        {
+                            sb.Append("<span title=\"").AppendHtmlEncode(e.Host).AppendHtmlEncode(e.UrlPath).Append("\">")
+                          .Append(e.UrlPath.EncodeTruncateWithEllipsis(40))
+                          .Append("</span>");
+                        }
+                        sb.AppendLine("</td>");
+                    } },
+                    { "Remote IP", (e, sb) => sb.Append("              <td>").AppendHtmlEncode(e.IPAddress).AppendLine("</td>") },
+                    { "Time", (e, sb) => sb.Append("              <td title=\"")
+                      .Append((e.LastLogDate ?? e.CreationDate).ToUniversalTime().ToString("u"))
+                      .Append("\">")
+                      .AppendHtmlEncode((e.LastLogDate ?? e.CreationDate).ToRelativeTime())
+                      .AppendLine("</td>") },
+                    { "Site", (e, sb) => sb.Append("              <td>").AppendHtmlEncode(e.Host).AppendLine("</td>") },
+                    { "Server", (e, sb) => sb.Append("              <td>").AppendHtmlEncode(e.MachineName).AppendLine("</td>") },
+                };
+
+                sb.AppendLine(@"            </tr>
           </thead>
           <tbody>");
+
                 foreach (var e in Errors)
                 {
                     sb.Append("            <tr data-id=\"").Append(e.GUID.ToString()).Append("\" class=\"error").Append(e.IsProtected ? " js-protected" : "").AppendLine("\">")
@@ -101,36 +151,23 @@ namespace StackExchange.Exceptional.Pages
                     {
                         sb.Append(" <span title=\"This error is protected\">").Append(IconLock).Append("</span>");
                     }
-                    sb.AppendLine("</td>")
-                      .Append("              <td title=\"").AppendHtmlEncode(e.Type).Append("\">")
-                      .AppendHtmlEncode(e.Type.ToShortTypeName())
-                      .AppendLine("</td>")
-                      .Append("              <td class=\"wrap\"><a href=\"").Append(Url(KnownRoutes.Info)).Append("?guid=").Append(e.GUID.ToString())
-                      .Append("\">").Append(e.Message.HasValue() ? e.Message.EncodeTruncateWithEllipsis(250) : "(no message)").Append("</a>");
-                    if (e.DuplicateCount > 1)
+                    sb.AppendLine("</td>");
+
+                    foreach (var header in headers)
                     {
-                        sb.Append(" <span class=\"duplicate-count\" title=\"number of similar errors occurring close to this error\">(")
-                          .Append(e.DuplicateCount.ToString())
-                          .Append(")</span>");
+                        if (displayLogic.TryGetValue(header, out var displayAction))
+                        {
+                            displayAction.Invoke(e, sb);
+                        }
+                        else if (e.CustomData != null && e.CustomData.TryGetValue(header, out var customValue))
+                        {
+                            sb.Append("              <td>").AppendHtmlEncode(customValue).AppendLine("</td>");
+                        }
+                        else
+                        {
+                            sb.Append("              <td></td>");
+                        }
                     }
-                    sb.AppendLine("</td>")
-                      .Append("              <td>");
-                    if (e.UrlPath.HasValue())
-                    {
-                        sb.Append("<span title=\"").AppendHtmlEncode(e.Host).AppendHtmlEncode(e.UrlPath).Append("\">")
-                          .Append(e.UrlPath.EncodeTruncateWithEllipsis(40))
-                          .Append("</span>");
-                    }
-                    sb.AppendLine("</td>")
-                      .Append("              <td>").AppendHtmlEncode(e.IPAddress).AppendLine("</td>")
-                      .Append("              <td title=\"")
-                      .Append((e.LastLogDate ?? e.CreationDate).ToUniversalTime().ToString("u"))
-                      .Append("\">")
-                      .AppendHtmlEncode((e.LastLogDate ?? e.CreationDate).ToRelativeTime())
-                      .AppendLine("</td>")
-                      .Append("              <td>").AppendHtmlEncode(e.Host).AppendLine("</td>")
-                      .Append("              <td>").AppendHtmlEncode(e.MachineName).AppendLine("</td>")
-                      .AppendLine("            </tr>");
                 }
                 sb.AppendLine("          </tbody>")
                   .AppendLine("        </table>");

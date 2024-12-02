@@ -100,6 +100,18 @@ namespace StackExchange.Exceptional.Internal
         public Action<Exception, Dictionary<string, string>> GetCustomData { get; set; }
 
         /// <summary>
+        /// Method to filter errors.
+        /// The method takes an `Error` object as input and returns a boolean value indicating whether the object should be filtered.
+        /// </summary>
+        public Func<Error, bool> FilterDataInErrorGrid { get; set; }
+
+        /// <summary>
+        /// Method to get the default columns for a list of strings.
+        /// The list of strings can be manipulated to remove or add columns.
+        /// </summary>
+        public Action<List<string>> GetColumns { get; set; }
+
+        /// <summary>
         /// Settings for the rendering of pages.
         /// </summary>
         public RenderSettings Render { get; } = new RenderSettings();
